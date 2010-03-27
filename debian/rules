@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+DEB_PYTHON_SYSTEM = pysupport
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/python-distutils.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+
+clean::
+	dh_testdir
+	dh_testroot
+	dh_clean fract4d/fract4d_stdlib.so fract4d/fract4dc.so
+	dh_clean fract4dgui/fract4dguic.so

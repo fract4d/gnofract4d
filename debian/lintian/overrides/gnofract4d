@@ -1,0 +1,2 @@
+# Python modules and scripts need not be executable:
+gnofract4d binary: script-not-executable
