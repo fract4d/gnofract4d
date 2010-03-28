@@ -1,0 +1,243 @@
+/* andreas01 - an open source xhtml/css website layout by Andreas
+Viklund (http://andreasviklund.com). Made for OSWD.org, free to use
+as-is for any purpose as long as the proper credits are given for the
+original design work. For design assistance and support, contact me
+through my website or through http://oswd.org/email.phtml?user=Andreas
+
+Version: 1.0
+(July 25, 2005)
+
+Screen layout: */
+
+body {
+margin: 0 auto;
+padding: 0;
+font: 76% Verdana,Tahoma,Arial,sans-serif;
+background: #f4f4f4 url(bg.gif) top center repeat-y;
+text-align: center
+}
+
+td {
+font: 76% Verdana,Tahoma,Arial,sans-serif;
+vertical-align: top
+}
+
+#wrap {
+background: #ffffff;
+color: #303030;
+margin: 0 auto;
+width: 760px;
+text-align: left
+}
+
+#header {
+clear: both;
+margin: 20px 0 0 0;
+padding: 0;
+height: 45px;
+}
+
+#header h1 {
+width: 250px;
+margin: 0 0 10px 0;
+float: left;
+}
+
+#header p {
+width: 500px;
+float: right;
+text-align: center;
+color: #a0a0a0;
+margin: 0 0 10px 0;
+font-size: 0.8em;
+line-height: 1.2em;
+}
+
+#frontphoto {
+margin: 0 0 10px 0;
+border: 0;
+}
+
+#avmenu {
+clear: left;
+float: left;
+width: 150px;
+margin: 0 0 10px 0;
+padding: 0;
+font-size: 0.9em;
+}
+
+#avmenu ul {	
+list-style: none;
+width: 150px;
+margin: 0 0 20px 0;
+padding: 0;
+font-size: 1.1em;
+}	
+
+#avmenu li {
+margin-bottom: 4px;
+}
+
+#avmenu li a {
+margin-bottom: 4px;
+font-weight: bold;
+height: 20px;
+display: block;
+padding: 6px 0 0 10px;
+background: #f4f4f4;
+border-left: 4px solid #cccccc;
+color: #505050;
+}	
+	
+#avmenu li span {
+margin-bottom: 4px;
+font-weight: bold;
+height: 20px;
+display: block;
+padding: 6px 0 0 10px;
+background: #d4d4d4;
+border-left: 4px solid #d4d4d4;
+}
+
+#avmenu li a:hover {
+background: #eaeaea;
+color: #286ea0;
+border-left: 4px solid #286ea0;
+}
+
+.announce {
+margin: 10px 10px 10px 0;
+padding: 10px;
+width: 130px;
+color: #505050;
+background-color: #f4f4f4;
+line-height: 1.3em;
+}
+
+#extras {
+float: right;
+width: 100px;
+margin: 0 0 10px 0;
+padding: 0;
+font-size: 0.9em;
+line-height: 1.5em;
+}
+
+#extras p {
+margin: 0 0 1.5em 0;
+}
+
+#content {
+margin: 0 10px 20px 160px;
+border-left: 1px solid #f0f0f0;
+border-right: 1px solid #f0f0f0;
+padding: 0 10px 0 10px;
+line-height: 1.6em;
+text-align: left;
+}
+
+#content h2 {
+font-size: 1.5em;
+margin: 0 0 0.5em 0;
+}
+
+#content img {
+padding: 1px;
+display:inline;
+background: #cccccc;
+border: 4px solid #f0f0f0;
+}
+
+.q {
+font-weight: bold;
+background: #eeeeee;
+}
+
+h3 {
+font-size: 1.3em;
+margin: 0 0 10px 0;
+}
+
+a {
+text-decoration: none;
+color: #286ea0;
+}
+
+a:hover {
+text-decoration: underline;
+color: #286ea0;
+}
+
+a img {
+border: 0;
+}
+
+#footer {
+clear: both;
+margin: 0 auto;
+padding: 10px 0 20px 0;
+border-top: 4px solid #f0f0f0;
+width: 760px;
+text-align: center;
+color: #808080;
+font-size: 0.9em;
+}
+
+#footer a {
+color: #808080;
+text-decoration: none;
+}
+
+#footer a:hover {
+text-decoration: underline;
+}
+
+.left {
+margin: 10px 10px 5px 0;
+float: left;
+}
+
+.right {
+margin: 10px 0 5px 10px;
+float: right;
+}
+
+.textright {
+text-align: right;
+}
+
+.center {
+text-align: center;
+}
+
+.small {
+font-size: 0.8em;
+}
+
+.bold {
+font-weight: bold;
+}
+
+.hide {
+display: none;
+}
+
+.downloadbar {
+position: relative; border-top: 1px solid #008000; 
+background: #0a0 url("http://images.sourceforge.net/sfx/sfx_dl_bg2.png") repeat-x bottom left; 
+font-size: 100%; color: #456; 
+padding: .3em 4.5em 1.7em .5em !important; 
+margin: 0 0 -.5em 1em; width: 80px;}
+
+.downloadbar a {color: #fff !important; margin: 0 3.5em 0 0 !important}
+.downloadbar a:hover {color: #efe !important;}
+.downloadbar small
+{
+        color: #fff;
+        padding: 20px;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        background: url("http://images.sourceforge.net/sfx/sfx_dl_arrow2.png")  bottom left no-repeat;
+}
