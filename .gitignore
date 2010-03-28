@@ -1,0 +1,5 @@
+website/*.html
+website/*.xml
+*.pyc
+*.so
+*~
