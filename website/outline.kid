@@ -30,7 +30,7 @@ urchinTracker();
 	<span py:if="refpage.file == page.file">${refpage.name}</span>
 </li>
 <li>
-	<a href="http://gnofract4d.wiki.sourceforge.net/">FAQ</a>
+	<a href="https://sourceforge.net/apps/mediawiki/gnofract4d/index.php?title=Main_Page">Wiki &amp; FAQ</a>
 </li>
 <li>
 	<a href="http://sourceforge.net/projects/gnofract4d">SourceForge Page</a>

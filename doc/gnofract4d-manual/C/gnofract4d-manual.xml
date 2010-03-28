@@ -1259,7 +1259,8 @@ work.
 <para>
 Branko Kokanovic developed and contributed the animation
 feature. Chris Le Sueur provided parts of the gradient editing
-feature. </para>
+feature. Henryk Trappmann provided HSV gradient support. 
+The man page was contributed by Aleksander Adamowski.</para>
 
 <para>
 The formula language which &gf4d; uses originated in &fractint; and
@@ -1290,10 +1291,6 @@ LGPL license.  </para>
 <para>
 <filename>lex.py</filename> and <filename>yacc.py</filename> come from
 the PLY package, and are distributed under the LGPL license. </para>
-
-<para>
-The man page was contributed by Aleksander Adamowski.
-</para>
 
 <para>
 Some of the menu icons are taken or adapted from

@@ -16,8 +16,8 @@ class Bag:
         self.__dict__.update(kwds)
         
 announce = Bag(
-    date="xxx",
-    text="Version 3.13 released.")
+    date="March 28th, 2010",
+    text="Version 3.13 released. This contains some bug fixes and HSV gradient support, but drops binary releases for Python 2.5.")
 
 manual_pages = [
     Bag(name="Using Gnofract 4D",

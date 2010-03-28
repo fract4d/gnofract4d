@@ -1,3 +1,3 @@
 #!/bin/sh
-scp *.html edwin@shell.sourceforge.net:/home/groups/g/gn/gnofract4d/htdocs/
-scp manual/*.html  edwin@shell.sourceforge.net:/home/groups/g/gn/gnofract4d/htdocs/manual
+scp *.html catenary,gnofract4d@web.sourceforge.net:/home/groups/g/gn/gnofract4d/htdocs/
+scp manual/*.html catenary,gnofract4d@web.sourceforge.net:/home/groups/g/gn/gnofract4d/htdocs/manual

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Gnofract 4D Internals</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /><link rel="start" href="index.html" title="Gnofract 4D" /><link rel="up" href="index.html" title="Gnofract 4D" /><link rel="prev" href="formref.html" title="Formula Language Reference" /><link rel="next" href="bugs.html" title="Bugs and Known Issues" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center"><span class="application">Gnofract 4D</span> Internals</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="formref.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="bugs.html">Next</a></td></tr></table><hr /></div><div class="sect1" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="internals"></a><span class="application">Gnofract 4D</span> Internals</h2></div></div></div><p>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Gnofract 4D Internals</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.1" /><link rel="home" href="index.html" title="Gnofract 4D" /><link rel="up" href="index.html" title="Gnofract 4D" /><link rel="prev" href="formref.html" title="Formula Language Reference" /><link rel="next" href="bugs.html" title="Bugs and Known Issues" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center"><span class="application">Gnofract 4D</span> Internals</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="formref.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="bugs.html">Next</a></td></tr></table><hr /></div><div class="sect1" title="Gnofract 4D Internals"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="internals"></a><span class="application">Gnofract 4D</span> Internals</h2></div></div></div><p>
 
 This section explains how <span class="application">Gnofract 4D</span> is structured. You don't need to know
 any of this to use the program, but it may come in handy if you want
@@ -14,7 +14,7 @@ is made of Python unittest framework to keep everything working - each
 Python file <code class="filename">foo.py</code> is accompanied by
 <code class="filename">test_foo.py</code>, which contains unit tests for that
 file's features. 'test.py' for each folder runs all of the tests.
-</p><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="layout"></a>Source Code Layout</h3></div></div></div><p>
+</p><div class="sect2" title="Source Code Layout"><div class="titlepage"><div><div><h3 class="title"><a id="layout"></a>Source Code Layout</h3></div></div></div><p>
 The important directories in the source are:
 
 </p><div class="informaltable"><table border="1"><colgroup><col /><col /></colgroup><thead><tr><th>Directory</th><th>Contents</th></tr></thead><tbody><tr><td><p><code class="filename">fract4d</code></p></td><td> <p>This contains all the non-GUI-related, relatively
@@ -49,7 +49,7 @@ calculation in a window. </p> </td></tr><tr><td><p><code class="filename">fract4
 fract4dguic.so extension. This only has one minimal function, to
 obtain gconf settings. </p> </td></tr></tbody></table></div><p>
 
-</p></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="compiler_internals"></a>Compiler</h3></div></div></div><p>The most complicated part of <span class="application">Gnofract 4D</span> is the compiler. This takes
+</p></div><div class="sect2" title="Compiler"><div class="titlepage"><div><div><h3 class="title"><a id="compiler_internals"></a>Compiler</h3></div></div></div><p>The most complicated part of <span class="application">Gnofract 4D</span> is the compiler. This takes
 as input an UltraFractal or Fractint formula file, and produces C
 code. We then invoke a C compiler (eg gcc) to produce a shared library
 containing code to generate the fractal which we dynamically load.
@@ -95,7 +95,7 @@ parameters. Numeric parameters like floats are passed in as an array,
 and the C++ code and Python code need to collaborate to work out which
 indices into this array correspond to which params- this is done by
 sorting them into alphabetic order. In general this area is a bit of a
-mess.</p></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="threading"></a>Threading</h3></div></div></div><p>
+mess.</p></div><div class="sect2" title="Threading"><div class="titlepage"><div><div><h3 class="title"><a id="threading"></a>Threading</h3></div></div></div><p>
 One of the weirder parts of the code is how we deal with
 threading. Basically we want the calculation of the fractal to happen
 on a different thread (or multiple threads for SMP) from the main UI,
@@ -115,7 +115,7 @@ pipe is added to the list of things the GTK main loop monitors, so
 whenever a new message appears we get a callback into the gtkfractal
 code, interleaved with the normal GTK events. We can interrupt a
 calculation in progress by setting a var which the calculation threads
-check frequently - they then abandon their work and quit.  </p><div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning</h3><p> Multiple threads and C++ exceptions do not coexist
+check frequently - they then abandon their work and quit.  </p><div class="warning" title="Warning" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning</h3><p> Multiple threads and C++ exceptions do not coexist
 well, at least on some of the libstdc++'s that <span class="application">Gnofract 4D</span> runs with. So the
 C++ code can't throw exceptions or very odd things including crashes
 will happen. </p></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="formref.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="bugs.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Formula Language Reference </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Bugs and Known Issues</td></tr></table></div></body></html>
