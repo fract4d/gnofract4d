@@ -1,0 +1,384 @@
+0.39user 0.01system 1:26.01elapsed 0%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1068major+278minor)pagefaults 0swaps
+
+User time (seconds): 0.36
+	System time (seconds): 0.03
+	Percent of CPU this job got: 0%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:26.02
+
+0.31user 0.05system 1:26.04elapsed 0%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1067major+276minor)pagefaults 0swaps
+
+Simplified iter8 (inexact):
+
+0.19user 0.03system 0:36.14elapsed 0%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1069major+275minor)pagefaults 0swaps
+
+0.22user 0.08system 0:36.14elapsed 0%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1068major+275minor)pagefaults 0swaps
+
+iter8 with save positions (memcpy):
+
+0.27user 0.04system 0:50.80elapsed 0%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1080major+276minor)pagefaults 0swaps
+
+0.27user 0.03system 0:50.76elapsed 0%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1068major+278minor)pagefaults 0swaps
+
+iter8 with save positions (assignment):
+0.26user 0.04system 0:52.25elapsed 0%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1079major+278minor)pagefaults 0swaps
+
+0.29user 0.04system 0:51.87elapsed 0%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1068major+278minor)pagefaults 0swaps
+
+iter8 with minisave:
+0.26user 0.06system 0:37.83elapsed 0%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1080major+275minor)pagefaults 0swaps
+
+0.25user 0.08system 0:37.85elapsed 0%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1068major+275minor)pagefaults 0swaps
+
+no if in bailFunc:
+0.22user 0.07system 0:37.46elapsed 0%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1081major+277minor)pagefaults 0swaps
+
+0.25user 0.09system 0:37.46elapsed 0%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1068major+275minor)pagefaults 0swaps
+
+first cut at thread pool (eek!):
+62.68user 0.16system 0:56.43elapsed 111%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1077major+283minor)pagefaults 0swaps
+
+7.08user 0.09system 0:56.53elapsed 12%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1074major+280minor)pagefaults 0swaps
+
+thread pool with 200-item queue:
+20.61user 0.11system 0:21.36elapsed 96%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1075major+280minor)pagefaults 0swaps
+
+40.96user 0.09system 0:21.38elapsed 191%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1074major+283minor)pagefaults 0swaps
+
++ box rows:
+35.63user 0.05system 0:18.68elapsed 190%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1089major+282minor)pagefaults 0swaps
+
+35.53user 0.06system 0:18.61elapsed 191%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1074major+282minor)pagefaults 0swaps
+
+better redraws:
+39.31user 0.03system 0:25.02elapsed 157%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1074major+283minor)pagefaults 0swaps
+
+24.34user 0.01system 0:24.64elapsed 98%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1074major+281minor)pagefaults 0swaps
+
+corrected tpool:
+49.63user 0.08system 0:25.60elapsed 194%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1078major+283minor)pagefaults 0swaps
+
+49.70user 0.08system 0:25.54elapsed 194%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1048major+282minor)pagefaults 0swaps
+
+templated tpool (no allocs):
+41.50user 0.07system 0:21.46elapsed 193%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1051major+283minor)pagefaults 0swaps
+
+41.56user 0.09system 0:21.44elapsed 194%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1049major+283minor)pagefaults 0swaps
+
+low priority drawing threads + some other changes:
+48.39user 0.07system 0:30.04elapsed 161%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1042major+284minor)pagefaults 0swaps
+
+48.56user 0.07system 0:24.95elapsed 194%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1039major+284minor)pagefaults 0swaps
+
+48.52user 0.09system 0:24.96elapsed 194%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1039major+284minor)pagefaults 0swaps
+
+whatever changes with high priority 
+(30s ones are where 1 thread is used for initial calc, for whatever reason):
+48.81user 0.10system 0:25.40elapsed 192%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1065major+284minor)pagefaults 0swaps
+
+48.13user 0.07system 0:30.02elapsed 160%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1039major+284minor)pagefaults 0swaps
+
+46.58user 1.56system 0:30.04elapsed 160%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1039major+284minor)pagefaults 0swaps
+
+RH7.1:
+41.08user 0.05system 0:21.28elapsed 193%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1218major+281minor)pagefaults 0swaps
+
+39.48user 0.09system 0:20.53elapsed 192%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1218major+281minor)pagefaults 0swaps
+
+periodicity:
+96.77user 0.11system 0:49.82elapsed 194%CPU (0text+0data 0max)k
+96.67user 0.09system 0:49.90elapsed 193%CPU (0text+0data 0max)k
+
+stubbed-out periodicity: about 45 secs
+
+revert to all iters in same memory loc (incorrect): 
+59.02user 0.04system 0:30.40elapsed 194%CPU (0text+0data 0max)k
+
+compiled, 8x iterations, no vcalls: (why does this suck so much?)
+89.06user 0.30system 0:47.80elapsed 186%CPU (0text+0data 0max)k
+
+disabled periodicity, 8x iterations:
+55.16user 0.18system 0:30.49elapsed 181%CPU (0text+0data 0max)k
+
+periodicity back on:
+60.44user 0.31system 0:33.42elapsed 181%CPU (0text+0data 0max)k
+
+v1.7+ on rh8.0:
+
+valley_test:
+1.38user 0.08system 0:24.69elapsed 5%CPU (0text+0data 0max)k 
+param.fct:
+1.26user 0.06system 0:18.68elapsed 7%CPU (0text+0data 0max)k
+1.26user 0.07system 0:18.69elapsed 7%CPU (0text+0data 0max)k
+
+new interfunc
+1.24user 0.07system 0:16.61elapsed 7%CPU (0text+0data 0max)k
+1.25user 0.07system 0:16.96elapsed 7%CPU (0text+0data 0max)k
+1.22user 0.08system 0:16.57elapsed 7%CPU (0text+0data 0max)k
+
+-march=i686 on cxxflags for runtime code:
+1.25user 0.08system 0:16.20elapsed 8%CPU (0text+0data 0max)k
+1.27user 0.05system 0:16.13elapsed 8%CPU (0text+0data 0max)k
+1.23user 0.08system 0:16.12elapsed 8%CPU (0text+0data 0max)k
+
+v2.0 
+14.59user 0.09system 0:15.25elapsed 96%CPU (0text+0data 0max)k
+14.64user 0.08system 0:15.24elapsed 96%CPU (0text+0data 0max)k
+14.62user 0.10system 0:15.22elapsed 96%CPU (0text+0data 0max)k
+
+v2.0 -march=i686
+13.15user 0.08system 0:13.78elapsed 96%CPU (0text+0data 0max)k
+13.17user 0.08system 0:13.80elapsed 96%CPU (0text+0data 0max)k
+13.13user 0.09system 0:13.80elapsed 95%CPU (0text+0data 0max)k
+
+v2.0
+14.10user 0.13system 0:14.91elapsed 95%CPU (0text+0data 0max)k
+14.10user 0.14system 0:14.93elapsed 95%CPU (0text+0data 0max)k
+14.08user 0.14system 0:15.02elapsed 94%CPU (0text+0data 0max)k
+
+initial periodicity (always-on):
+21.81user 0.15system 0:22.65elapsed 96%CPU (0text+0data 0max)k
+valley: 
+21.37user 0.16system 0:22.22elapsed 96%CPU (0text+0data 0max)k
+
+new benchmark
+
+no periodicity: [0.90291810035705566, 3.6989610195159912, 41.875502824783325, 29.285512208938599, 9.1835649013519287]
+
+some periodicity:
+0.7178 testdata/std.fct
+3.7456 testdata/param.fct
+5.6444 testdata/valley_test.fct
+28.4102 testdata/trigcentric.fct
+8.1515 testdata/zpower.fct
+46.6695671082
+
+2.2-pre1:
+0.8520 testdata/std.fct
+3.9118 testdata/param.fct
+5.6318 testdata/valley_test.fct
+28.2883 testdata/trigcentric.fct
+7.9833 testdata/zpower.fct
+46.6672129631
+
+2.2-pre2 (with recoloring buffer):
+0.7896 testdata/std.fct
+3.9417 testdata/param.fct
+5.7556 testdata/valley_test.fct
+29.5918 testdata/trigcentric.fct
+8.2473 testdata/zpower.fct
+48.3259401321
+
+2.11 with new computer:
+0.5120 testdata/std.fct
+2.4599 testdata/param.fct
+2.3300 testdata/valley_test.fct
+8.0739 testdata/trigcentric.fct
+4.4159 testdata/zpower.fct
+17.7915279865
+
+3.0:
+0.5861 testdata/std.fct
+2.3080 testdata/param.fct
+2.6457 testdata/valley_test.fct
+8.7381 testdata/trigcentric.fct
+5.5524 testdata/zpower.fct
+19.8303520679
+
+3.5:
+0.5257 testdata/std.fct
+2.5547 testdata/param.fct
+2.9928 testdata/valley_test.fct
+14.3698 testdata/trigcentric.fct
+5.9294 testdata/zpower.fct
+26.3723649979
+23.892553091
+22.5007739067
+
+3.6:
+0.7480 testdata/std.fct
+1.9500 testdata/param.fct
+1.9209 testdata/valley_test.fct
+8.1033 testdata/trigcentric.fct
+3.7447 testdata/zpower.fct
+16.4668610096
+
+3.7:
+0.9664 testdata/std.fct
+1.8150 testdata/param.fct
+2.2317 testdata/valley_test.fct
+7.3172 testdata/trigcentric.fct
+2.4942 testdata/zpower.fct
+14.8244171143
+13.9419879913
+13.8290600777
+
+3.10:
+0.8251 testdata/std.fct
+1.7368 testdata/param.fct
+2.1806 testdata/valley_test.fct
+7.3477 testdata/trigcentric.fct
+2.5105 testdata/zpower.fct
+14.6006448269
+14.1491141319
+14.1334190369
+14.0469760895
+14.1376690865
+14.1759769917
+
+v.sh @ 1600x1200 with Floyd's algorithm
+53.83user 0.39system 0:29.65elapsed 182%CPU (0text+0data 0max)k
+53.93user 0.37system 0:29.50elapsed 184%CPU (0text+0data 0max)k
+
+fractint muth.par
+calc time 28.58 seconds (24.48 with guessing)
+with periodicity=0 87.46 seconds
+periodicity=1 looks horrid
+periodicity=50 52.26 seconds
+gf4d MandAutoCritInZ 46.91 seconds (ouch!)
+with new period code (1) 38.45 seconds
+with new period + loose tolerance of 0.0009 26.42 (woot!) or 46 seconds (baffling)
+
+baseline valley test:
+./benchfct.py --repeat testdata/valley_test.fct
+21.9968588352
+21.9665300846
+22.0046010017
+22.0306479931
+21.985806942
+21.9687509537
+22.0362420082
+21.9481468201
+22.0591750145
+22.1914889812
+stats
+min:(21.9481), max(22.1915), average(22.0188)
+
+-m3dnow = min:(21.9588), max(23.1045), average(22.3425)
+-mathlon = min:(18.7973), max(18.9006), average(18.8462) :-)
+-mathlon -msse2 = min:(18.3319), max(18.4610), average(18.3806)
+-mathlon -msse2 -m3dnow = min:(18.2523), max(18.4153), average(18.3399)
+-O3 = no difference
+-mfpmath=sse or -mfpmath=sse,387 = worse
+without -ffast-math = min:(20.8038), max(22.0862), average(21.3920) (worse)
+
+z*z -> sqr(z) in mbrot:
+min:(18.2445), max(18.4242), average(18.3111)
+
+16-size blocks: 
+	min:(17.4803), max(17.9034), average(17.5822)
+	min:(17.0541), max(17.1163), average(17.0917) (weird, should be the same)
+	min:(16.9587), max(17.0592), average(17.0002)
+
+16-then-4 blocks: 
+	  min:(17.4581), max(17.5491), average(17.5116)
+	  min:(17.4790), max(17.7353), average(17.5602)
+
+16-then-8 blocks: min:(17.4832), max(17.6871), average(17.5599) (worse)
+
+core i7:
+flags: -O2 -fPIC -DPIC -D_REENTRANT -shared -ffast-math -march=core2 -msse4.2
+./gnofract4d -i 1280 -j 1024 --nogui  --buildonly foo.so  testdata/valley_test.fct
+3.55383205414
+3.63214182854
+3.59000301361
+3.54913210869
+3.73380088806
+stats
+min:(3.5491), max(3.7338), average(3.6118)
+
+parallel qbox_rows:
+3.55982089043
+3.50576996803
+3.50801992416
+3.55399107933
+3.51970791817
+stats
+min:(3.5058), max(3.5598), average(3.5295)
+
+skippage:
+default 800x600 = 26.38%, 0% wrong
+valley 800x600 = 29.43%, 0.002% wrong
+
+check 4x4 blocks = no change
+
+interpolate w 0 MAXERROR = 33.4% skip
+./gnofract4d -i 2560 -j 2048 --nogui  --buildonly foo.so  testdata/valley_test.fct
+10.782599926
+10.7948391438
+10.7575318813
+10.7519798279
+10.7286520004
+stats
+min:(10.7287), max(10.7948), average(10.7631)
+
+no interpolate: 26.3817% skip
+./gnofract4d -i 2560 -j 2048 --nogui  --buildonly foo.so  testdata/valley_test.fct
+10.8028459549
+10.8582849503
+10.8116719723
+10.8753378391
+10.8040909767
+stats
+min:(10.8028), max(10.8753), average(10.8304)
+
+interpolate w 3 MAXERROR = 61.3759% skip
+./gnofract4d -i 2560 -j 2048 --nogui  --buildonly foo.so  testdata/valley_test.fct
+10.8810629845
+10.7146100998
+10.7172079086
+10.6843791008
+10.7130539417
+stats
+min:(10.6844), max(10.8811), average(10.7421)
+
+interpolate w 10 MAXERROR = 65.404% skip
+./gnofract4d -i 2560 -j 2048 --nogui  --buildonly foo.so  testdata/valley_test.fct
+10.664465189
+10.7233679295
+10.7226228714
+10.6460950375
+10.7730829716
+stats
+min:(10.6461), max(10.7731), average(10.7059)
+
+overlap squares in a box_row:
+./gnofract4d -i 2560 -j 2048 --nogui  --buildonly foo.so  testdata/valley_test.fct
+10.3903110027
+10.3426129818
+10.3493080139
+10.3275959492
+10.5406808853
+stats
+min:(10.3276), max(10.5407), average(10.3901)

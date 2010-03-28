@@ -1,0 +1,132 @@
+<h2>Compile and Install Issues</h2>
+
+<p class="q">
+<b>Q:</b> How do I run Gnofract 4D on Mac OS X?
+</p>
+<p>
+<b>A:</b>
+See the instructions in <a href="https://sourceforge.net/forum/forum.php?thread_id=1665863&amp;forum_id=2319">this forum thread</a>
+</p>
+
+<p class="q">
+<b>Q:</b> When I try to install the Gnofract 4D RPM on
+Mandrake, Mandriva or SuSE, why do I get this message? <br/> 
+
+<code class="q"> 
+error: Failed dependencies: 
+        pygtk2 &gt;= 1.99 is needed by gnofract4d-2.13-1
+</code>
+
+</p>
+
+<p>
+
+<b>A:</b> Gnofract 4D needs PyGTK installed as a prerequisite. All these
+distributions provide a suitable version by default. Unfortunately
+they all use different names for it: Fedora uses "pygtk2", Mandrake
+uses "pygtk2.0", and SuSE uses "python-gtk". The RPMs I've built use
+the Fedora name, so they don't realize that all the packages they need
+are present on these distributions. The workaround is to run:</p>
+<p>
+<code>rpm -i <b>--nodeps</b> &lt;rpmfile&gt;</code>. 
+</p>
+<p>
+Alternatively you could download
+the source package or even volunteer to repackage Gnofract 4D for your
+distribution.
+</p>
+
+<p class="q">
+Q: When I try to compile Gnofract 4D on SuSE Linux, why do I get this error?<br/>
+
+<pre class="q">
+Traceback (most recent call last):
+  File "./setup.py", line 4, in ?
+    from distutils.core import setup, Extension
+ImportError: No module named distutils.core
+</pre>
+</p>
+
+<p>
+
+<b>A:</b>SuSE splits the distutils module into a separate package
+which is not installed by default. Personally I think that's a really
+bad idea, but c'est la vie. To compile Gnofract 4D successfully on
+SuSE linux, you must have these packages installed beyond the
+defaults:
+<ul>
+<li>python-devel</li>
+<li>gtk2-devel</li>
+<li>gconf2-devel</li>
+<li>libpng-devel</li>
+<li>libjpeg-devel</li>
+<li>gcc</li>
+<li>gcc-c++</li>
+</ul>
+
+Install those using YaST then try compiling again.
+</p>
+
+<p class="q">
+Q: When I try to compile older versions of Gnofract 4D on Ubuntu, why do I get this error?<br/>
+
+<pre class="q">
+Can't set up. Error running 'pkg-config gconf-2.0 --cflags'.
+Package gconf-2.0 was not found in the pkg-config search path.
+Perhaps you should add the directory containing `gconf-2.0.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'gconf-2.0' found
+Possibly you don't have one of these installed: 'gconf-2.0'.
+</pre>
+</p>
+
+<p>
+
+<b>A:</b>You need to install the libgconf2-dev package, which is
+required to build programs which use gconf. Newer versions will still
+compile if you don't have gconf2-devel, but they will be unable to 
+pick up your browser settings from gconf.
+</p>
+
+<p class="q">
+Q: When I try to compile Gnofract 4D, why do I get this error?<br/>
+
+<pre class="q">cc: error trying to exec 'cc1plus': execvp: No such file or directory
+error: command 'gcc' failed with exit status 1
+</pre>
+</p>
+
+<p>
+
+<b>A:</b>You have the C compiler installed, but not the C++
+compiler. You need to install the g++ (sometimes called gcc-c++)
+package, which is required to build C++ programs.
+</p>
+
+<h2>Runtime Issues</h2>
+
+<p class="q">
+Q: When I try to load a parameter file, why do I get an error 'Can't
+find formula file foo.frm in formula search path'?
+</p>
+
+<p>
+
+<b>A:</b>That parameter file uses a formula or coloring method which
+isn't included in the standard set shipped with Gnofract 4D. Try
+downloading the formula from the <a
+href="http://formulas.ultrafractal.com">UltraFractal Public Formula
+Database</a>.
+</p>
+
+<p class="q">
+Q: When I zoom in far enough, the image turns all pixelated and blocky. Why is that?
+</p>
+
+<p>
+<b>A:</b>You've reached the limit of the precision supplied by your
+processor's built-in math chip, I'm afraid. On Intel architectures
+this will be when the image size is around 10^-13. The numbers
+representing different pixels are so close together that it can't tell
+the difference. You'll have to zoom out again.
+</p>

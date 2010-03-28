@@ -1,0 +1,27 @@
+gnofract4d parameter file
+version=1.5
+bailout=4
+x=-0.35839115837775170625
+y=-0.022645129761692334158
+z=0.025781249999999991673
+w=-0.0018749999999999981959
+size=0.010637709891283883903
+xy=4.4674100000000001032
+xz=0
+xw=0
+yz=0
+yw=0
+zw=0
+maxiter=128
+antialias=1
+bailfunc=7
+[function]
+function=Nova
+a=(1,0)
+b=(1,0)
+c=(3,0)
+[endsection]
+[colors]
+colorizer=1
+file=/usr/share/maps/gnofract4d/horns.map
+[endsection]

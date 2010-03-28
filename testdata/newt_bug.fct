@@ -1,0 +1,26 @@
+gnofract4d parameter file
+version=1.6
+bailout=4
+x=-246451.15921561815776
+y=94617.625764248718042
+z=-0.37808326818826154536
+w=0.76064723699199854323
+size=3145727.9999999995343
+xy=0
+xz=3.1415963267948967541
+xw=0
+yz=0
+yw=3.1415963267948967541
+zw=0
+maxiter=64
+antialias=1
+bailfunc=7
+inner=2
+outer=1
+[function]
+function=Newton
+[endsection]
+[colors]
+colorizer=1
+file=/usr/share/maps/gnofract4d/blengbyg.map
+[endsection]

@@ -1,0 +1,27 @@
+gnofract4d parameter file
+version=1.5
+bailout=4
+x=0.22000000000000000111
+y=0.41999999999999998446
+z=-1.3470669892046150333e-17
+w=-2.5716733430269921683e-17
+size=4
+xy=0
+xz=1.570796326794896558
+xw=0
+yz=0
+yw=1.570796326794896558
+zw=0
+maxiter=512
+antialias=1
+bailfunc=7
+[function]
+function=Nova
+a=(0.02999999999999999889,-0.20999999999999999223)
+b=(2.4199999999999999289,0.05999999999999999778)
+c=(3,0)
+[endsection]
+[colors]
+colorizer=1
+file=/usr/share/maps/gnofract4d/blend8.map
+[endsection]

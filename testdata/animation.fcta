@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<animation>
+	<keyframes>
+		<keyframe filename="kf1" duration="10" stop="10" inttype="0"/>
+		<keyframe filename="kf2" duration="20" stop="20" inttype="1" xy="1" xz="1" xw="0" yz="0" yw="0" zw="0"/>
+	</keyframes>
+	<output filename="output.avi" framerate="28" width="320" height="240" swap="0"/>
+</animation>

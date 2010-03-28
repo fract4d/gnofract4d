@@ -1,0 +1,27 @@
+gnofract4d parameter file
+version=1.5
+bailout=1
+x=-3.8268948556948919541e-19
+y=-7.8834034027315538463e-17
+z=-0.0062499999999999777955
+w=-1.2875000000000000888
+size=35.299999999999997158
+xy=0
+xz=1.570796326794896558
+xw=0
+yz=0
+yw=1.570796326794896558
+zw=0
+maxiter=32
+antialias=1
+bailfunc=4
+[function]
+function=Nova
+a=(1,0)
+b=(1,0)
+c=(1.9099999999999999201,1.25)
+[endsection]
+[colors]
+colorizer=1
+file=/usr/share/maps/gnofract4d/chroma3.map
+[endsection]

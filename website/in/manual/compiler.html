@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Writing Your Own Functions</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /><link rel="start" href="index.html" title="Gnofract 4D" /><link rel="up" href="index.html" title="Gnofract 4D" /><link rel="prev" href="maths.html" title="About the maths" /><link rel="next" href="formref.html" title="Formula Language Reference" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Writing Your Own Functions</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="maths.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="formref.html">Next</a></td></tr></table><hr /></div><div class="sect1" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="compiler"></a>Writing Your Own Functions</h2></div></div></div><p>
+When you get tired of the fractal functions which come with Gnofract
+4D, you can write your own, or take advantage of thousands of formulas
+written by other fractal enthusiasts. Gnofract4D can load most fractal
+formula files written for <span class="application">Fractint</span> (and some written for
+<span class="application">UltraFractal</span>). However the compiler is not 100%
+backwards-compatible with <span class="application">Fractint</span>, so unfortunately some fractals
+can't be loaded, or will display differently when they do. <span class="application">Gnofract 4D</span>
+also supports many constructs <span class="application">Fractint</span> doesn't, so you need to take
+extra care when writing formulas if you want them to work in <span class="application">Fractint</span>
+too.
+</p><p>
+Here are links to some online resources for formula files:
+</p><div class="itemizedlist"><ul type="disc"><li><p> <a class="ulink" href="http://home.att.net/~Paul.N.Lee/OrgForm.html" target="_top">ORGFORM.ZIP</a>
+A collection of about 25,000 <span class="application">Fractint</span> formula files by many authors,
+originally compiled by George C. Martin and currently maintained by
+Paul N. Lee. Indispensable. </p></li><li><p> <a class="ulink" href="http://formulas.ultrafractal.com/" target="_top"><span class="application">UltraFractal</span> public formula
+database</a> Many thousands of formulas by users of
+<span class="application">UltraFractal</span>. Most of these will work with <span class="application">Gnofract 4D</span>. Let me know of
+any issues, since I aim to improve compatibility further in future
+releases. </p></li></ul></div><p>
+</p><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="frm_tutorial"></a>Writing Your First Formula</h3></div></div></div><p>
+This section steps you through the creation of a new fractal
+formula. By the way, the formulas for each of these steps can also be
+found in the file <code class="filename">formulas/tutorial.frm</code>.
+
+</p><div class="orderedlist"><ol type="1"><li><p>
+Create a new file called '<code class="filename">example.frm</code>' (the
+extension is important - <span class="application">Gnofract 4D</span> uses this to decide whether the file
+is a formula or a coloring function).
+</p></li><li><p>
+Enter the following in <code class="filename">example.frm</code>.
+
+</p><pre class="programlisting"><span><span class="bold"><strong>MyFormula {</strong></span></span><span>
+</span><span><span class="emphasis"><em>; First example formula - this produces a variant on the Mandelbrot set</em></span></span><span>
+</span><span><span class="bold"><strong>init:</strong></span></span><span>
+</span><span> </span><span> </span><span> </span><span> </span><span>z</span><span> </span><span>=</span><span> </span><span><code class="literal">0</code></span><span>
+</span><span> </span><span> </span><span> </span><span> </span><span>c</span><span> </span><span>=</span><span> </span><span>#pixel</span><span>
+</span><span><span class="bold"><strong>loop:</strong></span></span><span>
+</span><span> </span><span> </span><span> </span><span> </span><span>z</span><span> </span><span>=</span><span> </span><span>z</span><span>*</span><span>z</span><span>*</span><span>c</span><span> </span><span>+</span><span> </span><span>c</span><span>*</span><span>c</span><span>
+</span><span><span class="bold"><strong>bailout:</strong></span></span><span>
+</span><span> </span><span> </span><span> </span><span> </span><span>|</span><span>z</span><span>|</span><span> </span><span>&lt;</span><span> </span><span><code class="literal">4.0</code></span><span>
+</span><span>}</span><span>
+</span><span>
+</span></pre><p>
+
+</p></li><li><p>
+Start <span class="application">Gnofract 4D</span>, choose <span xmlns="" class="guimenuitem"><span xmlns="http://www.w3.org/1999/xhtml" class="guimenuitem">File | Open Formula
+File</span></span>, and open example.frm. You should see MyFormula in
+the list of formulas to choose from. Select it and click Apply. You
+should see an image like this:
+</p><p>
+</p><div><img src="figures/tutorial001.png" /></div><p> 
+</p><p>
+A few things to note about the formula. It's divided into named
+sections, marked with a colon: "init", "loop". and "bailout". The
+compiler uses these to supply some of the standard scaffolding for a
+fractal function so you don't have to. The "loop" statement is the
+heart of the formula - this is the statement which is run repeatedly
+and which defines the shape of your fractal.
+</p></li><li><p>
+
+At this point, the widgets for rotating the image in 4D will be
+disabled, because your formula doesn't use any of the 4D
+options. Let's turn those on. Edit your formula so it reads:
+
+</p><pre class="programlisting"><span><span class="bold"><strong>MyFormula {</strong></span></span><span>
+</span><span><span class="emphasis"><em>; Second example - introduce 4D</em></span></span><span>
+</span><span><span class="bold"><strong>init:</strong></span></span><span>
+</span><span> </span><span> </span><span> </span><span> </span><span>z</span><span> </span><span>=</span><span> </span><span><span class="bold"><strong>#zwpixel</strong></span></span><span> </span><span><span class="emphasis"><em>; take initial value from 4D position</em></span></span><span>
+</span><span> </span><span> </span><span> </span><span> </span><span>c</span><span> </span><span>=</span><span> </span><span>#pixel</span><span>
+</span><span><span class="bold"><strong>loop:</strong></span></span><span>
+</span><span> </span><span> </span><span> </span><span> </span><span>z</span><span> </span><span>=</span><span> </span><span>z</span><span>*</span><span>z</span><span>*</span><span>c</span><span> </span><span>+</span><span> </span><span>c</span><span>*</span><span>c</span><span>
+</span><span><span class="bold"><strong>bailout:</strong></span></span><span>
+</span><span> </span><span> </span><span> </span><span> </span><span>|</span><span>z</span><span>|</span><span> </span><span>&lt;</span><span> </span><span><code class="literal">4.0</code></span><span>
+</span><span>}</span><span>
+</span><span>
+</span></pre><p>
+
+</p><p>
+Then hit <span class="guibutton">Refresh</span> on the Formula Browser window. You 
+should now find that all the options are enabled. This is because the image now depends on all 4 components of the 4D space, via #pixel and #zwpixel.
+</p></li><li><p>
+Next let's add some parameters to our function:
+
+</p><pre class="programlisting"><span><span class="bold"><strong>MyFormula {</strong></span></span><span>
+</span><span><span class="emphasis"><em>; Third example - add a parameter</em></span></span><span>
+</span><span><span class="bold"><strong>init:</strong></span></span><span>
+</span><span> </span><span> </span><span> </span><span> </span><span>z</span><span> </span><span>=</span><span> </span><span>#zwpixel</span><span>
+</span><span> </span><span> </span><span> </span><span> </span><span>c</span><span> </span><span>=</span><span> </span><span>#pixel</span><span>
+</span><span><span class="bold"><strong>loop:</strong></span></span><span>
+</span><span> </span><span> </span><span> </span><span> </span><span>z</span><span> </span><span>=</span><span> </span><span><span class="bold"><strong>@myfunc</strong></span></span><span>(</span><span>z</span><span>*</span><span>z</span><span>*</span><span>c</span><span>)</span><span> </span><span>+</span><span> </span><span><span class="bold"><strong>@factor</strong></span></span><span> </span><span>*</span><span> </span><span>z</span><span> </span><span>+</span><span> </span><span>c</span><span>*</span><span>c</span><span>
+</span><span><span class="bold"><strong>bailout:</strong></span></span><span>
+</span><span> </span><span> </span><span> </span><span> </span><span>|</span><span>z</span><span>|</span><span> </span><span>&lt;</span><span> </span><span><code class="literal">4</code></span><span>
+</span><span><span class="bold"><strong>default:</strong></span></span><span>
+</span><span>param</span><span> </span><span>factor</span><span>
+</span><span>	</span><span>default</span><span> </span><span>=</span><span> </span><span>(</span><span><code class="literal">1.0</code></span><span>,</span><span><code class="literal">0.5</code></span><span>)</span><span>
+</span><span>endparam</span><span>
+</span><span>}</span><span>
+</span></pre><p>
+
+</p><p>
+Hit <span class="guibutton">Refresh</span> again, then <span xmlns="" class="guimenuitem"><span xmlns="http://www.w3.org/1999/xhtml" class="guimenuitem">Edit |
+Fractal Settings</span></span> to show the formula settings. You
+should two extra parameters in addition to the standard "Max
+Iterations" option: <span class="emphasis"><em>myfunc</em></span>, with a drop-down list
+of functions, and <span class="emphasis"><em>fac</em></span> (or Factor) with a
+draggable 4-way widget and 2 edit boxes. If you set myfunc to
+<span class="emphasis"><em>sqr</em></span> and set factor to (-1,0.5) you should see:
+</p><p>
+</p><div><img src="figures/tutorial002.png" /></div><p>
+</p><p> 
+Parameters like this are a quick way to add more options to your
+fractal. Listing them in the "default" section is optional but
+provides a way to pre-populate your formula with values that work
+well. If you leave the default out <span class="application">Gnofract 4D</span> will use "ident" for
+functions and 0 for numeric ones.
+</p></li></ol></div><p> 
+</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="maths.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="formref.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top"> About the maths </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Formula Language Reference</td></tr></table></div></body></html>

@@ -1,0 +1,24 @@
+gnofract4d parameter file
+version=1.4
+bailout=4
+x=-0.751551
+y=-0.0542325
+z=-0.0590972
+w=0.268793
+size=3.24829
+xy=0
+xz=1.5708
+xw=0
+yz=0
+yw=1.5708
+zw=0
+maxiter=512
+antialias=1
+bailfunc=0
+[function]
+function=Mandelbrot
+[endsection]
+[colors]
+colorizer=1
+file=/usr/share/maps/gnofract4d/rain4x.map
+[endsection]

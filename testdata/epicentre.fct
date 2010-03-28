@@ -1,0 +1,24 @@
+gnofract4d parameter file
+version=1.4
+bailout=4
+x=-0.93900970888137824666
+y=0.34462050628662110885
+z=0.75309967041015601907
+w=-0.48405151367187515543
+size=4.5091152191162110513e-05
+xy=0
+xz=0
+xw=0
+yz=0
+yw=0
+zw=0
+maxiter=32768
+antialias=1
+bailfunc=0
+[function]
+function=Lambda
+[endsection]
+[colors]
+colorizer=1
+file=/usr/share/maps/gnofract4d/topo.map
+[endsection]

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Gnofract 4D Internals</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /><link rel="start" href="index.html" title="Gnofract 4D" /><link rel="up" href="index.html" title="Gnofract 4D" /><link rel="prev" href="formref.html" title="Formula Language Reference" /><link rel="next" href="bugs.html" title="Bugs and Known Issues" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center"><span class="application">Gnofract 4D</span> Internals</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="formref.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="bugs.html">Next</a></td></tr></table><hr /></div><div class="sect1" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="internals"></a><span class="application">Gnofract 4D</span> Internals</h2></div></div></div><p>
+
+This section explains how <span class="application">Gnofract 4D</span> is structured. You don't need to know
+any of this to use the program, but it may come in handy if you want
+to change it or contribute to its development (which you're heartily
+encouraged to do).
+</p><p>
+
+<span class="application">Gnofract 4D</span> is implemented primarily in Python, with some C++
+extensions. Extensive use
+is made of Python unittest framework to keep everything working - each
+Python file <code class="filename">foo.py</code> is accompanied by
+<code class="filename">test_foo.py</code>, which contains unit tests for that
+file's features. 'test.py' for each folder runs all of the tests.
+</p><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="layout"></a>Source Code Layout</h3></div></div></div><p>
+The important directories in the source are:
+
+</p><div class="informaltable"><table border="1"><colgroup><col /><col /></colgroup><thead><tr><th>Directory</th><th>Contents</th></tr></thead><tbody><tr><td><p><code class="filename">fract4d</code></p></td><td> <p>This contains all the non-GUI-related, relatively
+platform-independent parts of the code. This is in case it ever needs
+to be ported to another environment (eg run on a server without a GUI
+as part of a cluster). Most of the files here are parts of the
+compiler (see below). The main class which represents a fractal is in
+<code class="filename">fractal.py</code>. This holds references to the compiled
+code, the formula and colorfunc definitions, the parameters and the
+colormap. It also handles loading and saving information from a
+<code class="filename">.fct</code> file, and provides
+wrappers for some of the gnarlier C++ extension functions. </p>
+</td></tr><tr><td><p><code class="filename">fract4d/c</code></p></td><td> <p>This contains the C++ extension code which is compiled
+to produce <code class="filename">fract4dc.so</code>. This is divided into a
+set of classes which communicate primaily via interfaces. The main
+responsibility of this code is to call the 'pointFunc' (the function
+which calculates a single pixel) once for each point on the
+image. This code also does the bulk of the '4D' manipulation -
+<code class="filename">vectors.h</code> contains code for 4-vectors and 4x4
+matrix math. This library also handles multi-threaded calculations,
+parcelling out the work to multiple MTFractWorkers via the queue in
+<code class="filename">threadpool.h</code></p> </td></tr><tr><td><p><code class="filename">fract4dgui</code></p></td><td> <p>This contains the python code which implements the
+GUI. It uses PyGTK as the GUI toolkit. The earliest PyGTK we support
+is 1.99, which has some annoying incompatibilities with newer PyGTK's
+like 2.4. I need to work out whether to ditch the older library
+altogether or try to come up with some wrappers to hide the
+differences. Basically there's one class per dialog or custom control,
+and a few other for utility purposes. The central class is
+<code class="classname">gtkfractal</code>, which wraps a
+<code class="classname">fractal</code> and displays the results of the
+calculation in a window. </p> </td></tr><tr><td><p><code class="filename">fract4dgui/c</code></p></td><td> <p>This contains the C code which implements the
+fract4dguic.so extension. This only has one minimal function, to
+obtain gconf settings. </p> </td></tr></tbody></table></div><p>
+
+</p></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="compiler_internals"></a>Compiler</h3></div></div></div><p>The most complicated part of <span class="application">Gnofract 4D</span> is the compiler. This takes
+as input an UltraFractal or Fractint formula file, and produces C
+code. We then invoke a C compiler (eg gcc) to produce a shared library
+containing code to generate the fractal which we dynamically load.
+</p><p>
+The UltraFractal manual is the best current description of the formula
+file format, though there are some UltraFractal features which are not
+yet supported. You can download it from <a class="ulink" href="http://www.ultrafractal.com/uf3-manual.zip" target="_top">here</a>.
+</p><p>
+The implementation is based on the outline in <em class="citetitle">Modern Compiler Implementation in ML: basic
+techniques</em> (Appel 1997, Cambridge). It doesn't do any
+optimization at this point, leaving that to the C compiler used as a
+back-end. It would be worthwhile to do some simple optimization (eg
+constant-folding, removing multiplication by 1.0) because the C
+compiler refuses to do this to floating point numbers.</p><p>
+Overall structure: The <a class="ulink" href="http://www.dabeaz.com/ply/ply.html" target="_top">PLY</a> package
+is used to do lexing and SLR parsing - it's in
+<code class="filename">lex.py</code> and
+<code class="filename">yacc.py</code>. <code class="filename">fractlexer.py</code> and
+<code class="filename">fractparser.py</code> are the lexer and parser
+definitions, respectively. They produce as output an abstract syntax
+tree (defined in the <code class="classname">Absyn</code> module). The
+<code class="classname">Translate</code> module type-checks the code,
+maintains the symbol table (<code class="filename">symbol.py</code>) and
+converts it into an intermediate form (<code class="filename">ir.py</code>).
+<code class="classname">Canon</code> performs several simplifying passes on
+the IR to make it easier to deal with, then
+<code class="classname">codegen</code> converts it into a linear sequence of
+simple C instructions. <code class="filename">stdlib.py</code> contains the
+'standard library' of mathematical functions, like cosh(z). It's at
+this point that complex and hypercomplex variables are expanded out
+into pairs of floating point numbers - the C code is oblivious to the
+complex numbers. Finally we invoke the C compiler to convert to a
+native code shared library.</p><p>
+At runtime the different phases happen at different times. First, the
+entire .frm file is lexed and parsed. Then when a particular formula
+is selected, it's translated and syntax-checked. The actual code is
+only generated just before the fractal is drawn. This phase is
+repeated whenever the function parameters are changed (eg @fn1 is set
+to 'cosh').
+</p><p>
+Probably the ugliest part of the code is the handling of
+parameters. Numeric parameters like floats are passed in as an array,
+and the C++ code and Python code need to collaborate to work out which
+indices into this array correspond to which params- this is done by
+sorting them into alphabetic order. In general this area is a bit of a
+mess.</p></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="threading"></a>Threading</h3></div></div></div><p>
+One of the weirder parts of the code is how we deal with
+threading. Basically we want the calculation of the fractal to happen
+on a different thread (or multiple threads for SMP) from the main UI,
+so you can interrupt at any point. This is complicated by the fact
+that Python only allows a single thread in the Global Interpreter
+Lock, and that PyGTK is often compiled by Linux distribution vendors
+without thread support, meaning this lock is not released when running
+the GTK main loop.
+</p><p>
+The way out of this is that the additional threads live only in the
+C++ code, where they are invisible to the Python code and GTK. When
+<code class="function">pycalc</code> is called with async=True, it spawns a
+thread to do the calculation, which may in turn spawn more workers if
+we want multiple threads. These all write to the image buffer and
+report back what they're doing by writing messages into a pipe. This
+pipe is added to the list of things the GTK main loop monitors, so
+whenever a new message appears we get a callback into the gtkfractal
+code, interleaved with the normal GTK events. We can interrupt a
+calculation in progress by setting a var which the calculation threads
+check frequently - they then abandon their work and quit.  </p><div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning</h3><p> Multiple threads and C++ exceptions do not coexist
+well, at least on some of the libstdc++'s that <span class="application">Gnofract 4D</span> runs with. So the
+C++ code can't throw exceptions or very odd things including crashes
+will happen. </p></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="formref.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="bugs.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Formula Language Reference </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Bugs and Known Issues</td></tr></table></div></body></html>

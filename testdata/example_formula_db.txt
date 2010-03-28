@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE> Ultra Fractal Formula Database - Browse </TITLE>
+<LINK REL=STYLESHEET HREF="../common/home.css" TYPE="text/css">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#CC9900" VLINK="#009900" ALINK="#009900" TOPMARGIN=0 MARGINHEIGHT=0>
+<DIV ALIGN=CENTER><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=500><TR><TD>
+<IMG SRC="../common/blank.gif" WIDTH=1 HEIGHT=512 HSPACE=0 VSPACE=0 ALT="" ALIGN=RIGHT>
+<BR>
+<B>Ultra Fractal Formula Database - Browse</B><BR>
+&nbsp;<BR>
+
+<A HREF="http://www.gwfa.de" TARGET="_blank" TITLE="Visit the author's page">Albrecht, Gerald</A>
+ - <A HREF="http://www.gwfa.de/fractal/dwnld/index.html" TARGET="_blank" TITLE="Visit the formula home page">Formula Home Page</A>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="/cgi-bin/formuladb?view;file=gwfa.ucl;type=.txt" TARGET="_blank" TITLE="View this formula file">gwfa.ucl</A>: modified Sun Jul 23 08:17:41 2006 (8K)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="/cgi-bin/formuladb?view;file=gwfa.ufm;type=.txt" TARGET="_blank" TITLE="View this formula file">gwfa.ufm</A>: modified Sun Jul 23 08:17:42 2006 (139K)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="/cgi-bin/formuladb?view;file=gwfa.uxf;type=.txt" TARGET="_blank" TITLE="View this formula file">gwfa.uxf</A>: modified Sun Jul 23 08:17:42 2006 (5K)<BR>
+<A HREF="http://www.fractalus.com/gumbycat/" TARGET="_blank" TITLE="Visit the author's page">Allison, Linda</A>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="/cgi-bin/formuladb?view;file=la.ufm;type=.txt" TARGET="_blank" TITLE="View this formula file">la.ufm</A>: modified Sun Jul 23 08:18:29 2006 (0K)<BR>
+Andrei, Prelipcean
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="/cgi-bin/formuladb?view;file=vvv.upr;type=.txt" TARGET="_blank" TITLE="View this formula file">vvv.upr</A>: modified Sun Jul 23 08:20:14 2006 (4K)<BR>
+
+&nbsp;<BR>
+
+<A HREF="../index.shtml">Return to Formula Database</A>
+<BR>&nbsp;
+</TD></TR></TABLE></DIV>
+</BODY>
+</HTML>
+

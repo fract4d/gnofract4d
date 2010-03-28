@@ -1,0 +1,26 @@
+gnofract4d parameter file
+version=1.6
+bailout=4
+x=-0.77771340211887096672
+y=0.038478537276475356654
+z=0.072843007329779982384
+w=0.45014137425847206009
+size=0.80794108945431319935
+xy=1.5707999999999999741
+xz=5.0341399999999998371
+xw=5.219490000000000407
+yz=-0.18638085947205060289
+yw=2.731759999999999966
+zw=-0.82001833837700244256
+maxiter=512
+antialias=1
+bailfunc=0
+inner=2
+outer=1
+[function]
+function=Mandelbrot
+[endsection]
+[colors]
+colorizer=1
+file=/usr/share/maps/gnofract4d/volcano.map
+[endsection]

@@ -1,0 +1,1081 @@
+blatte00 {
+gradient:
+  title="blatte00" smooth=yes index=26 color=6335712 index=77
+  color=12509934 index=142 color=6579371 index=337 color=10399764 index=393
+  color=5653536
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte01 {
+gradient:
+  title="blatte01" smooth=yes index=24 color=465469 index=82 color=4096110
+  index=188 color=7666931 index=245 color=4823217 index=312 color=69485
+  index=374 color=67361
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte02 {
+gradient:
+  title="blatte02" smooth=yes index=16 color=3643823 index=88
+  color=12843507 index=117 color=16777215 index=158 color=14214340
+  index=271 color=3961916 index=358 color=3766397
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte03 {
+gradient:
+  title="blatte03" smooth=no index=14 color=11505975 index=63
+  color=12843513 index=100 color=13100514 index=158 color=11858164
+  index=245 color=5079853 index=381 color=7503161
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte04 {
+gradient:
+  title="blatte04" smooth=no index=26 color=3739925 index=60 color=15417162
+  index=100 color=13576496 index=289 color=3932984
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte06 {
+gradient:
+  title="blatte06" smooth=no index=0 color=12074060 index=100 color=5987163
+  index=189 color=8944482 index=258 color=6967608 index=297 color=8076321
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte05 {
+gradient:
+  title="blatte05" smooth=yes rotation=152 index=12 color=11976 index=129
+  color=5886699 index=174 color=10482141 index=303 color=527396 index=353
+  color=888
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte07 {
+gradient:
+  title="blatte07" smooth=yes rotation=-69 index=3 color=11505009 index=51
+  color=24218 index=91 color=49140 index=161 color=7223552 index=171
+  color=0 index=201 color=12155941 index=219 color=16762491 index=227
+  color=16706772 index=234 color=14721088 index=307 color=0 index=343
+  color=5064715 index=364 color=6443832 index=379 color=16777215
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte08 {
+gradient:
+  title="blatte08" smooth=yes rotation=5 index=17 color=2894892 index=38
+  color=6443832 index=53 color=16777215 index=77 color=11505009 index=102
+  color=0 index=113 color=88 index=125 color=15770 index=140 color=43254
+  index=173 color=5299452 index=189 color=8774901 index=234 color=16777215
+  index=265 color=16777215 index=268 color=9725214 index=293 color=16762491
+  index=301 color=16706772 index=321 color=14721088 index=381 color=0
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte09 {
+gradient:
+  title="blatte09" smooth=yes rotation=5 index=17 color=789580 index=33
+  color=3750241 index=53 color=16777215 index=85 color=12032639 index=102
+  color=0 index=113 color=5767187 index=125 color=10092582 index=140
+  color=16129280 index=167 color=16552528 index=189 color=8774901 index=234
+  color=16777215 index=265 color=16777215 index=293 color=11686912
+  index=318 color=16758651 index=326 color=16771027 index=346
+  color=16745761 index=381 color=0
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte10 {
+gradient:
+  title="blatte10" smooth=yes rotation=139 index=16 color=2171171 index=34
+  color=65793 index=44 color=5276320 index=60 color=2237992 index=73
+  color=2437951 index=96 color=15792 index=114 color=24570 index=139
+  color=2107702 index=151 color=131586 index=172 color=2113350 index=189
+  color=6661815 index=201 color=263172 index=209 color=1712424 index=220
+  color=5527384 index=230 color=5593699 index=249 color=6382439 index=262
+  color=0 index=280 color=4737868 index=291 color=5477545 index=297
+  color=13558248 index=309 color=3955824 index=318 color=3225927 index=341
+  color=1252383 index=355 color=6262433 index=364 color=1645083 index=380
+  color=7120814 index=398 color=5200487
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte11 {
+gradient:
+  title="blatte11" smooth=yes rotation=-70 index=3 color=9427695 index=14
+  color=13562622 index=27 color=10611199 index=94 color=1826121 index=135
+  color=8684032 index=168 color=2829579 index=248 color=0 index=271
+  color=405054 index=299 color=2246226 index=378 color=4626864
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte12 {
+gradient:
+  title="blatte12" smooth=yes rotation=163 index=23 color=2246226 index=51
+  color=405054 index=74 color=0 index=154 color=2953995 index=187
+  color=8664832 index=209 color=3393023 index=224 color=5538468 index=295
+  color=10611199 index=308 color=13562622 index=319 color=9427695 index=344
+  color=4626864
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte13 {
+gradient:
+  title="blatte13" smooth=yes index=26 color=6708540 index=207
+  color=14676955 index=307 color=8512
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte14 {
+gradient:
+  title="blatte14" smooth=yes index=10 color=592193 index=85 color=11218242
+  index=131 color=0 index=164 color=5649200 index=303 color=1287909
+  index=353 color=12641532
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte15 {
+gradient:
+  title="blatte15" smooth=yes rotation=119 index=54 color=14661165
+  index=171 color=0 index=196 color=16777215 index=224 color=0 index=368
+  color=5583157
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte16 {
+gradient:
+  title="blatte16" smooth=yes rotation=134 index=8 color=0 index=24
+  color=7521756 index=47 color=4182783 index=75 color=363263 index=119
+  color=2894964 index=155 color=2236962 index=200 color=0 index=232
+  color=1052988 index=297 color=1513349 index=342 color=356863
+opacity:
+  smooth=no rotation=-200 index=200 opacity=255
+}
+
+blatte17 {
+gradient:
+  title="blatte17" smooth=no index=85 color=1118631 index=165 color=1817343
+  index=204 color=15258306 index=233 color=16777215 index=279 color=6571292
+  index=385 color=0
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte18 {
+gradient:
+  title="blatte18" smooth=no rotation=199 index=22 color=12407085 index=53
+  color=15965827 index=94 color=1817343 index=133 color=15258306 index=162
+  color=16777215 index=300 color=6768153 index=393 color=0
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte19 {
+gradient:
+  title="blatte19" smooth=no index=101 color=4210752 index=145 color=0
+  index=189 color=8768497 index=220 color=4751010 index=269 color=15264818
+  index=284 color=11839782 index=307 color=0 index=334 color=15258306
+  index=363 color=16777215
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte20 {
+gradient:
+  title="blatte20" smooth=no index=101 color=4210752 index=145 color=0
+  index=207 color=8768497 index=245 color=3703218 index=261 color=16754539
+  index=269 color=15497778 index=284 color=11816742 index=307 color=0
+  index=334 color=15258306 index=387 color=16777215
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte21 {
+gradient:
+  title="blatte21" smooth=yes rotation=105 index=112 color=0 index=155
+  color=6555170 index=232 color=15085764 index=275 color=14078975 index=292
+  color=16777215 index=307 color=9671567
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte22 {
+gradient:
+  title="blatte22" smooth=yes rotation=74 index=32 color=0 index=152
+  color=11826698 index=197 color=10348080 index=222 color=9433568 index=231
+  color=11136255 index=253 color=16777215 index=326 color=11711152
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte23 {
+gradient:
+  title="blatte23" smooth=no rotation=74 index=0 color=9295595 index=38
+  color=1710678 index=83 color=1647407 index=158 color=3495341 index=192
+  color=3289662 index=224 color=8310248 index=234 color=6271951 index=254
+  color=3618615 index=258 color=1776471 index=296 color=3158156 index=345
+  color=2917086
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte24 {
+gradient:
+  title="blatte24" smooth=no rotation=78 index=0 color=3684408 index=15
+  color=1250139 index=32 color=47854 index=42 color=5111039 index=49
+  color=10616319 index=57 color=5635327 index=78 color=2532322 index=112
+  color=855371 index=166 color=15772734 index=207 color=14459750 index=232
+  color=14920287 index=261 color=14912351 index=308 color=15087712
+  index=357 color=10031426 index=398 color=0
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte25 {
+gradient:
+  title="blatte25" smooth=no rotation=87 index=10 color=8710904 index=25
+  color=11461876 index=42 color=8774899 index=85 color=4941975 index=121
+  color=4009513 index=145 color=2360329 index=215 color=7346432 index=261
+  color=8664832 index=298 color=10307853 index=332 color=9266757 index=365
+  color=6842508
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte26 {
+gradient:
+  title="blatte26" smooth=no rotation=87 index=8 color=8700920 index=23
+  color=11455732 index=36 color=8765939 index=75 color=7359638 index=121
+  color=4729118 index=145 color=2360329 index=213 color=7353088 index=261
+  color=8675584 index=298 color=10319629 index=332 color=9995066 index=371
+  color=7753127
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte27 {
+gradient:
+  title="blatte27" smooth=no rotation=74 index=10 color=10427744 index=24
+  color=14493069 index=54 color=11933793 index=98 color=7017265 index=119
+  color=3674671 index=130 color=0 index=137 color=1986956 index=182
+  color=5879491 index=241 color=12512756 index=308 color=9485252 index=358
+  color=10133628
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte28 {
+gradient:
+  title="blatte28" smooth=no rotation=74 index=9 color=9232622 index=15
+  color=2896653 index=22 color=9100491 index=51 color=6133065 index=56
+  color=3165314 index=60 color=5271869 index=71 color=6327364 index=89
+  color=5007408 index=93 color=10415856 index=100 color=5401389 index=122
+  color=4609562 index=180 color=2108428 index=191 color=10280176 index=199
+  color=792916 index=206 color=10611199 index=226 color=12319222 index=231
+  color=2239237 index=239 color=11199462 index=256 color=8237291 index=297
+  color=2500208 index=307 color=12972799 index=316 color=1513291 index=329
+  color=3093609 index=332 color=2182978 index=336 color=8166946 index=340
+  color=1779779 index=343 color=2174071 index=358 color=594735 index=376
+  color=5672682 index=387 color=7919852
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte29 {
+gradient:
+  title="blatte29" smooth=no rotation=-143 index=8 color=12319218 index=13
+  color=2823941 index=21 color=11200223 index=38 color=8250347 index=79
+  color=2503536 index=89 color=12976095 index=98 color=1513291 index=111
+  color=3092329 index=115 color=2182989 index=118 color=10379298 index=122
+  color=1786687 index=125 color=3490403 index=139 color=592175 index=158
+  color=7390160 index=169 color=7921900 index=191 color=15655052 index=197
+  color=3345679 index=204 color=14469514 index=233 color=9797449 index=238
+  color=3172738 index=242 color=7429181 index=253 color=9203012 index=271
+  color=6834992 index=275 color=10414832 index=282 color=7030061 index=304
+  color=5650458 index=362 color=2891532 index=373 color=10285287 index=381
+  color=806996 index=388 color=10616821
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte30 {
+gradient:
+  title="blatte30" smooth=yes index=14 color=3151707 index=124
+  color=2410440 index=237 color=4610829 index=319 color=16268562
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte31 {
+gradient:
+  title="blatte31" smooth=yes index=0 color=6713655 index=113 color=4741468
+  index=166 color=6384449 index=209 color=7367198 index=266 color=6258041
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte32 {
+gradient:
+  title="blatte32" smooth=yes index=17 color=9335931 index=96 color=7227430
+  index=167 color=9343526 index=281 color=5605249 index=391 color=14071448
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte33 {
+gradient:
+  title="blatte33" smooth=yes index=0 color=8234333 index=65 color=8883023
+  index=114 color=9090160 index=189 color=131586 index=252 color=9097430
+  index=303 color=6118952 index=347 color=8690814
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte34 {
+gradient:
+  title="blatte34" smooth=no rotation=20 index=2 color=11326432 index=22
+  color=3691632 index=72 color=1449250 index=103 color=2715015 index=133
+  color=4741468 index=160 color=1126715 index=184 color=3434360 index=229
+  color=2906210 index=286 color=6258041 index=318 color=7303023 index=351
+  color=5995403
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte35 {
+gradient:
+  title="blatte35" smooth=no rotation=74 index=5 color=8368044 index=32
+  color=8089173 index=85 color=12892012 index=154 color=8090197 index=186
+  color=4468508 index=213 color=11179614 index=240 color=9735996 index=267
+  color=9539171 index=319 color=5919550 index=348 color=7437141
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte36 {
+gradient:
+  title="blatte36" smooth=no rotation=74 index=3 color=5275415 index=54
+  color=5099357 index=67 color=4041931 index=89 color=5169248 index=166
+  color=12278567 index=213 color=4934645 index=250 color=10522434 index=288
+  color=4623390 index=331 color=7659223 index=374 color=10522434
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte37 {
+gradient:
+  title="blatte37" smooth=no index=1 color=12018007 index=83 color=5126446
+  index=84 color=5058607 index=125 color=6511173 index=178 color=6584421
+  index=215 color=2044203 index=230 color=2366503 index=249 color=1318431
+  index=252 color=1644825 index=296 color=6592644 index=319 color=11457216
+  index=335 color=13628888 index=352 color=9744016 index=374 color=4147769
+  index=376 color=3160885 index=380 color=134699 index=382 color=14083795
+  index=386 color=13357266 index=390 color=11908286 index=399
+  color=16777215
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte38 {
+gradient:
+  title="blatte38" smooth=no rotation=20 index=0 color=6058612 index=46
+  color=4551811 index=81 color=10000484 index=91 color=11785677 index=99
+  color=8289918 index=141 color=9884752 index=175 color=4819913 index=203
+  color=4092880 index=260 color=5742773 index=287 color=13087575 index=334
+  color=9008713 index=360 color=15057299
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte39 {
+gradient:
+  title="blatte39" smooth=no rotation=20 index=0 color=2244653 index=32
+  color=6331812 index=76 color=5791310 index=101 color=6779227 index=137
+  color=3426879 index=164 color=6669247 index=193 color=2105116 index=219
+  color=6843211 index=301 color=4357192 index=367 color=3420968
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte40 {
+gradient:
+  title="blatte40" smooth=no index=0 color=15771298 index=36 color=12015448
+  index=83 color=5126446 index=84 color=5058607 index=125 color=6511173
+  index=178 color=6584421 index=215 color=2044203 index=233 color=2499612
+  index=244 color=5720377 index=252 color=3487029 index=296 color=6592644
+  index=319 color=11457216 index=335 color=13628888 index=352 color=9744016
+  index=374 color=4147769 index=393 color=5926500
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte41 {
+gradient:
+  title="blatte41" smooth=no rotation=89 index=15 color=9862376 index=37
+  color=5394379 index=92 color=5392946 index=130 color=8028441 index=151
+  color=1908232 index=176 color=4999442 index=242 color=6971070 index=263
+  color=6778587 index=286 color=7236630 index=347 color=0 index=388
+  color=16777215
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte42 {
+gradient:
+  title="blatte42" smooth=no rotation=89 index=15 color=15255676 index=37
+  color=12808479 index=90 color=1511439 index=130 color=8405786 index=151
+  color=1904905 index=176 color=4924179 index=242 color=9471694 index=263
+  color=9738726 index=288 color=8277530 index=347 color=0 index=386
+  color=9614056
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte43 {
+gradient:
+  title="blatte43" smooth=no rotation=89 index=15 color=7710703 index=37
+  color=4095964 index=92 color=6378019 index=130 color=8423442 index=151
+  color=2039814 index=176 color=5328397 index=240 color=13423433 index=263
+  color=6016999 index=286 color=7631632 index=347 color=0 index=387
+  color=8370153
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte44 {
+gradient:
+  title="blatte44" smooth=no rotation=-200 index=81 color=8154434 index=147
+  color=3420968 index=180 color=2244653 index=212 color=6331812 index=256
+  color=7958579 index=281 color=9472828 index=317 color=3426879 index=344
+  color=6669247 index=373 color=2105116 index=399 color=7036747
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte45 {
+gradient:
+  title="blatte45" smooth=no rotation=74 index=0 color=11431536 index=50
+  color=2691591 index=82 color=4942693 index=135 color=4807720 index=190
+  color=9126163 index=236 color=11117575 index=281 color=11036756 index=363
+  color=10796313
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte46 {
+gradient:
+  title="blatte46" smooth=no rotation=74 index=0 color=12568674 index=55
+  color=7570016 index=127 color=8706270 index=208 color=790030 index=277
+  color=8795204 index=312 color=12436648
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte47 {
+gradient:
+  title="blatte47" smooth=no rotation=74 index=0 color=6142856 index=55
+  color=8963732 index=97 color=2062160 index=175 color=8977129 index=250
+  color=10270369 index=308 color=1583668 index=335 color=5675146
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte48 {
+gradient:
+  title="blatte48" smooth=no rotation=74 index=0 color=8223293 index=47
+  color=5621593 index=115 color=7421284 index=202 color=13088277 index=264
+  color=7469469 index=323 color=5145171 index=380 color=4478532
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte49 {
+gradient:
+  title="blatte49" smooth=no rotation=74 index=0 color=10033974 index=82
+  color=5595652 index=176 color=9475899 index=238 color=5365473 index=300
+  color=4805883 index=355 color=8759336
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte50 {
+gradient:
+  title="blatte50" smooth=no rotation=74 index=0 color=2306449 index=32
+  color=2204415 index=69 color=12698049 index=102 color=1639689 index=163
+  color=5773871 index=218 color=15683957 index=262 color=1147135 index=291
+  color=8764653 index=333 color=921282 index=366 color=2631720
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte51 {
+gradient:
+  title="blatte51" smooth=no index=0 color=11443846 index=77 color=68911
+  index=107 color=14683693 index=145 color=12172298 index=260
+  color=16741219 index=316 color=331541 index=373 color=131690
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte52 {
+gradient:
+  title="blatte52" smooth=no index=0 color=6923223 index=15 color=1987702
+  index=42 color=5149722 index=59 color=14738365 index=79 color=1660215
+  index=99 color=1525137 index=123 color=3108487 index=142 color=5792338
+  index=171 color=822848 index=181 color=1659145 index=197 color=3536936
+  index=209 color=722695 index=224 color=13028032 index=258 color=2386366
+  index=275 color=2923768 index=298 color=1711130 index=330 color=3363623
+  index=345 color=16383229 index=368 color=6067317
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte53 {
+gradient:
+  title="blatte53" smooth=no index=0 color=6925271 index=15 color=1989494
+  index=42 color=9720090 index=59 color=0 index=79 color=5587737 index=99
+  color=1527697 index=123 color=3109767 index=142 color=5774098 index=167
+  color=9325836 index=181 color=5320457 index=197 color=16299816 index=209
+  color=657163 index=224 color=13093568 index=258 color=2389694 index=275
+  color=2927096 index=299 color=0 index=329 color=12609066 index=345
+  color=16383229 index=368 color=13405220
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte54 {
+gradient:
+  title="blatte54" smooth=no index=5 color=6136105 index=40 color=2377226
+  index=67 color=921188 index=86 color=6542135 index=108 color=978652
+  index=130 color=4418311 index=156 color=7491086 index=182 color=6363405
+  index=209 color=65895 index=240 color=4275991 index=249 color=12713970
+  index=282 color=8322248 index=339 color=10091887 index=380 color=9882913
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte55 {
+gradient:
+  title="blatte55" smooth=no index=0 color=131846 index=64 color=13161674
+  index=161 color=856327 index=201 color=3706958 index=318 color=14589524
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte56 {
+gradient:
+  title="blatte56" smooth=no index=0 color=0 index=27 color=4009483
+  index=55 color=5853193 index=74 color=9342606 index=97 color=14014835
+  index=121 color=15983893 index=135 color=0 index=166 color=3290122
+  index=198 color=9736206 index=226 color=1277069 index=275 color=2971952
+  index=308 color=4343300 index=338 color=3026478 index=376 color=8684546
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte57 {
+gradient:
+  title="blatte57" smooth=no index=0 color=11853420 index=30 color=3302972
+  index=56 color=9290567 index=111 color=4753699 index=135 color=5991430
+  index=206 color=4404265 index=251 color=658712 index=297 color=2716571
+  index=303 color=5088207 index=309 color=2454169 index=359 color=855309
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte58 {
+gradient:
+  title="blatte58" smooth=no index=0 color=5725357 index=111 color=131586
+  index=186 color=14918509 index=270 color=11586022 index=314
+  color=11185362
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte59 {
+gradient:
+  title="blatte59" smooth=no index=24 color=7048861 index=79 color=6368039
+  index=89 color=9059380 index=106 color=4594712 index=118 color=11354423
+  index=141 color=8855317 index=162 color=13454875 index=177 color=12399917
+  index=197 color=7291195 index=215 color=12475684 index=224 color=12805151
+  index=235 color=10846049 index=248 color=13070107 index=302
+  color=14133013 index=386 color=8641535
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte60 {
+gradient:
+  title="blatte60" smooth=no rotation=-168 index=0 color=1838860 index=35
+  color=7414598 index=95 color=13905484 index=190 color=12529961 index=282
+  color=9413142 index=344 color=16777215
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte61 {
+gradient:
+  title="blatte61" smooth=no rotation=-171 index=44 color=11924223
+  index=110 color=16777215 index=115 color=0 index=174 color=526121
+  index=200 color=2432515 index=211 color=4409358 index=219 color=5990944
+  index=221 color=8952888 index=224 color=5990944 index=232 color=2176821
+  index=249 color=3955271 index=286 color=3175894 index=386 color=5109503
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte62 {
+gradient:
+  title="blatte62" smooth=yes rotation=-153 index=7 color=0 index=54
+  color=197427 index=161 color=8501181 index=239 color=12703701 index=363
+  color=16777215 index=370 color=0
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte63 {
+gradient:
+  title="blatte63" smooth=yes rotation=-5 index=4 color=2896194 index=31
+  color=8163185 index=55 color=12249834 index=62 color=14349556 index=69
+  color=12905194 index=88 color=7714737 index=144 color=4473134 index=169
+  color=5132595 index=223 color=1451566 index=241 color=2239012 index=256
+  color=4220782 index=267 color=7972013 index=270 color=6132377 index=313
+  color=1184810 index=336 color=4941191 index=345 color=7248048 index=353
+  color=3757429 index=370 color=1642809 index=385 color=1708315
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte64 {
+gradient:
+  title="blatte64" smooth=yes rotation=-10 index=0 color=394760 index=26
+  color=8163185 index=50 color=12249834 index=57 color=14349556 index=64
+  color=12905194 index=96 color=8305847 index=139 color=4801833 index=164
+  color=5396014 index=209 color=1907983 index=219 color=0 index=230
+  color=3102039 index=250 color=5346719 index=262 color=10146780 index=286
+  color=2563333 index=320 color=9997354 index=340 color=16626299 index=345
+  color=15503696 index=364 color=7888896
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte65 {
+gradient:
+  title="blatte65" smooth=yes rotation=-116 index=12 color=0 index=27
+  color=2563333 index=56 color=10146780 index=59 color=14019309 index=65
+  color=8238525 index=83 color=3102039 index=94 color=0 index=116
+  color=3750175 index=146 color=5592367 index=163 color=8948312 index=185
+  color=6051892 index=217 color=2046778 index=256 color=12905194 index=266
+  color=16777215 index=268 color=13037294 index=280 color=8027748 index=312
+  color=394760 index=349 color=5852703 index=368 color=10009728 index=374
+  color=11723955 index=393 color=6776411
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte66 {
+gradient:
+  title="blatte66" smooth=no rotation=75 index=5 color=11138008 index=14
+  color=8106171 index=22 color=0 index=36 color=2432515 index=47
+  color=4657679 index=52 color=6892833 index=57 color=11358783 index=60
+  color=6892833 index=68 color=1252637 index=77 color=11974294 index=87
+  color=0 index=106 color=7870521 index=142 color=13920808 index=277
+  color=11003135 index=339 color=15198207 index=351 color=16777215
+  index=366 color=16777215 index=376 color=16777215 index=377 color=0
+  index=391 color=0 index=395 color=6317895 index=399 color=8830408
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte67 {
+gradient:
+  title="blatte67" smooth=no rotation=103 index=49 color=16777215 index=77
+  color=0 index=103 color=1969674 index=154 color=5055771 index=164
+  color=7682085 index=182 color=10776602 index=199 color=11385189 index=222
+  color=8497523 index=267 color=8433586 index=315 color=8640233 index=385
+  color=9881578
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte68 {
+gradient:
+  title="blatte68" smooth=no rotation=-53 index=2 color=6700064 index=14
+  color=9459246 index=28 color=658054 index=46 color=5198517 index=65
+  color=7573161 index=91 color=7182789 index=205 color=8771047 index=243
+  color=9881578 index=331 color=16777215 index=348 color=459524 index=387
+  color=4072982
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte69 {
+gradient:
+  title="blatte69" smooth=no rotation=186 index=44 color=8771047 index=82
+  color=9881578 index=118 color=16777215 index=136 color=0 index=191
+  color=4927259 index=249 color=0 index=257 color=197421 index=275
+  color=1908083 index=286 color=5198517 index=307 color=7573161 index=336
+  color=7182789
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte70 {
+gradient:
+  title="blatte70" smooth=yes rotation=-125 index=26 color=4135482
+  index=126 color=3200507 index=168 color=9954815 index=267 color=7416629
+  index=298 color=8934458 index=335 color=6432544 index=361 color=592137
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte71 {
+gradient:
+  title="blatte71" smooth=yes rotation=-62 index=9 color=4209450 index=38
+  color=0 index=91 color=5728300 index=189 color=4573157 index=231
+  color=9954815 index=303 color=8287562 index=363 color=1774609 index=394
+  color=4801327 index=399 color=7169351
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte72 {
+gradient:
+  title="blatte72" smooth=yes rotation=-200 index=51 color=4573157 index=93
+  color=9954815 index=164 color=5077874 index=225 color=1774609 index=257
+  color=7766098 index=263 color=11327976 index=273 color=7239501 index=300
+  color=0 index=353 color=1590140
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte73 {
+gradient:
+  title="blatte73" smooth=yes rotation=199 index=15 color=50 index=50
+  color=4573157 index=92 color=9954815 index=163 color=5077874 index=224
+  color=1774609 index=256 color=7766098 index=262 color=11327976 index=272
+  color=7239501 index=299 color=0 index=352 color=1590140
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte74 {
+gradient:
+  title="blatte74" smooth=yes rotation=-38 index=19 color=7766098 index=25
+  color=11327976 index=35 color=7239501 index=62 color=0 index=110
+  color=2055843 index=172 color=198963 index=214 color=6471112 index=255
+  color=9954815 index=278 color=11592422 index=328 color=7961421 index=387
+  color=1774609
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte75 {
+gradient:
+  title="blatte75" smooth=yes rotation=-44 index=13 color=7766098 index=19
+  color=11327976 index=29 color=7239501 index=56 color=0 index=98
+  color=2367395 index=160 color=1442611 index=208 color=6471112 index=249
+  color=9954815 index=272 color=11592422 index=323 color=5076859 index=381
+  color=1774609
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte76 {
+gradient:
+  title="blatte76" smooth=yes rotation=-10 index=0 color=9328938 index=47
+  color=10145470 index=88 color=8743239 index=132 color=14133877 index=238
+  color=5991002 index=346 color=1712192
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte77 {
+gradient:
+  title="blatte77" smooth=yes rotation=-10 index=0 color=3223329 index=46
+  color=1587050 index=158 color=3987482 index=277 color=5284991 index=361
+  color=988419
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte78 {
+gradient:
+  title="blatte78" smooth=yes rotation=-10 index=0 color=6510145 index=44
+  color=11918272 index=130 color=3688001 index=251 color=4867626 index=305
+  color=8435702
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte79 {
+gradient:
+  title="blatte79" smooth=no rotation=74 index=5 color=0 index=53
+  color=3026478 index=84 color=6184542 index=100 color=1382731 index=134
+  color=6788571 index=149 color=9684221 index=165 color=6989016 index=181
+  color=2894936 index=204 color=1184274 index=261 color=5528424 index=328
+  color=1315932
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte80 {
+gradient:
+  title="blatte80" smooth=no rotation=-18 index=8 color=4932373 index=42
+  color=14394215 index=57 color=16631187 index=73 color=14194282 index=89
+  color=5788972 index=112 color=1184274 index=169 color=6840148 index=236
+  color=6051348 index=313 color=0 index=361 color=3026478 index=392
+  color=6184542
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte81 {
+gradient:
+  title="blatte81" smooth=no index=0 color=7044441 index=58 color=7316239
+  index=81 color=9754805 index=146 color=51797 index=206 color=4826405
+  index=239 color=5460821 index=292 color=7576833 index=312 color=8713872
+  index=351 color=6906453
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte82 {
+gradient:
+  title="blatte82" smooth=no rotation=101 index=77 color=451314 index=96
+  color=12532025 index=163 color=6096662 index=246 color=13383119 index=362
+  color=16448807
+opacity:
+  smooth=no index=0 opacity=255
+}
+
+blatte83 {
+gradient:
+  title="blatte83" smooth=no rotation=30 index=14 color=0 index=27 color=0
+  index=42 color=16253056 index=58 color=13063566 index=78 color=13508698
+  index=83 color=7208996 index=104 color=16777215 index=106 color=8092539
+  index=111 color=0 index=152 color=10031426 index=201 color=15087712
+  index=248 color=14912351 index=277 color=14920287 index=302
+  color=14459750 index=363 color=16374693 index=396 color=4861198
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte84 {
+gradient:
+  title="blatte84" smooth=no index=112 color=16777215 index=150
+  color=2559489 index=206 color=4865846 index=228 color=9033967 index=271
+  color=3609605 index=307 color=9648429 index=366 color=14138225
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte85 {
+gradient:
+  title="blatte85" smooth=no rotation=199 index=7 color=329220 index=32
+  color=4744270 index=49 color=13758391 index=68 color=3232607 index=125
+  color=7662578 index=164 color=12319217 index=220 color=16777215 index=233
+  color=16251636 index=271 color=16777215 index=309 color=15728101
+  index=349 color=2054477
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte86 {
+gradient:
+  title="blatte86" smooth=no rotation=199 index=0 color=15252894 index=37
+  color=11186760 index=77 color=727820 index=135 color=13227225 index=212
+  color=2363906 index=249 color=7233364 index=285 color=65793 index=326
+  color=6377811
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte87 {
+gradient:
+  title="blatte87" smooth=no index=35 color=7442215 index=158 color=5445815
+  index=206 color=4789799 index=354 color=6516506
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte88 {
+gradient:
+  title="blatte88" smooth=yes rotation=74 index=0 color=6541797 index=84
+  color=3059353 index=156 color=4954445 index=274 color=72451 index=360
+  color=10319399
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte89 {
+gradient:
+  title="blatte89" smooth=no rotation=74 index=0 color=6541797 index=84
+  color=3034798 index=129 color=12350028 index=135 color=14388650 index=143
+  color=10046293 index=273 color=1769731 index=360 color=10319399
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte90 {
+gradient:
+  title="blatte90" smooth=no rotation=74 index=0 color=6541797 index=24
+  color=858449 index=107 color=9167611 index=129 color=5013692 index=137
+  color=7791602 index=143 color=4950681 index=191 color=65875 index=335
+  color=12257619
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte91 {
+gradient:
+  title="blatte91" smooth=no rotation=74 index=0 color=6541797 index=22
+  color=1646917 index=77 color=12642548 index=122 color=5996973 index=138
+  color=9098462 index=160 color=5800588 index=190 color=2895000 index=335
+  color=12516573
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte92 {
+gradient:
+  title="blatte92" smooth=no rotation=74 index=0 color=13771333 index=110
+  color=132614 index=159 color=12020319 index=211 color=16751509 index=338
+  color=1438997
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte93 {
+gradient:
+  title="blatte93" smooth=no index=19 color=10481149 index=82 color=5638146
+  index=109 color=15338741 index=143 color=11012699 index=292
+  color=14442614 index=391 color=11046470
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte94 {
+gradient:
+  title="blatte94" smooth=no index=3 color=13349640 index=166 color=8988142
+  index=227 color=9870111 index=271 color=8904678 index=362 color=3100885
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte95 {
+gradient:
+  title="blatte95" smooth=no index=15 color=5329387 index=59 color=1251858
+  index=117 color=14870172 index=171 color=6667249 index=196 color=5000352
+  index=252 color=8222217 index=281 color=3092526 index=330 color=11709996
+  index=375 color=7899256
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte96 {
+gradient:
+  title="blatte96" smooth=no index=0 color=11509869 index=28 color=2766138
+  index=46 color=7120306 index=63 color=9752546 index=76 color=3882321
+  index=97 color=9025983 index=127 color=4935763 index=150 color=922140
+  index=173 color=7120808 index=195 color=2829871 index=229 color=6789791
+  index=266 color=1513763 index=294 color=8368063 index=325 color=263172
+  index=337 color=11121331 index=370 color=723727
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte97 {
+gradient:
+  title="blatte97" smooth=yes rotation=183 index=41 color=6280163 index=89
+  color=11250677 index=114 color=3984478 index=139 color=15432612 index=186
+  color=9533660 index=262 color=6670196 index=288 color=11002853 index=348
+  color=3118079 index=387 color=6842472
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte98 {
+gradient:
+  title="blatte98" smooth=no index=29 color=9890599 index=117
+  color=12441961 index=218 color=6307110 index=280 color=592165 index=369
+  color=2622868
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}
+
+blatte99 {
+gradient:
+  title="blatte99" smooth=yes rotation=-132 index=23 color=10567723
+  index=92 color=7282971 index=127 color=11792895 index=170 color=7196415
+  index=227 color=84 index=280 color=12132992 index=358 color=15531290
+opacity:
+  smooth=no rotation=49 index=49 opacity=255 index=68 opacity=255 index=76
+  opacity=255 index=126 opacity=255 index=180 opacity=255
+}

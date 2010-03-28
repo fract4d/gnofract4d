@@ -1,0 +1,26 @@
+gnofract4d parameter file
+version=1.6
+bailout=4000
+x=0.36578125
+y=-0.59150390625
+z=0
+w=0
+size=0.03822265625
+xy=0
+xz=0
+xw=0
+yz=0
+yw=0
+zw=0
+maxiter=256
+antialias=1
+bailfunc=1
+inner=2
+outer=3
+[function]
+function=Mandelbrot
+[endsection]
+[colors]
+colorizer=1
+file=/usr/share/maps/gnofract4d/Gallet12.map
+[endsection]

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+  <mime-type type="text/x-gnofract4d-fractal-parameters">
+    <comment>Fractal image parameter file</comment>
+    <glob pattern="*.fct"/>
+  </mime-type>
+  <mime-type type="text/x-gnofract4d-fractal-formulas">
+    <comment>Fractal image formula file</comment>
+    <glob pattern="*.frm"/>
+    <glob pattern="*.ufm"/>
+    <glob pattern="*.cfrm"/>
+    <glob pattern="*.ucl"/>
+    <glob pattern="*.uxf"/>
+  </mime-type>
+  <mime-type type="text/x-gnofract4d-fractal-animation">
+    <comment>Fractal animation parameter file</comment>
+    <glob pattern="*.fcta"/>
+  </mime-type>
+</mime-info>

@@ -1,0 +1,27 @@
+gnofract4d parameter file
+version=1.5
+bailout=4
+x=-0.40078036785125742414
+y=-0.0058429861068725859677
+z=0.025781249999999991673
+w=-0.0018749999999999981959
+size=0.05764872550964355441
+xy=0
+xz=0
+xw=0
+yz=0
+yw=0
+zw=0
+maxiter=128
+antialias=1
+bailfunc=7
+[function]
+function=Nova
+a=(1,0)
+b=(1,0)
+c=(3,0)
+[endsection]
+[colors]
+colorizer=1
+file=/usr/share/maps/gnofract4d/japan.map
+[endsection]

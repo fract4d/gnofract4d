@@ -1,0 +1,24 @@
+gnofract4d parameter file
+version=1.4
+bailout=4
+x=-0.36096042825635077378
+y=0.62322323977531313144
+z=0.36398674479938947224
+w=-0.35915069477818795107
+size=0.05588240614111782828
+xy=2.8198400000000001242
+xz=0
+xw=-0.33491922635465148916
+yz=0
+yw=0
+zw=0
+maxiter=4096
+antialias=1
+bailfunc=4
+[function]
+function=Mandelbrot
+[endsection]
+[colors]
+colorizer=1
+file=/usr/share/maps/gnofract4d/kahki.map
+[endsection]

@@ -1,0 +1,24 @@
+gnofract4d parameter file
+version=1.4
+bailout=4
+x=0.63422438100374634029
+y=-0.97524339409207527751
+z=-0.026840247759398173921
+w=0.017630503621094389954
+size=3.5615552985442482381
+xy=1.5707999999999999741
+xz=1.570796326794896558
+xw=0
+yz=0
+yw=1.570796326794896558
+zw=0
+maxiter=64
+antialias=1
+bailfunc=0
+[function]
+function=Burning Ship
+[endsection]
+[colors]
+colorizer=1
+file=/usr/share/maps/gnofract4d/basic.map
+[endsection]

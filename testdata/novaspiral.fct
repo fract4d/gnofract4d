@@ -1,0 +1,27 @@
+gnofract4d parameter file
+version=1.6
+bailout=4
+x=-3.5590122157962840299e-17
+y=-1.9517163764044136936e-17
+z=-0.58125000000000004441
+w=-0.3187499999999999778
+size=0.1749999999999999889
+xy=0
+xz=1.5707999999999999741
+xw=0
+yz=0
+yw=1.5707999999999999741
+zw=0
+maxiter=256
+antialias=1
+bailfunc=7
+[function]
+function=Nova
+a=(0.11999999999999999556,-0.44000000000000000222)
+b=(1.0700000000000000622,1.1399999999999999023)
+c=(3,0)
+[endsection]
+[colors]
+colorizer=1
+file=/usr/share/maps/gnofract4d/copper.map
+[endsection]

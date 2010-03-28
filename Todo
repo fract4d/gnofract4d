@@ -1,0 +1,648 @@
+todo:
+
+changes in 3.13:
+* B	can't open .ggr files created by newer Gimp versions
+* W	hsv gradient .ggr support (Henryk Trappmann)
+* W	steps towards Windows support (Richard Mant)
+* B	switch from md5 to hashlib.md5 to remove DeprecationWarning on py2.6
+* W	min pygtk version -> 2.12
+* B	fixed deprecationwarnings from pygtk about Tooltips class
+
+bugs (the more B's, the worse the bug):
+* BBB	too slow!
+* BB	doesn't install on Ubuntu 9.04
+* BB	disabling auto-deepen doesn't turn of making shallower
+* BB	black screen when load slow fractal via cmd line, + segfault when resize before redraw finishes
+* BB	(0,0)^1 == nan (pow_cf_c code wrong for this case)
+* BB	sometimes get "Fatal Python error: GC object already tracked" during fract4d/test.py
+* BB	floating point exception on load of aho.ucl#Stripes_any (-1 % 0)
+* BB	animation colors are screwed
+* BB	func with a bailout of 1 will never quit and can't be interrupted
+* BB	infinite loops are possible in while loops
+* BB	Renderqueue should antialias even if main window doesn't
+* BB	better image-sizing widgets for render queue
+* BB	gnd.ufm#4D Julia - behaves very oddly
+* BB	fractint doesn't reset vars between points
+* BB	explorer rather slow with complex colorfuncs (recompile too much)
+* BB	not all keyboard shortcuts available when menu hidden (fullscreen)
+* BB	should save enum params as strings, not indexes
+* BB	squares left behind when changing from a smooth colormap to a jagged one
+* BB	sometimes copying subfract to main fract loses some data
+* BB	stops drawing after new gradient applied to DCA fractal (sometimes)
+* B	interrupt takes too long on deep-zoomed fractals
+* B	MandAutoCritInZ doesn't work if optimization off in g++?
+* B	hth.ufm#StrangeKindOfMandelbrot gives 'cmag_c_c not found'
+* B	can't have a DCA and a non-DCA formula for inner and outer
+* B	painter doesn't work on purple background of gfp2lob003.fct
+* B	compile 17x before display when loading parfile.fct ?
+* B	RQ: progress bar should be more colorful
+* B	half-done images left behind when RQ aborted
+* B	-, ! missing from docs
+* B	as.ufm:SpiralJazz: very long if/elsif sequence can cause stack overflow
+* B	no scrolling if too many parameters to fit on screen (eg barney3)
+* B	painter click on inner sometimes gives "IndexError: list assignment 
+        out of range" @ self.f.solids[color] = 
+        (int(r*255.0),int(g*255.0),int(b*255.0),255)
+* B     var called 'loat' would clash with C reserved word
+* B	weird behavior when using explorer mode & oversized image
+* B	untitled_5 displays weirdly - so do some combinations of bailout+colorfunc
+* B	should start drawing straight away when image returns to normal size
+* B	recoloring during deepening can make things shallower
+* B	horrible_drawing_bug.fct - zoom out & it looks very different
+* B	fractint builtin fns with () in the name 
+* B	each fractal gets compiled twice, 2nd time with extra vars
+* B	does everything have to be .17f ? (attach a float to controls)
+* B	default chebyshev gives blank screen
+* B	compile whenever resolution changes - pointless
+* B	O-fractals in fractint-g4.frm broken (don't work in Fractint either)
+* B	odd behavior re: selected transform in list
+
+features (the more W's, the more work involved):
+* WWW	toolbox: autozoom, clickzoom, UF-style zoom, realtime zoom, painter
+* WWW	database-backed browser
+* WW	preview gradients better, hook up gradientCellRenderer
+* W	more transforms, incl 4-d ones. Make 4D a 'standard' transform?
+* W	minibrot finder a la explorer.c
+* WW	provide a way to get a gradient vector
+* W	progress and interruptability while parsing/compiling
+* W	RQ: Should have option to delete an image from the queue
+* W	RQ: add pause/resume
+* WWW	RQ: continue rendering across shutdowns
+* WWW	high dynamic range color, OpenEXR 
+* W	center-select mode.
+* W	name of image and creator in .fct and .png files
+* W	user-supplied additional gradient params
+* W 	gradients: HSV backend (flare_glow_radial_2)
+* WW	download missing formulas from UF formula database
+* W	move handles in gradient editor
+* W	zoom gradient preview
+* W	copy & paste to/from text or image
+* WW	edit overall brightness/contrast/gamma/HSV/RGB
+* W	logmap
+* W	warn if overwrite/always save as/clear name on major change
+* WW	include formula in .fct file
+* W	make explorer mode work better if you're zoomed in a long way
+* W	"explore this parameter"
+* W	assert that correct number of params passed to init()
+* WWW	create colormap from picture (eg digital photo)
+* W	tie menu-based and toolbar-based explorer toggling
+* W	regenerate for explorer mode 
+* W	autosave/restore?
+* W	max size for .so cache
+* W	signal tpool conds after releasing mutex? (tiny perf change, maybe)
+* WWW	make it work with GMP
+* W 	desktop mode
+* W 	demo mode
+* W	bookmarks
+* WW	import .par files
+* WW	import .upr files
+* W	tooltips for custom widgets in toolbar
+* W	last-chance exception handler
+* W	formula browser:manage search path (user prefs)
+* W	formula browser:save changes to .frm files
+* W	review human interface guidelines
+* W	angles in degrees?
+* W	connect identically-named params in different parts of formula
+* W	autosave
+* W	make easier to use on click-to-focus systems
+* W	click-and-release on angle,fourway - may require pointer_grab, though
+* WW	visible history
+* W	finish fractint-builtins.frm
+
+tests:
+* W	regression test vs fractint, previous versions
+* W	improve benchmark
+* W	exact SMP equality test
+
+UF Incompatibilities:
+* B? 	jgr.ufm:Rowan - default is blank
+* B	jgr.ufm:Willow - '@fn1' is predefined (in switch)
+* B	browse fhq.ufm - invalid UTF8 string passed to pango_layout
+* B	dmj.udm:dmj-ManyJulia - looks like 3 quadrants are wrong somehow
+* W	raise/remove limit on number of parameters
+* W	allow redeclaration of variables
+
+Orbits/Attractors
+
+A new kind of formula which specifies a per-iteration function or set
+of functions from a 4D point to another 4D point. Plot after each
+iteration. Initially, ignore Z,W position - later, project to screen.
+
+Or: use same functions, a separate drawing mechanism, plus a flag for
+formula to set default. That could allow Buddhabrot-style
+calculations on all types.
+
+params (not all applicable to all types): 
+1) how to set color of point
+2) time step
+3) which points to start with
+
+gnofract4d
+* W	automatic saving of picture and parameters at the same time 
+* WW	How about colour cycling?
+* B	aspect ratio locked with -i and -j params
+* W	add fractal params to image, add load image
+* W	Julia preview by moving around while holding button3
+* W	history window (move history inside library??)
+* WW	MDI
+* B	pause doesn't stop subfracts
+
+xscreensaver version
+* W	auto random parameters
+* W	draw to root window
+
+Movies-
+* B	movies turn off AA
+* W	implement frames/image
+* W	implement curves
+* W	load/save movies
+* B	antialiasing/auto-deepen broken for movies
+* W 	actually save movie images -> disk
+* W	move keyframes up/down 
+* B	lines are ugly
+* W 	"constant zoom speed" mode?
+* WW	run mpeg encoder?
+* W	draw image all-at-once for movies?
+
+CmapEditor
+* W	put "click to apply" right next to preview
+* B	update previews doesn't expose colorbuts
+* B 	setting to an rgb_cizer permanently breaks cmap editor
+* W	color cycling
+* W	choose range + smooth
+* W	choose every other in range
+* W 	save new .map + add to preview list
+* W 	remove debug printfs
+* W	finish cmapeditor
+
+Gnofract4d server:
+Browse formulas, .fct files interactively in web browser, gf4d
+gf4d fetch formulas automatically when missing
+formulas are versioned, .fct file lists revision it used
+local repository with versioning?
+anyone can edit any formula, no-one can delete older revisions
+all edits are attached to a named user. 
+Anyone can create an account without human intervention
+Post new formulas and .fct files easily from within GUI
+Post thumbnail images for browsing
+
+design possibilities:
+use revision control system (subversion, cvs, rcs, arch?)
+pysvn (has further dependencies)
+hosting: cvsdude? sourceforge?
+wiki? (need to remove formatting, though)
+
+Distributed computing: 
+
+Scenario: I have 3 computers at home, want to generate fractals more
+quickly. I install gf4d on all 3 of them, then without further
+configuration I can use any of the computers to create images and the
+others will contribute if available.
+
+Requires: discovery protocol, work distribution scheme that can cope
+with missing or misbehaving clients
+
+Scenario: I want to generate a huge animation. I join up to a global
+group of gf4d users who contribute spare cycles (via a screensaver?)
+in return for a look at what I'm generating, (like ElectricSheep).
+
+Requires: above, +able to deal with ad-hoc networks of thousands of peers,
+economic incentive, security, works with NAT
+
+changes in 3.12:
+* B	auto-deepening logic made things shallower when it shouldn't
+* W	include gimp 2.0 gradient path in default search
+
+changes in 3.11:
+* W	--buildonly, --usebuilt, --cflags, --singlepoint flags
+* W	benchfct.py script
+* W	z*z -> sqr(z) in Mandelbrot
+* W	16x16 blocks
+* W	4-way AA
+* W	ab+ab -> 2.0 * ab in sqr_cc_c (slight perf gain)
+* B	tighten periodicity checking more often
+* W	added continuous_decomposition coloring method
+* W	added sterling2 formulas (courtesy Tad Boniecki)
+* W	stats calculation
+* B	fixed randomness in stats
+
+changes in 3.10:
+* B	can't upload immediately after authorizing
+* BB	UnicodeDecodeError uploading picture: unknown character 89 at posn 0
+* B	fixes to work with Python 2.6
+* W	deleted gconf nonsense, fract4dguic extension
+* BB	auto_tolerance messes up Hi-Res saved images
+
+changes in 3.9:
+* B	load old (v1.5) files with moved .map files
+* B	--nogui doesn't set map_path from prefs
+* W	added --threads cmd-line option
+* BB	./gnofract4d --nogui -q with multiple threads crashes	
+* B	wrong labels on planes menu (Artur G.)
+* B	setting number of threads should happen immediately (Artur G.)
+* B	specify libc6-dev as dependency on Ubuntu (Elaine N.)
+* W	edit formula directly, including inner & outer
+* B	instant julia preview all the time is distracting
+* BB	inline formulas aren't saved
+* BB	draws white boxes in explorer
+* BB	no notification of compile errors when editing formulas
+* BB	undo can lose warp param
+* BB	warp_param menu loses warp param on load
+* BB	painter doesn't work properly, draws rectangles
+
+changes in 3.8:
+* W	sliders for params with min/max
+* BB	browse to .frm file doesn't appear to work
+* W	more robust handling of unknown parameter settings
+* BB	previews missing from 'open parameter file' dialog
+* W	min, max functions
+* W	added signs, direct signs coloring methods
+* B	removed non-functional periodicity coloring method
+* W	widescreen resolutions in drop-down
+* W	show hints & captions on formula parameters
+* BB	'list index out of range' nudging MandelbrotMix4 params (preview not updated)
+* W	combined open dialogs
+
+changes in 3.7:
+* W	removed Gtk.ItemFactory and replaced with uimanager
+* W	some other cleanup of old GTK+ backcompat code which is no longer required
+* B	upload doesn't work immediately after authentication (creds not saved?)
+* B	dismissing autozoom doesn't stop zooming
+* WW	auto-tolerance
+* W	new deepen icon
+* BB	color preview loses tolerance until it's illegible
+* B	fix .desktop file (Stewart Adams)
+* B	behave better when no transcode installed
+* B	add debian files to MANIFEST.in
+
+changes in 3.6:
+* B	don't install buildtools to site-packages
+* B	run calc threads at normal priority - low prio unpredictably runs 2x slower sometimes
+* W	change periodicity logic to apply more often & hopefully go faster
+* W	--antialias command-line arg
+* B	until antialias, seems to run single-threaded more often than not
+* B	% complete > 100 when deepening with antialias off
+* B	try to display the text of .cs files, which are binary
+* B	Errors trying to parse .cs files
+* W	period tolerance option
+* B	Ubuntu 7.10 - gtk.ComboBox has no attribute menu_list when updating warp param
+* B	Ubuntu 7.10 - "T instance has no attribute 'button'" in onMotionNotify
+* B	firefox a more reliable default browser than mozilla
+* B	Ubuntu 7.10 - 4way and angle widgets activate as soon as you mouseover, not on click
+* B	after Flickr auth the upload dialog should show up immediately
+* B	sys.path messed up - can't load basic.map on startup
+
+changes in 3.5:
+* BB	'list index out of range' loading pre-2.0 .fct files
+* W	cut support for Python older than 2.4 and pygtk older than 2.6
+* W	not fully working: use images in coloring methods
+* B	fix default compiler options for mac os x
+* W	fixes to make things work better on Mac OS X
+* BB	params for MandelbrotMix4 formula contain embedded lists
+* B	--trace wasn't working
+* B	antialiasing setting not honored with --nogui
+* W	added --tracez option
+* BB	.cs files missing from gradient browser
+* BBB	balefire.fct doesn't load
+* B	error in avigen when PATH contains a missing dir
+* B	error in explorer when gradients can't be found
+* BB	UGR files not included in RPMs
+* B	help display when not run locally messed up
+* B	internal functions shown in docs
+* B	3D and 4D arrays busted (now disabled)
+
+changes in 3.4:
+* W	support .ugr files
+* W	added blatte*.ugr
+* W	separated color editor and gradient browser
+* B	deepen check was leaving odd pixels set
+* B	clear_in_fates not working properly
+* B	weird lines after deepening
+* BB	browser doesn't always update with current formula
+
+changes in 3.3:
+* B 	better error message when no func name to --formula
+* W	added #center variable
+* B	on freebsd, gtkfractal.onmotionnotify, self has no x
+* B	on freebsd, gtkfractal.onbuttonrelease, self has no x
+* WW	transforms
+* B	preview wrong when moving transform's 4-ways
+* W	skip 'enabled' flag in defaults
+
+fixed in 3.2:
+* B	Problem clicking 'yes' to overwrite temp .fct files
+* W	--nogui option
+* BB	--map doesn't work
+* W	makemap sort of works now
+* B	fix .par color parsing
+* BB	fixed mimetools problem with FC6 (and sporadically other systems)
+* BBB	upgrade breaks since .gnofract4d contains wrong formula path
+
+fixed in 3.1:
+* WW	critical values + multiple basins/color schemes
+* B	-p, --params flags broken (reported by Elaine Normandy)
+* W	make gconf optional
+* BB	use form 1, select warp_param, choose another form = disaster
+* W	added Chebyshev formula
+* WWW	Added Fractal Director (Branko Kokanovic)
+* BBB	Can't save with python > 2.4, standard_b64encode missing
+* WW	Added fate/basin code
+
+fixed in 3.0:
+* W	associate with file type?
+* B	DeprecationError on pygtk 2.8+
+* W	added maxiter cmd-line param
+* W	added position, --trace cmd-line params
+* W	--map cmd-line param
+* W	warp_param menu
+* B	warp_param menu should be hidden unless there are warpable params
+* B	shouldn't need to compile anything to print help or version
+* B	default param values: 'true' is case-sensitive, 'True' is false
+* B	parse continuation lines correctly mid-token
+* B	wrong line numbers when \ followed by blank line
+* B	sp.ucl#AllInOne - compiler error, wrong type for abs (Int version of abs)
+* W	smaller .fct files for easier sharing
+* B	browser doesn't scroll to current func when opened
+* BB	auto-generated names are wrong (image should == fractal name, 
+        don't remove numbers once added)
+* B	dmj.ufm:DHNovaJulka - '#magn' - no symbol starting with t__ is allowed
+* W	added #magn symbol
+* B	enum string comparisons should be case-sensitive
+* W	load ColorSchemer palette files, added some handsome files
+
+
+fixed in 2.14:
+* B	KeyError: "symbol '#width' : no symbol starting with t__ is allowed
+* B	allow fractint-style mid-token \'s
+* BB	link error when compiled on suse-10.0
+* W	warp_param
+
+fixed in 2.13:
+* WW	render to disk
+* W	previews in open file dialog
+* W	load .ufm etc files from cmd-line
+* W	-v cmd-line arg
+* W	antialiasing progress should be smoother and in 1 pass
+* W	all progress should be in one pass
+* BB	none of the formulas in fractint.ufm seem to work - bad bailout_var calc
+* B	error compiling aho.ufm#Poly3_J: 'NoneType' object has no attribute 'datatype'
+* B	standard.cfrm:triangle = all black
+* BB	boolean negation (! operator) doesn't actually work
+* BB	total size not updated when exploring, preview wrong
+* BB	petri_dish.fct:'local variable i referencenced before assignment'
+* BB	render queue only uses 1 CPU
+* BB	RQ: progress jitters a lot on quick images
+* BB	painter is broken
+
+
+fixed in 2.12:
+* B	exception printed when updating color widgets on later pygtks
+* W	minor speedups in codegen and symbol table
+* W	while loop in formulas
+* B	didn't parse settings sections with uppercase chars (eg as.ufm)
+* B	func param types not correctly inferred from default()
+* B	color funcs without a default() don't work
+* B	change transfer func, zoom, undo = displayed transfer changes back to ident (Edward Coffey)
+* BB	when destroy decoration chosen, UI destroyed before save prompt
+* W	recent files menu
+* BB	saving causes image to redraw because of recent files menu
+* BB	what if you have a Flickr account but are not a group member?
+* W	post to blogs via Flickr
+
+done in 2.11:
+* WW	added Flickr sharing
+* WW	register mime info
+* W	documentation improvements
+* W	View/Planes
+* W	bug report
+* W	added Send To command
+* W	added named constructors for types, eg hyper(complex, complex)
+* W	added eye_vector function 
+* W	better randomized gradients
+* W	--inner and --outer params
+* B     @func * 3 gives weird error message
+* B	directories appear in colormap list
+* B	open other_maps/__readme.txt = index out of range
+* B	you can declare the same parameter twice
+* W	nicer error display in gradient dialog
+* B	undo/redo loses "flip y axis" setting
+* B	painter doesn't understand solid
+* BB	desktop-file-install seems to do the wrong thing
+* B	angle widgets don't always work when changing planes
+* B	plane menu is available even if not is4D()
+* BB	flickr access should be threaded so UI doesn't hang
+* W	added argtype, FnParts, XBuffalo, YBuffalo
+* BB	crash with multiple threads on x86-64 (Paul Wayper)
+* BBB	tutorial.frm,createdocs.py not checked in
+* BBB   python2.3 gives: AssertionError: unexpected number of RPM files found: ['build/bdist.linux-x86_64/rpm/RPMS/x86_64/gnofract4d-debuginfo-2.11-1.x86_64.rpm', 'build/bdist.linux-x86_64/rpm/RPMS/x86_64/gnofract4d-2.11-1.x86_64.rpm']
+* B	app frozen on FC4 while browser/mailer running
+* B	FC4: gtk.input_add deprecated, gtk.timeout_add should be gobject.timeout_add
+* BBB	slave completely broken on python2.2
+
+done in 2.10:
+* B	removed all DeprecationWarnings
+* W	display settings in main window
+* W	load/save dialog improvements
+* W	list of formula directories saved in preferences
+* W	fullscreen mode
+* BB	daz.ucl: Lattice: C compiler error, invalid args to %
+* W	fourways in fract parameters, incl. tips
+* BB	default params not set when formula loaded from command-line
+* BB	painter fixed
+* BBB	cursor keys in fract params cause redraw
+* BBB 	update spec for RPMs to use desktop-file-install (per DAG spec)
+* BBB   load tumor.fct, set formula=Buffalo = crash (cmap deleted too early)
+* BB	two copies of settings window if you Ctrl+F twice
+
+done in 2.9:
+* BB	Couldn't load some .fct files saved by 2.7
+* BB	colormap gets reset when change formula
+* W	added formula cmd-line argument
+
+fixed in 2.8:
+* B	jock.ufm:neptwona = "complex z = #pixel", ie redeclare z
+* BB	horrible dots during pass 2 for formulas which redeclare z
+* B	coolness.fct - need direct coloring algorithm
+* W	direct coloring algorithms
+* B	old rgb colorizers don't work
+* B	bool params wouldn't load correctly
+* W	color params in GUI
+* W	color func params
+* B	parse periodicity in formulas and .fct file
+* W	make gradient() function work. 
+* BB	@_gradient differs from f.gradient
+* BB	save gradient twice
+* BB	gradient doesn't use in/out density/transfer/offset
+* BB	opening browser should select current fractfile and formula
+* B	$undef support
+
+Done in 2.7:
+* W	randomize colors tool
+* W	painter tool
+* B	painter shouldn't paint on click&drag
+* B	crash when allocate too large an image
+* B	should disable flip2julia if not is4D()
+* WW	enum, int, bool parameters
+* W	initial gradient stuff (chris le sueur)
+* B	collapsar preview different color from main image
+* BBB	explorer doesn't work properly with int/enum/bool params?
+* W	use fancy new filechooser dialog when available
+* W	implement $IFDEF
+* BB	hyperjulia doesn't work with continuous-potential coloring
+* WW	load/save gimp gradient files:
+* BB	opening color browser sometimes applies 1st item
+* BB	click on colormap calls calc() twice
+* BB	solid colors not used reliably
+* B	hlsrain5.map, ribbon20.map caused GdkColormap.alloc_color() problem
+* WW	cmap editor
+* W	added standard.ucl
+* BB	randomize colors doesn't work
+* W 	gradients: optimize colormap conversion to remove useless segments
+ 
+Done in 2.6:
+* W	prefs dialog option to change number of threads
+* BBB	open parade.fct, go to outer, change density = gtk-ERROR
+* BB	overwriting files doesn't work
+* BB	settings dialog doesn't update - can't repro
+* BB	CCL formula doesn't work
+* BB	resetting doesn't change bailout text in settings dialog
+* W	added CCL formulae
+* W	added initial fractint-builtin
+* BB	trigcentric.fct no longer works
+* B     related to failure in test_fc.testDoubleCompile?
+* B	use libdir for private path to clean up FreeBSD install
+* B	catch distutils exception on Mandrake
+
+done in 2.5:
+* BB	if formula didn't mention z, compilation failed
+* W	hypercomplex mandelbrot set
+
+done in 2.4:
+* BB	more robust error reporting
+* B	error messages not showing up
+* W	cosxx function
+* B	missing power in Newton function
+* BB	fixed formula load
+* B	compiler error on start won't let gf4d open
+* B	can't use auto_deepen prefs widget after auto_deepening (Joe Healy)
+* B 	(also introduced in 2.4) - yelp not run in background
+* B	make transition <-> explorer mode less slow + ugly
+* B	maxiter isn't updated due to auto-deepening
+
+done in 2.2:
+* W	speed up 'instant recolor'
+* W	recoloring
+* B	deepening doesn't happen until aa pass
+* BB	close window with decoration = gtk-critical complaints
+* W	reselect current fname and formula when reopening browser
+* W	if #zwpixel not used, disable 4D in toolbar and explorer
+* B	fix security bug
+* B	compile on FreeBSD
+* W	current angle in status bar
+* W	drop-down resolution chooser
+* B	method=multipass = compile error
+* W	sort formula files by name
+* B	jgr.ufm:Birch - compiler bug!
+* B	open formula file on .cfrm should go to correct page in browser
+* B	multiple copies of same filename
+
+2.1:
+* W	auto-list all formula files on path, parse on first click
+* B	prompt if not saved
+* W	tdis, other fractint colorfuncs
+* B	Undo/redo behaves weirdly sometimes 
+* W	periodicity
+* WW	doc
+* W	command-line arguments
+* W	add some more built-in types
+* W	Browser: remember selected formula on compile
+* W	Browser: if no compile errors, reapply current formula
+* W	Browser: run $EDITOR, refresh
+* W	warn before quitting or save current fractal to autosave by default?
+* B	translationerror on load doesn't pop up
+* B	change width or setting to something which isn't a number/float: 
+	ValueError in set_prefs, set_initparam etc
+* BB	mandrake9.2 RPM - fract4d libs install to python2.2 directory, 
+	python2.3 can't find them.
+	Then RuntimeWarning when loaded - python C API has different version.
+* B	sometimes deepen button doesn't work
+* B	standard.cfrm:smooth = error "all parameters must be floats"
+* BB	setting val for inner=flat changes bailout for formula 
+	(but not visibly in GUI)
+* W	UI for parameters for colorfuncs
+* BB	tower_of_thorns doesn't load 
+* B	rest doesn't change colorfunc paramsx
+* B	saving a fractal with a parameterized cfunc = index out of range
+* B	if load rgb colorizer .fct, report ValueError: Empty color array
+* WW	angle and 4way widgets
+* W	weirdness setting 
+* W	explorer mode
+* B	temp variables in colorfuncs persist across compilations?
+* W	keyboard shortcuts for all widgets
+* B	fn1..4 appear in random order in dialog box
+* B	shrink image while drawing: python: fract4d/c/image.cpp:40: virtual void image::put(int, int, s_rgba): Assertion `off + 2 < bytes()' failed.
+* B	load frm not on search path, undo = IOError "can't find formula file"
+* B	setting inner func has no effect
+* B	zooming broken if y-axis is flipped
+* B	ejection_distance broken (Errors:
+	invalid type complex for / on line 51, expecting float
+	Warnings:
+	Uninitialized variable @bailout referenced on line 51)
+* BB	novamount.fct
+* BB	auto-tolerance for older fractals
+* BB	skull_fairy.fct
+* WW	Inner, Outer pages for settings notebook
+* BB	old images are flipped left-to-right. 
+	- xy-rotating by #pi != vertical flip
+* W 	browser : color funcs vs normal funcs
+* W	init z from #zwpixel
+* BB	lattice.fct - 1.9 is wrong too!
+* B	buffer out of range when image is smaller than window
+* B	3rdim01 - p1=(0.5,0.3). Flipped across x axis. 
+	Gf4d has y increasing down, Fractint has it increasing up
+* B	3daMand01,02 - left half of image (x < 0) is black
+* B	browser pops up whenever click on fractal
+* W	formula browser : load formula file
+* BBB	crash when edit fractal parameters: G_IS_OBJECT(object) failed
+* W	make default fractal more interesting
+* B	Reset changes antialiasing
+* B	mandelbar is a circle (?)
+* B	defaults not applied when choose fractal
+* B	weird line breaks in "formula contains a fractint-style..."
+* B	apply newton, nova -> unsubscriptable object in get_func_value
+* B	"(Untitled Mandelbrot)" name not updated when formula changed
+* W	formula browser: apply to current fractal
+* B	default size for browser is too small
+* B	really wide edit box in formula browser
+* B	apply "cubic burning ship", "lambda" -> list index out of range
+* BB	reset on fragment.fct -> blank screen
+* W	added defaults to gf4d.frm
+* W	save images
+* WW	save parameter files (define a format first)
+* B	set_initparam didn't trigger parameters-changed
+* BB	load dubious.fct, undo/redo = gone, black screen instead
+* B	shouldn't start drawing original before loading params on cmd-line
+* BB	acos,acosh,asin,asinh,atan,atanh,cotan,cotanh give 'str not callable'
+* B	selected func in fractal settings dlg not updated by undo/redo
+* B	change func then undo causes problems
+* W	compiler properties
+* W	store user preferences
+* B	flip2julia puts 2 undo entries, + doesn't produce correct answer
+* WW	undo/redo
+* B	reset messes up undo order?
+* W	combine 2 classes in gtkfractal.py
+* W	auto_deepen, antialiasing widgets
+* W	set size of diff_bailout check from periodicity info
+* W	SMP/nthreads > 1
+* B	exception if you open and choose OK without selecting a file
+* B	test_fract4d.testMiniTextRender unreliable - initparams missing?
+* WW	support different bailout functions
+* WW	bailFuncs
+* W	user parameter functions
+* W	there is no warning before files are overwritten (parameter files +
+	pictures)
+* B	undo/redo cause recompilation
+
+Flickr ID: f29c6d8fa5d950131c4ae13adc55700d
+Shared Secret: 037ec6eec0e91cab
+

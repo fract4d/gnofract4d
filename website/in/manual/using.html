@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Using Gnofract 4D</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /><link rel="start" href="index.html" title="Gnofract 4D" /><link rel="up" href="index.html" title="Gnofract 4D" /><link rel="prev" href="index.html" title="Gnofract 4D" /><link rel="next" href="cmdref.html" title="Command Reference" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Using <span class="application">Gnofract 4D</span></th></tr><tr><td width="20%" align="left"><a accesskey="p" href="index.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="cmdref.html">Next</a></td></tr></table><hr /></div><div class="sect1" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="using"></a>Using <span class="application">Gnofract 4D</span></h2></div></div></div><p>
+
+<span class="application">Gnofract 4D</span>'s screen layout is deliberately simple. Most of the screen is
+taken up by a viewport onto the fractal you're investigating. By
+default, this is the Mandelbrot set. You can directly click on this to
+zoom. The toolbar provides quick access to frequently used functions,
+and more complex properties of the fractal are accessed through dialog
+boxes brought up via the menu bar.
+</p><p>
+Initially, just play around - after all, generating fractals isn't
+meant to be <span class="emphasis"><em>work</em></span>. If you make a change you don't
+like, just hit Undo.
+</p><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="basics"></a>Interacting with the Fractal</h3></div></div></div><p>
+Each fractal is an infinitely complex image, which you can see a slice
+of in the main window. By left-clicking on the window, you can zoom in
+to view finer and finer details. Just click on an area you like to
+view it more closely. If you click and drag with the left button, you can
+draw a white box around an area. When you let go, you zoom in
+so that the area inside that box fills the window. 
+</p><p>
+To zoom back out, click with the right button. You can also press
+<span class="keycap"><strong>Home</strong></span> to return all parameters to the starting point
+for this fractal, <span class="keycap"><strong>Control</strong></span>+<span class="keycap"><strong>Home</strong></span> to
+reset the zoom only, or use <span class="guibutton">Undo</span> to go back one
+step.  There isn't a click and drag feature for the right button.
+</p><p>
+Clicking with the middle button rotates the view by 90 degrees in the
+<span class="emphasis"><em>xz</em></span> and <span class="emphasis"><em>yw</em></span> axes. If you're
+currently looking at the Mandelbrot set, you'll get a Julia set, and
+vice versa. If you're looking at something else, you'll get something
+weird. Note that clicking this twice doesn't take you back to where
+you started: the screen also gets recentered on the point you clicked,
+so clicking twice will normally give you a perturbed, deformed-looking
+Mandelbrot.
+</p><p>
+The cursor keys pan around the image. Hold down
+<span class="keycap"><strong>Control</strong></span>+ <span class="keycap"><strong>&lt;cursor&gt;</strong></span> to move more
+quickly. Hold down <span class="keycap"><strong>Shift</strong></span> +
+<span class="keycap"><strong>&lt;cursor&gt;</strong></span> to move around in the other two
+dimensions, mutating the image. You can recenter the image on a point
+by left-clicking on that point while holding down
+<span class="keycap"><strong>Shift</strong></span>.  </p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Non-4D formulas</h3><p> Some fractal formulas
+(typically those originally written for Fractint or UltraFractal)
+don't support full 4D operation. (<span class="application">Gnofract 4D</span> determines this by whether
+the formula uses the <code class="varname">#zwpixel</code> variable.) In this
+case, the widgets for rotating in other dimensions, warping, and the
+middle mouse button will be disabled.  </p></div></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="files"></a>Working with Files</h3></div></div></div><p>
+
+<span class="application">Gnofract 4D</span> uses several different types of file. These have different
+purposes as listed in the table below.
+
+</p><div class="informaltable"><table border="1"><colgroup><col /><col /><col /></colgroup><thead><tr><th>File Type</th><th>Extensions</th><th>Description</th></tr></thead><tbody><tr><td>
+Parameter File
+</td><td><code class="filename">.fct</code></td><td>
+
+A parameter file is a small text file which contains all the settings
+required to produce a particular image, such as the position of the
+viewer along the X axis and the coloring scheme used. The parameter
+file lists the formula used, but doesn't contain the entire formula,
+so if you invent a new formula and want to share parameter files which
+use it, you need to distribute the formula file as well.
+
+<span class="application">Fractint</span> uses <code class="filename">.par</code> files for
+this purpose and <span class="application">UltraFractal</span> uses <code class="filename">.upr</code>. 
+Unfortunately <span class="application">Gnofract 4D</span> can't read
+those formats (yet).
+</td></tr><tr><td>
+Image File
+</td><td>
+<code class="filename">.jpg</code>,
+<code class="filename">.png</code>
+</td><td>
+<span class="application">Gnofract 4D</span> supports JPEG and PNG file formats for image
+output. <span class="emphasis"><em>No information about the fractal parameters is
+stored in the image file</em></span>, so if you want to carry on
+exploring from a particular point you need to save a parameter file as
+well. <span class="application">Gnofract 4D</span> can't load image files, only save them. Choose
+<span class="guimenu">File</span> &gt; <span xmlns="" class="guimenuitem"><span xmlns="http://www.w3.org/1999/xhtml" class="guimenuitem">Save Image</span></span> to
+save an image.
+I recommend
+using PNG images for high quality output, and JPEGs only when image
+size is important, because JPEGs introduce artifacts which blur the
+fine details of your fractal.
+</td></tr><tr><td>
+Formula File
+</td><td>
+<code class="filename">.frm</code>,
+<code class="filename">.ufm</code>
+</td><td>
+
+A formula file is a collection of formulas, each of which is a
+description of the algorithm used to draw a particular kind of
+fractal, expressed in a simple programming language (see <a class="xref" href="formref.html" title="Formula Language Reference">the section called “Formula Language Reference”</a> for language details). Both <span class="application">Gnofract 4D</span> and <span class="application">Fractint</span>
+use <code class="filename">.frm</code> as the extension, and
+<span class="application">UltraFractal</span> uses <code class="filename">.ufm</code>. In
+general, any formula which works in <span class="application">Fractint</span> should work in <span class="application">Gnofract 4D</span>
+and any which works in <span class="application">Gnofract 4D</span> should work in <span class="application">UltraFractal</span>, but the
+reverse is not true. 
+
+</td></tr><tr><td>
+Coloring Algorithm File
+</td><td>
+<code class="filename">.cfrm</code>,
+<code class="filename">.ucl</code>
+</td><td>
+
+A coloring algorithm file is a collection of formulas used to assign
+colors to a fractal. <span class="application">Gnofract 4D</span> combines a coloring algorithm with a
+formula to produce the final image (this approach is shared with
+<span class="application">UltraFractal</span> - <span class="application">Fractint</span> restricts you to built-in coloring
+algorithms).  Coloring algorithms are written in the same language as
+fractal formulas. <span class="application">UltraFractal</span> uses the extension .ucl for its
+coloring algorithm files. Some of these are compatible with <span class="application">Gnofract 4D</span> but
+so far not very many.
+</td></tr><tr><td>
+Gradient File
+</td><td>
+<code class="filename">.map</code>,
+<code class="filename">.ggr</code>
+<code class="filename">.ugr</code>
+</td><td>
+
+A gradient file is a list of colors which is used to translate the
+purely numerical output of the formula into something pretty to look
+at. Gradients are currently saved only inside the fractal itself, not
+as separate files. The GIMP uses the extension .ggr for its gradient
+files; <span class="application">Fractint</span> uses .map for its own, simpler files. <span class="application">UltraFractal</span>
+uses .ugr - these files contain multiple gradients.
+
+</td></tr></tbody></table></div><p>
+</p></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="tools"></a>Tools</h3></div></div></div><div class="sect3" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="autozoom"></a>Autozoom</h4></div></div></div><p> Autozoom automatically searches for interesting parts of the
+fractal by zooming in repeatedly, each time choosing the quadrant of
+the screen which has the largest number of different colors (with some
+randomization as well). You can start it going, go off for a coffee,
+and see what it's found when you return, or guide it by clicking on
+parts you like as it goes. It'll stop when the image reaches the
+minimum size, which is set by default to stop just before you get to
+the limits of the precision <span class="application">Gnofract 4D</span> offers.
+</p></div><div class="sect3" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="explorer"></a>Explorer</h4></div></div></div><p>
+The <span class="emphasis"><em>Explorer</em></span> helps you find neat-looking fractals
+easily. It divides the screen into a large central section and smaller
+"subfractals" which surround it. The central section is the main image
+- you can click on this to zoom in, change the color, or perform any
+operation you can normally. The other images around the edges are
+"mutant" versions of the main image - they're formed by starting with
+the base parameters and randomly changing them a bit. Whenever you
+change the main image, you get a whole new set of mutants. If you like
+a mutant more than the main picture, click on it to move it to the
+middle - it then becomes the main picture and you get 12 new mutants
+based on the new main image. When you're satisfied with the results,
+click the Explorer button again to return to normal mode.  </p><p> The Shape and Color sliders on the toolbar determines how
+different the mutants are from the standard image. If Shape's set to
+100, they're almost unrecognizable - if it's 0, they're exactly the
+same. Similarly if Color's 100, each mutant is a different color, and
+0 keeps the colors all the same.  </p></div><div class="sect3" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="browser"></a>Formula Browser</h4></div></div></div><p>
+
+The <span class="emphasis"><em>Formula Browser</em></span> allows you to look at all the
+fractal formulas, coloring functions and gradients which are currently loaded
+formula files. When you select a formula (from the Formula list in the
+middle), the source window shows you the contents of that formula. You
+can then use <span class="guibutton">Apply</span> to change the current
+fractal to use that formula. This also resets the formula's parameters
+to their defaults. Alternatively, <span class="guibutton">OK</span> applies
+the formula and closes the window.  </p><p>
+Tips: 
+</p><div class="itemizedlist"><ul type="disc"><li><p> To load a new formula file, choose <span class="guimenu">File</span>
+&gt; <span xmlns="" class="guimenuitem"><span xmlns="http://www.w3.org/1999/xhtml" class="guimenuitem">Open Formula File</span></span>. </p></li><li><p> If you have changed a formula on disk, choose
+<span class="guibutton">Refresh</span> to have <span class="application">Gnofract 4D</span> re-read
+it. </p></li><li><p> If the formula contains errors,
+<span class="guibutton">Apply</span> and <span class="guibutton">OK</span> will be
+disabled. Check the Messages window to see what the errors
+are. </p></li></ul></div><p>
+</p></div><div class="sect3" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="director"></a>Director</h4></div></div></div><p>
+
+The <span class="emphasis"><em>Director</em></span> allows you to create fractal movies.
+You first define keyframes (including base keyframes) which are stops
+in video.  Then, for each of them, you define for how long they last
+(<span class="guilabel">duration</span> - in frames), how long still image of
+keyframe will stay in video (<span class="guilabel">stopped for</span>) and
+interpolation type between several possibilities. When you hit
+<span class="guibutton">Render</span> button, Director will render all frames
+and put them in directory you selected and then it will try to create
+video using <a class="ulink" href="http://www.transcoding.org/" target="_top"><span class="emphasis"><em>transcode</em></span></a>
+tool.  </p><p>
+Tips:
+</p><div class="itemizedlist"><ul type="disc"><li><p>
+In order to end up with video file, not just a bunch of images, you need to have
+<span class="emphasis"><em>transcode</em></span> tool compiled with support for ImageMagick.
+</p></li><li><p>
+You can always save your animation configuration for later use.
+</p></li><li><p>
+You can always stop rendering images. As long as you use same animation setting again
+(for example, saving them before starting rendering), Director will starts from where
+it stopped last time.
+</p></li></ul></div><p>
+</p></div><div class="sect3" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="randomizecolors"></a>Randomize Colors</h4></div></div></div><p>
+Replaces the current gradient with a randomly-generated new one.
+</p></div><div class="sect3" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="painter"></a>Painter</h4></div></div></div><p>
+
+The painter dialog allows you to change the colors of your fractal by
+clicking on the place where you want the color to be different. First,
+select the color you want in the color selector. Then click on the
+image - the part of the gradient most responsible for the color of
+that pixel will be updated with the color you chose. Toggle the
+"painting" button off if you want to interact with the fractal while
+the painter dialog is up.
+
+</p></div></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="toolbar"></a>Toolbar buttons</h3></div></div></div><p>
+On the left of the toolbar you can see a small preview window, which
+updates as you change the angle or position buttons, to give you an
+idea of what the fractal will look like when you release the button.
+</p><p>
+The first eight toolbar buttons correspond to the ten parameters which
+define the view. The circular angle buttons, labelled
+<span class="emphasis"><em>xy</em></span> to <span class="emphasis"><em>zw</em></span>, correspond to
+rotation around the principal planes in four dimensions. They can
+changed by dragging the dot around. When you let go, the fractal will
+update. By the way, the <span class="emphasis"><em>zw</em></span> angle does work, you
+just can't see its effects until you rotate in some other dimensions
+first.  </p><p>
+The square position buttons, <span class="emphasis"><em>pan</em></span> and
+<span class="emphasis"><em>wrp</em></span> (aka Warp), can be used to alter the view. The
+<span class="emphasis"><em>pan</em></span> button allows you to pan around the current
+view. The <span class="emphasis"><em>wrp</em></span> button allows you to move along the
+other two axes, resulting in a mutated version of the current image.
+Click inside one then drag the mouse, watching the preview window
+update, then release the mouse when you like the results.  </p><p>The warp menu allows even formulas which weren't designed to be
+used with <span class="application">Gnofract 4D</span> to be used in 4D mode. If the current fractal has any
+complex parameters, they're listed in this menu. If you select one,
+that parameter's value is set to the value of the Z and W coordinates
+for each pixel. Basically what this means is that the parameter you choose
+becomes the fourth dimension. NB: If you set an explicit value for the parameter as
+well, it'll be ignored.
+</p><p>
+The <span class="emphasis"><em>Deepen</em></span> button allows you to increase the current iteration count
+and tighten the periodicity checking, for those occasions when the
+auto-deepening and/or auto-tolerance doesn't get it right. This will
+generally convert some 'inside' pixels to outside and make the image
+look better, at the cost of longer rendering time. The image size list should be
+self-explanatory. If you want a size not listed here, use the
+Preferences dialog. </p><p> The <span class="emphasis"><em>Undo</em></span> and
+<span class="emphasis"><em>Redo</em></span> buttons should be fairly obvious. You can
+undo as many times as you like. Note that undo also affects parameters
+such as color, not just position on screen.  Lastly, the
+<span class="emphasis"><em>Explore</em></span> button toggles Explorer Mode. See <a class="xref" href="using.html#explorer" title="Explorer">the section called “Explorer”</a>.</p></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="preferences"></a>Changing Fractal Settings</h3></div></div></div><p> In <span class="application">Gnofract 4D</span>, settings are divided into <span class="emphasis"><em>Fractal
+Settings</em></span>, <span class="emphasis"><em>Gradients</em></span> and
+<span class="emphasis"><em>Preferences</em></span>. <span class="emphasis"><em>Fractal
+Settings</em></span> and <span class="emphasis"><em>Gradients</em></span> are saved in the
+fractal's .fct file - they are properties of the fractal itself. By
+contrast, <span class="emphasis"><em> Preferences</em></span> are your preferences for
+<span class="application">Gnofract 4D</span>'s general behavior and are saved in <span class="application">Gnofract 4D</span>'s config file
+(~/.gnofract4d), so they will still be active next time you
+start <span class="application">Gnofract 4D</span> </p><div class="sect3" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="settingsdialog"></a>Fractal Settings</h4></div></div></div><p>
+
+The <span class="emphasis"><em>Formula</em></span> section allows you to choose the
+formula used to calculate the fractal, and to set any parameters the
+formula has. You can modify the formula by choosing <span class="guibutton">Browse
+</span>, which invokes the Formula Browser. <span class="emphasis"><em>Max
+Iterations</em></span> sets the number of iterations a point will go
+through before we give up and assume it's a member of the
+Julibrot. The other parameters on this pane are different depending on
+the fractal type.
+</p><p>
+The <span class="emphasis"><em>Outer</em></span> page controls the function used to
+decide what color to draw those points which aren't part of the
+fractal set proper. Similarly, the <span class="emphasis"><em>Inner</em></span> page
+controls the function used for points which are part of the set.
+</p><p>
+The <span class="emphasis"><em>Location</em></span> entryboxes allow you to
+change the coordinates of the screen center and the image size. 
+
+The <span class="emphasis"><em>Angles</em></span> entryboxes allows you to set the rotation
+angles. Only values between 0 and 2 * pi are different; values outside
+this range "wrap" to points inside that range.
+</p><p>
+
+The <span class="emphasis"><em>Transforms</em></span> page allows you to control a list
+of transformations applied to the image, and any parameters those transforms have.
+</p><p>
+The <span class="emphasis"><em>General</em></span> page gives a few options which don't
+fit anywhere else. <span class="emphasis"><em>Flip Y Axis</em></span> causes Y to
+increase top-to-bottom, rather than
+bottom-to-top. <span class="emphasis"><em>Periodicity Checking</em></span> is a method
+to speed up generation of the fractal. Points inside the fractal
+eventually settle into a loop, where they repeatedly jump around
+between the same points (they become 'periodic'). By noticing this, we
+can skip calculating the point any further. You will generally want to
+disable this if you are coloring the inside of the fractal, since it
+will look rather weird otherwise. <span class="emphasis"><em>Tolerance</em></span> is
+the distance between points which we'll accept as being 'the same' for
+the purposes of periodicity detection. This is automatically adjusted
+if the 'auto tolerance' setting in the preferences is enabled.
+
+</p><p>
+
+The <span class="emphasis"><em>Colors</em></span> tab allows you to edit the list of
+colors used to display your fractal. For more complex gradient
+editing, you can also use the GIMP's gradient editor.
+
+</p></div><div class="sect3" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="prefsdialog"></a>Preferences</h4></div></div></div><div class="sect4" lang="en" xml:lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="prefs_image"></a>Image</h5></div></div></div><p> <span class="emphasis"><em>Width</em></span> and <span class="emphasis"><em>Height</em></span> set
+the size of the image in pixels. If <span class="emphasis"><em>Maintain Aspect
+Ratio</em></span> is checked when you change either the width or
+height, the other automatically changes to keep the image the same
+shape. If <span class="emphasis"><em>Auto Deepen</em></span> is enabled, <span class="application">Gnofract 4D</span> will try
+to automatically guess how many iterations are required to display the
+image correctly. Similarly, <span class="emphasis"><em>Auto Tolerance</em></span>
+adjusts the periodicity tolerance setting to try and calculate the
+image quickly but correctly. <span class="emphasis"><em>Antialiasing</em></span> makes
+the image look smoother but takes extra time to do. The difference
+between 'fast' and 'best' is that fast antialiasing doesn't bother to
+recalculate points which are the same color as their neighbors. This
+speeds things up a lot but can miss a few details sometimes. </p></div><div class="sect4" lang="en" xml:lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="prefs_compiler"></a>Compiler</h5></div></div></div><p>
+<span class="application">Gnofract 4D</span> needs a C compiler to be available at runtime in order to work
+(it dynamically creates the code to compute a particular formula when
+you select it). The <span class="emphasis"><em>Compiler</em></span> page allows you to
+specify a location for the compiler and options to pass to
+it. <span class="emphasis"><em>If <span class="application">Gnofract 4D</span> is working fine, generally I suggest you leave
+those settings alone. However you <span class="emphasis"><em>may</em></span> be able to
+get noticeable performance gains by specifying the specific kind of
+processor you have. For example, fairly modern AMD processors will
+benefit by adding "-mathlon -msse2 -m3dnow" to the compiler flags.
+
+</em></span> The <span class="emphasis"><em>Formula Search
+Path</em></span> lists the directories where <span class="application">Gnofract 4D</span> will look for
+formulas when a parameter file is loaded.
+</p></div><div class="sect4" lang="en" xml:lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="prefs_general"></a>General</h5></div></div></div><p>
+
+<span class="emphasis"><em>Number of threads</em></span> sets how many calculation
+threads to use. Generally, leave this at 1 unless you have a
+hyper-threaded or multi-processor computer, in which case set it to 1
+greater than the number of CPUs you have.
+</p></div><div class="sect4" lang="en" xml:lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="prefs_helpers"></a>Helpers</h5></div></div></div><p>
+
+<span class="application">Gnofract 4D</span> sometimes need to invoke a helper program. It'll try to use
+your preferences from GConf if possible, and these fields are set to
+be those defaults. However if that default is wrong somehow, you can
+explicitly set it here.
+</p></div><div class="sect4" lang="en" xml:lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="prefs_flickr"></a>Flickr</h5></div></div></div><p>
+
+<span class="application">Gnofract 4D</span> can upload your images to the online image-sharing service
+Flickr. This page handles your online identity.
+
+</p></div></div></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="hints"></a>Hints</h3></div></div></div><div class="itemizedlist"><ul type="disc"><li><p>If you zoom into a busy part of the fractal the image can look
+"noisy". You can fix this by making the colors change more slowly - go
+to the "Outer" tab and change the transfer function to 'sqrt' or 'log'
+- or change "Density" to a number between 0 and 1 - a density of 0.1
+makes the colors change 10 times more slowly.
+</p></li><li><p>If you have an Inner coloring method other than zero, you may
+see weird effects unless you disable periodicity checking.
+</p></li></ul></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="index.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="cmdref.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Gnofract 4D </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Command Reference</td></tr></table></div></body></html>

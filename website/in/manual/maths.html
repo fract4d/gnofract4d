@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>About the maths</title><meta name="generator" content="DocBook XSL Stylesheets V1.73.2" /><link rel="start" href="index.html" title="Gnofract 4D" /><link rel="up" href="index.html" title="Gnofract 4D" /><link rel="prev" href="cmdref.html" title="Command Reference" /><link rel="next" href="compiler.html" title="Writing Your Own Functions" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center"> About the maths</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="cmdref.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="compiler.html">Next</a></td></tr></table><hr /></div><div class="sect1" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="maths"></a> About the maths</h2></div></div></div><div class="caution" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning: Dubious mathematics ahead</h3><p>I'm not a mathematician. You may find this discussion
+insultingly oversimplified or just plain wrong.
+</p></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="mset"></a>The Mandelbrot Set</h3></div></div></div><p> The Mandelbrot may be
+defined as the set of all complex numbers which, when you
+repeatedly square them and add them again, never become infinite. (The
+official definition of the set is somewhat different: it is the set of
+points in the complex plane whose corresponding Julia sets are
+connected. These end up being the same thing.)
+
+We can tell that a number will eventually reach infinity if it ever
+gets outside a circle of radius 2 around the origin. Unfortunately, we
+can't tell in general that a point will <span class="emphasis"><em>never</em></span>
+become infinite, so we have to estimate by trying a large number of
+times before giving up.
+</p><p>
+In <span class="application">Gnofract 4D</span>, the formula is:
+</p><pre class="programlisting">
+Mandelbrot1 {
+init:
+    z = 0
+loop:
+    z = z^2 + c
+bailout:
+    |z| &lt; 4.0
+}
+</pre><p>
+(|z| means the square of the magnitude of z). We calculate the loop
+function repeatedly until the bailout condition is false or we've
+performed the maximum number of iterations. At that point, if we
+"bailed out", we know we're outside the set: otherwise we're
+(probably) inside.
+</p><p>
+We do this repeatedly for each position on the screen, setting
+<span class="emphasis"><em>c</em></span> to a different value for each point. This gives
+rise to the familiar Mandelbrot set:
+</p><p>
+</p><div align="center"><img src="figures/mandelbrot_standard.png" align="middle" /></div><p>
+</p><p>
+All the points inside the set are (as is traditional) coloured
+black. The points outside the set are different colours depending on
+how long it takes them to escape from the set. These colours aren't
+very mathematically significant, but they look nice.
+</p><p>
+So what happens if <span class="emphasis"><em>z</em></span> is initially set to a
+complex value other than zero? (Strictly speaking, you shouldn't do
+this. Zero is important because it is the <span class="emphasis"><em>critical
+value</em></span> of z^2+c - other values are not mathematically
+meaningful. However, as with most fractal programs, <span class="application">Gnofract 4D</span> allows you
+to draw anything which looks interesting, regardless of its
+mathematical purity.)
+
+Well, you get a rather odd-looking, deformed M-set.  This initial
+value, which we'll call <span class="emphasis"><em>z0</em></span>, is called the intial
+perturbation, and sets which have a non-zero <span class="emphasis"><em>z0</em></span>
+are known as <span class="emphasis"><em>perturbed</em></span> sets: 
+</p><p>
+</p><div align="center"><img src="figures/mandelbrot_perturbed.png" align="middle" /></div><p>
+
+</p></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="julia"></a>The Julia Set</h3></div></div></div><p>
+The Julia set is actually drawn by the same procedure as the
+Mandelbrot set. But instead of changing the value of
+<span class="emphasis"><em>c</em></span> for each pixel, we keep <span class="emphasis"><em>c</em></span>
+constant and change <span class="emphasis"><em>z0</em></span>. There is a different
+Julia set for each value of <span class="emphasis"><em>c</em></span>; here's the one for
+<span class="emphasis"><em>c</em></span>=0.
+</p><p>
+</p><div align="center"><img src="figures/julia_standard.png" align="middle" /></div><p>
+
+</p><p>
+Boring, isn't it? That's because we're just squaring the value at each
+iteration without adding anything to it. So any value which starts
+with a magnitude less than 1 will shrink forever (and hence is a
+member of the set). All other values will grow forever, and so we've
+just discovered a rather inefficient way of drawing perfect circles.
+If we use a different value of <span class="emphasis"><em>c</em></span> we get something more
+interesting: 
+</p><p>
+</p><div align="center"><img src="figures/julia_perturbed.png" align="middle" /></div><p>
+
+</p></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="julibrot"></a>The Julibrot</h3></div></div></div><p>
+
+Here we come to the heart of the matter. I said above that both the
+Julia and Mandelbrot sets are drawn with the <span class="emphasis"><em>same
+function</em></span>. 
+</p><pre class="programlisting">
+julibrot(z0,c) {
+init:
+    z = z0
+loop:
+    z = z^2 + c
+bailout:
+    |z| &lt; 4.0
+}
+</pre><p>
+
+The Julibrot function has two complex parameters, or four real
+ones. In <span class="application">Gnofract 4D</span> I refer to the real parameters as x, y, z, and w:
+these are c.re , c.im, z0.re and z0.im respectively.
+
+The only difference is which points we choose to draw. To draw the
+Mandelbrot set, we keep <span class="emphasis"><em>z0</em></span> constant and change
+<span class="emphasis"><em>c</em></span> with each pixel. To draw the Julia set, we keep
+<span class="emphasis"><em>c</em></span> constant and change <span class="emphasis"><em>z0</em></span>. If
+you squint with your brain a bit, you can imagine both sets as
+orthogonal "slices" through the same four-dimensional object. In
+<span class="application">Gnofract 4D</span> terms, the Mandelbrot set is the <span class="emphasis"><em>xy</em></span>
+plane, and the Julia set is the <span class="emphasis"><em>zw</em></span> plane. We can
+also look at other planes: here's an image of the
+<span class="emphasis"><em>xw</em></span> plane:
+</p><p>
+</p><div align="center"><img src="figures/xw_plane.png" align="middle" /></div><p>
+
+</p></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="viewing"></a>Viewing in Four Dimensions</h3></div></div></div><p>
+However, we can draw any 2D slice we like, not just those which are
+parallel to the Julibrot axes. To do this we'll need to describe our
+scene by four things. First, the (<span class="emphasis"><em>x,y,z,w</em></span>)
+coordinates of the center of the screen. Second, a vector for the
+x-axis of the screen. This tells us how to change the parameters to
+the Julibrot function as we proceed across the screen. Third, a vector
+for the y-axis. Fourth and finally, the size of the image. For the
+Mandelbrot set, our "default" view, the screen is centered at
+[0,0,0,0], the x-vector is [1,0,0,0] and the y-vector is
+[0,1,0,0]. The initial size is 4, because the whole Mandelbrot set
+fits inside the 2x2 square. We can zoom into the set by changing
+<span class="emphasis"><em>x</em></span> and <span class="emphasis"><em>y</em></span> and the zoom factor.
+</p><p>
+If we want to draw other slices, we need to rotate our view through
+four dimensions. In 3D, we can rotate in 3 directions: around the
+<span class="emphasis"><em>x</em></span>, <span class="emphasis"><em>y</em></span>, and
+<span class="emphasis"><em>z</em></span> axes. In 4D, we rotate around a <span class="emphasis"><em>
+plane </em></span> rather than a line, and we can rotate in 6
+directions: around the <span class="emphasis"><em>xy, xz, xw, yz, yw</em></span> and
+<span class="emphasis"><em>zw</em></span> planes. For example, if we rotate through 90
+degrees in the xz and yw directions, our screen vectors become
+[0,0,1,0] and [0,0,0,1]: in other words, the Julia set. If we rotate
+only part of the way, we get a "hybrid" between the two sets, which
+looks decidedly odd:
+</p><p>
+</p><div align="center"><img src="figures/hybrid.png" align="middle" /></div><p>
+</p><p>
+In fact, we can rotate to any angle in each of the planes,
+creating a whole world of bizarre pictures.
+</p></div><div class="sect2" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="hypercomplex"></a>Hypercomplex Fractals and Quaternions</h3></div></div></div><p> There are other kinds of fractal which are commonly described
+as "four-dimensional" - hypercomplex and quaternion-based
+fractals. Hypercomplex numbers have four components (one real and
+three imaginary) where complex numbers have two. Since the
+hypercomplex mandelbrot has two hypercomplex parameters, in <span class="application">Gnofract 4D</span>
+terms it's actually an eight-dimensional object. <span class="application">Gnofract 4D</span> allows you to
+set four of these as part of the view - the other four have to be set
+via parameters. <span class="application">Gnofract 4D</span> doesn't support quaternions at present.</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="cmdref.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="compiler.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Command Reference </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Writing Your Own Functions</td></tr></table></div></body></html>
