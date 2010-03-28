@@ -8,6 +8,7 @@ changes in 3.13:
 * W	min pygtk version -> 2.12
 * B	fixed deprecationwarnings from pygtk about Tooltips class
 * W	moved repository to git
+* W	this is the 3.x branch
 
 bugs (the more B's, the worse the bug):
 * BBB	too slow!
