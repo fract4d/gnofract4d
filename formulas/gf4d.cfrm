@@ -1,0 +1,467 @@
+comment {
+
+Standard Gnofract4D coloring algorithms
+
+}
+
+default (OUTSIDE){
+; the default is just to use the iteration count
+final:
+#index = #numiter / 256.0
+}
+
+basins {
+final:
+#index = (#fate * 1.0/@nbasins)
+if @mode == "basin + iterations"
+	#index = #index + (#numiter / 256.0) % @nbasins
+elseif @mode == "basin + potential"
+        float ed = @bailout/(|z| + 1.0e-9) 
+	#index = #index + ((#numiter + ed)/ 256.0) % @nbasins
+endif	
+default:
+int param nbasins
+	default = 3
+endparam
+int param mode
+	enum = "basin" "basin + iterations" "basin + potential"
+	default = "basin + iterations"
+endparam
+float param bailout
+	default = 4.0
+endparam
+}
+
+direct_basins_2 {
+final:
+float ratio = log(#numiter+1)/log(#maxiter+1)
+color c = gradient(#fate/float(@nbasins))
+#color = blend(c,@background,ratio)
+
+default:
+color param background
+	default = rgb(1.0,1.0,1.0)
+endparam
+int param nbasins
+    default = 3
+endparam
+}
+
+
+direct_basins {
+final:
+float ratio = log(#numiter+1)/log(#maxiter+1)
+if #fate == 0
+	#color = blend(@basin1,@background,ratio)
+elseif #fate == 1
+	#color = blend(@basin2,@background,ratio)
+elseif #fate == 2
+	#color = blend(@basin3,@background,ratio)
+else
+	#color = blend(@basin4,@background,ratio)
+endif
+
+default:
+color param basin1
+	default = rgb(0.464, 0.597, 0.664)
+endparam
+color param basin2
+	default = rgb(0.199, 0.332, 0.398)
+endparam
+color param basin3
+	default = rgb(0.867, 0.851, 0.789)
+endparam
+color param basin4
+	default = rgb(0.551, 0.531, 0.438)
+endparam
+color param background
+	default = rgb(1.0,1.0,1.0)
+endparam
+}
+
+zero (BOTH) {
+final:
+#solid = true
+}
+
+continuous_potential {
+final:
+float ed = @bailout/(|z| + 1.0e-9) 
+#index = (#numiter + ed) / 256.0
+default:
+float param bailout
+	default = 4.0
+endparam
+}
+
+external_angle {
+final:
+float angle = atan2(z)
+if angle < 0.0 
+	angle = 2.0 * #pi + angle
+endif
+#index = angle / (2.0 * #pi)
+}
+
+biomorph {
+final:
+if |real(z)| < @zlimit || |imag(z)| < @zlimit
+	#solid = true
+else
+	float ed = @bailout/(|z| + 1.0e-9) 
+	#index = (#numiter + ed) / 256.0
+endif
+default:
+float param zlimit
+	default = 2.0
+endparam	
+float param bailout
+	default = 4.0
+endparam
+}
+
+decomposition {
+final:
+float quadrant = 0.0;
+if(real(z) < 0.0) 
+	quadrant = quadrant + 0.25
+endif
+if(imag(z) < 0.0) 
+	quadrant = quadrant + 0.5
+endif
+#index = quadrant
+}
+
+ejection_distance {
+final:
+float ed = @bailout/(|z| + 1.0e-9) 
+#index = ed
+default:
+float param bailout
+	default = 4.0
+endparam
+}
+
+rgb {
+; for backwards compatibility with 1.x versions of Gnofract 4D.
+; also rather cool looking
+init:
+	color ccol = @col * 10.0
+	ccol = rgb(red(@col) + 1.0, green(@col) + 1.0, blue(@col) + 1.0)
+final:
+	float dist = #numiter / 256.0
+	ccol = ccol * dist
+	#color = rgb(red(ccol) % 256, green(ccol) % 256, blue(ccol) % 256)
+default:
+color param col
+	default = rgb(1.0,0.0,0.0) 
+endparam
+}
+
+rgb_parts {
+; direct coloring algorithm which sets hsl separately
+;
+final:
+	; hue = angle
+	float angle = atan2(z)
+	if angle < 0.0 
+		angle = 2.0 * #pi + angle
+	endif
+	; convert to 0..6	
+	float h = angle * 6.0 / (2.0 * #pi)
+	
+	; saturation =ejection distance
+	float s = @bailout/(|z| + 1.0e-9) 
+
+	; luminosity = #numiter
+	float l = ((#numiter / #maxiter) - 1.0)*2.0 
+
+	#color = hsl(h,s,l)
+default:
+float param bailout
+	default = 4.0
+endparam
+}
+
+Angles {
+; delta total, total, min, delta min, max, delta max, avg, delta avg
+; iter @ min, iter @ max, iter @ delta min, iter @ delta max
+init:
+float angle = 0.0
+complex lastz = (0,0)
+float temp_angle
+int itermin = 0
+int itermax = 0
+if @angle_type == "delta min" || @angle_type == "min" || @angle_type == "iter @ min"
+    angle = #pi
+endif
+loop:
+if @angle_type == "delta total"
+    angle = angle + abs(atan2(z-lastz))
+elseif @angle_type == "delta max" 
+    temp_angle = abs(atan2(z-lastz))
+    if temp_angle > angle
+	angle = temp_angle
+    endif
+elseif @angle_type == "delta min"
+    temp_angle = abs(atan2(z-lastz))
+    if temp_angle < angle
+	angle = temp_angle
+    endif
+elseif @angle_type == "min" || @angle_type == "iter @ min"
+    temp_angle = abs(atan2(z))
+    if temp_angle < angle
+	angle = temp_angle
+	itermin = #numiter
+    endif
+elseif @angle_type == "max" || @angle_type == "iter @ max"
+    temp_angle = abs(atan2(z))
+    if temp_angle > angle
+	angle = temp_angle
+	itermax = #numiter
+    endif
+elseif @angle_type == "total"
+    angle = angle + abs(atan2(z))
+endif
+lastz = z
+final: 
+if @angle_type == "iter @ min" 
+    #index = itermin/256.0
+elseif @angle_type == "iter @ max"
+    #index = itermax/256.0
+else 
+    #index = angle/#pi
+endif
+default:
+param angle_type
+	default = 0
+	enum = "delta total" "delta max" "delta min" "min" "max" "total" "iter @ min" "iter @ max"
+endparam
+}  
+
+Hot And Cold {
+; 2 colors - on each orbit, the closer we are to 0, the more hot,
+; the closer we are to bailout, the more cold. Compute an average over
+; all iterations 
+
+init:
+float dist=0.0
+int closecalls=0
+int farcalls=0
+loop:
+dist = |z|
+if dist < @closedist
+   closecalls = closecalls + 1
+elseif @bailout - dist < @fardist
+   farcalls = farcalls + 1
+endif
+final:
+#color = @hotcolor * (closecalls/#numiter) + @coldcolor * (farcalls/#numiter)
+default:
+float param fardist
+	default = 1.0
+endparam
+float param closedist
+	default = 0.2
+endparam
+float param bailout
+	default = 4.0
+endparam
+color param hotcolor
+	default = rgb(0.97, 0.43, 0.01)
+endparam
+color param coldcolor
+	default = rgb(0.49, 0.79, 0.96)
+endparam
+}
+
+Hot And Cold Gradient {
+; On each orbit, the closer we are to 0, the lower in the gradient we are.
+; the closer we are to bailout, the higher. 
+
+init:
+float dist=0.0
+color thecolor = @startcolor
+loop:
+dist = |z|/@bailout
+color thiscolor = gradient(dist)
+thecolor = compose(thecolor, blend(thiscolor, @mergemode(thecolor, thiscolor), 1.0), @mergeopacity)   
+
+final:
+#color = thecolor
+default:
+float param bailout
+	default = 4.0
+endparam
+color param startcolor
+	default = rgb(1.0, 1.0, 1.0)
+endparam
+
+color func mergemode
+  caption = "Color Merge"
+  default = mergenormal()
+  hint = "This chooses the merge mode used to blend colors at each iteration."
+endfunc
+
+param mergeopacity
+  caption = "Trap Merge Opacity"
+  default = 0.2
+  hint = "Sets the opacity of each trap shape. Even if you set this value to 1 \
+        (forcing all traps to be fully opaque) you can still control opacity \
+        using the alpha channel in the gradient."
+endparam
+
+}
+
+Direct Signs {
+; based on when sign changes occur for x or y parts of z
+init:
+color thecolor = @startcolor
+color thiscolor
+complex lastz = (-1,-1)
+
+loop:
+bool update_color = false
+float offset = 0.0
+float dist = 0.0
+if @xpos && real(z) > 0 && real(lastz) < 0
+   dist = | real(z) - real(lastz)|
+   update_color = true
+endif
+if @xneg && real(z) < 0 && real(lastz) > 0
+   dist = | real(z) - real(lastz)|
+   offset = 0.25
+   update_color = true
+endif
+if @ypos && imag(z) > 0 && imag(lastz) < 0
+   dist = | imag(z) - imag(lastz)|
+   thiscolor = gradient(#numiter/#maxiter)
+   offset = 0.5
+   update_color = true
+endif
+if @yneg && imag(z) < 0 && imag(lastz) > 0
+   dist = | imag(z) - imag(lastz)|
+   thiscolor = gradient(#numiter/#maxiter)
+   offset = 0.75
+   update_color = true
+endif
+
+if ! @offset 
+	offset = 0.0
+endif
+if update_color
+   float pos
+   if @colortype == "iter"
+	pos = (#numiter/#maxiter + offset) % 1.0
+   elseif @colortype == "distance"
+        pos = (dist/@bailout * 2.0 + offset) % 1.0
+   endif
+   thiscolor = gradient(pos)
+   thecolor = compose(thecolor, blend(thiscolor, @mergemode(thecolor, thiscolor), 1.0), @mergeopacity)   
+endif
+lastz = z
+
+final: 
+#color = thecolor
+default:
+color param startcolor
+	default = rgb(1.0, 1.0, 1.0)
+endparam
+
+param colortype
+	enum = "iter" "distance"
+endparam
+
+float param bailout
+	default = 4.0
+endparam
+
+bool param xpos
+	default = true
+	hint = "Capture color when x becomes positive"
+endparam
+
+bool param xneg
+	default = true
+	hint = "Capture color when x becomes negative"
+endparam
+
+bool param ypos
+	default = true
+	hint = "Capture color when y becomes positive"
+endparam
+
+bool param yneg
+	default = true
+	hint = "Capture color when y becomes negative"
+endparam
+
+bool param offset
+	default = false
+endparam
+
+color func mergemode
+  caption = "Color Merge"
+  default = mergenormal()
+  hint = "This chooses the merge mode used to blend colors at each iteration."
+endfunc
+
+param mergeopacity
+  caption = "Trap Merge Opacity"
+  default = 0.2
+  hint = "Sets the opacity of each trap shape. Even if you set this value to 1 \
+        (forcing all traps to be fully opaque) you can still control opacity \
+        using the alpha channel in the gradient."
+endparam
+}
+
+Signs {
+; based on when sign changes occur for x or y parts of z
+init:
+complex lastz = (-1,-1)
+
+int min_iter_x = 0
+int max_iter_x = 0
+int min_iter_y = 0
+int max_iter_y = 0
+
+loop:
+if real(z) * real(lastz) < 0 
+   max_iter_x = #numiter
+endif
+if imag(z) * imag(lastz) < 0 
+   max_iter_y = #numiter
+endif
+lastz = z
+final: 
+if @sign_type == "x iter" 
+    #index = max_iter_x/256.0
+elseif @sign_type == "y iter"
+    #index = max_iter_y/256.0
+endif 
+default:
+param sign_type
+	default = 0
+	enum = "x iter" "y iter"
+endparam
+}
+
+continuous_decomposition {
+final:
+float quadrant = 0.0;
+if(real(z) < 0.0) 
+	quadrant = quadrant + 0.25
+endif
+if(imag(z) < 0.0) 
+	quadrant = quadrant + 0.5
+endif
+float ed = @bailout/(|z| + 1.0e-9) 
+#index = (#numiter + ed) / 256.0 + @quadfactor * quadrant
+default:
+float param bailout
+	default = 4.0
+endparam
+float param @quadfactor
+      default = 1.0
+endparam
+}

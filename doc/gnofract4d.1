@@ -1,0 +1,157 @@
+.\"
+.\" Template for man pages by Jan Schaumann <jschauma@netmeister.org>
+.\"
+.TH gnofract4d 1 "19 July 2007" Linux "gnofract4d Manpage"
+.SH NAME
+gnofract4d \- a GUI fractal generator/explorer
+
+.SH SYNOPSIS
+.B gnofract4d
+
+.SH DESCRIPTION
+\fBgnofract4d\fR is a free, open source program which allows anyone to create 
+beautiful images called fractals. The images are automatically created by the 
+computer based on mathematical principles. These include the Mandelbrot and 
+Julia sets and many more. You don't need to do any math: you can explore a 
+universe of images just using a mouse.
+
+
+.SH USAGE
+.B gnofract4d [OPTIONS]
+
+.SH OPTIONS
+.TP
+To generate an image non-interactively, use:
+
+.TP
+.B
+gnofract4d -s myimage.png -q myfractal.fct 
+
+.TP
+General Flags:
+
+.TP
+.B
+\-h \-\-help
+Show this message
+.TP
+.B
+\-v \-\-version
+Show version info
+.TP
+.B
+\-q \-\-quit
+Exit as soon as the image is finished
+.TP
+.B
+\-X \-\-explorer
+Start in explorer mode
+
+.TP
+Fractal Settings:
+.TP
+.B
+\-p \-\-params FILE
+Use FILE as a parameter file
+.TP
+.B
+\-s \-\-save IMAGEFILE
+Save image to IMAGEFILE after calculation
+.TP
+.B
+\-i \-\-width N
+Make image N pixels wide
+.TP
+.B
+\-j \-\-height N
+Make image N pixels tall
+.TP
+.B
+\-P \-\-path P
+Add P to the formula search path
+.TP
+.B
+\-f \-\-formula F#func
+Use formula 'func' from file F
+.TP
+.B
+   \-\-inner F#func
+Use coloring algorithm 'func' from file F
+.TP
+.B
+   \-\-outer F#func
+Use coloring algorithm 'func' from file F
+.TP
+.B
+   \-\-transforms F#func1,F2#func2
+Apply transforms 'func1' and 'func2'
+.TP
+.B
+\-m \-\-maxiter N
+Use N as maximum number of iterations
+.TP
+.B
+   \-\-map FILE
+Load map file FILE
+
+.TP
+Positional Parameters:
+.TP
+.B
+   \-\-xcenter N
+.TP
+.B
+   \-\-ycenter N
+.TP
+.B
+   \-\-zcenter N
+.TP
+.B
+   \-\-wcenter N
+.TP
+.B
+   \-\-xyangle N
+.TP
+.B
+   \-\-xzangle N
+.TP
+.B
+   \-\-xwangle N
+.TP
+.B
+   \-\-yzangle N
+.TP
+.B
+   \-\-ywangle N
+.TP
+.B
+   \-\-zwangle N
+.TP
+.B
+   \-\-magnitude N
+
+Obscure settings:
+.TP
+.B
+   \-\-trace              Produce voluminous tracing output
+.TP
+.B
+   \-\-nogui              Run with no UI (doesn't require X or GTK)
+
+
+.SH VERSION
+3.4
+
+.SH BUGS
+None known... Report discovered bugs here:
+
+\fIhttp://sourceforge.net/tracker/?group_id=785&atid=100785\fR
+
+.SH AUTHOR
+Tim Whidbey
+
+This man-page was written by Aleksander Adamowski 
+<aleksander.adamowski@gmail.com> as part of "The Missing
+Man Pages Project".  Please see 
+\fIhttp://www.netmeister.org/misc/m2p2/index.html\fR
+for details.

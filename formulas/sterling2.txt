@@ -1,0 +1,1733 @@
+/////////////////////////////////////
+// ftloo01.c
+//
+// stephen c. ferguson
+// created 10/18/98
+// modified August 2008 by Tad Boniecki
+//
+/////////////////////////////////////
+ 
+// 3358 - 3418
+void Formula_00(CDATA *v)
+{
+      // Nova variation method
+      z = v->z;
+      temp = 1;
+      while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+      {
+            v->pXTemp[v->Iteration] = __real__ v->z;
+            v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            sine_cosine();
+ 
+            z2 = z*z;
+            z3 = z2*z;
+            v->z = z - (zsin*clog_z() - ctan_z())/(z2*zcos - 2*z)* v->c;  
+ 
+            zd = z1-v->z;
+            temp = sum_sqrs_zd();
+      }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// 3243 - 3258
+void Formula_01(CDATA *v)
+{
+      // Nova variation method
+      z = v->z;
+      //v->z += 1;
+ 
+      temp = 1;
+      while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+      {
+            v->pXTemp[v->Iteration] = __real__ v->z;
+            v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            sine_cosine();
+ 
+            z2 = z*z;
+            z3 = z2*z;
+            v->z = z-(z3*zsin - 1)/(7*z2*zcos - 1)+ v->c;    //
+ 
+            zd = z1-v->z;
+            temp = sum_sqrs_zd();
+      }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// very similar to #6
+void Formula_02(CDATA *v)
+{
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+            v->z = z-(zsin/(1e-15+zcos))*(z8-z6-zsin-z-1)/(8*z7-6*z5-zcos -c);    // almost the old 49 for 3165 "no 1-3"
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 3189 - 3197, and 3199 - 3205 a very complicated one
+void Formula_03(CDATA *v)
+{
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z3*z;
+            z5 = z4*z;
+            sine_cosine();
+            //zcos = (1e-15+zcos)/0.1;
+            //zsin = (1e-15+zsin)/0.1;
+ 
+            v->z = z - ((z*zsin) - z3 + v->c/(z5*zcos))/(c/z5 + zsin*zcos - 100*z5);
+            v->z = v->z - z*((z4 - z*zsin - v->c)/(4*z3 - 3*z2 - 2*z -  z*zcos - v->c));
+            v->z = c/(v->z);
+            v->z = (v->z)*(v->z) - v->z;
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+}
+// OK 3045 - 3077
+void Formula_04(CDATA *v)
+{
+      // Newton method
+      if (v->jul == 0)
+       v->z = 1;
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+            z = z1 = v->z;
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            sine_cosine();
+    //v->z = z-(z4-z)/(4*z3)+v->c;   
+ 
+            // a good one
+            v->z = z - ((z5 - z4 + z3*zsin + v->c)/(z4 + z3 - z2*zcos + v->c));
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 3003 - 3044
+void Formula_05(CDATA *v)
+{
+      // Twister weed method
+      z1 = z;
+      z = v->z;
+      c2 = cexp_z();
+      //z = z1;
+     
+      //c2 = 1;
+      temp = 1;
+ 
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+            z1 = z;
+     
+            v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+     
+            z2 = z*z;
+            sine_cosine();
+            z = z -(c2*z2*z2-1)/(z*z2*zcos - z*c)+ v->c;
+ 
+            zd = z1-z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ z;
+      v->pYTemp[v->Iteration] = __imag__ z;
+ 
+      v->z = z;
+}
+// another variant of old #49, ?? 3167 - 3174 Others too - it's good
+void Formula_06(CDATA *v)
+{
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+            //v->z = z-(zsin/(1e-15+zcos))*(z8-z6-zsin-z-1)/(8*z7-6*z5-zcos -c);    // almost the old 49 for 3165 "no 1-3"
+            //v->z = z-(zsin/(1e-15+zcos))*(z8-zsin-z*c)/(8*z7-zcos-c);           // current #8 - same red/blue flame as the above when enlarged
+ 
+            v->z = z-(zsin/(1e-15+zcos))*(z8-z6-zsin-z-1)/(8*z7-6*z5-zcos);     // new 3167 - 3174 ?
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2946 - 2987
+void Formula_07(CDATA *v)  // Phoenix
+{
+      // Nova variation method
+      z = v->z;
+      v->z = csin_z();
+ 
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            sine_cosine();
+    v->z = z -(c*cexp_z()*z4-z)*(z3 - zsin*clog_z())/(z2*zcos + zsin*zsin*zsin)+v->c; 
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+}
+// variant of old #49, 3152 to 3163
+void Formula_08(CDATA *v)
+{
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+            v->z = z-(zsin/(1e-15+zcos))*(z8-zsin-z*c)/(8*z7-zcos-c);   
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2848 - 2872
+void Formula_09(CDATA *v)
+{
+      // Nova variation method
+      z = v->z;
+      v->z = csin_z();
+ 
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            sine_cosine();
+            //v->z = z-(z4-z)/(4*z3-z)+ v->c;   
+    v->z = z-(z3 - zsin*clog_z())/(z2*zcos + zsin*zsin*zsin)+v->c; 
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+}
+// OK 2719 - 2809
+void Formula_10(CDATA *v)
+{
+      // Nova variation method
+      z = v->z;
+      //v->z += 1;
+ 
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            sine_cosine();
+ 
+            z2 = z*z;
+            z3 = z2*z;
+    v->z = z-(z3*zsin-1)/(3*z2*zcos - zsin*zsin)+v->c;   
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+}
+//OK 2698 - 2718
+void Formula_11(CDATA *v)
+{
+      z = v->z;
+      c = v->c;
+ 
+  z = -z/3;
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+    v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z2 = z;
+    z1 = z*z;
+    sine_cosine();
+   
+    z = z - (c*cexp_z()*zsin * z1*clog_z())/(z*z + c * zcos);
+ 
+    zd = z-z2;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// OK 2652 - 2687
+void Formula_18(CDATA *v)  // Newton M-Set, Explanation by Paul Carlson
+{
+      z = v->z;
+      c = v->c;
+ 
+  z = -z/3;
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+    v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z2 = z;
+    z1 = z*z;
+    sine_cosine();
+    //z=z-(z*z1+z1*c-z+c-zsin)/(3*z1+2*c*z-1-zcos);
+   
+    z= z - (c*cexp_z()*zsin - z1*clog_z())/(z*z + c*z - zcos);
+ 
+    zd = z-z2;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2620 - 2651
+void Formula_19(CDATA *v)
+{
+      z = v->z;
+      c = v->c;
+ 
+  z = -z/3;
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z2 = z;
+           
+            //ztan = ctan_z()/v->bailout;
+            sine_cosine();
+            zcos = (1e-15+zcos)/v->dStrands;
+            zsin = (1e-15+zsin)/v->dStrands;
+   
+            z=z-(z*z*z+ c*cexp_z() - z - z*clog_z())/(3*z*z+2*c*z-zcos);
+   
+            zd = z-z2;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2599 - 2619
+void Formula_20(CDATA *v)
+{
+  /*
+  Solve the roots of the function.
+  Initialize z to one of the roots.
+  Apply Newton's method for solving roots.
+  f(z) = z - z/z'
+ 
+  z   = z*z*z*z - z*z*z*c - z - c;  // the function
+  z'  = 4*z*z*z - 3*z*z*c - 1;      // 1st derivative
+  z'' = 12*z*z - 6*z*c;             // 2nd derivative
+ 
+  12*z*z = 6*z*c;
+  z   = (6*z*c)/(12*z);             // solve for z
+  z   = c/2;
+ 
+  */
+ 
+      z = v->z;
+      c = v->c;
+ 
+  z = z/2;
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z2 = z;
+    z1 = z*z;
+ 
+            sine_cosine();
+            //zcos = (1e-15+zcos)/v->dStrands;
+            //zsin = (1e-15+zsin)/v->dStrands;
+   
+            z=z-(z1*c*cexp_z() - z1*z*c - z - z*clog_z())/(4*z*z1 - 3*z1*c - zcos);
+ 
+    zd = z-z2;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// OK 2584 - 2598
+void Formula_21(CDATA *v)  //
+{
+  /*
+  Solve the roots of the function.
+  Initialize z to one of the roots.
+  Apply Newton's method for solving roots.
+  f(z) = z - z/z'
+ 
+  z   = z*z*z*c + z*z + z + c;  // the function
+  z'  = 3*z*z*c + 2*z + 1;      // 1st derivative
+  z'' = 6*z*c   + 2;            // 2nd derivative
+ 
+  6*z*c = -2;
+  z     = -2/(6*c);             // solve for z
+  z     = -1/(3*c)
+ 
+  */
+ 
+      z = v->z;
+      c = v->c;
+ 
+  z = -1/(3*z);
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z2 = z;
+    z1 = z*z;
+            sine_cosine();
+    z =z-(z1*c + c*cexp_z() + ctan_z() - zcos)/(z1*z1*c + z*clog_z() + c - zsin);
+    zd = z-z2;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2550 to 2583
+void Formula_22(CDATA *v)  //
+{
+      z = v->z;
+      c = v->c;
+ 
+  if (v->jul == 0)
+    z = -.5;
+ 
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+      v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z2 = z;
+    z1 = z*z;
+    z  = z2;
+ 
+    sine_cosine();
+   
+    z  = z-(z1*z*c * c * cexp_z()*zsin)/(zsin + 2*zcos);
+ 
+    zd = z-z2;
+    temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2511 - 2542
+void Formula_23(CDATA *v)  //
+{
+      z = v->z;
+      c = v->c;
+ 
+  z = -.5/z;
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z2 = z;
+    z1 = z*z;
+ 
+            //ztan = ctan_z();
+            sine_cosine();
+            //zcos = (1e-15+zcos)/v->dStrands;
+            //zsin = (1e-15+zsin)/v->dStrands;
+    
+    z  = z-(z1*z1*c + z1*z + z + c - zsin)/(4*z1*z*c + 3*cexp_z() - zcos);
+    zd = z-z2;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2479 - 2510
+void Formula_24(CDATA *v)  // testing
+{
+  /*
+  Solve the roots of the function.
+  Initialize z to one of the roots.
+  Apply Newton's method for solving roots.
+  f(z) = z - z/z'
+ 
+  z   = z*z*z + z*z*c + c;  // the function
+  z'  = 3*z*z + 2*z*c    ;  // 1st derivative
+  z'' = 6*z + 2*c        ;  // 2nd derivative
+ 
+      6*z = -2*c;
+  z     = -2*c/6;
+ 
+  */
+ 
+      z = v->z;
+      c = v->c;
+ 
+  z = -z/3;
+ 
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z2 = z;
+    z1 = z*z;
+ 
+            //ztan = ctan_z();
+            sine_cosine();
+            //zcos = (1e-15+zcos)/v->dStrands;
+            //zsin = (1e-15+zsin)/v->dStrands;
+   
+    z  = z - (z1*cexp_z() + z1*c + c - zsin)/(3*z1 + 2*z*c - zcos);
+ 
+    zd = z-z2;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2449 - 2478
+void Formula_25(CDATA *v)  // testing
+{
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+            v->z = z + (z5*zsin - c*z4*zcos)/((z5*clog_z() + ctan_z()) * ctan_z());
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2434 - 2448
+void Formula_26(CDATA *v)  // testing
+{
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+            v->z = z + cexp_z() * (z5*zsin - c*z4*zcos)/((z5*clog_z() + ctan_z()) * ctan_z());
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK but not too hot 2421 - 2433
+void Formula_27(CDATA *v)  // testing
+{
+  /*
+  Solve the roots of the function.
+  Initialize z to one of the roots.
+  Apply Newton's method for solving roots.
+  f(z) = z - z/z'
+ 
+  z   = z*z*z*z*z*z*z + z*z*z*z*z*z*c + c;  // the function
+  z'  = 7*z*z*z*z*z*z + 6*z*z*z*z*z*c    ;  // 1st derivative
+  z'' = 42*z*z*z*z*z  + 30*z*z*z*z*c     ;  // 2nd derivative
+ 
+      42*z*z*z*z*z = -30*z*z*z*z*c;
+  z            = -(30*z*z*z*z*c)/(42*z*z*z*z);
+  z            = -(15*c)/21;
+  z            = -(5*c)/7;
+ 
+  */
+ 
+  //if (jul == 0)
+ 
+      z = v->z;
+      c = v->c;
+ 
+  z = -(5*z)/7;
+ 
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z1 = z;
+    z2 = z1*z1;
+    z5 = z2*z2*z1;
+ 
+            sine_cosine();
+            //zcos = (1e-15+zcos)/v->dStrands;
+            //zsin = (1e-15+zsin)/v->dStrands;
+   
+            z  = (7*z5*z1 + 6*z5*c - zcos);   
+            z  = z1-(z5*z2 + z5*z1*c + c - zsin)/z;
+            v->z = z + ctan_z() * (z5*zsin - z4*zcos)/(z5 + ctan_z()) * zsin * zcos * ctan_z();
+ 
+    zd = z-z1;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2405 to 2420
+void Formula_28(CDATA *v)  // 9th order Newton Mset
+{
+  /*
+  Solve the roots of the function.
+  Initialize z to one of the roots.
+  Apply Newton's method for solving roots.
+  f(z) = z - z/z'
+ 
+  z   = z*z*z*z*z*z*z*z*z + z*z*z*z*z*z*z*z*c + c;  // the function
+  z'  = 9*z*z*z*z*z*z*z*z + 8*z*z*z*z*z*z*z*c    ;  // 1st derivative
+  z'' = 72*z*z*z*z*z*z*z  + 56*z*z*z*z*z*z*c     ;  // 2nd derivative
+ 
+      72*z*z*z*z*z*z*z = -56*z*z*z*z*z*z*c;
+  z                = -(56*z*z*z*z*z*z*c)/(72*z*z*z*z*z*z);
+  z                = -(7*c)/9;
+ 
+  */
+ 
+  //if (jul == 0)
+ 
+      z = v->z;
+      c = v->c;
+ 
+  z = -(7*z)/9;
+ 
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z1 = z;
+    z2 = z*z;
+    z4 = z2*z2;
+    z5 = z2*z2*z;
+    z8 = z4*z4;
+ 
+            sine_cosine();
+            //zcos = (1e-15+zcos)/v->dStrands;
+            //zsin = (1e-15+zsin)/v->dStrands;
+   
+    //z  = z-(z5*z4 + z8*c + c - zsin)/(9*z8 + 8*z5*z2*c - zcos);
+    z = z - zsin/(clog_z()*z8 + (cexp_z() + c*z - zcos));
+ 
+    zd = z-z1;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2386 to 2404
+void Formula_29(CDATA *v)  // 13th order Newton Mset
+{
+  /*
+  Solve the roots of the function.
+  Initialize z to one of the roots.
+  Apply Newton's method for solving roots.
+  f(z) = z - z/z'
+ 
+  z   = z^13         + (z^12)*c + c;    // the function
+  z'  = 13*(z^12)    + 12*(z^11)*c;     // 1st derivative
+  z'' = 12*13*(z^11) + 11*12*(z^10)*c;  // 2nd derivative
+ 
+  12*13*(z^11) = -11*12*(z^10)*c;
+  z            = -(11*12*(z^10)*c)/(12*13*(z^10));
+               = -(11*12*c)/(12*13);
+               = -11*c/13;
+ 
+  */
+ 
+  //if (jul == 0)
+ 
+      z = v->z;
+      c = v->c;
+ 
+  z = -(11*z)/13;
+ 
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z1 = z;
+    z2 = z*z;
+    z4 = z2*z2;
+    z5 = z2*z2*z;
+    z8 = z4*z2;
+    z8 = z4;
+ 
+            sine_cosine();
+            //zcos = (1e-15+zcos)/v->dStrands;
+            //zsin = (1e-15+zsin)/v->dStrands;
+   
+    z = z - (clog_z()*z8 + (cexp_z() + c*z - zcos))/zsin;
+ 
+    zd = z-z1;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2364 to 2380
+void Formula_30(CDATA *v)  // Testing again
+{
+      z = v->z;
+      c = v->c;
+ 
+      z = -(3*z)/5;
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z1 = z;
+    z2 = z*z;
+ 
+            sine_cosine();
+            //zcos = (1e-15+zcos)/v->dStrands;
+            //zsin = (1e-15+zsin)/v->dStrands;
+   
+    z = z - clog_z()*(z2*z2*z + z2*z2*c + z + c - zsin)/(5*z2*cexp_z() + 4*z2*z*c + 1 - zcos);
+ 
+    zd = z-z1;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+}
+// OK 2311 to 2341
+void Formula_31(CDATA *v)  // Newton Diamond
+{
+  /*
+  Solve the roots of the function.
+  Initialize z to one of the roots.
+  Apply Newton's method for solving roots.
+  f(z) = z - z/z'
+ 
+  z   = z^5      + (z^4)*c   + z + c;  // the function
+  z'  = 5*(z^4)  + 4*(z^3)*c + 1;      // 1st derivative
+  z'' = 20*(z^3) + 12*(z^2)*c;         // 2nd derivative
+ 
+  20*(z^3) = -12*(z^2)*c;
+  z   = -(12*(z^2)*c)/(20*(z^2));       // solve for z
+  z   = -(3*c)/5;
+ 
+  */
+ 
+      z = v->z;
+      c = v->c;
+ 
+  z = -(3*z)/5;
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z1 = z;
+    z2 = z*z;
+ 
+            sine_cosine();
+            //zcos = (1e-15+zcos)/v->dStrands;
+            //zsin = (1e-15+zsin)/v->dStrands;
+   
+    z = z - clog_z()*(z2*z2*z + z2*z2*c + z + c - zsin)/(5*z2*z2 + 4*z2*z*c + 1 - zcos);
+ 
+    zd = z-z1;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// ok 2283 to 2310
+void Formula_32(CDATA *v)  // Newton Pentagon
+{
+  /*
+  Solve the roots of the function.
+  Initialize z to one of the roots.
+  Apply Newton's method for solving roots.
+  f(z) = z - z/z'
+ 
+  z   = z^6      + (z^5)*c   + z + c;  // the function
+  z'  = 6*(z^5)  + 5*(z^4)*c + 1;      // 1st derivative
+  z'' = 30*(z^4) + 20*(z^3)*c;         // 2nd derivative
+ 
+  30*(z^4) = -20*(z^3)*c;
+  z   = -(20*(z^3)*c)/(30*(z^3));      // solve for z
+  z   = -(2*c)/3;
+  */
+ 
+      z = v->z;
+      c = v->c;
+ 
+  z = -(2*z)/3;
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z1 = z;
+    z2 = z*z;
+    z4 = z2*z2;
+ 
+            sine_cosine();
+            //zcos = (1e-15+zcos)/v->dStrands;
+            //zsin = (1e-15+zsin)/v->dStrands;
+   
+    //z=z-(z4*z2 + z4*z*c + z + c - zsin)/(6*z4*z + 5*z4*c - zcos);
+            z = z - z2*cexp_z()+ c*zcos;
+   
+            zd = z-z1;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2270 to 2282
+void Formula_33(CDATA *v)  // Newton Hexagon
+{
+  /*
+  Solve the roots of the function.
+  Initialize z to one of the roots.
+  Apply Newton's method for solving roots.
+  f(z) = z - z/z'
+ 
+  z   = z^7      + (z^6)*c   + z + c;  // the function
+  z'  = 7*(z^6)  + 6*(z^5)*c + 1;      // 1st derivative
+  z'' = 42*(z^5) + 30*(z^4)*c;         // 2nd derivative
+ 
+  42*(z^5) = -30*(z^4)*c;
+  z   = -(30*(z^4)*c)/(42*(z^4));      // solve for z
+  z   = -(5*c)/7;
+ 
+  */
+ 
+      z = v->z;
+      c = v->c;
+ 
+  z = -(5*z)/7;
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z1 = z;
+    z2 = z*z;
+    z4 = z2*z2;
+ 
+            sine_cosine();
+            //zcos = (1e-15+zcos)/v->dStrands;
+            //zsin = (1e-15+zsin)/v->dStrands;
+   
+    z = z - (z4*z2*z + z4*z2*c + z*cexp_z() + c - zsin)/(7*z4*z2 + 6*z4*z*c + cexp_z()* - zcos);
+   
+            zd = z-z1;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2257 to 2269
+void Formula_34(CDATA *v)  // Newton Octagon
+{
+  /*
+ 
+  Solve the roots of the function.
+  Initialize z to one of the roots.
+  Apply Newton's method for solving roots.
+  f(z) = z - z/z'
+ 
+  z   = z^9      + (z^8)*c   + z + c;  // the function
+  z'  = 9*(z^8)  + 8*(z^7)*c + 1;      // 1st derivative
+  z'' = 72*(z^7) + 56*(z^6)*c;         // 2nd derivative
+ 
+  72*(z^7) = -56*(z^6)*c;
+  z   = -(56*(z^6)*c)/(72*(z^6));      // solve for z
+  z   = -(7*c)/9;
+ 
+  */
+ 
+      z = v->z;
+      c = v->c;
+ 
+  z = -(7*z)/9;
+      temp = 1;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ z;
+        v->pYTemp[v->Iteration] = __imag__ z;
+ 
+    z1 = z;
+    z2 = z*z;
+    z4 = z2*z2;
+ 
+            sine_cosine();
+            //zcos = (1e-15+zcos)/v->dStrands;
+            //zsin = (1e-15+zsin)/v->dStrands;
+       
+            z=z- cexp_z()*(z4*z4*z + z4*z4*c + z + c - zsin)/(9*z4*z4 + 8*z4*z2*z*c + 1 - zcos);
+ 
+    zd = z-z1;
+        temp = sum_sqrs_zd();
+  }
+      __real__ v->z = __real__ z;
+      __imag__ v->z = __imag__ z;
+  v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// keep 3147 to 3151
+void Formula_35(CDATA *v)  // Testing
+{
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+            v->z = z-(zsin/(1e-15+zcos))*(z7-zsin-z*c-1)/(8*z7-zcos-c);   
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// keep 2207 to 2241
+void Formula_36(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+            c2 = cexp_z();
+ 
+            v->z = z-(z5-z3-z2*zsin-c2*zsin)/(5*z3-z*z2-z2*zcos-1-zcos)+ v->c;   
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2193-2206
+void Formula_37(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+            v->z = z + (ctan_z()*ctan_z() - z4 + 7*c )/((z*zsin * zcos - z5)*ctan_z());
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK 2184 to 2192
+void Formula_38(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+            v->z = z - (z7*zcos - z4)/(z2*zsin -1 ) + v->c;   
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// keep 2149 - 2171
+void Formula_39(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+   
+            v->z = z-(z3-z2-z*zsin)/(z3-z2-z*zcos)+v->c;   
+           
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// keep 2137 - 2148
+void Formula_40(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      if (v->jul == 0)
+        v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+            v->z = z - (z - c)*(z + c)*(z*z + c)*c;
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// keep 2123-2134
+void Formula_41(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+            v->z = z-(zsin/(1e-15+zsin))*(z8-z5*zsin-z*c-1)/(8*z7-6*z5-zcos-c)*(z5-z4*zsin-zsin*z*c-z);   
+ 
+// was    v->z = z-(z5-z4*zsin-zsin*z*c-z)/(5*z4-5*z4*zcos-zcos*z*c-1);   
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// OK but weak 3123 - 3135
+void Formula_42(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+            v->z = z-(z3*zsin * zcos * zcos - c)/(z*cexp_z() - zsin + z2);      // change this
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// Similar to original 3087 - 3095
+void Formula_43(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+    v->z = z-(z5*zsin-z3*zsin-zsin*z*c-z)/(5*z4*zcos-z4*zcos-zcos*z2*c-1);       
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+// keep 2050 - 2070
+void Formula_44(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+   
+// was      v->z = z-(z6-z5-z5*zsin-z4*zsin*c-zsin*z*c-z)/(6*z5-5*z4-z5*zcos-z4*zcos*c-zcos*z*c-1);   
+ 
+            v->z = z-(z5*zsin-z4*zsin-z3*zsin-z2*zsin*c)/(4*z3*zcos-3*z2*zcos-z2*zcos*c);   
+     
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// keep 2032-2049
+void Formula_45(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+            v->z = (z -(z*zsin * zcos - z5)*ctan_z())/(zsin*z5 -zcos*(z2-zsin));
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// keep 1986 - 2028
+void Formula_46(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+            v->z = z-(z8+z6+z5-z5*zsin-z4*zcos*c-z)/(8*z7-6*z5-5*z4-z5*zcos*zcos-z4*zcos-1);   
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// keep 1957 - 1985
+void Formula_47(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+   
+            v->z = z - (c + ctan_z() + zcos*zsin)/(ctan_z() + z4*zsin - z5);
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// 1921 - 1930 keep
+void Formula_48(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+            v->z = (z -(z*zsin * zcos - z5)*ctan_z()/(ctan_z()*ctan_z() - z4 + 7*c));
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// modified 20 June 2007 produced # 1696 - 1713; to keep
+void Formula_49(CDATA *v)
+{
+ 
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+            v->z = z-(zsin/(1e-15+zcos*zsin + c))*(z8-z6-zsin-z*c-1)/(8*z7-6*z5-zcos-c);   
+// was         v->z = z-(zsin/(1e-15+zcos))*(z8-z6-zsin-z*c-1)/(8*z7-6*z5-zcos-c);   
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// modified June 2007; another version of #49; made # 1714 - 1733; To keep
+void Formula_50(CDATA *v)
+{
+  temp = 1;
+  c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+// was      v->z = z-(z4-z3-z3-z2*zsin*c)/(4*z3-3*z2-z2*zcos*c);   
+            v->z = z-(zsin/(1e-15+7*zcos*zsin + c))*(4*z8-z6-zsin-z*c-1)/(z7-6*z5-zcos-c);   
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+  v->pXTemp[v->Iteration] = __real__ v->z;
+  v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// entirely new formula 27/6/7; used for # 1737 - 1778; to keep
+void Formula_51(CDATA *v)
+{
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+// was      v->z = z-(z4*zsin-z3*zsin-z3*zsin-z2*zsin*c)/(4*z3-3*z2-z2*zcos*c);   
+            v->z = z - c*(z8*zsin - z5 + z4*zcos)/(z6 - 27*z7 + z*c);
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// entirely new formula 10/7/7; used for # 1800 - 1828; to keep
+void Formula_52(CDATA *v)
+{
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+// was      v->z = z-(z4*zsin-z3*zsin-z3*zsin-z2*zsin*c)/(4*z3*zcos-3*z2*zcos-z2*zcos*c);   
+            v->z = z - c*(z*ctan_z() - z4*zcos)/(zsin*z5 -zcos*(z2-zsin));
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// partially tested variant of new 52 22/7/7; 1837 - 1839 keep
+void Formula_53(CDATA *v)
+{
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+// was         v->z = z-(z3*zsin-z2*zsin*c-1)/(3*z2*zcos-2*z*zcos*c);   
+            v->z = z + ctan_z()*ctan_z();
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// 1847 - 1860
+void Formula_54(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      // 4th order Nova
+      //if (v->jul == 0)
+        //v->z = 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+ 
+            v->z = z + ctan_z()*ctan_z() * (z + z*ctan_z()) * z2*zsin * z3*zcos * z8*ctan_z()/(z5*zsin - z4);
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 
+// 1862 - 1903
+void Formula_55(CDATA *v)
+{
+  //MessageBox(NULL, "formula 02", "bug", MB_OK);
+ 
+      //if (v->jul == 0)
+        //v->z += 1;
+      temp = 1;
+      c = v->c;
+  while( v->Iteration++ < v->Maxit && temp > zerotol && temp < dMAX)
+  {
+      v->pXTemp[v->Iteration] = __real__ v->z;
+        v->pYTemp[v->Iteration] = __imag__ v->z;
+ 
+            z = z1 = v->z;
+            z2 = z*z;
+            z3 = z2*z;
+            z4 = z2*z2;
+            z5 = z4*z;
+            z6 = z5*z;
+            z7 = z6*z;
+            z8 = z7*z;
+            sine_cosine();
+            v->z = z + ctan_z() * (z5 + ctan_z()) * zsin * zcos * ctan_z()/(z5*zsin - z4*zcos);
+ 
+            zd = z1-v->z;
+        temp = sum_sqrs_zd();
+  }
+ 
+      v->pXTemp[v->Iteration] = __real__ v->z;
+      v->pYTemp[v->Iteration] = __imag__ v->z;
+}
+ 

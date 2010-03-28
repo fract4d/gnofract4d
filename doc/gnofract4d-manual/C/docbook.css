@@ -1,0 +1,39 @@
+body {
+    font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif; 
+    font-size: 12px; 
+}
+
+div.article {
+	margin-left: 225px;
+}
+
+div.toc {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 220px;
+	background: #D1D7E2;
+    padding-left:5px;
+    padding-top:5px;
+    border-right: 1px solid #404040;
+    height: 100%;
+    overflow: auto;
+}
+
+table {
+    border-collapse: collapse;
+    border-color: #656464;
+    font-size: 12px;
+}
+
+th {
+    background: #D1D7E2;
+}
+
+div.toc dt a:link { color: #505D6D; text-transform: uppercase; font-weight: bold; text-decoration: none; }
+div.toc dt a:hover { text-decoration: underline; }
+div.toc dt a:visited { color: #505D6D; text-transform: uppercase; font-weight: bold; text-decoration: none; }
+
+div.toc dd dl dt a:link { color: black; text-transform: none; font-weight: normal; text-decoration: none; }
+div.toc dd dl dt a:hover { text-decoration: underline; }
+div.toc dd dl dt a:visited { color: black; text-transform: none; font-weight: normal; text-decoration: none; }

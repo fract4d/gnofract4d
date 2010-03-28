@@ -1,0 +1,693 @@
+comment {
+
+  This file contains Ultra Fractal-style coloring algorithms that 
+  reproduce most coloring options in Fractint. Ultra Fractal uses these
+  coloring algorithms to import Fractint PAR parameter files. Don't
+  change them, or the PAR import feature may not work correctly anymore.
+  If this happens, you need to reinstall Ultra Fractal.
+  
+  The distance estimator and the ranges option have not been implemented.
+  
+  Written by Frederik Slijkerman.
+  Last updated March 26, 1999.
+}
+
+;===================== Outside coloring algorithms =======================
+
+outside(OUTSIDE) {
+; Exactly imitates the outside coloring options in Fractint 
+; with 256-color modes.
+; When using a palette containing many sharp color changes, some
+; small color shifts may occur due to the way the gradient is
+; implemented in Ultra Fractal. Use the Smooth Coloring parameter
+; to turn true-color coloring on and off.
+; The decomp, distest and potential options are implemented as
+; separate coloring algorithms, since they don't use parameters
+; like biomorph and logmap (except for decomp), and the number
+; of parameters would become rather large if they were added here.
+final:
+  float lf = 0
+  float mlf = 0  
+  float iter = 1 + #numiter
+  bool  skipfirst = @outside == 1
+  
+  if @outside == 2
+    ; outside = real
+    if @smooth
+      iter = iter + 7 + real(#z)
+    else
+      iter = iter + 7 + trunc(real(#z))
+    endif
+    
+  elseif @outside == 3
+    ; outside = imag
+    if @smooth
+      iter = iter + 7 + imag(#z)
+    else
+      iter = iter + 7 + trunc(imag(#z))
+    endif
+    
+  elseif @outside == 4
+    ; outside = mult
+    if @smooth
+      iter = iter * (real(#z) / imag(#z))
+    else
+      iter = trunc(iter * (real(#z) / imag(#z)))
+    endif
+    
+  elseif @outside == 5
+    ; outside = summ
+    if @smooth
+      iter = iter + real(#z) + imag(#z)
+    else
+      iter = iter + trunc(real(#z) + imag(#z))
+    endif
+    
+  elseif @outside == 6
+    ; outside = atan
+    if @smooth
+      iter = abs(atan2(#z) * 180/#pi)
+    else
+      iter = trunc(abs(atan2(#z) * 180/#pi))
+    endif
+    
+  endif
+  
+  if iter < 0 || iter > #maxiter
+    iter = 0
+  endif
+  
+  ; biomorph option
+  if (@biomorph >= 0) && \
+     ((abs(real(#z)) <= sqrt(@bailout)) || (abs(imag(#z)) <= sqrt(@bailout)))     
+    iter = @biomorph
+    skipfirst = false
+  endif
+    
+  if @outside == 0
+    iter = @n
+  endif
+  
+  ; logmap options
+  if @outside > 0
+    if @logmap > 0
+      if @logmap > 1
+        lf = @logmap
+      else
+        lf = 0
+      endif
+        
+      if lf >= #maxiter
+        lf = #maxiter - 1
+      endif
+      
+      if lf > 0
+        mlf = 254 / log(#maxiter - lf)
+      else
+        mlf = 255 / log(#maxiter)
+      endif
+        
+      if iter <= lf 
+        iter = 1
+      elseif (iter - lf) / log(iter - lf) <= mlf
+        if lf > 0
+          iter = iter - lf + 1
+        else
+          iter = iter - lf
+        endif
+      else
+        iter = 1 + mlf * log(iter - lf)
+      endif
+      
+    elseif @logmap == -1
+      if iter == 0
+        iter = 1
+      else
+        iter = 1 + (255 / log(150)) * log(iter)
+      endif
+      
+    elseif @logmap < -1
+      lf = -@logmap
+      
+      if lf >= #maxiter
+        lf = #maxiter - 1
+      endif
+       
+      mlf = 254 / sqrt(#maxiter - lf)
+        
+      if iter <= lf
+        iter = 1
+      elseif (iter - lf) <= mlf*mlf
+        iter = iter - lf + 1
+      else
+        iter = 1 + mlf * sqrt(iter - lf)
+      endif    
+      
+    endif
+  endif
+  
+  if skipfirst
+    ; hack to skip first color (0)...
+    #index = (1 + (iter - 1) % 255) / 256 - 0.001
+  else
+    #index = (iter % 256) / 256 - 0.001
+  endif
+  
+default:
+  title = "Outside Options"
+  
+  param outside
+    caption = "Outside Color"
+    default = 1
+    enum = "nnn" "iter" "real" "imag" "mult" "summ" "atan"
+    hint = "This is the outside= value in Fractint. If outside=nnn, \
+            you can specify the nnn value with the Color Index parameter."
+  endparam
+
+  param n
+    caption = "Color Index"
+    hint = "This is the nnn value used when outside=nnn. \
+            Enter a value from 0 to 255."
+    default = 1
+    min = 0
+    max = 255
+  endparam
+  
+  param logmap
+    caption = "Log Palette"
+    hint = "This is exactly the same as the Log Palette value \
+            in Fractint. 0=no, 1=yes, -1=old, +n=cmprsd, -n=sqrt."
+    default = 0
+  endparam
+  
+  param biomorph
+    caption = "Biomorph Color"
+    hint = "This is the biomorph option. Specify -1 to turn it off, \
+            or a color value (0..255) to turn it on using the specified color."
+    default = -1
+    min = -1
+    max = 255
+  endparam
+  
+  param bailout
+    caption = "Biomorph Bailout"
+    hint = "This is the bailout value used with the biomorph option. \
+            It should be equal to the bailout value used by the fractal \
+            formula in the Formula tab. A good value for Mandelbrot sets is 100."
+    default = 100.0
+    min = 1
+  endparam
+  
+  param smooth
+    caption = "Smooth coloring"
+    hint = "This defines whether or not the image will be colored smoothly. \
+            Enable it to get smooth true-color images; disable it to \
+            use only 256 possible colors, just like in Fractint."
+    default = true
+  endparam
+}
+
+
+decomp(OUTSIDE) {
+; Reproduces the decomp option in Fractint. Use the Smooth Coloring 
+; parameter to turn true-color output on and off.
+final:
+  float lf = 0
+  float mlf = 0
+  float iter = 0
+  float angle = atan2(#z)
+  int   colors = 0
+  
+  ; normalize angle to the range 0..2*pi
+  if angle < 0
+    angle = angle + 2 * #pi
+  endif
+  
+  ; calculate number of colors
+  colors = round(2 ^ (@decomp + 1))
+  if colors < 256
+    iter = 1
+  endif
+  
+  if @smooth
+    iter = iter + (angle * (colors - iter)) / (2 * #pi)
+  else
+    iter = iter + trunc((angle * colors) / (2 * #pi))
+  endif
+  
+  if (@logmap != 0) && (iter > #maxiter)
+    iter = #maxiter
+  endif    
+
+  if @logmap > 0
+    if @logmap > 1
+      lf = @logmap
+    else
+      lf = 0
+    endif
+      
+    if lf >= #maxiter
+      lf = #maxiter - 1
+    endif
+    
+    if lf > 0
+      mlf = 254 / log(#maxiter - lf)
+    else
+      mlf = 255 / log(#maxiter)
+    endif
+      
+    if iter <= lf 
+      iter = 1
+    elseif (iter - lf) / log(iter - lf) <= mlf
+      if lf > 0
+        iter = iter - lf + 1
+      else
+        iter = iter - lf
+      endif
+    else
+      iter = 1 + mlf * log(iter - lf)
+    endif
+    
+  elseif @logmap == -1
+    if iter == 0
+      iter = 1
+    else
+      iter = 1 + (255 / log(150)) * log(iter)
+    endif
+    
+  elseif @logmap < -1
+    lf = -@logmap
+    
+    if lf >= #maxiter
+      lf = #maxiter - 1
+    endif
+     
+    mlf = 254 / sqrt(#maxiter - lf)
+      
+    if iter <= lf
+      iter = 1
+    elseif (iter - lf) <= mlf*mlf
+      iter = iter - lf + 1
+    else
+      iter = 1 + mlf * sqrt(iter - lf)
+    endif    
+    
+  endif
+
+  #index = (iter % 256) / 256 - 0.001
+
+default:
+  title = "Decomposition"
+  
+  param decomp
+    caption = "Decomposition"
+    hint = "This is the Decomp Option parameter in Fractint."
+    default = 7
+    enum = "2" "4" "8" "16" "32" "64" "128" "256"
+  endparam
+  
+  param logmap
+    caption = "Log Palette"
+    hint = "This is exactly the same as the Log Palette value \
+            in Fractint. 0=no, 1=yes, -1=old, +n=cmprsd, -n=sqrt."
+    default = 0
+  endparam
+
+  param smooth
+    caption = "Smooth coloring"
+    hint = "This defines whether or not the image will be colored smoothly. \
+            Enable it to get smooth true-color decomposition; disable it \
+            to restrict the number of colors to the decomposition value, \
+            just like in Fractint."
+    default = true
+  endparam
+}
+
+
+potential(OUTSIDE) {
+final:
+  float mag = |#z|
+  float pot = 3 + #numiter
+  float iter = 0
+  float lf = 0
+  float mlf = 0  
+  
+  if pot <= 0 || mag <= 1
+    pot = 0
+  else  
+    pot = log(mag) / 2^pot
+    if pot < 1e-10
+      pot = 0
+    endif
+  endif
+  
+  if pot > 0
+    pot = sqrt(pot)
+    pot = @maxcol - pot * @slope - 1
+  else
+    pot = @maxcol - 1
+  endif
+  
+  if pot < 1
+    pot = 1  ; avoid color 0
+  endif
+  
+  if !@smooth
+    pot = trunc(pot)
+  endif
+  
+  if pot >= 256
+    iter = 255
+  else
+    iter = pot
+  endif
+  
+  if @logmap != 0 && iter > #maxiter
+    iter = #maxiter
+  endif    
+    
+  if @logmap > 0
+    if @logmap > 1
+      lf = @logmap
+    else
+      lf = 0
+    endif
+      
+    if lf >= #maxiter
+      lf = #maxiter - 1
+    endif
+    
+    if lf > 0
+      mlf = 254 / log(#maxiter - lf)
+    else
+      mlf = 255 / log(#maxiter)
+    endif
+      
+    if iter <= lf 
+      iter = 1
+    elseif (iter - lf) / log(iter - lf) <= mlf
+      if lf > 0
+        iter = iter - lf + 1
+      else
+        iter = iter - lf
+      endif
+    else
+      iter = 1 + mlf * log(iter - lf)
+    endif
+    
+  elseif @logmap == -1
+    if iter == 0
+      iter = 1
+    else
+      iter = 1 + (255 / log(#maxiter)) * log(iter)
+    endif
+    
+  elseif @logmap < -1
+    lf = -@logmap
+    
+    if lf >= #maxiter
+      lf = #maxiter - 1
+    endif
+     
+    mlf = 254 / sqrt(#maxiter - lf)
+      
+    if iter <= lf
+      iter = 1
+    elseif (iter - lf) <= mlf*mlf
+      iter = iter - lf + 1
+    else
+      iter = 1 + mlf * sqrt(iter - lf)
+    endif    
+    
+  endif
+
+  #index = (iter % 256) / 256 - 0.001  
+  
+default:
+  title = "Continuous Potential"
+  
+  param maxcol
+    caption = "Max Color"
+    hint = "This is equal to the Potential Max Color parameter \
+            on the y-options screen in Fractint. It defines the \
+            highest color used (1-255)."
+    default = 255
+    min = 1
+    max = 255
+  endparam
+  
+  param slope
+    caption = "Slope"
+    hint = "This is equal to the Potential Slope parameter \
+            on the y-options screen in Fractint. It defines \
+            the speed at which the colors change."
+    default = 500.0
+    min = 0
+  endparam
+
+  param logmap
+    caption = "Log Palette"
+    hint = "This is exactly the same as the Log Palette value \
+            on the x-options screen in Fractint. \
+            0=no, 1=yes, -1=old, +n=cmprsd, -n=sqrt."
+    default = 0
+  endparam
+
+  param smooth
+    caption = "Smooth coloring"
+    hint = "This defines whether or not the image will be colored smoothly. \
+            Enable it to get a smooth true-color potential; disable it \
+            to restrict the number of colors to the Max Color value, \
+            just like in Fractint."
+    default = true
+  endparam
+}
+
+
+;====================== Inside coloring algorithms =======================
+
+
+inside(INSIDE) {
+; Imitates the outside coloring options in Fractint with 256-color modes.
+; When using a palette containing many sharp color changes, some
+; small color shifts may occur due to the way the gradient is
+; implemented in Ultra Fractal. Use the Smooth Coloring parameter
+; to turn true-color coloring on and off.
+; Unfortunately some coloring options could not be reproduced exactly.
+; The bof61 option behaves a bit different with type=mandel and type=julia, 
+; and the epsiloncross option cannot color the outside pixels, although it 
+; does so in Fractint. The startrail option has not been implemented at all.
+; Thanks to Andrew Ryan for improving the periodicity code.
+init:
+  float   zmin = 1e100
+  float   zmod = 0
+  int     miniter = 1
+  int     i = 1
+  int     epscr_color = 0
+  int     per_startiter = round(0.8 * #maxiter)
+  int     per_testiter = 16
+  int     per_color = #maxiter
+  complex per_z = (0,0)
+  float   per_mindiff = 0.0005 * exp(-log(2) * @tolerance)
+  bool    per_searching = true
+
+loop:
+  if @inside == 2
+    ; inside = bof60
+    zmod = |#z|
+    if zmod < zmin
+      zmin = zmod
+    endif
+    
+  elseif @inside == 3
+    ; inside = bof61
+    zmod = |#z|
+    i = i + 1
+    if zmod < zmin
+      zmin = zmod
+      miniter = i
+    endif
+
+  elseif @inside == 4
+    ; inside = epsiloncross
+    if epscr_color == 0
+      if abs(imag(#z)) < 0.01
+        epscr_color = 4
+      elseif abs(real(#z)) < 0.01
+        epscr_color = 2
+      endif
+    endif
+    
+  elseif @inside == 5
+    ; inside = periodicity    
+    if per_searching && (i >= per_startiter)
+      if (i > per_startiter) && (i - per_startiter < per_testiter)
+        ; test periodicity
+        if (abs(real(#z) - real(per_z)) < per_mindiff) && \
+           (abs(imag(#z) - imag(per_z)) < per_mindiff)
+          ; found periodicity!
+          per_searching = false
+          per_color = i - per_startiter
+        endif
+      else
+        ; save new z value
+        per_z = #z
+        per_testiter = per_testiter + per_testiter + 1
+        per_startiter = i
+      endif
+      ; update iteration counter          
+    endif
+    i = i + 1
+    
+  endif
+
+final:
+  float lf = 0
+  float mlf = 0
+  float iter = 0
+  
+  if @inside == 0
+    ; inside = nnn
+    if @n == -1
+      iter = #maxiter
+    else
+      iter = @n
+    endif
+    
+  elseif @inside == 1
+    ; inside = zmag
+    iter = |#z| * trunc(#maxiter / 2) + 1
+    
+  elseif @inside == 2
+    ; inside = bof60
+    iter = sqrt(zmin) * 75
+    
+  elseif @inside == 3
+    ; inside = bof61
+    iter = miniter
+    
+  elseif @inside == 4
+    ; inside = epsiloncross
+    iter = epscr_color
+    
+  elseif @inside == 5
+    ; inside = periodicity
+    if per_color > 255
+      iter = 255
+    else
+      iter = per_color
+    endif
+    
+  endif
+
+  if !@smooth
+    iter = trunc(iter)
+  endif
+  
+  ; logmap options
+  if @inside >= 2
+    if @logmap > 0
+      if @logmap > 1
+        lf = @logmap
+      else
+        lf = 0
+      endif
+        
+      if lf >= #maxiter
+        lf = #maxiter - 1
+      endif
+      
+      if lf > 0
+        mlf = 254 / log(#maxiter - lf)
+      else
+        mlf = 255 / log(#maxiter)
+      endif
+        
+      if iter <= lf 
+        iter = 1
+      elseif (iter - lf) / log(iter - lf) <= mlf
+        if lf > 0
+          iter = iter - lf + 1
+        else
+          iter = iter - lf
+        endif
+      else
+        iter = 1 + mlf * log(iter - lf)
+      endif
+      
+    elseif @logmap == -1
+      if iter == 0
+        iter = 1
+      else
+        iter = 1 + (255 / log(150)) * log(iter)
+      endif
+      
+    elseif @logmap < -1
+      lf = -@logmap
+      
+      if lf >= #maxiter
+        lf = #maxiter - 1
+      endif
+       
+      mlf = 254 / sqrt(#maxiter - lf)
+        
+      if iter <= lf
+        iter = 1
+      elseif (iter - lf) <= mlf*mlf
+        iter = iter - lf + 1
+      else
+        iter = 1 + mlf * sqrt(iter - lf)
+      endif    
+      
+    endif
+  endif
+  
+  #index = (iter % 256) / 256 - 0.001
+
+default:
+  title = "Inside Options"
+
+  param inside
+    caption = "Inside Color"
+    hint = ""
+    enum = "nnn" "zmag" "bof60" "bof61" "epsiloncross" "periodicity"
+    default = 0
+  endparam
+  
+  param n
+    caption = "Color Index"
+    hint = "This is the nnn value used when inside=nnn. \
+            Enter a value from 0 to 255, or -1 to use \
+            the maximum iterations value."
+    default = 1
+    min = -1
+    max = 255
+  endparam
+  
+  param logmap
+    caption = "Log Palette"
+    hint = "This is exactly the same as the Log Palette value \
+            in Fractint. 0=no, 1=yes, -1=old, +n=cmprsd, -n=sqrt."
+    default = 0
+  endparam
+  
+  param smooth
+    caption = "Smooth coloring"
+    hint = "This defines whether or not the image will be colored smoothly. \
+            Enable it to get smooth true-color images; disable it to \
+            use only 256 possible colors, just like in Fractint."
+    default = true
+  endparam
+  
+  param tolerance
+    caption = "Periodicity Tolerance"
+    hint = "This defines the tolerance used for periodicity coloring. \
+            It is only used when Inside Color is set to 'periodicity'. \
+            It is equal to the periodicity=nnn parameter in Fractint. \
+            Use 1 for the default tolerance. Higher values give more \
+            precise images, but you have to use a larger maximum iterations \
+            value for that to work correctly."
+    min = 1.0
+    default = 1.0
+  endparam
+}

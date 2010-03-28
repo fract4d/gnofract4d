@@ -1,0 +1,566 @@
+Stripes {
+; Jussi Härkönen, 07-01-02
+; See Fibers and Things by Ron Barnett for a similar coloring
+; for convergent fractals.
+;
+; TIA originally developed by Kerry Mitchell
+; Curvature originally developed by Damien Jones
+;
+; 07-02-15 Added the interpolation mode parameter
+; 07-03-07 Added the "None" interpolation mode
+; 07-03-30 Added Skip iterations, seed (TIA only) and Mandel version (TIA only)
+;          parameters
+;
+global:
+  ; Precalculate the attenuation factor for attenuated sum
+  float attenuationFactor = 1 - exp(-@attenuation)
+
+init:
+  int iteration = 0
+
+  ; Sums (needed for smooth interpolation)
+  float sum = 0; S(k)
+  float sum1 = 0; S(k-1)
+  float sum2 = 0; S(k-2)
+  float sum3 = 0; S(k-3)
+
+  ; k'th term in the sum
+  float Tk = 0
+
+  ; |C| or |seed| for TIA
+  float cAbsolute = 0
+  if (@usePixel)
+    cAbsolute = cabs(#pixel)
+  else
+    cAbsolute = cabs(@seed)
+  endif
+  float znAbs = 0
+
+  ; Array for previous iterations. Curvature needs current and 2 previous
+  ; values so always reserve at least 3 iterates. First is newest (z(k))
+  int numZPrev = @skipIter + 3
+  complex zPrevArray[@skipIter + 3]
+  ; Fill with zeros
+  int k = 0
+  while (k < numZPrev)
+    zPrevArray[k] = 0
+    k = k + 1
+  endwhile
+
+  ; Shortcut values of old z for TIA and Curvature
+  complex z = (0,0)
+  complex zPrev = (0,0)
+  complex zPrev2 = (0,0)
+
+  ; Fractional iteration count
+  float il = 0 ; Assigned in the final section
+  float lp = log(log(@bailout))
+
+loop:
+  ; k:th iteration, ranging from 1 to N-1
+  ; z(N) is first outside bailout, and |z|^2 > bailout
+  ; (Note that UF evaluates "|z|" as the square of magnitude, |z|^2)
+
+  iteration = iteration + 1
+  if (@skipIter == 0)
+    zPrev2 = zPrev
+    zPrev = z
+    z = #z
+  else ; @skipiter > 0
+    ; Update preceding terms for next iteration
+    k = numZPrev - 1
+    while (k > 0)
+      zPrevArray[k] = zPrevArray[k-1]
+      k = k - 1
+    endwhile
+    zPrevArray[0] = #z
+
+    ; Get old z
+    z = zPrevArray[@skipIter]
+    zPrev = zPrevArray[@skipIter+1]
+    zPrev2 = zPrevArray[@skipIter+2]
+  endif
+  
+if (iteration > @skipIter)
+  if (@coloring == "Stripes")
+    ; Angle dependent component  in [-1,1]
+    float TkAng = sin(@angularFrequency * atan2(z) + @angularOffset)
+
+    ; Radius-dependent component in [-1,1]
+    float TkRad = sin(@circularFrequency * log((cabs(z))) + @circularOffset)
+
+    ; The weighted sum of radius and angle dependent terms is in [-1,1]
+    ; Scale and translate it to [0,1]
+    Tk = 0.5 + 0.5 * ((1 - @circularWeight) * TkAng + @circularWeight * TkRad)
+
+  elseif (@coloring == "Curvature")
+    ; Skip two first iterations in order to get two nonzero previous values
+
+    if (iteration > @skipIter + 2)
+      q = (z - zPrev) / (zPrev - zPrev2)
+      Tk = (abs(atan2(q)) / (pi))
+    else
+      Tk = 0
+    endif
+  else ; "TIA"
+    ; Skip first iteration
+    if (iteration > 1 + @skipIter)
+      ; |z(k-1)^n|
+      if (@usePixel)
+        ; Use pixel value
+        znAbs = cabs(z - #pixel)
+      else
+        ; Use seed specified by the user
+        znAbs = cabs(z - @seed)
+      endif
+
+      ; Bounds:
+      ; m(k) = ||z(k-1)|^n - |c||
+      float lowBound = abs(znAbs - cAbsolute)
+      ; M(k) = |z(k-1)|^n + |c|
+      float upBound = znAbs + cAbsolute
+
+      ; T(k)
+      Tk = (cabs(z) - lowBound) / (upBound - lowBound)
+    endif
+  endif
+
+  ; Update previous sums
+  sum3 = sum2
+  sum2 = sum1
+  sum1 = sum
+
+
+  ; Calculate S(k)
+  if (@attenuate)
+    sum = attenuationFactor*sum + Tk
+  else
+    sum = sum + Tk
+  endif
+
+endif
+
+final:
+  if (@autoPower)
+    ; Approximate power
+    if (@skipiter > 0)
+      z = zPrevArray[0]
+    endif
+    
+    float power = log(|#z|)/log(|z|)
+    il = real(1 / log(power))
+  else
+    ; Use user-specified power
+    il = 1/log(@power)
+  endif
+
+  ; Calculate the decimal part of iteration count
+  ; Note that "log(|#z|)" evaluates to 2*log(|#z|)
+  float u = il*(lp - log(log(|#z|))) + 1
+
+  ; Calculate average sums
+  if (@attenuate)
+    ; Normalize the averages so that the steady-state value is in [0,1]
+    sum = sum * (1 - attenuationFactor)
+    sum1 = sum1 * (1 - attenuationFactor)
+    sum2 = sum2 * (1 - attenuationFactor)
+    sum3 = sum3 * (1 - attenuationFactor)
+  else
+    ; Calculate average
+    sum = sum / #numiter
+    if (#numiter > 3)
+      sum3 = sum3 / (#numiter - 3)
+    endif
+    if (#numiter > 2)
+      sum2 = sum2 / (#numiter - 2)
+    endif
+    if (#numiter > 1)
+      sum1 = sum1 / (#numiter - 1)
+    endif
+  endif
+
+  ; Calculate the index value
+  if (@interpolation == "Smooth")
+    ; Interpolate smoothly using a Catmull-Rom spline
+    float u2 = u^2
+    float u3 = u * u2
+
+    ; Add 1 to the index in order to avoid negative index values
+    #index = 1 + 0.5 *((-sum3 + 3*sum2 - 3*sum1 + sum)*u3 + (2*sum3 - 5*sum2 + 4*sum1 - sum)*u2 + (-sum3 + sum1)*u + 2*sum2)
+
+  elseif (@interpolation == "Linear")
+    ; Interpolate linearly between the sums
+    #index = u*sum + (1-u) * sum1
+  else ; none
+    #index = sum
+  endif
+
+default:
+  title = "Stripes"
+
+  param coloring
+    caption = "Coloring mode"
+    default = 0
+    enum = "Stripes" "TIA" "Curvature"
+    hint = "Specifies the coloring algorithm."
+  endparam
+
+  param usePixel
+    caption = "Mandel version"
+    default = false
+    visible = @coloring == "TIA"
+    hint = "Specifies whether to use the algorithm adapted \
+            to Julia or Mandelbrot sets"
+  endparam
+
+  param seed
+    caption = "Seed"
+    default = (0.5,0.25)
+    visible = (@coloring == "TIA") && (@usePixel == false)
+    hint = "Seed of the Julia set."
+  endparam
+
+  param interpolation
+    caption = "Interpolation"
+    default = 0
+    enum = "Linear" "Smooth" "None"
+    hint = "Specifies the interpolation method."
+  endparam
+
+  float param circularWeight
+    caption = "Circle weight"
+    default = 0.0
+    visible = (@coloring == "Stripes")
+    min = 0
+    max = 1
+    hint = "Weight of circular and radial components. Weight = 0 shows only \
+            stripes, whereas weight = 1 shows only circles."
+  endparam
+
+  float param circularFrequency
+    caption = "Circle frequency"
+    default = 5.0
+    visible = (@coloring == "Stripes")
+    hint = "Specifies the density of circles. Use integer values for smooth results."
+  endparam
+
+  float param circularOffset
+    caption = "Circle offset"
+    default = 0.0
+    visible = (@coloring == "Stripes")
+    hint = "Circle offset given in radians."
+  endparam
+
+  float param angularFrequency
+    caption = "Stripe density"
+    default = 5.0
+    visible = (@coloring == "Stripes")
+    hint = "Specifies the density of stripes. Use integer values for smooth results."
+  endparam
+
+  float param angularOffset
+    caption = "Stripe offset"
+    default = 0.0
+    visible = (@coloring == "Stripes")
+    hint = "Stripe offset given in radians."
+  endparam
+
+  int param skipIter
+    caption = "Skip iterations"
+    default = 0
+    hint = "Excludes a given number of iterations from the end of the orbit."
+  endparam
+
+  ; Fractional iteration count parameters
+  float param bailout
+    caption = "Bailout"
+    default = 1e20
+    min = 1
+    hint = "Bail-out value used by the fractal formula. Use large bailouts for \
+      best results."
+  endparam
+
+  bool param autoPower
+    caption = "Auto-power"
+    default = false
+    hint = "Approximate the power numerically. This gives smooth results for \
+      divergent fractal formulas different from z^n + C."
+  endparam
+
+  float param power
+    caption = "Exponent"
+    default = 2.0
+    visible = (@autoPower == false)
+    hint = "The fractal formula exponent."
+  endparam
+
+  ; Attenuation parameters
+  bool param attenuate
+    caption = "Moving average"
+    default = false
+    hint = "Use moving average instead of average. This may make the coloring \
+      structure appear clearer (especially with TIA), but may also make busy \
+      areas to appear flat."
+  endparam
+
+  float param attenuation
+    caption = "Filter factor"
+    default = 2
+    visible = @attenuate
+    min = 0
+    hint = "Specifies the moving average strength. Values close to 0 cause the last \
+      terms to be weighted creating results similar to Cilia. Large values \
+      make the sum look more like the usual average."
+  endparam
+}
+
+
+CircularGrid {
+; Jussi Härkönen, Sep-2006
+; First public version 07-01-13
+;
+; Uses a grid of disks forming circles around the center to
+; trap orbits. The algorithm is based on ideas from and is
+; mathematically related to gaussian integer by Kerry Mitchell.
+;
+; Below,
+; k denotes the index of the circle closest to the position
+; m denotes the index of the closest disk on circle k
+; circle refers to a circle of disks
+; segment refers to the area defined by an interval for radius and angle
+; into which a disk is contained.
+;
+; 2007-02-03 Added "Use solid color" checkbox.
+;
+global:
+  ; Calculate angular step based on number of segments
+  float angleStep = 2*pi / @numSegments
+
+  ; Calculate radial decrease rate so that the segments
+  ; contain as large disk as possible (omitting circle rotation)
+  float radialDecrease = (1 - sin(angleStep / 2))^2
+  init:
+  int iteration = 0
+
+  ; Relative distances inside a segment
+  float distance = 0
+  float minDistance = @size
+  float sumDistances = 0
+
+  ; Segment indices
+  int k = 0
+  int m = 0
+
+  ; A flag indicating wheter this point should be colored solid
+  bool solid = true
+  loop:
+  iteration = iteration + 1
+
+  ; Translate the complex plane so that the trap center is at
+  ; the given position
+  complex position = #z - @trapCenter
+
+  ; Calculate z(n) in polar coordinates (radius and angle of z(n))
+  float radius = cabs(position)
+  ; Get angle in [-pi,pi]
+  float angle = atan2(position)
+  ; Translate to [0,2pi]
+  if (angle < 0)
+    angle = angle + 2*pi
+  endif
+
+  ; Calculate k and m for the segment where z(n) is located
+  k = round(-log(radius) / log(radialDecrease))
+  m = round((angle - k * @rotation) / angleStep - 0.5)
+
+  ; Calculate segment center (r(k), theta(k,m))
+  float radiusCenter = radialDecrease^(-k)
+  float angleCenter = (angleStep * (m + 0.5) + k * @rotation) % (2*pi)
+  complex sectorCenter = radiusCenter * exp(angleCenter * (0,1))
+
+
+  ; Calculate the radius of the disks in the circle k
+  float diskRadius = radiusCenter * (1 - sqrt(radialDecrease))
+
+  ; Calculate relative distance scale based on the radius
+  float iterationScale = 1 - exp(-@iterationIncrease * iteration)
+  float relativeScale = iterationScale * diskRadius * exp(-@radialDecrease * radiusCenter)
+
+  ; Calculate relative distance of z(n) from the sector center
+  float distance = cabs(sectorCenter - position) / relativeScale
+
+  if (@method == "Closest")
+    ; Find minimun distance
+
+    if (distance < minDistance)
+      ; distance < size because minDistance <= size
+      solid = false
+      minDistance = distance
+    endif
+  elseif (@method == "average")
+    ; Find average distance
+
+    if (distance < @size)
+      solid = false
+      float edgeDistance = @size - distance
+      sumDistances = sumDistances + edgeDistance
+    endif
+  endif
+
+final:
+  if (@method == "closest")
+    if (solid)
+      ; Closest point is outside the disks
+      if (@useSolid)
+        #solid = true
+      else ; use first color in the gradient
+        #index = @size
+      endif
+    else
+      #index = minDistance
+    endif
+  elseif (@method == "average")
+    if (solid)
+      ; All points are outside the disks
+      if (@useSolid)
+        #solid = true
+      else ; use first color in the gradient
+        #index = 0
+      endif
+    else
+      #index = sumDistances / 10
+    endif
+  endif
+  
+default:
+    title = "Circular Grid Trap"
+    
+param method
+    caption = "Method"
+    default = 0
+enum = "average" "closest"
+hint = "Method used to calculate coloring"
+endparam
+
+int param numSegments
+    caption = "Segments"
+    default = 10
+    hint = "Number of disk segments on circles around the center. Large \
+values result in textures similar to the gaussian integer."
+endparam
+
+float param size
+    caption = "Disc size"
+    default = 1
+    min = 0
+    max = 1
+    hint = "Relative disk size: 0 = no disk, 1 = large disk."
+endparam
+
+param trapCenter
+caption = "Trap center"
+default = (0,0)
+hint = "Location of the circles center in the complex plane."
+endparam
+
+float param rotation
+    caption = "Disk rotation"
+    default = 0
+    hint = "Angle, in radians, used to rotate the disk segments \
+on each circle"
+endparam
+
+float param radialDecrease
+    caption = "Disk density"
+    default = 0.1
+    min = 0
+max = 1
+    hint = "Specifies how densely the trap disks are arranged around the \
+center. Large values result in smaller disks far from center."
+endparam
+
+float param iterationIncrease
+    caption = "Iteration increase"
+    default = 3
+    hint = "Specifies how fast trap disk size increases as a function \
+of iteration. Smaller values give smaller disks far from the \
+fractal structure."
+endparam
+
+bool param useSolid
+caption = "Use solid color"
+default = true
+endparam
+}
+
+SmoothIterationCount {
+; Jussi Härkönen, 07-02-03
+;
+; This is the same as the smooth (Mandelbrot) coloring, supplemented
+; with auto-power (needed for the Perforated formulas) and the
+; continuous coloring mode.
+;
+global:
+  float lp = log(log(@bailout))
+
+init:
+  ; Initialize to the power specified by the user
+  float il = 1/log(@power)
+
+  complex zPrev = 0
+loop:
+  ; Get previous iterate
+  zPrev = #z
+final:
+  if (@autoPower)
+    ; Estimate the power
+    float power = log(|#z|)/log(|zPrev|)
+    il = real(1 / log(power))
+  endif
+  ; Else use the power specified by the user
+
+  ; Calculate the decimal part of the iteration count
+  ; Note that "|#z|" evaluates to |z|
+  float f = 0
+  if (@mode == "Smooth")
+    f = 1 + il*(lp - log(log(|#z|)))
+  else ; Continuous
+    f = (@bailout^2 - |#z|) / (@bailout^2 - @bailout)
+  endif
+
+  ; Calculate the smooth/continuous iteration count
+  #index = #numiter + f
+
+default:
+  title = "Smooth Iteration Count"
+
+  param mode
+    caption = "Mode"
+    default = 0
+    enum = "Smooth" "Continuous"
+    hint = "Choose between the smooth and continuous iteration counts. Use \
+            a bailout of of about 100"
+  endparam
+
+  float param bailout
+    caption = "Bailout"
+    default = 1e20
+    min = 1
+    hint = "Bail-out value used by the fractal formula. Use large bailouts for \
+            best results."
+  endparam
+
+  bool param autoPower
+  caption = "Auto-power"
+  default = true
+  hint = "Approximate the power numerically. This gives smooth results for \
+          divergent fractal formulas different from z^n + C."
+  endparam
+
+  float param power
+    caption = "Power"
+    default = 2.0
+    visible = (@autoPower == false)
+    hint = "The fractal formula exponent."
+  endparam
+}

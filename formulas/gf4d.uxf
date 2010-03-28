@@ -1,0 +1,32 @@
+; These are some simple examples; I suggest downloading 
+; http://formulas.ultrafractal.com/cgi-bin/formuladb?view;file=standard.uxf;type=.txt
+; for some more interesting transforms
+
+Inverse {
+;
+; Inverts the complex plane before calculating the fractal.
+; Essentially turns the fractal "inside out".
+;
+transform:
+  #pixel = @center + @radius / (#pixel - @center)
+default:
+  title = "Inverse"
+  float param radius
+    caption = "Radius"
+    default = 1.0
+    hint = "This is the radius of the inversion circle. Larger values \
+            magnify the fractal."
+    min = 0
+  endparam
+  complex param center
+    caption = "Center"
+    default = (0, 0)
+    hint = "This is the center of the inversion circle."
+  endparam
+}
+
+XFlip {
+transform:
+  #pixel = (-real(#pixel),imag(#pixel))
+}
+

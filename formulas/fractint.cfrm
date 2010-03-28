@@ -1,0 +1,67 @@
+; Contains code to mimic the "coloring functions" built in to Fractint:
+; fmod, bof60, bof61, tdis, zmag 
+
+fmod (INNER) {
+init:
+	float small_mag = -1.0
+loop:
+	float zmag = |z|
+	if ( zmag < @closeprox) 
+		small_mag = zmag
+	endif
+final: 
+	if small_mag < 0.0
+		#solid = true
+	else
+		#index = small_mag/@closeprox
+	endif
+default:
+float param closeprox
+	default = 0.01
+endparam
+}
+
+bof60 {
+init:
+	float mag_of_closest_point = 1e100
+loop:
+	float zmag = |z|
+	if zmag < mag_of_closest_point
+		mag_of_closest_point = zmag
+	endif
+final:
+	#index = sqrt(mag_of_closest_point) * 75.0/256.0
+}
+
+bof61 {
+init:
+	int current_index = -1 ; -1 to match Fractint's notion of iter count
+	int index_of_closest_point = -1
+	float mag_of_closest_point = 1e100
+loop:
+	current_index = current_index + 1
+	float zmag = |z|
+	if zmag < mag_of_closest_point
+		index_of_closest_point = current_index
+		mag_of_closest_point = zmag
+	endif
+final:
+	#index = index_of_closest_point /256.0
+}
+
+tdis {
+init:
+	lastz = z
+	float dist = 0.0
+loop:
+	dist = dist + sqrt(|z-lastz|)
+	lastz = z
+final:
+	#index = dist / 256.0
+}
+
+zmag {
+final:
+	#index = (|z| * #numiter/2.0 + 1)/256.0
+}
+

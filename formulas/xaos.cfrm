@@ -1,0 +1,191 @@
+comment {
+; coloring algorithms which mimic the ones used by XaoS, 
+; with some additional options in some cases
+}
+
+; true-color methods
+
+;re*im sin(re^2) angle
+
+re_im_sin_re_2__angle {
+final:
+	float w = sin(imag(z)/real(z))*0.5
+	float b = (real(z) * imag(z)) / 256.0 + w
+	float g = (sin(real(z) * real(z)/2.0)+1.0) * 0.5 + w
+	float r = (sin(atan2(real(z),imag(z))*20.0) + 1.0) * 0.5 + w
+
+	if r > 1.0
+		r = 1.0
+	elseif r < 0.0
+		r = 0.0
+	endif
+
+	if g > 1.0
+		g = 1.0
+	elseif g < 0.0
+		g = 0.0
+	endif
+
+	if b > 1.0
+		b = 1.0
+	elseif b < 0.0
+		b = 0.0
+	endif
+
+	#color = rgb(r,g,b)
+
+}
+
+; sin(re) sin(im) sin(square)
+sin_re_sin_im_sin_square_ {
+final:
+	float r
+	float g
+	float b
+	float w = sin(imag(z)/real(z)) * 0.5 * @wfactor
+	if(inset)
+		b = (sin(@blueFunc(z) * 50.0)+ 1.0) * 0.5 + w
+		g = (sin(@greenFunc(z) * 50.0)+ 1.0) * 0.5 + w
+		r = (sin(@redFunc(z) * 50.0) + 1.0) * 0.5 + w
+	else
+		b = (sin(@blueFunc(z) * 2) + 1) * 0.5 + w
+		g = (sin(@greenFunc(z) * 2) + 1) * 0.5 + w
+		r = (sin(@redFunc(z) / 2.0) + 1) * 0.5 + w
+	endif
+
+	if r > 1.0
+		r = 1.0
+	elseif r < 0.0
+		r = 0.0
+	endif
+
+	if g > 1.0
+		g = 1.0
+	elseif g < 0.0
+		g = 0.0
+	endif
+
+	if b > 1.0
+		b = 1.0
+	elseif b < 0.0
+		b = 0.0
+	endif
+
+	#color = rgb(r,g,b)
+default:
+bool param inset 
+	default = false
+	description = "True = Xaos incoloring, False = outcoloring"
+endparam
+float func blueFunc
+	default = real
+endfunc
+float func greenFunc
+	default = imag
+endfunc
+float func redFunc
+	default = cmag
+endfunc
+float param wfactor
+	default =1.0
+endparam
+}
+
+hsv {
+; not exactly the same results as xaos, color patches are rotated - not quite sure why
+final:
+	float h
+	float s
+	float v
+	if(@inset == true)
+		h = ((atan2(flip(z))) / (#pi) * 6.0) % 6.0 
+		s = (sin(@satFunc(z) * 50.0)+ 1.0) * 0.5
+		v = (sin(@lumFunc(z) * 50.0) + 1.0) * 0.5
+	else
+		h = ((atan2(flip(z))) / (#pi) * 6.0) % 6.0 
+		s = (sin(@satFunc(z)) + 1) * 0.5
+		v = (sin(@lumFunc(z)) + 1) * 0.5
+	endif
+	#color = hsv(h,s,v)
+default:
+bool param inset 
+	default = false
+	description = "True = Xaos incoloring, False = outcoloring"
+endparam
+float func satFunc
+	default = real
+endfunc
+float func lumFunc
+	default = imag
+endfunc
+}
+
+hsv3 {
+final:
+	float h
+	float s
+	float v
+	if(inset)
+		h = atan2(z) / #pi
+		s = (sin(@satFunc(z) * 50.0)+ 1.0) * 0.5
+		v = (sin(@lumFunc(z) * 50.0) + 1.0) * 0.5
+	else
+		h = atan2(z) / #pi
+		s = (sin(@satFunc(z)) + 1) * 0.5
+		v = (sin(@lumFunc(z))+ 1) * 0.5
+	endif
+	float l = (v - 0.5)* 2.0 ; convert from v->l (0..1 -> -1..1)
+	#color = hsl(h,s,l)
+default:
+bool param inset 
+	default = false
+	description = "True = Xaos incoloring, False = outcoloring"
+endparam
+float func satFunc
+	default = real
+endfunc
+float func lumFunc
+	default = imag
+endfunc
+}
+
+hsl {
+final:
+	float h
+	float s
+	float l
+	h = @hueFunc(z) * 6.0
+	s = (@satFunc2(@satFunc(z))+1)/2.0
+	l = @lumFunc2(@lumFunc(z))
+
+	#color = hsl(h,s,l)
+default:
+float func hueFunc
+	default = real
+endfunc
+float func satFunc
+	default = real
+endfunc
+float func satFunc2
+	argtype = float
+	default = sin
+endfunc
+float func lumFunc
+	default = imag
+endfunc
+float func lumFunc2
+	argtype =float
+	default = cos
+endfunc
+}
+
+hsv2
+
+cos_re_2_cos_im_2_cos_square_
+abs_re_2_abs_im_2_abs_square_
+re_im_re_re_im_im
+abs_im_cim_abs_re_cre_abs_re_cim
+abs_re_im_csqr_abs_re_2_csqr_abs_im_2_csqr_
+
+
+

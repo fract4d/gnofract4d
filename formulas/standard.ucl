@@ -1,0 +1,1804 @@
+comment {
+
+  This file contains standard coloring algorithms for Ultra Fractal 3.
+  Many of the coloring algorithms here were written by other formula
+  authors, as noted in the comments with each formula. All formulas
+  have been edited and simplified by Frederik Slijkerman.
+  
+}
+
+
+BinaryDecomposition {
+;
+; Classic binary decomposition. Can give quite abstract effects.
+; Use low bail-out values in the fractal formula (if possible) for
+; best effects. This coloring algorithm uses just two colors from
+; the gradient: one from the left end and one from the middle.
+;
+final:
+  if @type == "Type 1"
+    if real(#z) * imag(#z) >= 0 
+      #index = 0.5
+    else
+      #index = 0
+    endif
+  else
+    if atan2(#z) > 0
+      #index = 0.5
+    else
+      #index = 0
+    endif
+  endif  
+default:
+  title = "Binary Decomposition"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/binarydecomposition.html"
+  param type
+    caption = "Decomposition Type"
+    enum = "Type 1" "Type 2"
+    default = 0
+    hint = "Toggles between two types of binary decomposition. Type 2 \
+            reproduces the coloring used with many images in the classic \
+            Beauty of Fractals book."
+  endparam
+}
+
+
+Gradient {
+;
+; Shows the entire gradient in various ways. The fractal formula
+; is ignored. Use zooming, panning and rotating to get the desired
+; gradient. Make sure that Repeat Gradient is enabled.
+;
+final:
+  if @type == "Linear"
+    #index = 16.5 + 0.25 * real(#pixel)
+  elseif @type == "Radial"
+    #index = 0.2 * |#pixel|
+  else
+    #index = 0.5 - atan2(#pixel) / (2 * #pi)
+  endif
+default:
+  title = "Gradient"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/gradient.html"
+  param type
+    caption = "Gradient Type"
+    enum = "Linear" "Radial" "Cone"
+    hint = "Specifies the shape of the gradient."
+  endparam
+}
+
+
+Default {
+;
+; Reproduces the iterations coloring algorithm found in most fractal
+; software. This is the coloring algorithm that is used by default in
+; Ultra Fractal when no coloring algorithm is loaded. See also the
+; Basic coloring algorithm.
+;
+final:
+  #index = 0.01 * #numiter
+default:
+  title = "None"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/none.html"
+}
+
+
+Basic(OUTSIDE) {
+;
+; Four basic and classic ways to color a fractal. Other classic
+; algorithms are Decomposition, Binary Decomposition, and
+; Distance Estimator.
+;
+final:
+  if @type == "Iteration"
+    #index = 0.01 * #numiter
+  elseif @type == "Real"
+    #index = 0.05 * (4 + real(#z))
+  elseif @type == "Imaginary"
+    #index = 0.05 * (4 + imag(#z))
+  else
+    #index = 0.05 * (4 + real(#z) + imag(#z))
+  endif  
+default:
+  title = "Basic" 
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/basic.html"
+  param type
+    caption = "Coloring Type"
+    enum = "Iteration" "Real" "Imaginary" "Sum"
+    hint = "Specifies how the fractal is colored. Most options work best \
+            with low bail-out values for the fractal formula, like 4. \
+            The Iteration option is the classic way to color fractals."
+  endparam
+}
+
+
+Decomposition {
+;
+; Decomposes the angle of the Z variable after iteration
+; and distributes it over the gradient. See also the
+; Binary Decomposition coloring algorithm.
+;
+; Written by Damien M. Jones
+;
+final:
+  float d = atan2(#z); get angle of z
+  IF (d < 0); it's negative
+    d = d + #pi * 2; make it positive
+  ENDIF
+  #index = d / (#pi * 2)
+
+default:
+  title = "Decomposition"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/decomposition.html"
+}
+
+
+Triangle {
+;
+; Variation on the Triangle Inequality Average coloring method 
+; from Kerry Mitchell. The smoothing used here is based on the
+; Smooth formula, which only works for z^n+c and derivates.
+;
+; Written by Damien M. Jones
+;
+init:
+  float sum = 0.0
+  float sum2 = 0.0
+  float ac = cabs(#pixel)
+  float il = 1/log(@power)
+  float lp = log(log(@bailout)/2.0)
+  float az2 = 0.0
+  float lowbound = 0.0
+  float f = 0.0
+  BOOL first = true
+loop:
+  sum2 = sum
+  IF (!first)
+    az2 = cabs(#z - #pixel)
+    lowbound = abs(az2 - ac)
+    sum = sum + ((cabs(#z) - lowbound) / (az2+ac - lowbound))
+  ELSE
+    first = false
+  ENDIF
+final:
+  sum = sum / (#numiter)
+  sum2 = sum2 / (#numiter-1)
+  f = il*lp - il*log(log(cabs(#z)))
+  #index = sum2 + (sum-sum2) * (f+1)  
+default:
+  title = "Triangle Inequality Average"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/triangleinequalityaverage.html"
+  param power
+    caption = "Exponent"
+    default = 2.0
+    hint = "This should be set to match the exponent of the \
+            formula you are using. For Mandelbrot, this is 2."
+  endparam
+  param bailout
+    caption = "Bailout"
+    default = 1e20
+    min = 1
+    hint = "This should be set to match the bail-out value in \
+            the Formula tab. Use a very high value for good results."
+  endparam
+}
+
+
+Lighting {
+;
+; Coloring algorithm for the Slope family of fractal types.
+; This coloring algorithm performs 3D lighting for these
+; fractals.
+;
+; Written by Damien M. Jones
+;
+final:
+  float vz = -sqrt(1-|#z|); extract implied portion of normal
+  float d2r = #pi/180; degrees to radians conversion factor
+
+  ; create vector for light direction
+  float lx = cos((270-@angle)*d2r) * cos(@elevation*d2r)
+  float ly = sin((270-@angle)*d2r) * cos(@elevation*d2r)
+  float lz = -sin(@elevation*d2r)
+
+  ; compute cosine of angle between these vectors
+  ; (this is the amount of lighting on the surface)
+  float l = lx*real(#z) + ly*imag(#z) + lz*vz
+  IF (l < @ambient); light is below the ambient level
+    l = @ambient; set it to the ambient level
+  ENDIF
+  IF (@ambient < 0); the ambient level is negative
+    l = l + 1; offset to prevent clipping at 0
+  ENDIF
+  #index = l*0.99; reduce it just a bit to prevent
+  ; the colors from wrapping
+
+default:
+  title = "Lighting"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/lighting.html"
+  
+  param @angle
+    caption = "Light Rotation"
+    default = 90.0
+    hint = "Gives the rotation of the light source, in degrees. With 0 \
+            degrees, the light comes from above. Positive values give \
+            clockwise rotation."
+  endparam
+  param @elevation
+    caption = "Light Elevation"
+    default = 30.0
+    hint = "Gives the elevation of the light source, in degrees."
+  endparam
+  param @ambient
+    caption = "Ambient Light"
+    default = 0.0
+    min = -1.0
+    max = 1.0
+    hint = "Specifies the level of ambient light.  Use -1.0 to \
+            color all surfaces."
+  endparam
+}
+
+
+DistanceEstimator(OUTSIDE) {
+;
+; Distance-estimator coloring algorithm for Mandelbrot and
+; other z^n fractal types (Phoenix, Julia). This coloring
+; algorithm estimates the distance to the boundary of the
+; fractal (for example the Mandelbrot set) and colors points
+; accordingly.
+;
+; Written by Damien M. Jones
+;
+init:
+  complex dz = (0,0)
+loop:
+  dz = @power * #z^(@power-1) * dz + 1
+final:
+  #index = (@power*log(cabs(#z)) * cabs(#z) / cabs(dz))^(1/@power)
+default:
+  title = "Distance Estimator"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/distanceestimator.html"
+  param power
+    caption = "Exponent"
+    default = 2.0
+    hint = "This should be set to match the exponent of the \
+            formula you are using. For Mandelbrot, this is 2."
+  endparam
+}
+
+
+Emboss {
+;
+; Coloring algorithm for the Embossed family of fractal types.
+; This coloring algorithm performs 3D lighting for these fractals.
+;
+; Uses 3 colors from the gradient, at index values of 0.2, 0.5, 
+; and 0.8. With Color Density set to 1, Transfer Function set to
+; Linear, and Gradient Offset set to 0, these index values 
+; corresponding to the gradient positions 80, 200, and 320.
+;
+; Written by Kerry Mitchell.
+;
+final:
+  if(real(#z)<imag(#z))
+    #index=0.2
+  elseif(imag(#z)<real(#z))
+    #index=0.8
+  else
+    #index=0.5
+  endif
+default:
+  title="Emboss"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/emboss.html"
+}
+
+
+GaussianInteger {
+;
+; Colors by the relationship of the orbit of Z to Gaussian 
+; Integers. 
+;
+; Written by Kerry Mitchell.
+;
+init:
+  float r=0.0
+  float rmin=1.0e12
+  float rmax=0.0
+  float rave=0.0
+  float total=0.0
+  float t=0.0
+  int iter=0
+  int itermin=0
+  int itermax=0
+  zmin=(0.0,0.0)
+  zmax=(0.0,0.0)
+  if(@norm==1)                       ; pixel normalization
+    normfac=#pixel
+  elseif(@norm==2)                   ; factor normalization
+    normfac=@fac
+  elseif(@norm==3)                   ; f(z) normalization
+    normfac=@normfunc(#z)
+  else                               ; no normalization
+    normfac=(1.0,0.0)
+  endif
+  float logfac=@logseed
+loop:
+  iter=iter+1
+  temp2=#z
+  if @randomize
+    logfac=4*logfac*(1-logfac)
+    temp2=temp2*(1-@randomsize*logfac)
+  endif
+  if(@inttype==1)                    ; trunc
+    temp=trunc(temp2/normfac)
+  elseif(@inttype==2)                ; floor
+    temp=floor(temp2/normfac)
+  elseif(@inttype==3)                ; ceil
+    temp=ceil(temp2/normfac)
+  else                               ; round
+    temp=round(temp2/normfac)
+  endif
+  remain=temp2-temp*normfac
+  r=cabs(remain)
+  total=total+r
+  rave=total/iter
+  if(r<rmin)
+    rmin=r
+    zmin=temp2
+    itermin=iter
+  endif
+  if(r>rmax)
+    rmax=r
+    zmax=temp2
+    itermax=iter
+  endif
+final:
+  if(@colorby==1)            ; iteration @ min
+    #index=0.01*itermin
+  elseif(@colorby==2)        ; angle @ min
+    t=atan2(zmin)
+    t=t/pi
+    if(t<0.0)
+      t=t+2.0
+    endif
+    #index=0.5*t
+  elseif(@colorby==3)        ; maximum distance
+    #index=rmax
+  elseif(@colorby==4)        ; iteration @ max
+    #index=0.01*itermax
+  elseif(@colorby==5)        ; angle @ max
+    t=atan2(zmax)
+    t=t/pi
+    if(t<0.0)
+      t=t+2.0
+    endif
+    #index=0.5*t
+  elseif(@colorby==6)        ; average distance
+    #index=rave
+  elseif(@colorby==7)        ; min/mean/max angle
+    zmax=(rave-rmin)+flip(rmax-rave)
+    t=atan2(zmax)
+    t=t/pi
+    if(t<0.0)
+      t=t+2.0
+    endif
+    #index=0.5*t
+  elseif(@colorby==8)        ; max/min ratio
+    #index=rmax/(rmin+1.e-12)
+  else                       ; minimum distance
+    #index=rmin
+  endif
+default:
+  title="Gaussian Integer"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/gaussianinteger.html"
+  param inttype
+    caption="Integer Type"
+    default=0
+    enum="round(z)" "trunc(z)" "floor(z)" "ceil(z)"
+  endparam
+  param colorby
+    caption="Color By"
+    default=0
+    enum="minimum distance" "iteration @ min" "angle @ min" \
+      "maximum distance" "iteration @ max" "angle @ max" "average distance"\
+      "min/mean/max angle" "max/min ratio"
+  endparam
+  param norm
+    caption="Normalization"
+    default=0
+    enum="none" "pixel" "factor" "f(z)"
+  endparam
+  param fac
+    caption=" Factor"
+    default=(2.0,1.0)
+    hint = "Normalization factor."
+    visible = @norm == "factor"
+  endparam
+  func normfunc
+    caption=" Function"
+    default=ident()
+    hint = "Normalization function."
+    visible = @norm == "f(z)"
+  endfunc
+  param randomize
+    caption="Randomize"
+    default=false
+    hint="Applies a random factor to z every iteration before \
+      finding the Gaussian integer."
+  endparam
+  param randomsize
+    caption="Random Size"
+    default=(0.1,0)
+    hint="Size of random factor. Larger values give more randomization."
+    visible = @randomize
+  endparam
+  param logseed
+    caption="Random Seed"
+    default=0.1
+    min=0.0
+    max=1.0
+    hint="Randomize seed, between 0 and 1. Every seed gives a different \
+          image."
+    visible = @randomize
+  endparam
+}
+
+
+ExponentialSmoothing {
+;
+; This coloring method provides smooth iteration
+; colors for all fractal types, convergent or
+; divergent (or both).  It combines the two methods
+; developed by Ron Barnett.  It doesn't map
+; precisely to iterations, but it's close.
+;
+; Written by Damien M. Jones
+;
+init:
+  float sum = 0.0
+  float sum2 = 0.0
+  complex zold = (0,0)
+  
+loop:
+  IF (@diverge)
+    sum = sum + exp(-cabs(#z))
+  ENDIF
+  IF (@converge)
+    sum2 = sum2 + exp(-1/cabs(zold-#z))
+  ENDIF
+  zold = #z
+
+final:
+  IF (|#z - zold| < 0.5); convergent bailout.
+    IF (@converge)
+      #index = sum2
+    ELSE
+      #index = 0
+    ENDIF
+    
+  ELSE; divergent bailout.
+    IF (@diverge)
+      #index = sum * @divergescale
+    ELSE
+      #index = 0
+    ENDIF
+  ENDIF
+  
+default:
+  title = "Exponential Smoothing"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/exponentialsmoothing.html"
+
+  param diverge
+    caption = "Color Divergent"
+    default = FALSE
+    hint = "If set, points which escape to infinity will be \
+            colored."
+  endparam
+  param converge
+    caption = "Color Convergent"
+    default = TRUE
+    hint = "If set, points which collapse to one value will be \
+            colored."
+  endparam
+  param divergescale
+    caption = "Divergent Density"
+    default = 1.0
+    hint = "Sets the divergent coloring density, relative to the \
+            convergent coloring.  If set to 1.0, they will use \
+    the same color density."
+  endparam
+}
+
+
+Smooth(OUTSIDE) {
+;
+; This coloring method provides smooth iteration
+; colors for Mandelbrot and other z^2 formula types
+; (Phoenix, Julia).  Results on other types may be
+; unpredictable, but might be interesting.
+;
+; Thanks to F. Slijkerman for some tweaks.
+; Thanks to Linas Vepstas for the math.
+;
+; Written by Damien M. Jones
+;
+init:
+  complex il = 1/log(@power); Inverse log (power).
+  float lp = log(log(@bailout)); log(log bailout).
+
+final:
+  #index = 0.05 * real(#numiter + il*lp - il*log(log(cabs(#z))))
+
+default:
+  title = "Smooth (Mandelbrot)"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/smooth.html"
+
+  param power
+    caption = "Exponent"
+    default = (2,0)
+    hint = "This should be set to match the exponent of the \
+            formula you are using. For Mandelbrot, this is 2."
+  endparam
+  param bailout
+    caption = "Bail-out value"
+    default = 128.0
+    min = 1
+    hint = "This should be set to match the bail-out value in \
+            the Formula tab. This formula works best with bail-out \
+            values higher than 100."
+  endparam
+}
+
+
+OrbitTraps {
+;
+; General Orbit Traps coloring algorithm, suitable for almost
+; all fractal types.
+;
+; Originally written by Damien M. Jones.
+;
+init:
+; OrbitTraps and OrbitTrapsDirect are exactly the same. The DIRECT symbol
+; is used to switch between the two formulas.
+; don't $DEFINE DIRECT
+  float d = 0.0
+  float d2 = 0.0
+  complex z2 = (0,0)
+  int iter = 0
+  float diameter2 = sqr(@diameter)
+  complex r = (0,1) ^ (@angle / 90.0)
+  complex r0 = (0,0)
+  complex rh = (0,1) ^ (@traporder / 8); heart rotation value
+  complex zh = (0,0)
+  complex trapcenter2 = @trapcenter
+
+  if @trapshape == "ring ripples" || @trapshape == "grid ripples" || \
+     @trapshape == "radial ripples"
+    diameter2 = #pi / @diameter
+  endif
+
+$IFDEF DIRECT
+  color accumulator = @startcolor; initialize color accumulator
+  color current = rgb(0,0,0); holds current iteration's color
+  
+$ELSE
+  float closest = 1e38
+  float closest1 = 1e38
+  complex point = (0,0)
+  complex point1 = (0,0)
+  complex point2 = (0,0)
+  complex point3 = (0,0)
+  bool done = false
+  int i = 0
+  int i1 = 0
+  
+  if @traptype == "farthest" || @traptype == "sum" || \
+     @traptype == "average" || @traptype == "sign average" || \
+     @traptype == "alternating average" || @traptype == "alternating average 2" || \
+     @traptype == "inverted sum" || @traptype == "exponential average" || \
+     @traptype == "average change" || @traptype == "inverted sum squared" || \
+     @traptype == "trap only"
+    closest = 0.0
+  elseif @traptype == "product"
+    closest = 1.0
+  elseif @traptype == "second farthest" || @traptype == "two farthest"
+    closest = 0.0
+    closest = 0.0
+  endif
+$ENDIF  
+
+  bool usesolid = true   ; assume a solid color
+
+loop:
+  iter = iter + 1        ; iteration counter
+
+$IFDEF DIRECT
+  z2 = #z
+$ELSE
+  if @traptype == "trap only"   ; trap only, work on unadulterated pixel
+    z2 = #pixel
+  else
+    z2 = #z
+  endif
+$ENDIF
+  
+  z2 = (z2 - trapcenter2) * r; rotate  
+  
+  if @aspect != 1.0
+    z2 = real(z2) + flip(imag(z2) * @aspect) ; apply aspect
+  endif
+  
+  ; determine distance from trap -- different for each shape
+  if @trapshape == "point"
+    d = cabs(z2)
+  elseif @trapshape == "ring"
+    d = abs(cabs(z2) - @diameter)
+  elseif @trapshape == "ring 2"
+    d = abs(|z2| - diameter2)
+  elseif @trapshape == "egg"
+    d = (cabs(z2-flip(@diameter)*2) + cabs(z2)*@traporder*0.5) * 0.25
+  elseif @trapshape == "hyperbola"
+    d = abs(imag(z2) * real(z2) - @diameter)
+  elseif @trapshape == "hypercross"
+    d = abs(imag(z2) * real(z2))
+  elseif @trapshape == "cross"
+    d = abs(real(z2))
+    d2 = abs(imag(z2))
+    if d2 < d
+      d = d2
+    endif
+  elseif @trapshape == "astroid"
+    d = abs(real(z2))^@traporder + abs(imag(z2))^@traporder
+    if @traporder < 0
+      d = 1/d
+    endif
+  elseif @trapshape == "diamond"
+    d = abs(real(z2)) + abs(imag(z2))
+  elseif @trapshape == "rectangle"
+    d = abs(real(z2))
+    d2 = abs(imag(z2))
+    if d2 > d
+      d = d2
+    endif
+  elseif @trapshape == "box"
+    d = abs(real(z2))
+    d2 = abs(imag(z2))
+    if d2 > d
+      d = d2
+    endif
+    d = abs(d - @diameter)
+  elseif @trapshape == "lines"
+    d = abs(abs(imag(z2)) - @diameter)
+  elseif @trapshape == "waves"
+    d = abs(abs(imag(z2) + sin(real(z2)*@trapfreq)*@traporder*0.25) - @diameter)
+  elseif @trapshape == "mirrored waves"
+    d = abs(abs(imag(z2)) - @diameter + sin(real(z2)*@trapfreq)*@traporder*0.25)
+  elseif @trapshape == "mirrored waves 2"
+    d2 = @diameter - sin(real(z2)*@trapfreq)*@traporder*0.25; compute wave height
+    d  = abs(abs(imag(z2)) - d2); distance to each wave
+    d2 = abs(abs(imag(z2)) + d2)
+    if d2 < d
+      d = d2
+    endif
+  elseif @trapshape == "radial waves"
+    d2 = atan2(z2)
+    d = abs(cabs(z2) * (1 - sin(d2*@trapfreq)*@traporder*0.125) - @diameter)
+  elseif @trapshape == "radial waves 2"
+    d2 = atan2(z2)
+    d2 = sin(d2*@trapfreq)*@traporder*0.125
+    d = abs(cabs(z2) * (1 - d2) - @diameter)
+    d2 = abs(cabs(z2) * (1 + d2) - @diameter)
+    if d2 < d
+      d = d2
+    endif
+  elseif @trapshape == "ring ripples"
+    d = cabs(z2)
+    if d < @traporder
+      d = cos(d * diameter2 * @trapfreq) * sqr(1-d/@traporder)
+    else
+      d = 0
+    endif
+  elseif @trapshape == "grid ripples"
+    d = cabs(z2)
+    if d < @traporder
+      d = (cos(real(z2)*diameter2*@trapfreq) + cos(imag(z2)*diameter2*@trapfreq)) * sqr(1-d/@traporder) * 0.5
+    else
+      d = 0
+    endif
+  elseif @trapshape == "radial ripples"
+    d = atan2(z2)
+    d2 = cabs(z2)
+    if d2 < @traporder
+      d = cos(4 * d * @trapfreq) * sqr(1-d2/@traporder)
+    else
+      d = 0
+    endif
+  elseif @trapshape == "pinch"
+    d2 = atan2(z2)
+    if d2 < 0
+      d2 = d2 + 2*#pi
+    endif
+    d = sqrt(cabs(z2)) / abs(sin(d2*@traporder*0.5))
+  elseif @trapshape == "spiral"
+    d = 1/(cabs(z2)) * @diameter
+    r0 = (0,1) ^ d
+    z2 = z2 * r0
+    d = atan(abs(imag(z2)/real(z2)))
+  elseif @trapshape == "heart"
+    zh = real(z2) + flip(abs(imag(z2)))
+    zh = zh*rh * 3 / @diameter
+    d = abs(real(zh) - sqr(imag(zh)) + 3)
+  endif
+
+$IFDEF DIRECT
+  ; Compute direct color. This code is very similar to the normal processing
+  ; in the final section.
+  IF (d < @threshold); orbit is close enough to shape
+    IF (@trapcolor == "distance"); distance
+      current = gradient(d/@threshold)
+    ELSEIF (@trapcolor == "magnitude"); magnitude
+      current = gradient(cabs(z2))
+    ELSEIF (@trapcolor == "real"); real
+      current = gradient(abs(real(z2)))
+    ELSEIF (@trapcolor == "imaginary"); imaginary
+      current = gradient(abs(imag(z2)))
+    ELSEIF (@trapcolor == "angle to trap"); angle to trap
+      d2 = atan2(z2)
+      IF (d2 < 0)
+        d2 = d2 + #pi * 2
+      ENDIF
+      current = gradient(d2 / (#pi * 2))
+    ELSEIF (@trapcolor == "angle to origin"); angle to origin
+      d2 = atan2(#z)
+      IF (d2 < 0)
+        d2 = d2 + #pi * 2
+      ENDIF
+      current = gradient(d2 / (#pi * 2))
+    ELSEIF (@trapcolor == "angle to origin 2") ; angle to origin 2 (old ReallyCool)
+      current = gradient(0.02 * abs(atan(imag(#z) / real(#z)) * 180/#pi))
+    ELSEIF (@trapcolor == "iteration"); iteration
+      current = gradient(iter / #maxiter)
+    ENDIF
+
+    IF (@trapmergemodifier == "distance")
+      current = rgba(red(current), green(current), blue(current), alpha(current) * (1 - d / @threshold))
+    ENDIF
+    IF (@trapmergeorder == "bottom-up")
+      accumulator = compose(accumulator, blend(current, @trapmergemode(accumulator, current), alpha(accumulator)), @trapmergeopacity)
+    ELSEIF (@trapmergeorder == "top-down")
+      accumulator = compose(current, blend(accumulator, @trapmergemode(current, accumulator), alpha(current)), @trapmergeopacity)
+    ENDIF
+  ENDIF
+
+$ELSE
+  ; now adjust closest/point/i as needed
+  IF (@traptype == 0); closest
+    IF (d < closest)
+      i = iter
+      point = #z
+      point2 = z2
+      closest = d
+    ENDIF
+    IF (d < @threshold)
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 1); farthest (within threshold)
+    IF (d > closest && d < @threshold)
+      i = iter
+      point = #z
+      point2 = z2
+      closest = d
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 2); first (within threshold)
+    IF (d < @threshold && done == false)
+      i = iter
+      point = #z
+      point2 = z2
+      closest = d
+      done = true
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 3); last (within threshold)
+    IF (d < @threshold)
+      i = iter
+      point = #z
+      point2 = z2
+      closest = d
+      done = true
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 4); sum (within threshold)
+    IF (d < @threshold)
+      i = iter
+      point = point + #z
+      point2 = point2 + z2
+      closest = closest + d
+      usesolid = false
+   ENDIF
+  ELSEIF (@traptype == 5); average (within threshold)
+    IF (d < @threshold)
+      i = iter
+      i1 = i1 + 1
+      point = point + #z
+      point2 = point2 + z2
+      closest = closest + d
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 6); product (within threshold)
+    IF (d < @threshold)
+      i = iter
+      point = point * #z / @threshold
+      point2 = point2 * z2 / @threshold
+      closest = closest * d / @threshold
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 7); sign average
+    IF (d < d2)
+      i = i + 1
+      point = point + #z
+      point2 = point2 + z2
+      closest = closest + 1
+      usesolid = false
+    ELSE
+      i = i - 1
+    ENDIF
+    d2 = d
+  ELSEIF (@traptype == 8 || @traptype == 10) ; second/two closest
+    IF (d < closest)
+      i1 = i
+      point1 = point
+      point3 = point2
+      closest1 = closest
+      i = iter
+      point = #z
+      point2 = z2
+      closest = d
+    ELSEIF (d < closest1)
+      i1 = iter
+      point1 = #z
+      point3 = z2
+      closest1 = d
+    ENDIF
+    IF (d < @threshold)
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 9 || @traptype == 11) ; second/two farthest
+    IF (d > closest && d < @threshold)
+      i1 = i
+      point1 = point
+      point3 = point2
+      closest1 = closest
+      i = iter
+      point = #z
+      point2 = z2
+      closest = d
+      usesolid = false
+    ELSEIF (d > closest1 && d < @threshold)
+      i1 = iter
+      point1 = #z
+      point3 = z2
+      closest1 = d
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 12); funky average
+    IF (d < @threshold)
+      i = i + 1
+      point = #z - point
+      point2 = z2 - point2
+      closest = @threshold - abs(closest - d)
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 13); funky average 2
+    IF (d < @threshold)
+      i = i + 1
+      point = #z - point
+      point2 = z2 - point2
+      closest = abs(d - @threshold + closest)
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 14); funky average 3 (Luke Plant)
+    IF (d < @threshold)
+      i = i + 1
+      d2 = d/@threshold
+      point = #z + (point-#z) * d2
+      point2 = z2 + (point2-z2) * d2
+      closest = closest + d
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 15); funky average 4 (exponential average)
+    IF (d < @threshold)
+      i = i + 1
+      point = #z - point
+      point2 = z2 - point2
+      closest = closest + exp(-d)
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 16); funky average 5 (average distance change)
+    IF (d < d2)
+      point = point + #z
+      point2 = point2 + z2
+      closest = closest + d2-d
+      usesolid = false
+    ENDIF
+    d2 = d
+  ELSEIF (@traptype == 17); funky average 6 (Luke Plant, 1/squared)
+    IF (d < @threshold)
+      i = i + 1
+      usesolid = false
+    ENDIF
+    d2 = sqr(d/@threshold)
+    point = #z + (point-#z) * d2
+    point2 = z2 + (point2-z2) * d2
+    closest = closest + 1/d2
+  ELSEIF (@traptype == 18); trap only, do first iteration
+    IF (iter == 1)
+      point = #z
+      point2 = z2
+      closest = d/@threshold
+      IF (d < @threshold)
+        usesolid = false
+      ENDIF
+    ENDIF
+  ENDIF
+$ENDIF  
+  
+final:
+  ; Apply solid color, if it is allowed.
+  if @solidcolor
+    #solid = usesolid
+  else
+    #solid = false
+  endif
+  
+$IFDEF DIRECT
+  ; Return direct color.
+  #color = accumulator
+  
+$ELSE
+  ; Calculate index value.
+  ; Un-fudge anything that was fudged.
+  IF (@traptype == 5); traptype average
+    point = point / i1
+    point2 = point2 / i1
+    closest = closest / i1
+  ELSEIF (@traptype == 6); traptype product
+    closest = abs(closest)
+  ELSEIF (@traptype == 7); traptype sign average
+    point = point / iter
+    point2 = point2 / iter
+    closest = closest / iter
+  ELSEIF (@traptype == 8 || @traptype == 9) ; second closest or farthest
+    i = i - i1
+    point = point - point1
+    point2 = point2 - point3
+    closest = closest - closest1
+  ELSEIF (@traptype == 10 || @traptype == 11) ; two closest or farthest
+    i = round((i + i1) / 2)
+    point = (point + point1) / 2
+    point2 = (point2 + point3) / 2
+    closest = (closest + closest1) / 2
+  ELSEIF (@traptype == 14); funky average 3
+    closest = @threshold * i - closest
+  ENDIF
+
+  ; choose coloring based on method
+  IF (@trapcolor == 0); distance
+    IF (@traptype == 2 || @traptype == 3) ; first or last type
+      #index = closest / @threshold
+    ELSE; any other trap type
+      #index = closest
+    ENDIF
+  ELSEIF (@trapcolor == 1); magnitude
+    #index = cabs(point2)
+  ELSEIF (@trapcolor == 2); real
+    #index = abs(real(point2))
+  ELSEIF (@trapcolor == 3); imaginary
+    #index = abs(imag(point2))
+  ELSEIF (@trapcolor == 4); angle to trap
+    d = atan2(point2)
+    IF (d < 0)
+      d = d + #pi * 2
+    ENDIF
+    #index = d / (#pi * 2)
+  ELSEIF (@trapcolor == 5); angle to trap 2 (no aspect)
+    point = point - @trapcenter
+    d = atan2(point)
+    IF (d < 0)
+      d = d + #pi * 2
+    ENDIF
+    #index = d / (#pi * 2)
+  ELSEIF (@trapcolor == 6); angle to origin
+    d = atan2(point)
+    IF (d < 0)
+      d = d + #pi * 2
+    ENDIF
+    #index = d / (#pi * 2)
+  ELSEIF (@trapcolor == 7); angle to origin 2 (old ReallyCool)
+    #index = 0.02 * abs(atan(imag(point) / real(point)) * 180/#pi)
+  ELSEIF (@trapcolor == 8); iteration
+    d = i
+    #index = d / #maxiter
+  ENDIF
+$ENDIF  
+  
+default:
+  title = "Orbit Traps"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/orbittraps.html"
+  
+  param trapshape
+    caption = "Trap Shape"
+    default = 0
+    enum = "point" "ring" "ring 2" "egg" "hyperbola" "hypercross" \
+           "cross" "astroid" "diamond" "rectangle" "box" "lines" \
+    "waves" "mirrored waves" "mirrored waves 2" \
+   "radial waves" "radial waves 2" "ring ripples" \
+   "grid ripples" "radial ripples" "pinch" "spiral" "heart"
+    hint = "This is the shape of the orbit trap."
+  endparam
+  param diameter
+    caption = "  Diameter"
+    default = 1.0
+    hint = "This is the diameter of the trap (for ring, box, and \
+            line shapes)."
+    visible = @trapshape != "point" && @trapshape != "hypercross" && \
+              @trapshape != "cross" && @trapshape != "astroid" && \
+              @trapshape != "diamond" && @trapshape != "rectangle" && \
+              @trapshape != "radial ripples" && @trapshape != "pinch"
+  endparam
+  param traporder
+    caption = "  Order"
+    default = 4.0
+    hint = "Number of leaves for the pinch trap shape, the \
+            exponent to use for astroid curves (try 0.66667), \
+            'egginess', or the height of waves."
+    visible = @trapshape != "point" && @trapshape != "ring" && \
+              @trapshape != "ring 2" && @trapshape != "hyperbola" && \
+              @trapshape != "hypercross" && @trapshape != "cross" && \
+              @trapshape != "diamond" && @trapshape != "rectangle" && \
+              @trapshape != "box" && @trapshape != "lines" && \
+              @trapshape != "spiral"
+  endparam
+  param trapfreq
+    caption = "  Frequency"
+    default = 1.0
+    hint = "The frequency of ripples or waves."
+    visible = @trapshape == "waves" || @trapshape == "mirrored waves" || \
+              @trapshape == "mirrored waves 2" || @trapshape == "radial waves" || \
+              @trapshape == "radial waves 2" || @trapshape == "ring ripples" || \
+              @trapshape == "grid ripples" || @trapshape == "radial ripples"
+  endparam
+  param trapcolor
+    caption = "Trap Coloring"
+    default = 0
+    enum = "distance" "magnitude" "real" "imaginary" "angle to trap" \
+           "angle to trap 2" "angle to origin" "angle to origin 2" "iteration"
+    hint = "This is the information used to produce a color."
+  endparam
+
+$IFDEF DIRECT
+  param threshold
+    caption = "Threshold"
+    default = 0.25
+    min = 0
+  endparam
+
+  heading
+    caption = "Merging"
+  endheading
+  color param startcolor
+    caption = "Base Color"
+    default = rgb(0,0,0)
+    hint = "Specifies the 'base', or starting color with which all iterations' \
+            colors will be merged."
+  endparam
+  color func trapmergemode
+    caption = "Trap Color Merge"
+    default = mergenormal()
+    hint = "This chooses the merge mode used to blend colors at each iteration."
+  endfunc
+  param trapmergemodifier
+    caption = "Additional Alpha"
+    default = 0
+    enum = "none" "distance"
+    hint = "Specifies an additional alpha value to incorporate during merging."
+  endparam
+  param trapmergeopacity
+    caption = "Trap Merge Opacity"
+    default = 0.2
+    hint = "Sets the opacity of each trap shape. Even if you set this value to 1 \
+        (forcing all traps to be fully opaque) you can still control opacity \
+        using the alpha channel in the gradient."
+  endparam
+  param trapmergeorder
+    caption = "Trap Merge Order"
+    default = 0
+    enum = "bottom-up" "top-down"
+    hint = "Sets the order in which traps will be merged. Bottom-up merges new \
+    traps on top of previous ones. Top-down merges new traps underneath \
+    previous ones."
+  endparam
+
+$ELSE
+  param traptype
+    caption = "Trap Mode"
+    default = 0
+    enum = "closest" "farthest" "first" "last" "sum" "average" "product" \
+           "sign average" "second closest" "second farthest" "two closest" \
+           "two farthest" "alternating average" "alternating average 2" "inverted sum" \
+           "exponential average" "average change" "inverted sum squared" \
+           "trap only"
+    hint = "This is how points will be chosen to use for coloring."
+  endparam
+  param threshold
+    caption = "  Threshold"
+    hint = "This is the width of the trap area, used for most trap modes."
+    visible = @traptype != "sign average" && @traptype != "average change"
+    default = 0.25
+    min = 0
+  endparam
+$ENDIF
+
+  heading
+    caption = "Options"
+  endheading
+  param trapcenter
+    caption = "Trap Center"
+    default = (0,0)
+    hint = "This is the location of the trap in the complex plane."
+  endparam
+  param aspect
+    caption = "Aspect Ratio"
+    default = 1.0
+    min = 0.0000000001
+    hint = "This is how square the trap is.  You can distort the \
+            trap by using a value other than 1.0."
+  endparam
+  param angle
+    caption = "Rotation"
+    default = 0.0
+    hint = "This is the angle, in degrees, that the trap should \
+            be rotated."
+  endparam
+  param solidcolor
+    caption = "Use Solid Color"
+    default = false
+    hint = "If enabled, areas 'outside' the trap area will be colored \
+            with the 'solid color' on the coloring tab."
+  endparam
+}
+
+
+DirectOrbitTraps {
+;
+; General Direct Orbit Traps coloring algorithm, suitable for almost
+; all fractal types. Computes and combines colors at every iteration.
+;
+; Originally written by Damien M. Jones.
+;
+init:
+; OrbitTraps and DirectOrbitTraps are exactly the same, except for the
+; title. The DIRECT symbol is used to switch between the two formulas.
+$DEFINE DIRECT
+  float d = 0.0
+  float d2 = 0.0
+  complex z2 = (0,0)
+  int iter = 0
+  float diameter2 = sqr(@diameter)
+  complex r = (0,1) ^ (@angle / 90.0)
+  complex r0 = (0,0)
+  complex rh = (0,1) ^ (@traporder / 8); heart rotation value
+  complex zh = (0,0)
+  complex trapcenter2 = @trapcenter
+
+  if @trapshape == "ring ripples" || @trapshape == "grid ripples" || \
+     @trapshape == "radial ripples"
+    diameter2 = #pi / @diameter
+  endif
+
+$IFDEF DIRECT
+  color accumulator = @startcolor; initialize color accumulator
+  color current = rgb(0,0,0); holds current iteration's color
+  
+$ELSE
+  float closest = 1e38
+  float closest1 = 1e38
+  complex point = (0,0)
+  complex point1 = (0,0)
+  complex point2 = (0,0)
+  complex point3 = (0,0)
+  bool done = false
+  int i = 0
+  int i1 = 0
+  
+  if @traptype == "farthest" || @traptype == "sum" || \
+     @traptype == "average" || @traptype == "sign average" || \
+     @traptype == "alternating average" || @traptype == "alternating average 2" || \
+     @traptype == "inverted sum" || @traptype == "exponential average" || \
+     @traptype == "average change" || @traptype == "inverted sum squared" || \
+     @traptype == "trap only"
+    closest = 0.0
+  elseif @traptype == "product"
+    closest = 1.0
+  elseif @traptype == "second farthest" || @traptype == "two farthest"
+    closest = 0.0
+    closest = 0.0
+  endif
+$ENDIF  
+
+  bool usesolid = true   ; assume a solid color
+
+loop:
+  iter = iter + 1        ; iteration counter
+
+$IFDEF DIRECT
+  z2 = #z
+$ELSE
+  if @traptype == "trap only"   ; trap only, work on unadulterated pixel
+    z2 = #pixel
+  else
+    z2 = #z
+  endif
+$ENDIF
+  
+  z2 = (z2 - trapcenter2) * r; rotate  
+  
+  if @aspect != 1.0
+    z2 = real(z2) + flip(imag(z2) * @aspect) ; apply aspect
+  endif
+  
+  ; determine distance from trap -- different for each shape
+  if @trapshape == "point"
+    d = cabs(z2)
+  elseif @trapshape == "ring"
+    d = abs(cabs(z2) - @diameter)
+  elseif @trapshape == "ring 2"
+    d = abs(|z2| - diameter2)
+  elseif @trapshape == "egg"
+    d = (cabs(z2-flip(@diameter)*2) + cabs(z2)*@traporder*0.5) * 0.25
+  elseif @trapshape == "hyperbola"
+    d = abs(imag(z2) * real(z2) - @diameter)
+  elseif @trapshape == "hypercross"
+    d = abs(imag(z2) * real(z2))
+  elseif @trapshape == "cross"
+    d = abs(real(z2))
+    d2 = abs(imag(z2))
+    if d2 < d
+      d = d2
+    endif
+  elseif @trapshape == "astroid"
+    d = abs(real(z2))^@traporder + abs(imag(z2))^@traporder
+    if @traporder < 0
+      d = 1/d
+    endif
+  elseif @trapshape == "diamond"
+    d = abs(real(z2)) + abs(imag(z2))
+  elseif @trapshape == "rectangle"
+    d = abs(real(z2))
+    d2 = abs(imag(z2))
+    if d2 > d
+      d = d2
+    endif
+  elseif @trapshape == "box"
+    d = abs(real(z2))
+    d2 = abs(imag(z2))
+    if d2 > d
+      d = d2
+    endif
+    d = abs(d - @diameter)
+  elseif @trapshape == "lines"
+    d = abs(abs(imag(z2)) - @diameter)
+  elseif @trapshape == "waves"
+    d = abs(abs(imag(z2) + sin(real(z2)*@trapfreq)*@traporder*0.25) - @diameter)
+  elseif @trapshape == "mirrored waves"
+    d = abs(abs(imag(z2)) - @diameter + sin(real(z2)*@trapfreq)*@traporder*0.25)
+  elseif @trapshape == "mirrored waves 2"
+    d2 = @diameter - sin(real(z2)*@trapfreq)*@traporder*0.25; compute wave height
+    d  = abs(abs(imag(z2)) - d2); distance to each wave
+    d2 = abs(abs(imag(z2)) + d2)
+    if d2 < d
+      d = d2
+    endif
+  elseif @trapshape == "radial waves"
+    d2 = atan2(z2)
+    d = abs(cabs(z2) * (1 - sin(d2*@trapfreq)*@traporder*0.125) - @diameter)
+  elseif @trapshape == "radial waves 2"
+    d2 = atan2(z2)
+    d2 = sin(d2*@trapfreq)*@traporder*0.125
+    d = abs(cabs(z2) * (1 - d2) - @diameter)
+    d2 = abs(cabs(z2) * (1 + d2) - @diameter)
+    if d2 < d
+      d = d2
+    endif
+  elseif @trapshape == "ring ripples"
+    d = cabs(z2)
+    if d < @traporder
+      d = cos(d * diameter2 * @trapfreq) * sqr(1-d/@traporder)
+    else
+      d = 0
+    endif
+  elseif @trapshape == "grid ripples"
+    d = cabs(z2)
+    if d < @traporder
+      d = (cos(real(z2)*diameter2*@trapfreq) + cos(imag(z2)*diameter2*@trapfreq)) * sqr(1-d/@traporder) * 0.5
+    else
+      d = 0
+    endif
+  elseif @trapshape == "radial ripples"
+    d = atan2(z2)
+    d2 = cabs(z2)
+    if d2 < @traporder
+      d = cos(4 * d * @trapfreq) * sqr(1-d2/@traporder)
+    else
+      d = 0
+    endif
+  elseif @trapshape == "pinch"
+    d2 = atan2(z2)
+    if d2 < 0
+      d2 = d2 + 2*#pi
+    endif
+    d = sqrt(cabs(z2)) / abs(sin(d2*@traporder*0.5))
+  elseif @trapshape == "spiral"
+    d = 1/(cabs(z2)) * @diameter
+    r0 = (0,1) ^ d
+    z2 = z2 * r0
+    d = atan(abs(imag(z2)/real(z2)))
+  elseif @trapshape == "heart"
+    zh = real(z2) + flip(abs(imag(z2)))
+    zh = zh*rh * 3 / @diameter
+    d = abs(real(zh) - sqr(imag(zh)) + 3)
+  endif
+
+$IFDEF DIRECT
+  ; Compute direct color. This code is very similar to the normal processing
+  ; in the final section.
+  IF (d < @threshold); orbit is close enough to shape
+    IF (@trapcolor == "distance"); distance
+      current = gradient(d/@threshold)
+    ELSEIF (@trapcolor == "magnitude"); magnitude
+      current = gradient(cabs(z2))
+    ELSEIF (@trapcolor == "real"); real
+      current = gradient(abs(real(z2)))
+    ELSEIF (@trapcolor == "imaginary"); imaginary
+      current = gradient(abs(imag(z2)))
+    ELSEIF (@trapcolor == "angle to trap"); angle to trap
+      d2 = atan2(z2)
+      IF (d2 < 0)
+        d2 = d2 + #pi * 2
+      ENDIF
+      current = gradient(d2 / (#pi * 2))
+    ELSEIF (@trapcolor == "angle to origin"); angle to origin
+      d2 = atan2(#z)
+      IF (d2 < 0)
+        d2 = d2 + #pi * 2
+      ENDIF
+      current = gradient(d2 / (#pi * 2))
+    ELSEIF (@trapcolor == "angle to origin 2") ; angle to origin 2 (old ReallyCool)
+      current = gradient(0.02 * abs(atan(imag(#z) / real(#z)) * 180/#pi))
+    ELSEIF (@trapcolor == "iteration"); iteration
+      current = gradient(iter / #maxiter)
+    ENDIF
+
+    IF (@trapmergemodifier == "distance")
+      current = rgba(red(current), green(current), blue(current), alpha(current) * (1 - d / @threshold))
+    ENDIF
+    IF (@trapmergeorder == "bottom-up")
+      accumulator = compose(accumulator, blend(current, @trapmergemode(accumulator, current), alpha(accumulator)), @trapmergeopacity)
+    ELSEIF (@trapmergeorder == "top-down")
+      accumulator = compose(current, blend(accumulator, @trapmergemode(current, accumulator), alpha(current)), @trapmergeopacity)
+    ENDIF
+  ENDIF
+
+$ELSE
+  ; now adjust closest/point/i as needed
+  IF (@traptype == 0); closest
+    IF (d < closest)
+      i = iter
+      point = #z
+      point2 = z2
+      closest = d
+    ENDIF
+    IF (d < @threshold)
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 1); farthest (within threshold)
+    IF (d > closest && d < @threshold)
+      i = iter
+      point = #z
+      point2 = z2
+      closest = d
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 2); first (within threshold)
+    IF (d < @threshold && done == false)
+      i = iter
+      point = #z
+      point2 = z2
+      closest = d
+      done = true
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 3); last (within threshold)
+    IF (d < @threshold)
+      i = iter
+      point = #z
+      point2 = z2
+      closest = d
+      done = true
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 4); sum (within threshold)
+    IF (d < @threshold)
+      i = iter
+      point = point + #z
+      point2 = point2 + z2
+      closest = closest + d
+      usesolid = false
+   ENDIF
+  ELSEIF (@traptype == 5); average (within threshold)
+    IF (d < @threshold)
+      i = iter
+      i1 = i1 + 1
+      point = point + #z
+      point2 = point2 + z2
+      closest = closest + d
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 6); product (within threshold)
+    IF (d < @threshold)
+      i = iter
+      point = point * #z / @threshold
+      point2 = point2 * z2 / @threshold
+      closest = closest * d / @threshold
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 7); sign average
+    IF (d < d2)
+      i = i + 1
+      point = point + #z
+      point2 = point2 + z2
+      closest = closest + 1
+      usesolid = false
+    ELSE
+      i = i - 1
+    ENDIF
+    d2 = d
+  ELSEIF (@traptype == 8 || @traptype == 10) ; second/two closest
+    IF (d < closest)
+      i1 = i
+      point1 = point
+      point3 = point2
+      closest1 = closest
+      i = iter
+      point = #z
+      point2 = z2
+      closest = d
+    ELSEIF (d < closest1)
+      i1 = iter
+      point1 = #z
+      point3 = z2
+      closest1 = d
+    ENDIF
+    IF (d < @threshold)
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 9 || @traptype == 11) ; second/two farthest
+    IF (d > closest && d < @threshold)
+      i1 = i
+      point1 = point
+      point3 = point2
+      closest1 = closest
+      i = iter
+      point = #z
+      point2 = z2
+      closest = d
+      usesolid = false
+    ELSEIF (d > closest1 && d < @threshold)
+      i1 = iter
+      point1 = #z
+      point3 = z2
+      closest1 = d
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 12); funky average
+    IF (d < @threshold)
+      i = i + 1
+      point = #z - point
+      point2 = z2 - point2
+      closest = @threshold - abs(closest - d)
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 13); funky average 2
+    IF (d < @threshold)
+      i = i + 1
+      point = #z - point
+      point2 = z2 - point2
+      closest = abs(d - @threshold + closest)
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 14); funky average 3 (Luke Plant)
+    IF (d < @threshold)
+      i = i + 1
+      d2 = d/@threshold
+      point = #z + (point-#z) * d2
+      point2 = z2 + (point2-z2) * d2
+      closest = closest + d
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 15); funky average 4 (exponential average)
+    IF (d < @threshold)
+      i = i + 1
+      point = #z - point
+      point2 = z2 - point2
+      closest = closest + exp(-d)
+      usesolid = false
+    ENDIF
+  ELSEIF (@traptype == 16); funky average 5 (average distance change)
+    IF (d < d2)
+      point = point + #z
+      point2 = point2 + z2
+      closest = closest + d2-d
+      usesolid = false
+    ENDIF
+    d2 = d
+  ELSEIF (@traptype == 17); funky average 6 (Luke Plant, 1/squared)
+    IF (d < @threshold)
+      i = i + 1
+      usesolid = false
+    ENDIF
+    d2 = sqr(d/@threshold)
+    point = #z + (point-#z) * d2
+    point2 = z2 + (point2-z2) * d2
+    closest = closest + 1/d2
+  ELSEIF (@traptype == 18); trap only, do first iteration
+    IF (iter == 1)
+      point = #z
+      point2 = z2
+      closest = d/@threshold
+      IF (d < @threshold)
+        usesolid = false
+      ENDIF
+    ENDIF
+  ENDIF
+$ENDIF  
+  
+final:
+  ; Apply solid color, if it is allowed.
+  if @solidcolor
+    #solid = usesolid
+  else
+    #solid = false
+  endif
+  
+$IFDEF DIRECT
+  ; Return direct color.
+  #color = accumulator
+  
+$ELSE
+  ; Calculate index value.
+  ; Un-fudge anything that was fudged.
+  IF (@traptype == 5); traptype average
+    point = point / i1
+    point2 = point2 / i1
+    closest = closest / i1
+  ELSEIF (@traptype == 6); traptype product
+    closest = abs(closest)
+  ELSEIF (@traptype == 7); traptype sign average
+    point = point / iter
+    point2 = point2 / iter
+    closest = closest / iter
+  ELSEIF (@traptype == 8 || @traptype == 9) ; second closest or farthest
+    i = i - i1
+    point = point - point1
+    point2 = point2 - point3
+    closest = closest - closest1
+  ELSEIF (@traptype == 10 || @traptype == 11) ; two closest or farthest
+    i = round((i + i1) / 2)
+    point = (point + point1) / 2
+    point2 = (point2 + point3) / 2
+    closest = (closest + closest1) / 2
+  ELSEIF (@traptype == 14); funky average 3
+    closest = @threshold * i - closest
+  ENDIF
+
+  ; choose coloring based on method
+  IF (@trapcolor == 0); distance
+    IF (@traptype == 2 || @traptype == 3) ; first or last type
+      #index = closest / @threshold
+    ELSE; any other trap type
+      #index = closest
+    ENDIF
+  ELSEIF (@trapcolor == 1); magnitude
+    #index = cabs(point2)
+  ELSEIF (@trapcolor == 2); real
+    #index = abs(real(point2))
+  ELSEIF (@trapcolor == 3); imaginary
+    #index = abs(imag(point2))
+  ELSEIF (@trapcolor == 4); angle to trap
+    d = atan2(point2)
+    IF (d < 0)
+      d = d + #pi * 2
+    ENDIF
+    #index = d / (#pi * 2)
+  ELSEIF (@trapcolor == 5); angle to trap 2 (no aspect)
+    point = point - @trapcenter
+    d = atan2(point)
+    IF (d < 0)
+      d = d + #pi * 2
+    ENDIF
+    #index = d / (#pi * 2)
+  ELSEIF (@trapcolor == 6); angle to origin
+    d = atan2(point)
+    IF (d < 0)
+      d = d + #pi * 2
+    ENDIF
+    #index = d / (#pi * 2)
+  ELSEIF (@trapcolor == 7); angle to origin 2 (old ReallyCool)
+    #index = 0.02 * abs(atan(imag(point) / real(point)) * 180/#pi)
+  ELSEIF (@trapcolor == 8); iteration
+    d = i
+    #index = d / #maxiter
+  ENDIF
+$ENDIF  
+  
+default:
+  title = "Direct Orbit Traps"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/directorbittraps.html"
+
+  param trapshape
+    caption = "Trap Shape"
+    default = 0
+    enum = "point" "ring" "ring 2" "egg" "hyperbola" "hypercross" \
+           "cross" "astroid" "diamond" "rectangle" "box" "lines" \
+    "waves" "mirrored waves" "mirrored waves 2" \
+   "radial waves" "radial waves 2" "ring ripples" \
+   "grid ripples" "radial ripples" "pinch" "spiral" "heart"
+    hint = "This is the shape of the orbit trap."
+  endparam
+  param diameter
+    caption = "  Diameter"
+    default = 1.0
+    hint = "This is the diameter of the trap (for ring, box, and \
+            line shapes)."
+    visible = @trapshape != "point" && @trapshape != "hypercross" && \
+              @trapshape != "cross" && @trapshape != "astroid" && \
+              @trapshape != "diamond" && @trapshape != "rectangle" && \
+              @trapshape != "radial ripples" && @trapshape != "pinch"
+  endparam
+  param traporder
+    caption = "  Order"
+    default = 4.0
+    hint = "Number of leaves for the pinch trap shape, the \
+            exponent to use for astroid curves (try 0.66667), \
+            'egginess', or the height of waves."
+    visible = @trapshape != "point" && @trapshape != "ring" && \
+              @trapshape != "ring 2" && @trapshape != "hyperbola" && \
+              @trapshape != "hypercross" && @trapshape != "cross" && \
+              @trapshape != "diamond" && @trapshape != "rectangle" && \
+              @trapshape != "box" && @trapshape != "lines" && \
+              @trapshape != "spiral"
+  endparam
+  param trapfreq
+    caption = "  Frequency"
+    default = 1.0
+    hint = "The frequency of ripples or waves."
+    visible = @trapshape == "waves" || @trapshape == "mirrored waves" || \
+              @trapshape == "mirrored waves 2" || @trapshape == "radial waves" || \
+              @trapshape == "radial waves 2" || @trapshape == "ring ripples" || \
+              @trapshape == "grid ripples" || @trapshape == "radial ripples"
+  endparam
+  param trapcolor
+    caption = "Trap Coloring"
+    default = 0
+    enum = "distance" "magnitude" "real" "imaginary" "angle to trap" \
+           "angle to trap 2" "angle to origin" "angle to origin 2" "iteration"
+    hint = "This is the information used to produce a color."
+  endparam
+
+$IFDEF DIRECT
+  float param threshold
+    caption = "Threshold"
+    default = 0.25
+    min = 0
+  endparam
+
+  heading
+    caption = "Merging"
+  endheading
+  color param startcolor
+    caption = "Base Color"
+    default = rgb(0,0,0)
+    hint = "Specifies the 'base', or starting color with which all iterations' \
+            colors will be merged."
+  endparam
+  color func trapmergemode
+    caption = "Trap Color Merge"
+    default = mergenormal()
+    hint = "This chooses the merge mode used to blend colors at each iteration."
+  endfunc
+  param trapmergemodifier
+    caption = "Additional Alpha"
+    default = 0
+    enum = "none" "distance"
+    hint = "Specifies an additional alpha value to incorporate during merging."
+  endparam
+  param trapmergeopacity
+    caption = "Trap Merge Opacity"
+    default = 0.2
+    hint = "Sets the opacity of each trap shape. Even if you set this value to 1 \
+        (forcing all traps to be fully opaque) you can still control opacity \
+        using the alpha channel in the gradient."
+  endparam
+  param trapmergeorder
+    caption = "Trap Merge Order"
+    default = 0
+    enum = "bottom-up" "top-down"
+    hint = "Sets the order in which traps will be merged. Bottom-up merges new \
+    traps on top of previous ones. Top-down merges new traps underneath \
+    previous ones."
+  endparam
+
+$ELSE
+  param traptype
+    caption = "Trap Mode"
+    default = 0
+    enum = "closest" "farthest" "first" "last" "sum" "average" "product" \
+           "sign average" "second closest" "second farthest" "two closest" \
+           "two farthest" "alternating average" "alternating average 2" "inverted sum" \
+           "exponential average" "average change" "inverted sum squared" \
+           "trap only"
+    hint = "This is how points will be chosen to use for coloring."
+  endparam
+  param threshold
+    caption = "  Threshold"
+    hint = "This is the width of the trap area, used for most trap modes."
+    visible = @traptype != "sign average" && @traptype != "average change"
+    default = 0.25
+    min = 0
+  endparam
+$ENDIF
+
+  heading
+    caption = "Options"
+  endheading
+  param trapcenter
+    caption = "Trap Center"
+    default = (0,0)
+    hint = "This is the location of the trap in the complex plane."
+  endparam
+  param aspect
+    caption = "Aspect Ratio"
+    default = 1.0
+    min = 0.0000000001
+    hint = "This is how square the trap is.  You can distort the \
+            trap by using a value other than 1.0."
+  endparam
+  param angle
+    caption = "Rotation"
+    default = 0.0
+    hint = "This is the angle, in degrees, that the trap should \
+            be rotated."
+  endparam
+  param solidcolor
+    caption = "Use Solid Color"
+    default = false
+    hint = "If enabled, areas 'outside' the trap area will be colored \
+            with the 'solid color' on the coloring tab."
+  endparam
+}
+
