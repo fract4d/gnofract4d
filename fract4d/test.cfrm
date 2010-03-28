@@ -1,0 +1,112 @@
+dca2 {
+final: 
+float ed = @bailout/(|z| + 1.0e-9) 
+float index = (#numiter + ed) / 256.0
+#color = gradient(index)
+default:
+float param bailout
+	default = 4.0
+endparam
+}
+
+flat {
+final:
+ #index = real(@myfunc(@val)) + |@val2|*0.0
+default:
+float param val
+	default = 0.4
+endparam
+func myfunc
+	default = abs()
+endfunc
+hyper param val2
+	default = (0.7,0.8,0.9,1)
+endparam
+int param i
+	default = 4
+endparam
+bool param b
+	default = true
+endparam
+param ep
+	enum = "hello" "world" "zook"
+	default = "world"
+endparam
+color param col
+	default = rgba(0.01, 0.02, 0.03, 0.04)
+endparam
+color func mycolorfunc
+	default = mergenormal()
+endfunc
+} 
+
+flat2 {
+final:
+#index = real(@myfunc(@val))
+default:
+float param val
+	default = 0.4
+endparam
+float func myfunc
+	default = abs()
+endfunc
+} 
+
+Triangle {
+;
+; Variation on the Triangle Inequality Average coloring method 
+; from Kerry Mitchell. The smoothing used here is based on the
+; Smooth formula, which only works for z^n+c and derivates.
+;
+; Written by Damien M. Jones
+;
+init:
+  float sum = 0.0
+  float sum2 = 0.0
+  float ac = cabs(#pixel)
+  float il = 1/log(@power)
+  float lp = log(log(@bailout)/2.0)
+  float az2 = 0.0
+  float lowbound = 0.0
+  float f = 0.0
+  BOOL first = true
+loop:
+  sum2 = sum
+  IF (!first)
+    az2 = cabs(#z - #pixel)
+    lowbound = abs(az2 - ac)
+    sum = sum + ((cabs(#z) - lowbound) / (az2+ac - lowbound))
+  ELSE
+    first = false
+  ENDIF
+final:
+  sum = sum / (#numiter)
+  sum2 = sum2 / (#numiter-1)
+  f = il*lp - il*log(log(cabs(#z)))
+  #index = sum2 + (sum-sum2) * (f+1)  
+default:
+  title = "Triangle Inequality Average"
+  helpfile = "Uf3.chm"
+  helptopic = "Html/coloring/standard/triangleinequalityaverage.html"
+  param power
+    caption = "Exponent"
+    default = 2.0
+    hint = "This should be set to match the exponent of the \
+            formula you are using. For Mandelbrot, this is 2."
+  endparam
+  param bailout
+    caption = "Bailout"
+    default = 1e20
+    min = 1
+    hint = "This should be set to match the bail-out value in \
+            the Formula tab. Use a very high value for good results."
+  endparam
+}
+
+image {
+final:
+	#color = @image(#z)
+default:
+image param @image
+endparam
+}
