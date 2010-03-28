@@ -7,6 +7,7 @@ changes in 3.13:
 * B	switch from md5 to hashlib.md5 to remove DeprecationWarning on py2.6
 * W	min pygtk version -> 2.12
 * B	fixed deprecationwarnings from pygtk about Tooltips class
+* W	moved repository to git
 
 bugs (the more B's, the worse the bug):
 * BBB	too slow!
