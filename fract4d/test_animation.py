@@ -4,6 +4,7 @@
 
 import unittest
 import sys
+import os
 
 import animation, fractal, fc
 
@@ -116,7 +117,8 @@ class Test(unittest.TestCase):
         anim2 = animation.T(g_comp)
         anim2.load_animation("test.fcta")
         self.checkExpectedLoadedValues(anim2)
-        
+        os.remove("test.fcta")
+
     def testCreateList(self):
         self.anim.add_keyframe("f1.fct", 10, 4, animation.INT_LOG)
 	self.anim.add_keyframe("f2.fct", 6, 3, animation.INT_LOG)

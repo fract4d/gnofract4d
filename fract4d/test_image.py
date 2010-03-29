@@ -155,7 +155,7 @@ class Test(testbase.TestBase):
             self.saveTestImage(f)
             self.doTestLoad(f)
         finally:
-            pass #if os.path.exists(f): os.remove(f)
+            if os.path.exists(f): os.remove(f)
             
     def testLoadBadType(self):
         self.assertRaises(ValueError,self.doTestLoad,"foo.xxx")

@@ -1203,7 +1203,7 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         
         im = image.T(40,30)
         f.draw(im)
-        im.save("no_warp.png") # should be completely white
+        #im.save("no_warp.png") # should be completely white
 
         # now set the parameter to be warped
         f.set_warp_param("@p1")
@@ -1213,7 +1213,7 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         self.assertNotEqual(-1,s.find("@p1=warp"))
 
         f.draw(im)
-        im.save("yes_warp.png") # should look like a circle
+        #im.save("yes_warp.png") # should look like a circle
 
     def round_trip(self,f):
         f2 = fractal.T(self.compiler)

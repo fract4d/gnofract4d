@@ -667,7 +667,7 @@ class Test(testbase.TestBase):
             dirty=is_dirty)
 
         #print "1st pass %s" % is_dirty
-        #fract4dc.image_save(image, "pass1%d.tga" % is_dirty)
+        #fract4dc.image_save(image, "/tmp/pass1%d.tga" % is_dirty)
         #self.print_fates(image,xsize,ysize)
         
         cmap = fract4dc.cmap_create(
@@ -692,7 +692,7 @@ class Test(testbase.TestBase):
 
         #print "2nd pass %s" % is_dirty
         #self.print_fates(image,xsize,ysize)
-        im.save("pass2%d.tga" % is_dirty)
+        im.save("/tmp/pass2%d.tga" % is_dirty)
         
         return [] # fract4dc.image_buffer(image)
         
