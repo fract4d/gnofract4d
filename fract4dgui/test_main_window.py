@@ -168,7 +168,8 @@ class Test(unittest.TestCase):
                          self.mw.f.serialize())
             
         self.mw.set_explorer_state(False)
-            
+        os.remove("main.fct")
+        os.remove("sub3.fct")
 
     def testPlanes(self):
         self.mw.set_xz_plane(None,None)

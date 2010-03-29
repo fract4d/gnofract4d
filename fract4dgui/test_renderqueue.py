@@ -59,6 +59,7 @@ class Test(unittest.TestCase):
         self.wait()
 
         self.assertEqual(0, len(rq.queue))
+        os.remove("rq1.png")
 
     def testQueueDialog(self):
         f = fractal.T(g_comp)
@@ -70,7 +71,8 @@ class Test(unittest.TestCase):
         rq.connect('done', self.quitloop)
         rq.start()
         self.wait()
-        
+        os.remove("foo.png"); os.remove("foo2.png"); os.remove("foo3.png")
+
 def suite():
     return unittest.makeSuite(Test,'test')
 

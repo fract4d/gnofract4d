@@ -103,7 +103,8 @@ class TestHidden(unittest.TestCase):
         f.connect('status-changed', self.quitloop)
         f.draw_image("hires.png")
         self.wait()
-        
+        os.remove("hires.png")
+
 class Test(unittest.TestCase):
     def setUp(self):
         global g_comp

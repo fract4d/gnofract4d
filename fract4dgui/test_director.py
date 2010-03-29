@@ -64,6 +64,9 @@ class Test(unittest.TestCase):
             self.assertEqual(True,os.path.exists("video.avi"))
 
         dd.destroy()
+        os.remove("list")
+        os.remove("./image_0000000.png")
+        os.remove("./image_0000001.png")
 
     def assertRaisesMessage(self, excClass, msg, callable, *args, **kwargs):
         try:
