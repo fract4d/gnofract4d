@@ -97,12 +97,12 @@ class T:
         fract4dc.image_read(self._img, fp,type)
         
     def start_save(self,name):
+        ft = self.file_type(name)
         try:
             self.fp = open(name, "wb")
         except IOError, err:
             raise IOError("Unable to save image to '%s' : %s" % (name,err.strerror))
-        self.writer = fract4dc.image_writer_create(
-            self._img, self.fp, self.file_type(name))
+        self.writer = fract4dc.image_writer_create(self._img, self.fp, ft)
         fract4dc.image_save_header(self.writer)
         return file
 

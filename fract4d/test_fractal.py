@@ -1233,7 +1233,7 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         im = image.T(w,h)
         f.draw(im)
 
-        im.save("foo.tga")
+        im.save("/tmp/foo.tga")
         # check that result is horizontally symmetrical
         buf = im.image_buffer(0,0)
         for y in xrange(h):
@@ -1661,7 +1661,7 @@ solids=[
         f.compile()
         im = image.T(30,30)
         f.draw(im)
-        im.save("foo.tga")
+        im.save("/tmp/foo.tga")
 
     def disabled_testPeriodColorfunc(self):
         f = fractal.T(self.compiler)

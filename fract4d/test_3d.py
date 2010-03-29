@@ -165,14 +165,14 @@ class Test(testbase.TestBase):
             image=self.im._img,
             site=self.f.site)
 
-        self.im.save("hs.tga")
+        #self.im.save("hs.tga")
         
     def testDrawMBrot(self):
         self.f.set_formula("gf4d.frm", "Mandelbrot")
         self.f.compile()
         im = image.T(80,60)
         self.f.draw(im)
-        im.save("mb.tga")
+        #im.save("mb.tga")
         
 def suite():
     return unittest.makeSuite(Test,'test')
