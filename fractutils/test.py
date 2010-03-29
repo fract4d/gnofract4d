@@ -17,11 +17,12 @@ def suite():
 def main():
     unittest.main(defaultTest='suite')
     
-if __name__ == '__main__':
+def profile():
     import hotshot
     prof = hotshot.Profile("makemap.prof")
     prof.runcall(main)
     prof.close()
 
-    #main()
+if __name__ == '__main__':    
+    main()
 
