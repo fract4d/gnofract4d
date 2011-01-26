@@ -119,7 +119,7 @@ public:
 	info_ptr = png_create_info_struct(png_ptr);
 	if(NULL == info_ptr)
 	{
-	    png_destroy_write_struct(&png_ptr, png_infopp_NULL);
+	    png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
 	    return;
 	}
 
@@ -312,7 +312,7 @@ public:
 	info_ptr = png_create_info_struct(png_ptr);
 	if (info_ptr == NULL)
 	{
-	    png_destroy_read_struct(&png_ptr, png_infopp_NULL, png_infopp_NULL);
+	    png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
 	    return;
 	}
 
@@ -325,7 +325,7 @@ public:
 	//printf("shutdown\n");
 	if(ok)
 	{
-	    png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
+	    png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 	}
     }
 
@@ -351,7 +351,7 @@ png_reader::read_header()
     
     //printf("get IHDR\n");
     png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
-		 &interlace_type, int_p_NULL, int_p_NULL);
+		 &interlace_type, (int *)NULL, (int *)NULL);
 
     //printf("set res(%d,%d)\n",width,height);
     if(!im->set_resolution(width, height, -1, -1))
@@ -372,7 +372,7 @@ png_reader::read_tile()
 	for (int y = 0; y < im->Yres(); y++)
 	{
 	    png_bytep row = (png_bytep)(im->getBuffer() + im->row_length() * y); 
-	    png_read_rows(png_ptr, &row, png_bytepp_NULL, 1);
+	    png_read_rows(png_ptr, &row, (png_bytepp)NULL, 1);
 	}
     }
     return true;
