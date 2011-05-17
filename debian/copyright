@@ -6,7 +6,8 @@ It was downloaded from http://gnofract4d.sourceforge.net/download.html
 Upstream Author: Tim Whidbey <catenary@users.sourceforge.net>
 
 Copyrights:
-	(c) 1999-2007, Tim Whidbey.
+	(c) 1999-2011, Tim Whidbey.
+	(c) 2001, Richard Mant.
 
 	fract4gui/FCTGen.py,
 	fract4gui/DlgAdvOpt.py,
