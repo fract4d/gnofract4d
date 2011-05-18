@@ -3,6 +3,7 @@ Section: graphics
 Version: 3.14-1ubuntu1
 Priority: extra
 Maintainer: Richard Mant <dx-mon@users.sourceforge.net>
+Changed-By: Richard Mant <dx-mon@users.sourceforge.net>
 Uploaders: Tim Whidbey <catenary@users.sourceforge.net>
 XSBC-Original-Maintainer: Francesco Namuri <francesco@namuri.it>
 Build-Depends: debhelper (>= 5), cdbs, python, python-dev, python-support (>= 0.5.3), libpng12-dev, libgconf2-dev, libjpeg62-dev
