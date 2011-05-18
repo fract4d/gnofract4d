@@ -19,4 +19,4 @@ class my_install_egg_info(install_egg_info):
 		install_egg_info.run()
 		if 'win' != sys.platform[:3]:
 			base = 'debian/gnofract4d'
-			os.path.walk(base, chowner, None):
+			os.path.walk(base, chowner, None)
