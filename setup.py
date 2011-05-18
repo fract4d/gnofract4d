@@ -8,7 +8,7 @@ import stat
 import commands
 import sys
 
-gnofract4d_version = '3.13'
+gnofract4d_version = '3.14'
 
 if float(sys.version[:3]) < 2.4:
     print "Sorry, you need Python 2.4 or higher to run Gnofract 4D."
@@ -136,7 +136,7 @@ module_fract4dgmp = Extension(
     undef_macros = [ 'NDEBUG']    
     )
 
-if "win" in sys.platform:
+if 'win' == sys.platform[:3]:
     warnings = '/W3'
     libs = [ 'pthreadVC2', 'libdl' ]
     osdep = [ '/DWIN32', '/DWINDOWS', '/D_USE_MATH_DEFINES', '/D_CRT_SECURE_NO_WARNINGS', '/EHsc', '/Ox' ]
