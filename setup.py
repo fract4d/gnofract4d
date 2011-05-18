@@ -26,7 +26,7 @@ if build_version and build_python and sys.version[:3] != build_version:
     print "running other Python version %s with args: %s" % (build_python,args)
     os.execv(build_python, args)
 
-from buildtools import my_bdist_rpm, my_build, my_build_ext, my_install_lib
+from buildtools import my_bdist_rpm, my_build, my_build_ext, my_install_lib, my_install_egg_info
 
 # Extensions need to link against appropriate libs
 # We use pkg-config to find the appropriate set of includes and libs
