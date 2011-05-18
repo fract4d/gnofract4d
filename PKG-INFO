@@ -1,12 +1,14 @@
 Metadata-Version: 1.0
 Name: gnofract4d
-Version: 3.13
+Version: 3.14
 Summary: A program to draw fractals
 Home-page: http://gnofract4d.sourceforge.net/
 Author: Tim Whidbey
 Author-email: catenary@users.sourceforge.net
+Maintainer: Richard Mant
+Maintainer-email: dx-mon@users.sourceforge.net
 License: UNKNOWN
-Description: Gnofract 4D is a fractal browser. It can generate many different fractals,
+Description: Gnofract 4D is a fractal browser. It can generate many different fractals, 
         including some which are hybrids between the Mandelbrot and Julia sets,
         and includes a Fractint-compatible parser for your own fractal formulas.
 Keywords: fractal Mandelbrot Julia fractint chaos
