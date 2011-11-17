@@ -282,6 +282,6 @@ def copy_libs(dummy,dirpath,namelist):
              shutil.copy(name, target)
             
 os.path.walk("build",copy_libs,None)
-if 'win' in sys.platform:
+if 'win' == sys.platform[:3]:
     shutil.copy("fract4d/fract4d_stdlib.pyd", "fract4d_stdlib.pyd")
 
