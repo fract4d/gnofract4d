@@ -271,7 +271,7 @@ lib_targets = {
     "fract4dcgmp" + so_extension : "fract4d",
     "gmpy" + so_extension: "fract4d"
     }
-if 'win' in sys.platform:
+if 'win' == sys.platform[:3]:
     lib_targets["fract4d_stdlib.lib"] = "fract4d"
 
 def copy_libs(dummy,dirpath,namelist):
