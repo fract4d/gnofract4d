@@ -747,6 +747,7 @@ class MainWindow:
             self.toolbar.hide()
             self.bar.hide()
             self.swindow.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
+            self.window.move(0, 0)
 
             screen = self.window.get_screen()
             preferences.userPrefs.set_size(
