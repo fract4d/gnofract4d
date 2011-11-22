@@ -1448,7 +1448,7 @@ class MainWindow:
             self.compiler.clear_cache()
         finally:
             gtk.main_quit()
-            if 'win' in sys.platform:
+            if 'win' == sys.platform[:3]:
                 exit(0);
 #            return False
 
