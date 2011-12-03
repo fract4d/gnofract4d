@@ -146,7 +146,7 @@ class Compiler:
         self.cache = cache.T()
         self.cache_dir = os.path.expanduser("~/.gnofract4d-cache/")
         self.init_cache()
-        if 'win' not in sys.platform:
+        if 'win' != sys.platform[:3]:
             self.compiler_name = "gcc"
             self.flags = "-fPIC -DPIC -g -O3 -shared"
             self.output_flag = "-o "
@@ -419,7 +419,7 @@ class Compiler:
         # -march=i686 for 10% speed gain
         cmd = "%s \"%s\" %s %s\"%s\"" % \
               (self.compiler_name, cfile, self.flags, self.output_flag, outputfile)
-        if 'win' in sys.platform:
+        if 'win' == sys.platform[:3]:
             cmd += " /Fo\"%s\"" % objfile
         cmd += " %s" % self.libs
         #print "cmd: %s" % cmd

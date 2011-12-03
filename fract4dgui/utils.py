@@ -64,7 +64,7 @@ def timeout_add(time,callable):
     except AttributeError:
         gtk.timeout_add(time,callable)
 
-if 'win' not in sys.platform:
+if 'win' != sys.platform[:3]:
     def input_add(fd,cb):
         try:
             _throwback()

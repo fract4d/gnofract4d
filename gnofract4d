@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/opt/local/bin/python2.7
 
 # the main program. Relies on fract4d libs to do the real work
 

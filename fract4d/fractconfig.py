@@ -7,7 +7,7 @@ class T(ConfigParser.ConfigParser):
     def __init__(self, file):
         _shared_formula_dir = self.get_data_path("formulas")
         _shared_map_dir = self.get_data_path("maps")
-        if 'win' in sys.platform:
+        if 'win' == sys.platform[:3]:
             comp = 'cl'
         else:
             comp = 'gcc'
@@ -137,7 +137,7 @@ class T(ConfigParser.ConfigParser):
 
     def get_default_compiler_options(self):
         # appears to work for most unixes
-		if 'win' in sys.platform:
+		if 'win' == sys.platform[:3]:
 			return "/Ox /EHsc /Gd /nologo /W3 /LD /MT /TP /DWIN32 /DWINDOWS /D_USE_MATH_DEFINES"
 		else:
 			return "-fPIC -DPIC -D_REENTRANT -O2 -shared -ffast-math"

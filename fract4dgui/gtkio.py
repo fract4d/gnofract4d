@@ -10,7 +10,7 @@ except ImportError, err:
 
 class gtkio:
 	def read(self, fd, len):
-		if 'win' in sys.platform:
+		if 'win' == sys.platform[:3]:
 			return fract4dc.read(fd, len)
 		else:
 			return os.read(fd, len)
