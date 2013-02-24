@@ -1,8 +1,14 @@
+gnofract4d (3.14.1-1ubuntu1) lucid; urgency=low
+
+	* Windows vs Mac fixes
+
+ -- Rachel Mant <dx-mon@users.sourceforge.net>  [date]
+
 gnofract4d (3.14-1ubuntu1) lucid; urgency=low
 
   * New version of program
  
- -- Richard Mant <dx-mon@users.sourceforge.net>  Wed, 18 May 2011 21:00:00 +0100
+ -- Rachel Mant <dx-mon@users.sourceforge.net>  Wed, 18 May 2011 21:00:00 +0100
 
 gnofract4d (3.13-1ubuntu1) gutsy; urgency=low
 

@@ -17,7 +17,7 @@ class Bag:
         
 announce = Bag(
     date="May 18th, 2011",
-    text="Version 3.14 released. This contains bug fixes for Ubuntu .deb files, and Mac vs Windows in the build system.")
+    text="Version 3.14.1 released. This contains bug fixes for Mac vs Windows in the build system.")
 
 manual_pages = [
     Bag(name="Using Gnofract 4D",

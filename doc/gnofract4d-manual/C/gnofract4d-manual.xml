@@ -10,7 +10,7 @@
 <!ENTITY gf4d "<application>Gnofract 4D</application>">
 <!ENTITY fractint "<application>Fractint</application>">
 <!ENTITY ultrafractal "<application>UltraFractal</application>">
-<!ENTITY version "3.14">
+<!ENTITY version "3.14.1">
 
 ]>
 <article id="gnofract4d">

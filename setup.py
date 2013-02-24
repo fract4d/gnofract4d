@@ -8,7 +8,7 @@ import stat
 import commands
 import sys
 
-gnofract4d_version = '3.14'
+gnofract4d_version = '3.14.1'
 
 if float(sys.version[:3]) < 2.4:
     print "Sorry, you need Python 2.4 or higher to run Gnofract 4D."
