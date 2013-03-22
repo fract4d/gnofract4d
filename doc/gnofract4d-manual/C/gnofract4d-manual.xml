@@ -15,7 +15,10 @@
 ]>
 <article id="gnofract4d">
 <articleinfo>
-<author><firstname>Tim</firstname><surname>Whidbey</surname></author>
+<authorgroup>
+	<author><firstname>Tim</firstname><surname>Whidbey</surname></author>
+	<author><firstname>Rachel</firstname><surname>Mant</surname></author>
+</authorgroup>
 <date>1999-12-12</date>
 <title>Gnofract 4D</title>
 <subtitle><emphasis>For when 2D fractals just aren't weird enough</emphasis></subtitle>
@@ -1191,8 +1194,8 @@ will happen. </para> </warning>
 <para>
 <emphasis>Please</emphasis> report any bugs you encounter, either by
 mailing <ulink
-url="mailto:catenary@users.sourceforge.net">
-catenary@users.sourceforge.net</ulink> or by
+url="mailto:dx-mon@users.sourceforge.net">
+dx-mon@users.sourceforge.net</ulink> or by
 using the <ulink
 url="http://sourceforge.net/tracker/?func=add&amp;group_id=785&amp;atid=100785">
 bug form</ulink> at SourceForge. I'll do my best to fix them.  </para>
@@ -1200,7 +1203,7 @@ bug form</ulink> at SourceForge. I'll do my best to fix them.  </para>
 </sect2>
 
 <sect2 id="compat">
-<title>Backwards Compatibility</title>
+<title>Backwards Compatibility (A note from Tim)</title>
 
 <para>
 Version 2.x contains major architectural changes from version 1.x, so
@@ -1241,6 +1244,8 @@ http://gnofract4d.sourceforge.net/</ulink>.
 <para>
 &gf4d; is Copyright 1999-2009 Tim Whidbey <ulink
 url="mailto:catenary@users.sourceforge.net">(catenary@users.sourceforge.net)
+</ulink>, and Copyright 2011-2013 Rachel Mant <ulink
+url="mailto:dx-mon@users.sourceforge.net">(dx-mon@users.sourceforge.net)
 </ulink>, and is distributed under the <emphasis>BSD
 license</emphasis>.  See the file "COPYING" for details. 
 </para>

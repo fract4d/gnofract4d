@@ -40,8 +40,9 @@ urchinTracker();
 
 <div class="announce" py:if="hasattr(page,'announce')">
 <h3>Latest news:</h3>
-<p><strong>${page.announce.date}:</strong><br/>
-${XML(page.announce.text)}
+<p py:for="announce in page.announce">
+<strong>${announce.date}:</strong><br/>
+${XML(announce.text)}
 </p>
 </div>
 
