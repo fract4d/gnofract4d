@@ -1,7 +1,7 @@
 gnofract4d (3.14.1) lucid; urgency=low
 
-	* Windows vs Mac fixes
-	* Debian build, not Ubuntu (more generic .deb, hopefully) hence removal of ubuntu tag
+  * Windows vs Mac fixes
+  * Debian build, not Ubuntu (more generic .deb, hopefully) hence removal of ubuntu tag
 
  -- Rachel Mant <dx-mon@users.sourceforge.net>  Sun, 24 Feb 2013 03:29:00 +0000
 
