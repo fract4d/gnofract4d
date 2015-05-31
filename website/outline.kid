@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://purl.org/kid/ns#" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -30,13 +30,13 @@ urchinTracker();
 	<span py:if="refpage.file == page.file">${refpage.name}</span>
 </li>
 <li>
-	<a href="https://sourceforge.net/apps/mediawiki/gnofract4d/index.php?title=Main_Page">Wiki &amp; FAQ</a>
+	<a href="https://github.com/edyoung/gnofract4d/wiki">Wiki &amp; FAQ</a>
 </li>
 <li>
-	<a href="http://sourceforge.net/projects/gnofract4d">SourceForge Page</a>
+	<a href="https://github.com/edyoung/gnofract4d">GitHub Project Page</a>
 </li>
 </ul>
-<h3 class="downloadbar"><a href="http://sourceforge.net/project/platformdownload.php?group_id=785">Download</a></h3>
+<h3 class="downloadbar"><a href="https://github.com/edyoung/gnofract4d/archive/V_3_14_1.tar.gz">Download</a></h3>
 
 <div class="announce" py:if="hasattr(page,'announce')">
 <h3>Latest news:</h3>
@@ -59,7 +59,7 @@ ${XML(body)}
 </div>
 
 <div id="footer">
-Hosted by: <a href="http://sourceforge.net/projects/gnofract4d"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=785&amp;type=12" width="120" height="30" border="0" alt="Get Gnofract 4D at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+Hosted by GitHub
 </div>
 
 </div>

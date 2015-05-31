@@ -16,12 +16,15 @@ class Bag:
         self.__dict__.update(kwds)
         
 announce = [
+        Bag(
+            date="June 1st, 2015",
+            text="Moved to GitHub"),            
 	Bag(
-		date="February 2nd, 2013",
-		text="Version 3.14.1 released. This is a bug-fix release including fixes for the manual and build system"),
+            date="February 2nd, 2013",
+            text="Version 3.14.1 released. This is a bug-fix release including fixes for the manual and build system"),
 	Bag(
-		date="May 18th, 2011",
-		text="Version 3.14 released. This contains bug fixes for Mac vs Windows in the build system.")
+            date="May 18th, 2011",
+            text="Version 3.14 released. This contains bug fixes for Mac vs Windows in the build system.")
 	]
 
 manual_pages = [
@@ -172,6 +175,7 @@ def strip_empty_hrefs(s):
     return s
 
 def process_all(pages,side_pages):
+    outdir = os.path.expanduser("~/gnofract4d-website")
     for page in pages:
         if hasattr(page,"stub"):
             continue
@@ -180,7 +184,7 @@ def process_all(pages,side_pages):
         body_text = strip_body(body_text)
 
         print "processing ",page.file
-        out = open(page.file, "w")
+        out = open(os.path.join(outdir, page.file), "w")
         template = module.Template(
             body=body_text,
             pages=side_pages,
@@ -198,5 +202,13 @@ def process_all(pages,side_pages):
             print "children",page.children
             process_all(page.children,pages)
 
+
+def copy_resources():
+    os.system("cp *.jpg ~/gnofract4d-website")
+    os.system("cp images/* ~/gnofract4d-website/images")
+    os.system("cp *.png ~/gnofract4d-website")
+    os.system("cp *.css ~/gnofract4d-website")
+    
 create_manual()
 process_all(pages,pages)
+copy_resources()
