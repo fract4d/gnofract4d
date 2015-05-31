@@ -1,0 +1,1062 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="content-type" />
+<link media="screen" href="../gnofract4d.css" type="text/css" rel="stylesheet" />
+<link media="print" href="../print.css" type="text/css" rel="stylesheet" />
+<title>Gnofract 4D: Superior Fractal Software : Language Reference</title>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+_uacct = "UA-2808912-1";
+urchinTracker();
+</script>
+</head>
+<body>
+<div id="wrap">
+<div id="header">
+<h1>Gnofract 4D</h1>
+<p><strong>"There is no excellent beauty which hath not some strangeness in the proportion."</strong><br />(Francis Bacon)</p>
+</div>
+<div id="avmenu">
+<h2 class="hide">Menu:</h2>
+<ul>
+<li>
+	<a href="../index.html">Home</a>
+</li><li>
+	<a href="../features.html">Features</a>
+</li><li>
+	<a href="../screencast.html">Screencast</a>
+</li><li>
+	<a href="../screenshots.html">Screenshots</a>
+</li><li>
+	<a href="../gallery.html">Galleries</a>
+</li><li>
+	<a href="../contributing.html">Help Wanted</a>
+</li><li>
+	<a href="../manual/index.html">Manual</a>
+</li><li>
+	<a href="../links.html">Links</a>
+</li>
+<li>
+	<a href="https://github.com/edyoung/gnofract4d/wiki">Wiki &amp; FAQ</a>
+</li>
+<li>
+	<a href="https://github.com/edyoung/gnofract4d">GitHub Project Page</a>
+</li>
+</ul>
+<h3 class="downloadbar"><a href="https://github.com/edyoung/gnofract4d/archive/V_3_14_1.tar.gz">Download</a></h3>
+</div>
+<div id="content">
+<div class="sect1" title="Formula Language Reference"><div class="titlepage"><div><div><h2  class="title">Formula Language Reference</h2></div></div></div><div class="sect2" title="Operators"><div class="titlepage"><div><div><h3 class="title">Operators</h3></div></div></div><div class="informaltable"><table border="1"><colgroup><col /><col /><col /><col /></colgroup><thead><tr><th>Name</th><th>Description</th><th>Argument Types</th><th>Return Type</th></tr></thead><tbody><tr><td align="left" rowspan="4" valign="top">
+!=</td><td align="left" rowspan="4" valign="top">
+Inequality operator. Compare two values and return true if
+      they are different.
+</td><td align="left" valign="top">
+Int, Int
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Complex, Complex
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Bool, Bool
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" rowspan="2" valign="top">
+%</td><td align="left" rowspan="2" valign="top">
+Modulus operator. Computes the remainder when x is divided by y. Not to be confused with the complex modulus.
+</td><td align="left" valign="top">
+Int, Int
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+&amp;&amp;</td><td align="left" valign="top">
+Logical AND.
+</td><td align="left" valign="top">
+Bool, Bool
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" rowspan="6" valign="top">
+*</td><td align="left" rowspan="6" valign="top">
+Multiplication operator.
+</td><td align="left" valign="top">
+Int, Int
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex, Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper, Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+Hyper, Float
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+Color, Float
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" rowspan="5" valign="top">
++</td><td align="left" rowspan="5" valign="top">
+Adds two numbers together.
+</td><td align="left" valign="top">
+Int, Int
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex, Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper, Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+Color, Color
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" rowspan="5" valign="top">
+-</td><td align="left" rowspan="5" valign="top">
+Subtracts two numbers
+</td><td align="left" valign="top">
+Int, Int
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex, Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper, Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+Color, Color
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" rowspan="5" valign="top">
+/</td><td align="left" rowspan="5" valign="top">
+Division operator
+</td><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex, Float
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Complex, Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper, Float
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+Color, Float
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" rowspan="3" valign="top">
+&lt;</td><td align="left" rowspan="3" valign="top">
+Less-than operator. Compare two values and return true if the first is less than the second.
+</td><td align="left" valign="top">
+Int, Int
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Complex, Complex
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" rowspan="3" valign="top">
+&lt;=</td><td align="left" rowspan="3" valign="top">
+Less-than-or-equal operator. Compare two values and return true if the first is less than or equal to the second.
+</td><td align="left" valign="top">
+Int, Int
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Complex, Complex
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" rowspan="4" valign="top">
+==</td><td align="left" rowspan="4" valign="top">
+Equality operator. Compare two values and return true if they are
+      the same.
+</td><td align="left" valign="top">
+Int, Int
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Complex, Complex
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Bool, Bool
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" rowspan="3" valign="top">
+></td><td align="left" rowspan="3" valign="top">
+Greater-than operator. Compare two values and return true if the first is greater than the second.
+</td><td align="left" valign="top">
+Int, Int
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Complex, Complex
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" rowspan="3" valign="top">
+>=</td><td align="left" rowspan="3" valign="top">
+Greater-than-or-equal operator. Compare two values and return true if the first is greater than or equal to the second.
+</td><td align="left" valign="top">
+Int, Int
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Complex, Complex
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" rowspan="3" valign="top">
+^</td><td align="left" rowspan="3" valign="top">
+Exponentiation operator. Computes x to the power y.
+</td><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex, Float
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Complex, Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+not</td><td align="left" valign="top">
+Logical NOT.
+</td><td align="left" valign="top">
+Bool
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+||</td><td align="left" valign="top">
+Logical OR.
+</td><td align="left" valign="top">
+Bool, Bool
+</td><td align="left" valign="top">
+Bool</td></tr></tbody></table></div></div><div class="sect2" title="Functions"><div class="titlepage"><div><div><h3 class="title">Functions</h3></div></div></div><div class="informaltable"><table border="1"><colgroup><col /><col /><col /><col /></colgroup><thead><tr><th>Name</th><th>Description</th><th>Argument Types</th><th>Return Type</th></tr></thead><tbody><tr><td align="left" valign="top">
+#rand</td><td align="left" valign="top">
+Each time this is accessed, it returns a new pseudo-random complex number. This is primarily for backwards compatibility with Fractint formulas - use the random() function in new formulas.
+</td><td align="left" valign="top" /><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+#random</td><td align="left" valign="top">
+Each time this is accessed, it returns a new pseudo-random complex number. This is primarily for backwards compatibility with Fractint formulas - use the random() function in new formulas.
+</td><td align="left" valign="top" /><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+@fn1</td><td align="left" valign="top">
+Predefined function parameter used by Fractint formulas
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+@fn2</td><td align="left" valign="top">
+Predefined function parameter used by Fractint formulas
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+@fn3</td><td align="left" valign="top">
+Predefined function parameter used by Fractint formulas
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+@fn4</td><td align="left" valign="top">
+Predefined function parameter used by Fractint formulas
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" rowspan="3" valign="top">
+abs</td><td align="left" rowspan="3" valign="top">
+The absolute value of a number. abs(3) = abs(-3) = 3.
+      abs() of a complex number is a complex number consisting of
+      the absolute values of the real and imaginary parts, i.e.
+      abs(a,b) = (abs(a),abs(b)).
+</td><td align="left" valign="top">
+Int
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" rowspan="3" valign="top">
+acos</td><td align="left" rowspan="3" valign="top">
+Inverse cosine function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="3" valign="top">
+acosh</td><td align="left" rowspan="3" valign="top">
+Inverse hyperbolic cosine function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+alpha</td><td align="left" valign="top">
+The alpha component of a color. Can be assigned to.
+</td><td align="left" valign="top">
+Color
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" rowspan="3" valign="top">
+asin</td><td align="left" rowspan="3" valign="top">
+Inverse sine function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="3" valign="top">
+asinh</td><td align="left" rowspan="3" valign="top">
+Inverse hyperbolic sine function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="3" valign="top">
+atan</td><td align="left" rowspan="3" valign="top">
+Inverse tangent function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+atan2</td><td align="left" valign="top">
+The angle between this complex number and the real line,
+      aka the complex argument.
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" rowspan="3" valign="top">
+atanh</td><td align="left" rowspan="3" valign="top">
+Inverse hyperbolic tangent function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+blend</td><td align="left" valign="top">
+Blend two colors together in the ratio given by the 3rd parameter.
+</td><td align="left" valign="top">
+Color, Color, Float
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" valign="top">
+blue</td><td align="left" valign="top">
+The blue component of a color. Can be assigned to.
+</td><td align="left" valign="top">
+Color
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+bool</td><td align="left" valign="top">
+Construct a boolean. It's not really required (bool x = bool(true) is just the same as bool x = true) but is included for consistency.
+</td><td align="left" valign="top">
+Bool
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+cabs</td><td align="left" valign="top">
+The complex modulus of a complex number z.
+      cabs(a,b) is equivalent to sqrt(a*a+b*b).
+      This is also the same as sqrt(|z|)
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" rowspan="2" valign="top">
+ceil</td><td align="left" rowspan="2" valign="top">
+Round up to the next highest number.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" rowspan="2" valign="top">
+cmag</td><td align="left" rowspan="2" valign="top">
+The squared modulus of a complex or hypercomplex number z.
+      cmag(a,b) is equivalent to a*a+b*b. This is the same as |z|.
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+color</td><td align="left" valign="top">
+Constructs a new color from floating point red, green, blue and alpha
+     components. Equivalent to rgba.
+</td><td align="left" valign="top">
+Float, Float, Float, Float
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" valign="top">
+complex</td><td align="left" valign="top">
+Construct a complex number from two real parts.
+      complex(a,b) is equivalent to (a,b).
+</td><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+compose</td><td align="left" valign="top">
+Composite the second color on top of the first, with opacity given
+by the 3rd parameter.
+</td><td align="left" valign="top">
+Color, Color, Float
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" rowspan="2" valign="top">
+conj</td><td align="left" rowspan="2" valign="top">
+The complex conjugate. conj(a,b) is equivalent to (a,-b).
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="3" valign="top">
+cos</td><td align="left" rowspan="3" valign="top">
+trigonometric sine function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="3" valign="top">
+cosh</td><td align="left" rowspan="3" valign="top">
+Hyperbolic cosine function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="2" valign="top">
+cosxx</td><td align="left" rowspan="2" valign="top">
+Incorrect version of cosine function. Provided for backwards
+      compatibility with equivalent wrong function in Fractint.
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="3" valign="top">
+cotan</td><td align="left" rowspan="3" valign="top">
+Trigonometric cotangent function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="3" valign="top">
+cotanh</td><td align="left" rowspan="3" valign="top">
+Hyperbolic cotangent function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="3" valign="top">
+exp</td><td align="left" rowspan="3" valign="top">
+exp(x) is equivalent to e^x
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="2" valign="top">
+flip</td><td align="left" rowspan="2" valign="top">
+Swap the real and imaginary parts of a complex number.
+      flip(a,b) = (b,a).
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+float</td><td align="left" valign="top">
+Construct a floating-point number.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" rowspan="2" valign="top">
+floor</td><td align="left" rowspan="2" valign="top">
+Round down to the next lowest number.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+fn1</td><td align="left" valign="top">
+Predefined function parameter used by Fractint formulas
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+fn2</td><td align="left" valign="top">
+Predefined function parameter used by Fractint formulas
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+fn3</td><td align="left" valign="top">
+Predefined function parameter used by Fractint formulas
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+fn4</td><td align="left" valign="top">
+Predefined function parameter used by Fractint formulas
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+gradient</td><td align="left" valign="top">
+Look up a color from the default gradient.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" valign="top">
+green</td><td align="left" valign="top">
+The green component of a color. Can be assigned to.
+</td><td align="left" valign="top">
+Color
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+hsl</td><td align="left" valign="top">
+Create a color from hue, saturation and lightness components. The alpha channel is set to to 1.0 (=100%).
+</td><td align="left" valign="top">
+Float, Float, Float
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" valign="top">
+hsla</td><td align="left" valign="top">
+Create a color from hue, saturation and lightness components and an alpha channel.
+</td><td align="left" valign="top">
+Float, Float, Float, Float
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" valign="top">
+hsv</td><td align="left" valign="top">
+Create a color from hue, saturation and value components. HSV is a similar color model to HSL but has a different valid range for brightness.
+</td><td align="left" valign="top">
+Float, Float, Float
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" valign="top">
+hue</td><td align="left" valign="top">
+The hue of a color.
+</td><td align="left" valign="top">
+Color
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" rowspan="2" valign="top">
+hyper</td><td align="left" rowspan="2" valign="top">
+Construct a hypercomplex number with a real and 3 imaginary parts.
+      Can be passed either 2 complex numbers or 4 floating-point numbers.
+      hyper(a,b,c,d) is equivalent to the shorthand (a,b,c,d).
+</td><td align="left" valign="top">
+Float, Float, Float, Float
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+Complex, Complex
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+hyper_j</td><td align="left" valign="top">
+The 3rd component of a hypercomplex number. Can be assigned to.
+      hyper_j(a,b,c,d) = c.
+</td><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+hyper_jk</td><td align="left" valign="top">
+The 3rd and 4th parts of a hypercomplex number.
+      Can be assigned to. hyper_jk(a,b,c,d) = (c,d).
+</td><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+hyper_k</td><td align="left" valign="top">
+The 4th component of a hypercomplex number. Can be assigned to.
+      hyper_k(a,b,c,d) = d.
+</td><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+hyper_ri</td><td align="left" valign="top">
+The real and imaginary parts of a hypercomplex number.
+      Can be assigned to. hyper_ri(a,b,c,d) = (a,b).
+</td><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" rowspan="5" valign="top">
+ident</td><td align="left" rowspan="5" valign="top">
+Do nothing. ident(x) is equivalent to x.
+      This function is useless in normal formulas but
+      comes in useful as a value for a function parameter
+      to a formula. For example, a general formula like z = @fn1(z*z)+c
+      can be set back to a plain Mandelbrot by setting fn1 to ident.
+      Note: ident() is compiled out so there's no speed penalty involved.
+</td><td align="left" valign="top">
+Int
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Bool
+</td><td align="left" valign="top">
+Bool</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="2" valign="top">
+imag</td><td align="left" rowspan="2" valign="top">
+Extract the imaginary part of a complex or hypercomplex number.
+      imag(a,b) = b.
+      imag() is unusual in that it can be assigned to: imag(z) = 7 changes
+      the imag part of z.
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+imag2</td><td align="left" valign="top">
+The square of the imaginary part of a complex number.
+      real2(a,b) = b*b.
+      While not a generally useful function, this is provided to ease porting
+      of files from older Gnofract 4D versions.
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+int</td><td align="left" valign="top">
+Construct an integer. To convert a float to an int, use floor, ceil, round or trunc instead.
+</td><td align="left" valign="top">
+Int
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" rowspan="3" valign="top">
+log</td><td align="left" rowspan="3" valign="top">
+The natural log.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+lum</td><td align="left" valign="top">
+The luminance (or brightness) of a color.
+</td><td align="left" valign="top">
+Color
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+manhattan</td><td align="left" valign="top">
+The Manhattan distance between the origin and complex number z.
+      manhattan(a,b) is equivalent to abs(a) + abs(b).
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+manhattanish</td><td align="left" valign="top">
+A variant on Manhattan distance provided for backwards
+      compatibility. manhattanish(a,b) is equivalent to a+b.
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+manhattanish2</td><td align="left" valign="top">
+A variant on Manhattan distance provided for backwards
+      compatibility. manhattanish2(a,b) is equivalent to (a*a + b*b)^2.
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+max</td><td align="left" valign="top">
+Returns the larger of its two arguments.
+</td><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+max2</td><td align="left" valign="top">
+max2(a,b) returns the larger of a*a or b*b. Provided for
+      backwards compatibility.
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+mergemultiply</td><td align="left" valign="top">
+Multiplies colors together. Result is always darker than either input.
+</td><td align="left" valign="top">
+Color, Color
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" valign="top">
+mergenormal</td><td align="left" valign="top">
+Returns second color, ignoring first.
+</td><td align="left" valign="top">
+Color, Color
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" valign="top">
+min</td><td align="left" valign="top">
+Returns the smaller of its two arguments.
+</td><td align="left" valign="top">
+Float, Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+min2</td><td align="left" valign="top">
+min2(a,b) returns the smaller of a*a or b*b. Provided for
+      backwards compatibility.
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" rowspan="4" valign="top">
+neg</td><td align="left" rowspan="4" valign="top">
+No documentation yet.
+</td><td align="left" valign="top">
+Int
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+rand</td><td align="left" valign="top">
+Each time this is accessed, it returns a new pseudo-random complex number. This is primarily for backwards compatibility with Fractint formulas - use the random() function in new formulas.
+</td><td align="left" valign="top" /><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" rowspan="2" valign="top">
+real</td><td align="left" rowspan="2" valign="top">
+Extract the real part of a complex or hypercomplex number.
+      real(a,b) = a.
+      real() is unusual in that it can be assigned to: real(z) = 7 changes
+      the real part of z.
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+real2</td><td align="left" valign="top">
+The square of the real part of a complex number.
+      real2(a,b) = a*a.
+      While not a generally useful function, this is provided to ease porting
+      of files from older Gnofract 4D versions.
+</td><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" rowspan="3" valign="top">
+recip</td><td align="left" rowspan="3" valign="top">
+The reciprocal of a number. recip(x) is equivalent to 1/x.
+      Note that not all hypercomplex numbers have a proper reciprocal.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" valign="top">
+red</td><td align="left" valign="top">
+The red component of a color. Can be assigned to.
+</td><td align="left" valign="top">
+Color
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+rgb</td><td align="left" valign="top">
+Create a color from three color components. The alpha channel is set to to 1.0 (=100%).
+</td><td align="left" valign="top">
+Float, Float, Float
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" valign="top">
+rgba</td><td align="left" valign="top">
+Create a color from three color components and an alpha channel.
+</td><td align="left" valign="top">
+Float, Float, Float, Float
+</td><td align="left" valign="top">
+Color</td></tr><tr><td align="left" rowspan="2" valign="top">
+round</td><td align="left" rowspan="2" valign="top">
+Round to the nearest number (0.5 rounds up).
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+sat</td><td align="left" valign="top">
+The saturation of a color.
+</td><td align="left" valign="top">
+Color
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" rowspan="3" valign="top">
+sin</td><td align="left" rowspan="3" valign="top">
+trigonometric sine function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="3" valign="top">
+sinh</td><td align="left" rowspan="3" valign="top">
+Hyperbolic sine function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="4" valign="top">
+sqr</td><td align="left" rowspan="4" valign="top">
+Square the argument. sqr(x) is equivalent to x*x or x^2.
+</td><td align="left" valign="top">
+Int
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="3" valign="top">
+sqrt</td><td align="left" rowspan="3" valign="top">
+The square root.
+      The square root of a negative float number is NaN
+      (ie it is NOT converted to complex). Thus sqrt((-3,0)) != sqrt(-3).
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="3" valign="top">
+tan</td><td align="left" rowspan="3" valign="top">
+trigonometric sine function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="3" valign="top">
+tanh</td><td align="left" rowspan="3" valign="top">
+Hyperbolic tangent function.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" valign="top">
+Hyper
+</td><td align="left" valign="top">
+Hyper</td></tr><tr><td align="left" rowspan="2" valign="top">
+trunc</td><td align="left" rowspan="2" valign="top">
+Round towards zero.
+</td><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr><tr><td align="left" rowspan="3" valign="top">
+zero</td><td align="left" rowspan="3" valign="top">
+Returns zero.
+</td><td align="left" valign="top">
+Int
+</td><td align="left" valign="top">
+Int</td></tr><tr><td align="left" valign="top">
+Float
+</td><td align="left" valign="top">
+Float</td></tr><tr><td align="left" valign="top">
+Complex
+</td><td align="left" valign="top">
+Complex</td></tr></tbody></table></div></div><div class="sect2" title="Symbols"><div class="titlepage"><div><div><h3 class="title">Symbols</h3></div></div></div><div class="informaltable"><table border="1"><colgroup><col /><col /><col /><col /></colgroup><thead><tr><th>Name</th><th>Description</th><th>Argument Types</th><th>Return Type</th></tr></thead><tbody><tr><td align="left" valign="top">
+#center</td><td align="left" valign="top">
+Where the center of the image is located on the complex plane
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#color</td><td align="left" valign="top">
+Set this from a coloring function to directly set the color instead of using a gradient
+</td><td>Color</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#fate</td><td align="left" valign="top">
+The fate of a point can be used to distinguish between different basins of attraction or whatever you like. Set this to a number from 2 to 128 to indicate that a different 'fate' has befallen this point. 0 indicates the point has diverged, 1 that it has been trapped, >1 whatever you like. Can only be usefully updated in the #final section.
+</td><td>Int</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#index</td><td align="left" valign="top">
+The point in the gradient to use for the color of this point.
+</td><td>Float</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#inside</td><td align="left" valign="top">
+Set this in the final section of a formula to override whether a point is colored with the inside or outside coloring algorithm. This is mainly useful in conjuction with #fate.
+</td><td>Bool</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#magn</td><td align="left" valign="top">
+The magnification factor of the image. This is the number of times the image size has doubled, or ln(4.0/size)
+</td><td>Float</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#maxit</td><td align="left" valign="top">
+No documentation yet.
+</td><td>Int</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#maxiter</td><td align="left" valign="top">
+No documentation yet.
+</td><td>Int</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#numiter</td><td align="left" valign="top">
+The number of iterations performed.
+</td><td>Int</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#pi</td><td align="left" valign="top">
+The constant pi, 3.14159...
+</td><td>Float</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#pixel</td><td align="left" valign="top">
+The (X,Y) coordinates of the current point. When viewing the Mandelbrot set, this has a different value for each pixel. When viewing the Julia set, it remains constant for each pixel.
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#solid</td><td align="left" valign="top">
+Set this to true in a coloring function to use the solid color rather than the color map.
+</td><td>Bool</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#tolerance</td><td align="left" valign="top">
+10% of the distance between adjacent pixels.
+</td><td>Float</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#xypixel</td><td align="left" valign="top">
+The (X,Y) coordinates of the current point. When viewing the Mandelbrot set, this has a different value for each pixel. When viewing the Julia set, it remains constant for each pixel.
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#z</td><td align="left" valign="top">
+No documentation yet.
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+#zwpixel</td><td align="left" valign="top">
+The (Z,W) coordinates of the current point. (See #pixel for the other two coordinates.) When viewing the Mandelbrot set, this remains constant for each pixel on the screen; when viewing the Julia set, it's different for each pixel. Initialize z to some function of this to take advantage of 4D drawing.
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+@p1</td><td align="left" valign="top">
+Predefined parameter used by Fractint formulas
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+@p2</td><td align="left" valign="top">
+Predefined parameter used by Fractint formulas
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+@p3</td><td align="left" valign="top">
+Predefined parameter used by Fractint formulas
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+@p4</td><td align="left" valign="top">
+Predefined parameter used by Fractint formulas
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+@p5</td><td align="left" valign="top">
+Predefined parameter used by Fractint formulas
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+@p6</td><td align="left" valign="top">
+Predefined parameter used by Fractint formulas
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+maxit</td><td align="left" valign="top">
+No documentation yet.
+</td><td>Int</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+maxiter</td><td align="left" valign="top">
+No documentation yet.
+</td><td>Int</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+p1</td><td align="left" valign="top">
+Predefined parameter used by Fractint formulas
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+p2</td><td align="left" valign="top">
+Predefined parameter used by Fractint formulas
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+p3</td><td align="left" valign="top">
+Predefined parameter used by Fractint formulas
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+p4</td><td align="left" valign="top">
+Predefined parameter used by Fractint formulas
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+p5</td><td align="left" valign="top">
+Predefined parameter used by Fractint formulas
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+p6</td><td align="left" valign="top">
+Predefined parameter used by Fractint formulas
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+pi</td><td align="left" valign="top">
+The constant pi, 3.14159...
+</td><td>Float</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+pixel</td><td align="left" valign="top">
+The (X,Y) coordinates of the current point. When viewing the Mandelbrot set, this has a different value for each pixel. When viewing the Julia set, it remains constant for each pixel.
+</td><td>Complex</td><td class="auto-generated"> </td></tr><tr><td align="left" valign="top">
+z</td><td align="left" valign="top">
+No documentation yet.
+</td><td>Complex</td><td class="auto-generated"> </td></tr></tbody></table></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="compiler.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="internals.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Writing Your Own Functions </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> <span class="application">Gnofract 4D</span> Internals</td></tr></table></div>
+</div>
+<div id="footer">
+Hosted by GitHub
+</div>
+</div>
+</body>
+</html>
