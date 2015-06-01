@@ -175,7 +175,7 @@ def strip_empty_hrefs(s):
     return s
 
 def process_all(pages,side_pages):
-    outdir = os.path.expanduser("~/gnofract4d-website")
+    outdir = os.path.expanduser("~/projects/gnofract4d-website")
     for page in pages:
         if hasattr(page,"stub"):
             continue
@@ -204,11 +204,13 @@ def process_all(pages,side_pages):
 
 
 def copy_resources():
-    os.system("cp *.jpg ~/gnofract4d-website")
-    os.system("cp images/* ~/gnofract4d-website/images")
-    os.system("cp *.png ~/gnofract4d-website")
-    os.system("cp *.css ~/gnofract4d-website")
+    os.system("cp *.jpg ~/projects/gnofract4d-website")
+    os.system("cp images/* ~/projects/gnofract4d-website/images")
+    os.system("cp *.png ~/projects/gnofract4d-website")
+    os.system("cp *.css ~/projects/gnofract4d-website")
+    os.system("cp manual/figures/* ~/projects/gnofract4d-website/manual/figures")
     
+
 create_manual()
 process_all(pages,pages)
 copy_resources()
