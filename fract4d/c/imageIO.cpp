@@ -264,14 +264,16 @@ ImageWriter::create(image_file_t file_type, FILE *fp, IImage *image)
     {
     case FILE_TYPE_TGA:
 	return new tga_writer(fp, image);
-#ifdef PNG_ENABLED
     case FILE_TYPE_PNG:
+      #ifdef PNG_ENABLED
 	return new png_writer(fp, image);
-#endif
-#ifdef JPG_ENABLED
+      #endif
+	break;
     case FILE_TYPE_JPG:
+      #ifdef JPG_ENABLED
 	return new jpg_writer(fp, image);
-#endif	
+      #endif
+	break;
     }
     return NULL; // unknown file type
 }
@@ -394,10 +396,14 @@ ImageReader::create(image_file_t file_type, FILE *fp, IImage *image)
     //printf("Creating reader for type %d\n", file_type);
     switch(file_type)
     {
-#ifdef PNG_ENABLED
     case FILE_TYPE_PNG:
+      #ifdef PNG_ENABLED
 	return new png_reader(fp, image);
-#endif
+      #endif
+	break;
+    case FILE_TYPE_JPG:
+    case FILE_TYPE_TGA:
+	break;
     }
     return NULL; // unknown file type
 }
