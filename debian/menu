@@ -1,3 +1,0 @@
-?package(gnofract4d):needs="X11" section="Apps/Graphics"\
-  icon="gnofract4d-logo.xpm" title="Gnofract 4D"\
-  longtitle="A fractal images creator" command="/usr/bin/gnofract4d"

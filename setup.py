@@ -15,24 +15,13 @@ if float(sys.version[:3]) < 2.4:
     print "You have version %s. Please upgrade." % sys.version
     sys.exit(1)
 
-# hack to use a different Python for building if an env var is set
-# I use this to build python-2.2 and 2.4 RPMs.
-build_version = os.environ.get("BUILD_PYTHON_VERSION")
-build_python = os.environ.get("BUILD_PYTHON")
-
 # by default python uses all the args which were used to compile it. But Python is C and some
 # extension files are C++, resulting in annoying '-Wstrict-prototypes is not supported' messages.
 # tweak the cflags to override
 os.environ["CFLAGS"]= distutils.sysconfig.get_config_var("CFLAGS").replace("-Wstrict-prototypes","")
 os.environ["OPT"]= distutils.sysconfig.get_config_var("OPT").replace("-Wstrict-prototypes","")
 
-if build_version and build_python and sys.version[:3] != build_version:
-    print sys.version[:3], build_version
-    args = ["/usr/bin/python"] + sys.argv
-    print "running other Python version %s with args: %s" % (build_python,args)
-    os.execv(build_python, args)
-
-from buildtools import my_bdist_rpm, my_build, my_build_ext, my_install_lib, my_install_egg_info
+from buildtools import my_install_lib
 
 # Extensions need to link against appropriate libs
 # We use pkg-config to find the appropriate set of includes and libs
@@ -61,7 +50,7 @@ png_flags = call_package_config("libpng", "--cflags", True)
 if png_flags != []:
     extra_macros.append(('PNG_ENABLED', 1))
 else:
-    print "NO PNG HEADERS FOUND"
+    print "NO PNG HEADERS FOUND, install libpng-dev"
     
 png_libs = call_package_config("libpng", "--libs", True)
 
@@ -70,7 +59,7 @@ if os.path.isfile("/usr/include/jpeglib.h"):
     extra_macros.append(('JPG_ENABLED', 1))
     jpg_libs = [ jpg_lib ]
 else:
-    print "NO JPEG HEADERS FOUND"
+    print "NO JPEG HEADERS FOUND, install libjpeg-dev"
     jpg_libs = []
 
 #not ready yet. 
@@ -165,7 +154,6 @@ module_fract4dc = Extension(
     'fract4d/c'
     ],
     libraries = libs + jpg_libs,
-    #library_dirs=['/home/edwin/gnofract4d'],
     extra_compile_args = [
     warnings,
     ] + osdep + png_flags,
@@ -257,9 +245,6 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
             ['COPYING', 'README']),
            ],
        cmdclass={
-           "my_bdist_rpm": my_bdist_rpm.my_bdist_rpm,
-           "build" : my_build.my_build,
-           "my_build_ext" : my_build_ext.my_build_ext,
            "install_lib" : my_install_lib.my_install_lib           
            }
        )

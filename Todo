@@ -1,5 +1,9 @@
 todo:
 
+changes in 4.0
+* B	stupid compiler warning messages
+* W	remove packaging
+
 changes in 3.13:
 * B	can't open .ggr files created by newer Gimp versions
 * W	hsv gradient .ggr support (Henryk Trappmann)
