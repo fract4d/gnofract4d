@@ -20,6 +20,12 @@ if float(sys.version[:3]) < 2.4:
 build_version = os.environ.get("BUILD_PYTHON_VERSION")
 build_python = os.environ.get("BUILD_PYTHON")
 
+# by default python uses all the args which were used to compile it. But Python is C and some
+# extension files are C++, resulting in annoying '-Wstrict-prototypes is not supported' messages.
+# tweak the cflags to override
+os.environ["CFLAGS"]= distutils.sysconfig.get_config_var("CFLAGS").replace("-Wstrict-prototypes","")
+os.environ["OPT"]= distutils.sysconfig.get_config_var("OPT").replace("-Wstrict-prototypes","")
+
 if build_version and build_python and sys.version[:3] != build_version:
     print sys.version[:3], build_version
     args = ["/usr/bin/python"] + sys.argv
@@ -129,7 +135,7 @@ module_fract4dgmp = Extension(
     'stdc++', 'gmp'
     ] + jpg_libs,
     extra_compile_args = [
-    '-Wall', '-Wno-strict-prototypes'
+    '-Wall', 
     ] + png_flags,
     extra_link_args = png_libs, 
     define_macros = defines + [('USE_GMP',1)] + extra_macros,
