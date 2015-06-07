@@ -198,7 +198,7 @@ setup (name = 'gnofract4d',
 '''Gnofract 4D is a fractal browser. It can generate many different fractals, 
 including some which are hybrids between the Mandelbrot and Julia sets,
 and includes a Fractint-compatible parser for your own fractal formulas.''',
-       author = 'Edwin Young'
+       author = 'Edwin Young',
        author_email = 'edwin@bathysphere.org',
        maintainer = 'Edwin Young',
        maintainer_email = 'catenary@users.sourceforge.net',
