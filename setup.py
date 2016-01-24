@@ -50,7 +50,7 @@ png_flags = call_package_config("libpng", "--cflags", True)
 if png_flags != []:
     extra_macros.append(('PNG_ENABLED', 1))
 else:
-    print "NO PNG HEADERS FOUND, install libpng-dev"
+    raise Exception("NO PNG HEADERS FOUND, you need to install libpng-dev")
     
 png_libs = call_package_config("libpng", "--libs", True)
 
@@ -59,7 +59,7 @@ if os.path.isfile("/usr/include/jpeglib.h"):
     extra_macros.append(('JPG_ENABLED', 1))
     jpg_libs = [ jpg_lib ]
 else:
-    print "NO JPEG HEADERS FOUND, install libjpeg-dev"
+    raise Exception("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
     jpg_libs = []
 
 #not ready yet. 
