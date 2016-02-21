@@ -226,12 +226,14 @@ get_double_array(PyObject *pyitem, const char *name, double *pVal, int n)
     if(!PySequence_Check(pyfield))
     {
 	PyErr_SetString(PyExc_ValueError, "Bad segment object");
+	Py_DECREF(pyfield);
 	return NULL;
     }
 
     if(!(PySequence_Size(pyfield) == n))
     {
 	PyErr_SetString(PyExc_ValueError, "Bad segment object");
+	Py_DECREF(pyfield);
 	return NULL;
     }
 
@@ -241,6 +243,7 @@ get_double_array(PyObject *pyitem, const char *name, double *pVal, int n)
 	if(!py_subitem)
 	{
 	    PyErr_SetString(PyExc_ValueError, "Bad segment object");
+	    Py_DECREF(pyfield);
 	    return NULL; 
 	}
 	*(pVal+i)=PyFloat_AsDouble(py_subitem);
@@ -302,6 +305,7 @@ cmap_from_pyobject(PyObject *pyarray)
 	PyObject *pyitem = PySequence_GetItem(pyarray,i);
 	if(!pyitem)
 	{
+	    delete cmap;
 	    return NULL; 
 	}
 
@@ -313,6 +317,8 @@ cmap_from_pyobject(PyObject *pyarray)
 	   !get_double_array(pyitem, "left_color", left_col, 4) ||
 	   !get_double_array(pyitem, "right_color", right_col, 4))
 	{
+	    Py_DECREF(pyitem);
+	    delete cmap;
 	    return NULL;
 	}
 	
@@ -381,7 +387,7 @@ parse_posparams(PyObject *py_posparams, double *pos_params)
     for(int i = 0; i < N_PARAMS; ++i)
     {
 	PyObject *pyitem = PySequence_GetItem(py_posparams,i);
-	if(!PyFloat_Check(pyitem))
+	if(pyitem == NULL || !PyFloat_Check(pyitem))
 	{
 	    PyErr_SetString(
 		PyExc_ValueError,
@@ -429,6 +435,7 @@ parse_params(PyObject *pyarray, int *plen)
 	    PyObject *pyitem = PySequence_GetItem(pyarray,i);
 	    if(NULL == pyitem)
 	    {
+		free(params);
 		return NULL;
 	    }
 	    if(PyFloat_Check(pyitem))
@@ -448,17 +455,22 @@ parse_params(PyObject *pyarray, int *plen)
 		PyObject_HasAttrString(pyitem,"segments"))
 	    {
 		PyObject *pycob = PyObject_GetAttrString(pyitem,"cobject");
-		if(pycob == Py_None)
+		if(pycob == Py_None || pycob == NULL)
 		{
-		    Py_DECREF(pycob);
+		    Py_XDECREF(pycob);
 		    PyObject *pysegs = PyObject_GetAttrString(
 			pyitem,"segments");
 
-		    ColorMap *cmap = cmap_from_pyobject(pysegs);
-		    Py_DECREF(pysegs);
+		    ColorMap *cmap;
+		    if (pysegs == Py_None || pysegs != NULL)
+			cmap = NULL;
+		    else
+			cmap = cmap_from_pyobject(pysegs);
+		    Py_XDECREF(pysegs);
 
 		    if(NULL == cmap)
 		    {
+			free(params);
 			return NULL;
 		    }
 
@@ -470,13 +482,13 @@ parse_params(PyObject *pyarray, int *plen)
 			PyObject_SetAttrString(pyitem,"cobject",pycob);
 			// not quite correct, we are leaking some
 			// cmap objects 
-			Py_XINCREF(pycob);
+			Py_INCREF(pycob);
 		    }
 		}
 		params[i].t = GRADIENT;
 		params[i].gradient = PyCObject_AsVoidPtr(pycob);
 		//fprintf(stderr,"%d = gradient(%p)\n",i,params[i].gradient);
-		Py_DECREF(pycob);
+		Py_XDECREF(pycob);
 	    }
 	    else if(
 		PyObject_HasAttrString(pyitem,"_img"))
@@ -484,7 +496,7 @@ parse_params(PyObject *pyarray, int *plen)
 		PyObject *pycob = PyObject_GetAttrString(pyitem,"_img");
 		params[i].t = PARAM_IMAGE;
 		params[i].image = PyCObject_AsVoidPtr(pycob);
-		Py_DECREF(pycob);
+		Py_XDECREF(pycob);
 	    }
 	    else
 	    {
@@ -719,10 +731,13 @@ cmap_create(PyObject *self, PyObject *args)
 	PyObject *pyitem = PySequence_GetItem(pyarray,i);
 	if(!pyitem)
 	{
+	    delete cmap;
 	    return NULL; 
 	}
 	if(!PyArg_ParseTuple(pyitem,"diiii",&d,&r,&g,&b,&a))
 	{
+	    Py_DECREF(pyitem);
+	    delete cmap;
 	    return NULL;
 	}
 	cmap->set(i,d,r,g,b,a);
@@ -956,7 +971,7 @@ public:
 		const_cast<char *>("is_interrupted"),NULL);
 
 	    bool ret = false;
-	    if(PyInt_Check(pyret))
+	    if(pyret != NULL && PyInt_Check(pyret))
 	    {
 		long i = PyInt_AsLong(pyret);
 		//fprintf(stderr,"ret: %ld\n",i);
@@ -2035,7 +2050,7 @@ image_buffer(PyObject *self, PyObject *args)
     fprintf(stderr,"%p : IM : BUF\n",i);
 #endif
 
-    if(! i->ok())
+    if(!i || ! i->ok())
     {
 	PyErr_SetString(PyExc_MemoryError, "image not allocated");
 	return NULL;
@@ -2072,6 +2087,13 @@ image_fate_buffer(PyObject *self, PyObject *args)
 #ifdef DEBUG_CREATION
     fprintf(stderr,"%p : IM : BUF\n",i);
 #endif
+
+    if(NULL == i)
+    {
+	PyErr_SetString(PyExc_ValueError,
+			"Bad image object");
+	return NULL;
+    }
 
     if(x < 0 || x >= i->Xres() || y < 0 || y >= i->Yres())
     {
