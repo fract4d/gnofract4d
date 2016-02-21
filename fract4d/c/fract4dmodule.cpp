@@ -454,6 +454,8 @@ parse_params(PyObject *pyarray, int *plen)
 		PyObject_HasAttrString(pyitem,"cobject") &&
 		PyObject_HasAttrString(pyitem,"segments"))
 	    {
+		// looks like a colormap. Either we already have an object, which we can use now,
+		// or we need to construct one from a list of segments
 		PyObject *pycob = PyObject_GetAttrString(pyitem,"cobject");
 		if(pycob == Py_None || pycob == NULL)
 		{
@@ -462,14 +464,20 @@ parse_params(PyObject *pyarray, int *plen)
 			pyitem,"segments");
 
 		    ColorMap *cmap;
-		    if (pysegs == Py_None || pysegs != NULL)
+		    if (pysegs == Py_None || pysegs == NULL)
+		    {
 			cmap = NULL;
+		    }
 		    else
+		    {
 			cmap = cmap_from_pyobject(pysegs);
+		    }
+		    
 		    Py_XDECREF(pysegs);
 
 		    if(NULL == cmap)
 		    {
+			PyErr_SetString(PyExc_ValueError, "Invalid colormap object");
 			free(params);
 			return NULL;
 		    }
