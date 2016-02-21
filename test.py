@@ -47,20 +47,6 @@ class Test(unittest.TestCase):
         self.failUnless(m,"doc doesn't specify version")
         self.assertEqual(options.version,m.group(1), "Version mismatch")
 
-    def testPkgInfoVersionMatches(self):
-        pki = open("PKG-INFO").read()
-        pk_re = re.compile(r'^Version: (\S+)', re.MULTILINE)
-        m = pk_re.search(pki)
-        self.failUnless(m,"PKG-INFO doesn't specify version")
-        self.assertEqual(options.version, m.group(1), "Version mismatch")
-
-    def testChangeLogVersionMatches(self):
-        changelog_top = open("debian/changelog").readline()
-        cl_re = re.compile(r'gnofract4d \(([0-9\.]+)-1ubuntu1\)')
-        m = cl_re.search(changelog_top)
-        self.failUnless(m,"changelog doesn't specify version")
-        self.assertEqual(options.version, m.group(1), "Version mismatch")
-        
     def testGenerateMandelbrot(self):
         if os.path.exists("test.png"):
             os.remove("test.png")
