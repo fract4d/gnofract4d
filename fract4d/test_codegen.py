@@ -1740,13 +1740,29 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
             return cmath.cos(z)/cmath.sin(z)
 
         tests = self.manufacture_tests("cotan",mycotan)
-        
+
+        # CONSIDER: Python 2.7 thinks this cotan(0) is -nan,-nan, older versions think (nan,nan)
+        tests[0][2] = "(-nan,-nan)"
+
         # CONSIDER: comes out as -0,1.31304 in python, but +0 in C++ and gf4d
         # think Python's probably in error, but not 100% sure
         tests[6][2] = "(0,1.31304)"
         
         return tests
 
+    def cotanhtests(self):
+        def mycotanh(z):
+            return cmath.cosh(z)/cmath.sinh(z)
+
+        tests = self.manufacture_tests("cotanh",mycotanh)
+
+        #print tests
+        
+        # CONSIDER: Python 2.7 thinks this cotanh(0) is -nan,-nan, older versions think (nan,nan)
+        tests[0][2] = "(-nan,-nan)"
+
+        return tests
+        
     def logtests(self):
         tests = self.manufacture_tests("log",cmath.log)
                     
@@ -1770,8 +1786,12 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
 
     def atantests(self):
         tests = self.manufacture_tests("atan",cmath.atan)
-        tests[1][2] = "(nan,nan)"
-        tests[6][2] = "(nan,-inf)" # not really sure who's right on this
+
+        print "before", tests
+        tests[0][2] = "(-nan,-nan)" # changed in python 2.7
+        #tests[1][2] = "(nan,nan)"
+        #tests[6][2] = "(nan,-inf)" # not really sure who's right on this
+        print "after", tests
         return tests
 
     def atanhtests(self):
@@ -1871,7 +1891,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
             [ "l = (log(1),log(3))", "l", self.predict(math.log,1,3)],
             [ "ex = (exp(1),exp(2))","ex", self.predict(math.exp,1,2)],
             [ "pow0a = (2^2, 9^0.5)", "pow0a", "(4,3)"],
-            [ "pow0b = ((-1)^0.5,(-1)^2)", "pow0b", "(nan,1)"], 
+            [ "pow0b = ((-1)^0.5,(-1)^2)", "pow0b", "(-nan,1)"], 
             [ "pow1 = (1,0)^2","pow1", "(1,0)"],
             [ "pow2 = (-2,-3)^7.5","pow2","(-13320.5,6986.17)"],
             [ "pow3 = (-2,-3)^(1.5,-3.1)","pow3","(0.00507248,-0.00681128)"],
@@ -1935,7 +1955,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         tests += self.manufacture_tests("trunc",myctrunc)
         tests += self.manufacture_tests("zero",myczero)
         tests += self.cotantests()
-        tests += self.manufacture_tests("cotanh",mycotanh)
+        tests += self.cotanhtests()
         tests += self.logtests()
         
         tests += self.asintests()
