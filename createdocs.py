@@ -29,5 +29,6 @@ def create_stdlib_docs():
         print >>sys.stderr,\
               "Problem creating docs. Online help will be incomplete."
         print >>sys.stderr, err
+        sys.exit(1)
 
 create_stdlib_docs()
