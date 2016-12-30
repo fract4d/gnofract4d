@@ -1309,7 +1309,7 @@ class MainWindow:
         self.display_help("formref")
 
     def report_bug(self, *args):
-        url="http://sourceforge.net/tracker/?func=add&group_id=785&atid=100785"
+        url="https://github.com/edyoung/gnofract4d/issues"
         utils.launch_browser(
             preferences.userPrefs,
             url,
