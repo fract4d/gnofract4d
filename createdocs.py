@@ -23,8 +23,10 @@ def create_stdlib_docs():
         fract4dgui.createdocs.main("doc/gnofract4d-manual/C/commands.xml")
 
         # create HTML version of docs for them as don't have yelp
-        os.chdir("doc/gnofract4d-manual/C")
-        os.system("xsltproc --output gnofract4d-manual.html --stringparam html.stylesheet docbook.css gnofract4d.xsl gnofract4d-manual.xml")
+        os.chdir("doc/gnofract4d-manual/C")        
+        retval = os.system("xsltproc --output gnofract4d-manual.html --stringparam html.stylesheet docbook.css gnofract4d.xsl gnofract4d-manual.xml")
+        if retval != 0:
+            raise Exception("error processing xslt")
     except Exception, err:
         print >>sys.stderr,\
               "Problem creating docs. Online help will be incomplete."
