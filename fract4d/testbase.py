@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # a base class other test classes inherit from - some shared functionality
 
@@ -13,13 +13,13 @@ class TestBase(unittest.TestCase):
     def assertNearlyEqual(self,a,b,epsilon=1.0e-12):
         # check that each element is within epsilon of expected value
         for (ra,rb) in zip(a,b):
-            if isinstance(ra, types.ListType) or isinstance(ra, types.TupleType):
+            if isinstance(ra, list) or isinstance(ra, tuple):
                 for (ca,cb) in zip(ra,rb):
                     d = abs(ca-cb)
-                    self.failUnless(d < epsilon, "%s - %s = %s, > %s" % (ca,cb,d,epsilon))
+                    self.assertTrue(d < epsilon, "%s - %s = %s, > %s" % (ca,cb,d,epsilon))
             else:
                 d = abs(ra-rb)
-                self.failUnless(d < epsilon, "%s - %s = %s, > %s" % (ra,rb,d,epsilon))
+                self.assertTrue(d < epsilon, "%s - %s = %s, > %s" % (ra,rb,d,epsilon))
 
     def assertError(self,t,str):
         self.assertNotEqual(len(t.errors),0)
@@ -38,7 +38,7 @@ class TestBase(unittest.TestCase):
     def assertNoErrors(self,t, info=""):
         self.assertEqual(len(t.errors),0,
                          "Unexpected errors %s in %s" % (t.errors, info))
-        for (name, item) in t.canon_sections.items():
+        for (name, item) in list(t.canon_sections.items()):
             for stm in item:
                 #print stm.pretty()
                 self.assertESeqsNotNested(stm,1)
@@ -50,7 +50,7 @@ class TestBase(unittest.TestCase):
         expecting = None
         for stm in trace:
             if expecting != None:
-                self.failUnless(isinstance(stm,ir.Label))
+                self.assertTrue(isinstance(stm,ir.Label))
                 self.assertEqual(stm.name,expecting)
                 expecting = None
             elif isinstance(stm, ir.CJump):
@@ -60,7 +60,7 @@ class TestBase(unittest.TestCase):
         self.assertEqual(img.get_all_fates(x,y), fates)
         (r,g,b) = (0,0,0)
         nsubpixels = 0
-        for i in xrange(img.FATE_SIZE):
+        for i in range(img.FATE_SIZE):
             fate = fates[i]
             if fate==img.UNKNOWN and efate != None:
                 fate = efate
@@ -100,18 +100,18 @@ class TestBase(unittest.TestCase):
         self.assertNoErrors(t)
         
     def assertVar(self,t, name,type):
-        self.assertEquals(t.symbols[name].type,type)
+        self.assertEqual(t.symbols[name].type,type)
 
     def assertNode(self,name,n):
-        self.failUnless(isinstance(n,ir.T), ("%s(%s) is not a node" % (n, name)))
+        self.assertTrue(isinstance(n,ir.T), ("%s(%s) is not a node" % (n, name)))
         
     def assertTreesEqual(self, name, t1, t2):
-        if isinstance(t1,types.ListType):
+        if isinstance(t1,list):
             # canonicalized trees are a list, not a Seq()
             for (s1,s2) in zip(t1,t2):
                 self.assertNode(name,s1)
                 self.assertNode(name,s2)
-                self.failUnless(
+                self.assertTrue(
                     s1.pretty() == s2.pretty(),
                     ("%s, %s should be equivalent (section %s)" %
                      (s1.pretty(), s2.pretty(), name)))
@@ -119,20 +119,20 @@ class TestBase(unittest.TestCase):
             self.assertNode(name,t1)
             self.assertNode(name,t2)
 
-            self.failUnless(
+            self.assertTrue(
                 t1.pretty() == t2.pretty(),
                 ("%s, %s should be equivalent" % (t1.pretty(), t2.pretty())))
 
     def assertEquivalentTranslations(self,t1,t2):
-        for (k,item) in t1.sections.items():
+        for (k,item) in list(t1.sections.items()):
             self.assertTreesEqual(k,item,t2.sections[k])
-        for (k,item) in t2.sections.items():
+        for (k,item) in list(t2.sections.items()):
             self.assertTreesEqual(k,t1.sections[k], item)
 
     def assertFuncOnList(self,f,nodes,types):
         self.assertEqual(len(nodes),len(types))
         for (n,t) in zip(nodes,types):
-            self.failUnless(f(n,t))
+            self.assertTrue(f(n,t))
 
     def assertESeqsNotNested(self,t,parentAllowsESeq):
         'check that no ESeqs are left below other nodes'
@@ -170,8 +170,8 @@ class TestBase(unittest.TestCase):
             elif isinstance(n,ir.Label):                
                 jumpLabels[n.name] = 1
 
-        for target in jumpTargets.keys():
-            self.failUnless(jumpLabels.has_key(target),
+        for target in list(jumpTargets.keys()):
+            self.assertTrue(target in jumpLabels,
                             "jump to unknown target %s" % target )
 
     def assertBlocksAreWellFormed(self,blocks):
@@ -189,28 +189,28 @@ class TestBase(unittest.TestCase):
     
 
     def assertStartsWithLabel(self, block, name=None):
-        self.failUnless(isinstance(block[0], ir.Label))
+        self.assertTrue(isinstance(block[0], ir.Label))
         if name != None:
             self.assertEqual(block[0].name, name)
 
     def assertEndsWithJump(self,block, name=None):
-        self.failUnless(isinstance(block[-1], ir.Jump) or \
+        self.assertTrue(isinstance(block[-1], ir.Jump) or \
                         isinstance(block[-1], ir.CJump))
         if name != None:
             self.assertEqual(block[-1].dest, name)
 
     def assertWellTyped(self,t):
-        for (key,s) in t.sections.items():
+        for (key,s) in list(t.sections.items()):
             for node in s:
                 if isinstance(node,ir.T):
                     ob = node
                     dt = node.datatype
-                elif isinstance(node,types.StringType):
+                elif isinstance(node,bytes):
                     try:
                         sym = t.symbols[node]
-                    except KeyError, err:
+                    except KeyError as err:
                         self.fail("%s not a symbol in %s" % (node, s.pretty()))
-                    self.failUnless(isinstance(sym,fracttypes.Var),
+                    self.assertTrue(isinstance(sym,fracttypes.Var),
                                     "weird symbol %s : %s(%s)" %
                                     (node, sym, sym.__class__.__name__))
                     ob = sym
@@ -221,5 +221,5 @@ class TestBase(unittest.TestCase):
                 if isinstance(ob,ir.Stm):
                     self.assertEqual(dt,None,"bad type %s for %s" % (dt, ob))
                 else:
-                    self.failUnless(dt in fracttypes.typeList,
+                    self.assertTrue(dt in fracttypes.typeList,
                                     "bad type %s for %s" % (dt, ob))

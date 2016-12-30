@@ -1,12 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import string
-import commands
+import subprocess
 import re
 import os
 import time
-import cPickle
+import pickle
 
 import testbase
 
@@ -35,11 +35,11 @@ class Test(testbase.TestBase):
         self.assertEqual(False,os.path.exists("experiment"))
         
         c.init()
-        self.failUnless(os.path.isdir("experiment"))
+        self.assertTrue(os.path.isdir("experiment"))
 
         f = open("experiment/file1.txt","w")
         f.close()
-        self.failUnless(os.path.exists("experiment/file1.txt"))
+        self.assertTrue(os.path.exists("experiment/file1.txt"))
 
         c.clear()
         self.assertEqual(False, os.path.exists("experiment/file1.txt"))
@@ -61,12 +61,12 @@ class Test(testbase.TestBase):
         
         contents = c.getcontents("experiment/file1.txt", self.readall)        
         self.assertEqual("fish",contents)
-        self.failUnless(self.readall_called, "Should have called readall")
+        self.assertTrue(self.readall_called, "Should have called readall")
 
         self.readall_called = False
         contents = c.getcontents("experiment/file1.txt", self.readall)
         self.assertEqual("fish",contents)
-        self.failUnless(
+        self.assertTrue(
             not self.readall_called, "Should not have called readall")
 
     def testUpdateFileOnDisk(self):
@@ -78,7 +78,7 @@ class Test(testbase.TestBase):
         
         contents = c.getcontents("experiment/file1.txt", self.readall)        
         self.assertEqual("fish",contents)
-        self.failUnless(self.readall_called, "Should have called readall")
+        self.assertTrue(self.readall_called, "Should have called readall")
 
         self.readall_called = False
         time.sleep(1.0) # ensure filesystem will have a different time
@@ -87,7 +87,7 @@ class Test(testbase.TestBase):
 
         contents = c.getcontents("experiment/file1.txt", self.readall)
         self.assertEqual("wibble",contents)
-        self.failUnless(
+        self.assertTrue(
             self.readall_called, "Should have called readall")
 
     def disabled_testPickleFile(self):
@@ -99,10 +99,10 @@ class Test(testbase.TestBase):
         self.assertEqual(
             "experiment/0de8fb66544e4ae95935a50ab783fdba.pkl",
             c.files["experiment/file1.txt"].cache_file)
-        self.failUnless(
+        self.assertTrue(
             os.path.exists("experiment/0de8fb66544e4ae95935a50ab783fdba.pkl"),
             "no pickled file found")
-        val = cPickle.load(open("experiment/0de8fb66544e4ae95935a50ab783fdba.pkl"))
+        val = pickle.load(open("experiment/0de8fb66544e4ae95935a50ab783fdba.pkl"))
         self.assertEqual(contents, val)
 
         c.save()

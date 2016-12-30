@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import string
 import unittest
-import StringIO
+import io
 import sys
 import math
 import copy
@@ -337,7 +337,7 @@ class Test(unittest.TestCase):
         file = g_testfile
         
         f = fractal.T(self.compiler);
-        f.loadFctFile(StringIO.StringIO(file))
+        f.loadFctFile(io.StringIO(file))
         self.assertExpectedValues(f)
         
     def testUpsideDown(self):
@@ -345,7 +345,7 @@ class Test(unittest.TestCase):
 
         file = file.replace('version=2.0','version=1.9',1)
         f = fractal.T(self.compiler);
-        f.loadFctFile(StringIO.StringIO(file))
+        f.loadFctFile(io.StringIO(file))
         self.assertEqual(f.params[f.XYANGLE], 0.00000001)
         self.assertEqual(f.yflip, True)
         f.reset()
@@ -380,7 +380,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(f.maxiter, 259)
         g = f.get_gradient()
-        self.failUnless(len(g.segments)> 1)
+        self.assertTrue(len(g.segments)> 1)
         self.assertEqual(g.segments[0].left,0.0)
         self.assertEqual(g.segments[-1].right,1.0)
         self.assertEqual(f.solids[0],(0,0,0,255))
@@ -476,7 +476,7 @@ colorlist=[
         f = fractal.T(self.compiler)
         f.warn = wc.warn
         self.assertRaises(ValueError,f.loadFctFile,
-                          (StringIO.StringIO(bad_testfile)))
+                          (io.StringIO(bad_testfile)))
 
         self.assertEqual(os.path.exists('evil.txt'),False)
 
@@ -511,7 +511,7 @@ colorlist=[
 '''
         f = fractal.T(self.compiler)
         self.assertRaises(ValueError,f.loadFctFile,
-                          (StringIO.StringIO(bad_testfile)))
+                          (io.StringIO(bad_testfile)))
 
     def testLoadColorFile(self):
         testfile = '''gnofract4d parameter file
@@ -574,7 +574,7 @@ colorlist=[
 '''
         f = fractal.T(self.compiler)
         self.assertRaises(ValueError,f.loadFctFile,
-                          (StringIO.StringIO(bad_testfile)))
+                          (io.StringIO(bad_testfile)))
 
     def testLoadBadColor(self):
         bad_testfile = '''gnofract4d parameter file
@@ -607,7 +607,7 @@ colorlist=[
 '''
         f = fractal.T(self.compiler)
         self.assertRaises(ValueError,f.loadFctFile,
-                          (StringIO.StringIO(bad_testfile)))
+                          (io.StringIO(bad_testfile)))
 
 
     def testLoadBoolParamSavedByOlderVersion(self):
@@ -626,7 +626,7 @@ colorlist=[
         f.set_param(0,7.3)
         self.assertEqual(f.saved, False)
 
-        savefile = StringIO.StringIO("")
+        savefile = io.StringIO("")
         f.save(savefile)
         self.assertEqual(f.saved, True)
 
@@ -642,13 +642,13 @@ colorlist=[
         x = f.serialize()
         self.assertEqual(f.saved, False)
 
-        f.loadFctFile(StringIO.StringIO(g_testfile))
+        f.loadFctFile(io.StringIO(g_testfile))
         self.assertEqual(f.saved, True)
 
     def testLoadBadFileRaises(self):
         'Test we throw an exception when loading an invalid file'
         f = fractal.T(self.compiler)
-        not_a_file = StringIO.StringIO("ceci n'est pas un file")
+        not_a_file = io.StringIO("ceci n'est pas un file")
         self.assertRaises(Exception,f.loadFctFile,not_a_file)
 
     def testSetBadGradientFromFile(self):
@@ -679,7 +679,7 @@ colorlist=[
         
         f.set_initparam(1, "17", 0)
         self.assertEqual(f.forms[0].params[1],17)
-        self.failUnless(isinstance(f.forms[0].params[1],types.IntType))
+        self.assertTrue(isinstance(f.forms[0].params[1],int))
             
     def testCFParams(self):
         f = fractal.T(self.compiler)
@@ -747,7 +747,7 @@ colorlist=[
         cg.output_decls(f.forms[0].formula)
         c_code = cg.output_c(f.forms[0].formula)
 
-        self.failUnless("double t__a_cf0bailout = t__pfo->p[5]" in c_code)
+        self.assertTrue("double t__a_cf0bailout = t__pfo->p[5]" in c_code)
 
         self.assertNotEqual( # use
             c_code.find("log(t__a_cf0bailout)"),-1)
@@ -779,9 +779,9 @@ colorlist=[
         # check that each element is within epsilon of expected value
         epsilon = 1.0e-12
         for (ra,rb) in zip(a,b):
-            if isinstance(ra, types.FloatType):
+            if isinstance(ra, float):
                 d = abs(ra-rb)
-                self.failUnless(d < epsilon,"%f != %f (by %f)" % (ra,rb,d))
+                self.assertTrue(d < epsilon,"%f != %f (by %f)" % (ra,rb,d))
             else:
                 self.assertEqual(ra,rb)
                 
@@ -817,34 +817,34 @@ blue=0.3
 [endsection]
 '''
         f = fractal.T(self.compiler);
-        rgb_file = StringIO.StringIO(file)
+        rgb_file = io.StringIO(file)
         
         f.loadFctFile(rgb_file)
         self.assertEqual(f.forms[1].funcName,"rgb")
 
     def testLoadWithInlineFormula(self):
         f1 = fractal.T(self.compiler)
-        file1 = StringIO.StringIO(g_test3file)
+        file1 = io.StringIO(g_test3file)
         f1.loadFctFile(file1)
 
-        self.failUnless("__inline__" in f1.forms[0].funcFile)
+        self.assertTrue("__inline__" in f1.forms[0].funcFile)
         self.assertEqual(f1.forms[0].funcName, "Mandelbrot")
 
-        self.failUnless("__inline__" in f1.forms[1].funcFile)
+        self.assertTrue("__inline__" in f1.forms[1].funcFile)
         self.assertEqual(f1.forms[1].funcName, "continuous_potential")
 
-        self.failUnless("__inline__" in f1.forms[2].funcFile)
+        self.assertTrue("__inline__" in f1.forms[2].funcFile)
         self.assertEqual(f1.forms[2].funcName, "zero")
 
-        outfile = StringIO.StringIO()
+        outfile = io.StringIO()
         f1.save(outfile)
 
-        self.failUnless(outfile.getvalue().count("formula=[")==3)
+        self.assertTrue(outfile.getvalue().count("formula=[")==3)
 
     def testSaveWithCFParams(self):
         'load and save a file with a colorfunc which has parameters'
         f1 = fractal.T(self.compiler)
-        file1 = StringIO.StringIO(g_test2file)
+        file1 = io.StringIO(g_test2file)
         f1.loadFctFile(file1)
 
         f1.compile()
@@ -863,14 +863,14 @@ blue=0.3
         self.assertEqual(f1.forms[2].get_func_value("@myfunc"),"sqrt")
         
         # save again
-        file2 = StringIO.StringIO()
+        file2 = io.StringIO()
         f1.save(file2)
         saved = file2.getvalue()
-        self.failUnless(saved.startswith("gnofract4d parameter file"))
+        self.assertTrue(saved.startswith("gnofract4d parameter file"))
         self.assertNotEqual(saved.find("@power=3.0"),-1)
         
         # load it into another instance
-        file3 = StringIO.StringIO(saved)
+        file3 = io.StringIO(saved)
         f3 = fractal.T(self.compiler)
         f3.loadFctFile(file3)
 
@@ -880,7 +880,7 @@ blue=0.3
     def testParseVersionString(self):
         f = fractal.T(self.compiler)
         self.assertEqual(2000.0, f.parse_version_string("2.0"))
-        self.failUnless(f.parse_version_string("2.14") > f.parse_version_string("2.9"))
+        self.assertTrue(f.parse_version_string("2.14") > f.parse_version_string("2.9"))
 
     def assertFuncsEqual(self, form1, form2):
         for name in form1.func_names():
@@ -918,17 +918,17 @@ blue=0.3
     def runSaveTest(self,compressed):
         # load some settings
         f1 = fractal.T(self.compiler)
-        file1 = StringIO.StringIO(g_testfile)        
+        file1 = io.StringIO(g_testfile)        
         f1.loadFctFile(file1)
 
         # save again
-        file2 = StringIO.StringIO()
+        file2 = io.StringIO()
         f1.save(file2,compress=compressed)
         saved = file2.getvalue()
-        self.failUnless(saved.startswith("gnofract4d parameter file"))
+        self.assertTrue(saved.startswith("gnofract4d parameter file"))
         
         # load it into another instance
-        file3 = StringIO.StringIO(saved)
+        file3 = io.StringIO(saved)
         f2 = fractal.T(self.compiler)
         f2.loadFctFile(file3)
         f2.auto_deepen = False
@@ -1057,8 +1057,8 @@ blue=0.3
         # the image with loose tolerance should be inside everywhere the 
         # tight one is, and some more places too
 
-        for y in xrange(h):
-            for x in xrange(w):
+        for y in range(h):
+            for x in range(w):
                 (is_solid,fate) = im.get_fate(x,y)
                 if fate == 32:
                     (is_solid2, fate2) = im2.get_fate(x,y)
@@ -1103,8 +1103,8 @@ blue=0.3
             self.assertBlack(buf,w/2,h/2,w)        
 
             # and vertically symmetrical
-            for x in xrange(w):
-                for y in xrange(h/2):
+            for x in range(w):
+                for y in range(h/2):
                     apos = (y*w+x)*3
                     bpos = ((h-y-1)*w+x)*3
                     a = buf[apos:apos+3]
@@ -1169,7 +1169,7 @@ version=99.9
 '''
         warning_catcher = WarningCatcher()
         f = fractal.T(self.compiler);
-        future_file = StringIO.StringIO(file)
+        future_file = io.StringIO(file)
         
         f.warn = warning_catcher.warn
         f.loadFctFile(future_file)
@@ -1236,24 +1236,24 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         im.save("/tmp/foo.tga")
         # check that result is horizontally symmetrical
         buf = im.image_buffer(0,0)
-        for y in xrange(h):
-            line = map(ord,list(buf[y*w*3:(y*w+w)*3]))
+        for y in range(h):
+            line = list(map(ord,list(buf[y*w*3:(y*w+w)*3])))
             line.reverse()
             revline = line
-            line = map(ord,list(buf[y*w*3:(y*w+w)*3]))
-            for x in xrange(w):
+            line = list(map(ord,list(buf[y*w*3:(y*w+w)*3])))
+            for x in range(w):
                 a = line[x*3:(x+1)*3]
                 b = revline[x*3:(x+1)*3]
 
                 if a != b:
                     fate_buf = im.fate_buffer(0,y)
-                    print map(ord,list(fate_buf[0:w]))
+                    print(list(map(ord,list(fate_buf[0:w]))))
                     self.assertEqual(a,b,"%s != %s, %d != %d" % (a,b,x,w-x))
 
 
         # and vertically symmetrical
-        for x in xrange(w):
-            for y in xrange(h/2):
+        for x in range(w):
+            for y in range(h/2):
                 apos = (y*w+x)*3
                 bpos = ((h-y-1)*w+x)*3
                 a = buf[apos:apos+3]
@@ -1273,8 +1273,8 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         f.draw(im)
 
         buf = im.image_buffer(0,0)
-        for y in xrange(h):
-            for x in xrange(w):
+        for y in range(h):
+            for x in range(w):
                 if x > y:
                     self.assertWhite(buf,x,y,w)
                 elif y > x:
@@ -1298,8 +1298,8 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         f.draw(im)
 
         buf = im.image_buffer(0,0)
-        for y in xrange(h):
-            for x in xrange(w):
+        for y in range(h):
+            for x in range(w):
                 if x > y:
                     self.assertWhite(buf,x,y,w)
                 elif y > x:
@@ -1330,7 +1330,7 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         saved = f.serialize()
 
         f2 = fractal.T(self.compiler)
-        f2.loadFctFile(StringIO.StringIO(saved))
+        f2.loadFctFile(io.StringIO(saved))
         self.check_diagonal_image(f2, ingrey, outgrey)
         
     def check_diagonal_image(self,f,ingrey,outgrey):
@@ -1343,8 +1343,8 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
 
         buf = im.image_buffer(0,0)
         
-        for y in xrange(h):
-            for x in xrange(w):
+        for y in range(h):
+            for x in range(w):
                 if x >= y:
                     self.assertColor(buf,x,y,w,outgrey)
                 else:
@@ -1388,7 +1388,7 @@ blue=0.5543108971162746
         f = fractal.T(self.compiler)
         wc = WarningCatcher()
         f.warn = wc.warn
-        f.loadFctFile(StringIO.StringIO(file))
+        f.loadFctFile(io.StringIO(file))
 
         self.assertEqual(
             [ f.get_gradient(), 4.0, 0.34,-0.28],
@@ -1452,13 +1452,13 @@ solids=[
 ]
 '''
         f = fractal.T(self.compiler)
-        f.loadFctFile(StringIO.StringIO(file))
+        f.loadFctFile(io.StringIO(file))
 
         g = f.get_gradient()
         self.assertEqual(len(g.segments),6)
 
     def failBuf(self,buf):
-        self.failUnless(False)
+        self.assertTrue(False)
         
     def assertWhite(self,buf,x,y,w):
         self.assertColor(buf,x,y,w,255)
@@ -1481,7 +1481,7 @@ solids=[
         f.append_transform("gf4d.uxf","Inverse")
         self.assertEqual(1,len(f.transforms))
         t = f.transforms[0]
-        self.failUnless(isinstance(t, formsettings.T))
+        self.assertTrue(isinstance(t, formsettings.T))
         self.assertEqual("Inverse", t.funcName)
 
         f.remove_transform(0)
@@ -1548,7 +1548,7 @@ solids=[
         old_colors = f.get_gradient().segments
 
         c0 = new_colors[0].left_color
-        for i in xrange(len(new_colors)):
+        for i in range(len(new_colors)):
             self.assertEqual(new_colors[i].left_color,
                              old_colors[i].left_color)
 
@@ -1631,7 +1631,7 @@ solids=[
         self.assertFractalsEqual(blend,f2)
         blend = f.blend(f2,0.5)
         self.assertEqual(2.0, blend.get_param(f.XCENTER)) # linear blend
-        self.failUnless(2.5 > blend.get_param(f.MAGNITUDE)) # exponential blend
+        self.assertTrue(2.5 > blend.get_param(f.MAGNITUDE)) # exponential blend
         self.assertEqual(2002.0, blend.forms[0].get_named_param_value("@bailout"))
 
     def testBadBlend(self):
@@ -1702,7 +1702,7 @@ solids=[
             f.determine_direction(0, -math.pi * 1.5,mode))
 
     def assertValidType(self,val):
-        self.assertNotEqual(val.__class__, types.ListType, "%s shouldn't be a list" % val)
+        self.assertNotEqual(val.__class__, list, "%s shouldn't be a list" % val)
         
     def testMandelbrotMix4(self):
         # regression test

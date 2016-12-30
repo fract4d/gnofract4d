@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import sys
 import math
-import StringIO
+import io
 import copy
 import re
 
@@ -55,7 +55,7 @@ class Test(testbase.TestBase):
         g1 = gradient.Gradient()
         g2 = gradient.Gradient()
 
-        self.failUnless(g1 == g2) # calls __eq__
+        self.assertTrue(g1 == g2) # calls __eq__
         self.assertEqual(g1,g2) # calls __ne__
 
         g1.segments[0].left_color[0] = 0.7
@@ -72,7 +72,7 @@ class Test(testbase.TestBase):
         
         cmap = fract4dc.cmap_create(colorlist)
         
-        for i in xrange(1000):
+        for i in range(1000):
             fi = i / 1000.0
             (r,g,b,a) = grad.get_color_at(fi)
             cmap_color = fract4dc.cmap_lookup(cmap, fi)
@@ -90,7 +90,7 @@ class Test(testbase.TestBase):
         # check they calculate the same answer
         self.assertWellFormedGradient(grad)
         cmap = fract4dc.cmap_create_gradient(grad.segments)
-        for i in xrange(1000):
+        for i in range(1000):
             fi = i / 1000.0
             (r,g,b,a) = grad.get_color_at(fi)
             #print "%d: %.17g, %.17g, %.17g, %.17g" % (i,r,g,b,a)
@@ -177,7 +177,7 @@ opacity:
     def testFromColormapCompressible(self):
         colorlist = self.colorMapFromFile("../maps/Gallet02.map")
         grad = self.checkColorMapAndGradientEquivalent(colorlist)
-        self.failUnless(len(grad.segments) < 255,"should have been compressed")
+        self.assertTrue(len(grad.segments) < 255,"should have been compressed")
 
     def testFromColormapLossyCompression(self):
         colorlist = self.colorMapFromFile("../maps/Gallet02.map")
@@ -197,7 +197,7 @@ opacity:
 
                 # in case they're over 255 - as some badly-behaved
                 # Fractint gradients are 
-                [r,g,b] = map(lambda x: min(x,255), [r,g,b])
+                [r,g,b] = [min(x,255) for x in [r,g,b]]
 
                 if i == 0:
                     # first color is inside solid color
@@ -316,11 +316,11 @@ opacity:
     def checkGreyGradient(self, g, midpoint, oracle):
         self.assertWellFormedGradient(g)
         
-        for i in xrange(256):
+        for i in range(256):
             x = i * 1.0/256.0
             fx = oracle(x,midpoint)
 
-            self.failUnless(0.0 <= fx <= 1.0,
+            self.assertTrue(0.0 <= fx <= 1.0,
                             "dubious value %f for %x" % (fx,x))
             
             col = g.get_color_at(x)
@@ -377,7 +377,7 @@ opacity:
         g = gradient.Gradient()
         g.segments[0].left_color[3] = 0.5
         self.assertWellFormedGradient(g)
-        for i in xrange(256):
+        for i in range(256):
             x = i * 1.0/256.0
             self.assertEqual(g.get_color_at(x), [x,x,x,0.5+x/2.0])
 
@@ -385,7 +385,7 @@ opacity:
         s = gradient.Segment(
             0.0, [0.0, 0.1, 0.2, 0.3],
             0.5, [0.4, 0.5, 0.6, 0.7])
-        sio = StringIO.StringIO()
+        sio = io.StringIO()
         s.save(sio)
         self.assertEqual(
             "0.000000 0.250000 0.500000 0.000000 0.100000 0.200000 0.300000 0.400000 0.500000 0.600000 0.700000 0 0\n", sio.getvalue())
@@ -408,7 +408,7 @@ opacity:
 0.500000 0.650000 0.800000 0.400000 0.500000 0.600000 0.700000 0.010000 0.020000 0.030000 0.040000 0 0
 """, sio.getvalue())
 
-        sio = StringIO.StringIO()
+        sio = io.StringIO()
         s.save(sio)
         s2.save(sio,True)
 
@@ -419,7 +419,7 @@ opacity:
         
     def testSaveMinimal(self):
         g = gradient.Gradient()
-        s = StringIO.StringIO()
+        s = io.StringIO()
         g.save(s)
         self.assertEqual(
             s.getvalue(),
@@ -430,13 +430,13 @@ opacity:
 
     def testLoadSimple(self):
         g = gradient.Gradient()
-        s = StringIO.StringIO(wood)
+        s = io.StringIO(wood)
         g.load(s)
         self.assertEqual(g.name, "Wood 2")
         self.assertEqual(len(g.segments), 9)
 
         # check round trip
-        s2 = StringIO.StringIO()
+        s2 = io.StringIO()
         g.save(s2)
         self.assertEqual(wood,s2.getvalue())
 
@@ -448,10 +448,10 @@ opacity:
         
     def testLoadCompressed(self):
         g = gradient.Gradient()
-        s = StringIO.StringIO(wood)
+        s = io.StringIO(wood)
         g.load(s)
 
-        s2 = StringIO.StringIO()
+        s2 = io.StringIO()
         g.save(s2,True)
 
         s2.seek(0,0)
@@ -463,7 +463,7 @@ opacity:
         
     def checkBadLoad(self, str):
         g = gradient.Gradient()
-        s = StringIO.StringIO(str)
+        s = io.StringIO(str)
         self.assertRaises(Exception, g.load,s)
         self.assertWellFormedGradient(g)
         
@@ -701,7 +701,7 @@ opacity:
         # check that each element is within epsilon of expected value
         for (ra,rb) in zip(a,b):
             d = abs(ra-rb)
-            self.failUnless(d < epsilon,msg)
+            self.assertTrue(d < epsilon,msg)
 
     def assertWellFormedGradient(self, g):
         # check starts and sends at 0 and 1
@@ -714,25 +714,25 @@ opacity:
         previous_seg = g.segments[0]
         for seg in g.segments[1:]:
             # check offsets
-            self.failUnless(0.0 <= seg.left <= 1.0)
-            self.failUnless(0.0 <= seg.right <= 1.0)
-            self.failUnless(
+            self.assertTrue(0.0 <= seg.left <= 1.0)
+            self.assertTrue(0.0 <= seg.right <= 1.0)
+            self.assertTrue(
                 seg.left <= seg.mid <= seg.right,
                 "midpoint %g not between endpoints %g,%g" % \
                 (seg.mid, seg.left, seg.right))
 
             # check colors
-            self.assertEquals(len(seg.left_color),4)
-            self.assertEquals(len(seg.right_color),4)
+            self.assertEqual(len(seg.left_color),4)
+            self.assertEqual(len(seg.right_color),4)
             for x in seg.left_color + seg.right_color:
-                self.failUnless(0.0 <= x <= 1.0)
+                self.assertTrue(0.0 <= x <= 1.0)
 
             # check modes
-            self.failUnless(Blend.LINEAR <= seg.bmode <= Blend.SPHERE_DECREASING)
-            self.failUnless(ColorMode.RGB <= seg.cmode <= ColorMode.HSV_CW)
+            self.assertTrue(Blend.LINEAR <= seg.bmode <= Blend.SPHERE_DECREASING)
+            self.assertTrue(ColorMode.RGB <= seg.cmode <= ColorMode.HSV_CW)
 
             # check offset chaining
-            self.failUnless(seg.right > seg.left)
+            self.assertTrue(seg.right > seg.left)
             self.assertEqual(seg.left, previous_seg.right)
             previous_seg = seg
 

@@ -4,7 +4,7 @@ import copy
 import math
 import random
 import re
-import StringIO
+import io
 import weakref
 
 import fracttypes
@@ -47,7 +47,7 @@ class T:
     def set_initparams_from_formula(self,g):
         self.params = self.formula.symbols.default_params()
         self.paramtypes = self.formula.symbols.type_of_params()
-        for i in xrange(len(self.paramtypes)):
+        for i in range(len(self.paramtypes)):
             if self.paramtypes[i] == fracttypes.Gradient:
                 self.params[i] = copy.copy(g)
             elif self.paramtypes[i] == fracttypes.Image:
@@ -100,28 +100,28 @@ class T:
 
     def save_formula_params(self,file,warp_param=None,sectnum=None):
         if sectnum == None:
-            print >>file, "[%s]" % self.sectname
+            print("[%s]" % self.sectname, file=file)
         else:
-            print >>file, "[%s]=%d" % (self.sectname, sectnum)
+            print("[%s]=%d" % (self.sectname, sectnum), file=file)
             
-        print >>file, "formulafile=%s" % self.funcFile
-        print >>file, "function=%s" % self.funcName
+        print("formulafile=%s" % self.funcFile, file=file)
+        print("function=%s" % self.funcName, file=file)
 
         if(self.compiler.is_inline(self.funcFile, self.funcName)):
             contents = self.compiler.get_formula_text(
                 self.funcFile, self.funcName)
-            print >>file, "formula=[\n%s\n]" % contents
+            print("formula=[\n%s\n]" % contents, file=file)
 
         names = self.func_names()
         names.sort()
         for name in names:
-            print >>file, "%s=%s" % (name, self.get_func_value(name))
+            print("%s=%s" % (name, self.get_func_value(name)), file=file)
         names = self.param_names()
         names.sort()
         for name in names:
-            print >>file, "%s=%s" % (name, self.initvalue(name,warp_param))
+            print("%s=%s" % (name, self.initvalue(name,warp_param)), file=file)
 
-        print >>file, "[endsection]"
+        print("[endsection]", file=file)
         
     def func_names(self):
         return self.formula.symbols.func_names()
@@ -132,7 +132,7 @@ class T:
     def params_of_type(self,type,readable=False):
         params = []
         op = self.formula.symbols.order_of_params()
-        for name in op.keys():
+        for name in list(op.keys()):
             if name != '__SIZE__':
                 if self.formula.symbols[name].type == type:
                     if readable:
@@ -206,7 +206,7 @@ class T:
         elif t == fracttypes.Hyper or t == fracttypes.Color:
             m = hyper_re.match(val)
             if m!= None:
-                for i in xrange(4):
+                for i in range(4):
                     val = float(m.group(i+1))
                     if self.params[ord+i] != val:
                         self.params[ord+i] = val
@@ -235,7 +235,7 @@ class T:
                 self.changed()
         elif t == fracttypes.Gradient:
             grad = gradient.Gradient()
-            grad.load(StringIO.StringIO(val))
+            grad.load(io.StringIO(val))
             self.params[ord] = grad
             self.changed()
         elif t == fracttypes.Image:
@@ -255,7 +255,7 @@ class T:
         return weirdness * (random.random() - 0.5 ) * 1.0 / factor
 
     def mutate(self, weirdness, size):
-        for i in xrange(len(self.params)):
+        for i in range(len(self.params)):
             if self.paramtypes[i] == fracttypes.Float:
                 self.params[i] += self.zw_random(weirdness, size)
             elif self.paramtypes[i] == fracttypes.Int:
@@ -327,7 +327,7 @@ class T:
         self.set_initparams_from_formula(gradient)
 
     def load_param_bag(self,bag):
-        for (name,val) in bag.dict.items():
+        for (name,val) in list(bag.dict.items()):
             if name == "formulafile" or name=="function":
                 pass
             else:
@@ -338,7 +338,7 @@ class T:
         if self.funcName != other.funcName or self.funcFile != other.funcFile:
             raise ValueError("Cannot blend parameters between different formulas")
         
-        for i in xrange(len(self.params)):
+        for i in range(len(self.params)):
             (a,b) = (self.params[i],other.params[i])
             if self.paramtypes[i] == fracttypes.Float:
                 self.params[i] = a*(1.0-ratio) + b*ratio

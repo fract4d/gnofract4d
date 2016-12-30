@@ -1,12 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import string
-import commands
+import subprocess
 import re
 import os
 import time
-import cPickle
+import pickle
 
 import testbase
 
@@ -121,7 +121,7 @@ class Test(testbase.TestBase):
     def assertListSorted(self,l):
         last = ""
         for f in l:
-            self.failUnless(last < f.lower(),"list not sorted: %s" % l)
+            self.assertTrue(last < f.lower(),"list not sorted: %s" % l)
             last = f.lower()
         
     def testFormulasSorted(self):

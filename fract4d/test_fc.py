@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import string
-import commands
+import subprocess
 import re
 import os
 import time
@@ -47,7 +47,7 @@ class Test(testbase.TestBase):
     def assertListContains(self,list,element):
         try:
             return list.index(element)
-        except ValueError, err:
+        except ValueError as err:
             raise AssertionError("couldn't find %s in %s" % (element, list))
 
     def assertListDoesntContain(self,list,element):
@@ -63,10 +63,10 @@ class Test(testbase.TestBase):
             fc.FormulaTypes.GRADIENT : "4zebbowx.map"
             }
 
-        for type in xrange(fc.FormulaTypes.FRACTAL, fc.FormulaTypes.GRADIENT + 1):
+        for type in range(fc.FormulaTypes.FRACTAL, fc.FormulaTypes.GRADIENT + 1):
             files = self.compiler.find_files_of_type(type)
 
-            for (exp_t, exp_val) in expected_files.items():
+            for (exp_t, exp_val) in list(expected_files.items()):
                 if exp_t == type:
                     self.assertListContains(files, exp_val)
                 else:
@@ -75,7 +75,7 @@ class Test(testbase.TestBase):
     def testLists(self):
         file = self.compiler.files["gf4d.cfrm"]
         names = file.get_formula_names()
-        self.assertEqual(names,file.formulas.keys())
+        self.assertEqual(names,list(file.formulas.keys()))
 
         inside_names = file.get_formula_names("OUTSIDE")
         for f in inside_names:
@@ -135,11 +135,11 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
         self.assertEqual(len(ff.formulas) > 0,1)
         f = self.compiler.get_formula("gf4d.frm","T03-01-G4")
         self.assertEqual(f.errors, [])
-        commands.getoutput("rm -f test-out.so")
+        subprocess.getoutput("rm -f test-out.so")
         cg = self.compiler.compile(f)
         self.compiler.generate_code(f,cg,"test-out.so",None)
         # check the output contains the right functions
-        (status,output) = commands.getstatusoutput('nm test-out.so')
+        (status,output) = subprocess.getstatusoutput('nm test-out.so')
         self.assertEqual(status,0)
         self.assertEqual(string.count(output,"pf_new"),1)
         self.assertEqual(string.count(output,"pf_calc"),1)
@@ -204,7 +204,7 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
         f.merge(cf2,"cf1_")
 
         ofile = self.compiler.generate_code(f,cg)
-        self.failUnless(os.path.exists(ofile))
+        self.assertTrue(os.path.exists(ofile))
 
     def testDoubleCompile(self):
         'Compile the same thing twice, check results same'
@@ -264,7 +264,7 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
 
     def testGetFormulaText(self):
         t = self.compiler.get_formula_text("gf4d.frm","Mandelbrot")
-        self.failUnless(t.startswith("Mandelbrot {"))
+        self.assertTrue(t.startswith("Mandelbrot {"))
 
 def suite():
     return unittest.makeSuite(Test,'test')

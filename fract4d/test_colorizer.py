@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import string
-import StringIO
+import io
 import unittest
 
 import colorizer
@@ -21,7 +21,7 @@ class Test(unittest.TestCase):
 
     def testReadBadStuff(self):
         wc = WarningCatcher()
-        f = StringIO.StringIO("""The files in this directory contain pallette files for fractint. Most
+        f = io.StringIO("""The files in this directory contain pallette files for fractint. Most
 of them came from Fractint itself or the Frxtra packages for fractint
 addons, and some are mine. The allmaps.zip file is a zipfile of all mapfiles
 that I've ever found. The ngmap.zip is just a collection of my own

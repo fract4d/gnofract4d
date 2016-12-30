@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import string
-import StringIO
+import io
 import re
 import os
 import sys
@@ -13,7 +13,7 @@ from time import time as now
 
 try:
     import fract4dcgmp as fract4dc
-except ImportError, err:
+except ImportError as err:
     import fract4dc
 
 import fracttypes
@@ -120,21 +120,21 @@ class T(fctutils.T):
         pass
     
     def serialize(self,comp=False):
-        out = StringIO.StringIO()
+        out = io.StringIO()
         self.save(out,False,compress=comp)
         return out.getvalue()
 
     def deserialize(self,string):
-        self.loadFctFile(StringIO.StringIO(string))
+        self.loadFctFile(io.StringIO(string))
         self.changed()
         
     def apply_params(self,dict):
-        for (key,value) in dict.items():
+        for (key,value) in list(dict.items()):
             self.parseVal(key,value,None)
 
     def save(self,file,update_saved_flag=True,**kwds):
-        print >>file, "gnofract4d parameter file"
-        print >>file, "version=%s" % THIS_FORMAT_VERSION
+        print("gnofract4d parameter file", file=file)
+        print("version=%s" % THIS_FORMAT_VERSION, file=file)
 
         compress = kwds.get("compress",False)
         if compress != False:
@@ -143,12 +143,12 @@ class T(fctutils.T):
             file = fctutils.Compressor()
 
         for pair in zip(self.paramnames,self.params):
-            print >>file, "%s=%.17f" % pair
+            print("%s=%.17f" % pair, file=file)
 
-        print >>file, "maxiter=%d" % self.maxiter
-        print >>file, "yflip=%s" % self.yflip
-        print >>file, "periodicity=%s" % int(self.periodicity)
-        print >>file, "period_tolerance=%.17f" % self.period_tolerance
+        print("maxiter=%d" % self.maxiter, file=file)
+        print("yflip=%s" % self.yflip, file=file)
+        print("periodicity=%s" % int(self.periodicity), file=file)
+        print("period_tolerance=%.17f" % self.period_tolerance, file=file)
         
         self.forms[0].save_formula_params(file,self.warp_param)
         self.forms[1].save_formula_params(file)
@@ -159,17 +159,17 @@ class T(fctutils.T):
             transform.save_formula_params(file,None,i)
             i += 1
             
-        print >>file, "[colors]"
-        print >>file, "colorizer=1"
-        print >>file, "solids=["
+        print("[colors]", file=file)
+        print("colorizer=1", file=file)
+        print("solids=[", file=file)
         for solid in self.solids:
-            print >>file, "%02x%02x%02x%02x" % solid
-        print >>file, "]"
-        print >>file, "[endsection]"
+            print("%02x%02x%02x%02x" % solid, file=file)
+        print("]", file=file)
+        print("[endsection]", file=file)
 
         if compress:
             file.close()
-            print >> main_file, file.getvalue()
+            print(file.getvalue(), file=main_file)
         
         if update_saved_flag:
             self.saved = True
@@ -179,7 +179,7 @@ class T(fctutils.T):
             g = self.forms[0].get_named_param_value("@_gradient")
             if g == 0:
                 g = self.default_gradient
-        except Exception, exn:
+        except Exception as exn:
             g = self.default_gradient
         return g
 
@@ -251,7 +251,7 @@ class T(fctutils.T):
 
         self.set_formula(file,func,0)
             
-        for (name,val) in params.dict.items():
+        for (name,val) in list(params.dict.items()):
             if name == "formulafile" or name == "function" or name == "formula" or name=="":
                 continue
             elif name == "a" or name =="b" or name == "c":
@@ -346,7 +346,7 @@ class T(fctutils.T):
         """Create a new fractal which blends the this and other's parameter sets using ratio.
         'angle_options' can be used to override the default method of interpolating angles."""
         new = copy.copy(self)
-        for i in xrange(self.XCENTER,self.MAGNITUDE):
+        for i in range(self.XCENTER,self.MAGNITUDE):
             (a,b) = (self.params[i], other.params[i])
             new.set_param(i, a*(1-ratio) + b* ratio)
 
@@ -361,7 +361,7 @@ class T(fctutils.T):
 
         new.set_param(self.MAGNITUDE, val)
 
-        for i in xrange(self.XYANGLE, self.ZWANGLE+1):
+        for i in range(self.XYANGLE, self.ZWANGLE+1):
             (a,b) = (self.params[i], other.params[i])
             option = angle_options[i-self.XYANGLE:i-self.XYANGLE]
             if len(option):
@@ -376,7 +376,7 @@ class T(fctutils.T):
         return new
     
     def reset_angles(self):
-        for i in xrange(self.XYANGLE,self.ZWANGLE+1):
+        for i in range(self.XYANGLE,self.ZWANGLE+1):
             self.set_param(i,0.0)
         
     def reset(self):
@@ -444,7 +444,7 @@ class T(fctutils.T):
         
     def set_solids(self, solids):
         same = True
-        for i in xrange(len(solids)):
+        for i in range(len(solids)):
             if self.solids[i] != solids[i]:
                same = False
                break
@@ -455,7 +455,7 @@ class T(fctutils.T):
         self.changed(False)
         
     def refresh(self):
-        for i in xrange(3):
+        for i in range(3):
             if self.compiler.out_of_date(self.forms[i].funcFile):
                 self.set_formula(
                     self.forms[i].funcFile,self.forms[i].funcName,i)
@@ -469,7 +469,7 @@ class T(fctutils.T):
 
         self.forms[0].set_initparams_from_formula(g)
 
-        for (name,val) in self.forms[0].formula.defaults.items():
+        for (name,val) in list(self.forms[0].formula.defaults.items()):
             # FIXME helpfile,helptopic,method,precision,
             #render,skew,stretch
             if name == "maxiter":
@@ -492,7 +492,7 @@ class T(fctutils.T):
                 if hasattr(self,name.upper()):
                     self.params[getattr(self,name.upper())] = float(val.value)
                 else:
-                    print "ignored unknown parameter %s" % name
+                    print("ignored unknown parameter %s" % name)
 
         for form in self.forms[1:] + self.transforms:
             form.reset_params()
@@ -598,7 +598,7 @@ class T(fctutils.T):
         if options.maxiter != -1:
             self.set_maxiter(options.maxiter)
 
-        for (num,val) in options.paramchanges.items():
+        for (num,val) in list(options.paramchanges.items()):
             self.set_param(num,val)
 
         for (file,func) in options.transforms:
@@ -640,7 +640,7 @@ class T(fctutils.T):
         self.changed(False)
         
     def mul_vs(self,v,s):
-        return map(lambda x : x * s, v)
+        return [x * s for x in v]
 
     def xy_random(self,weirdness,size):
         return weirdness * 0.5 * size * (random.random() - 0.5)
@@ -681,7 +681,7 @@ class T(fctutils.T):
             self.params[self.ZCENTER] += self.zw_random(weirdness, size)
             self.params[self.WCENTER] += self.zw_random(weirdness, size)
 
-            for a in xrange(self.XZANGLE,self.ZWANGLE):
+            for a in range(self.XZANGLE,self.ZWANGLE):
                 self.params[a] += self.angle_random(weirdness)
 
         if random.random() < weirdness * 0.75:
@@ -765,8 +765,8 @@ class T(fctutils.T):
 
     def _pixel_changed(self,params,x,y,aa,maxIters,nNoPeriodIters,dist,fate,nIters,r,g,b,a):
         # remove underscore to debug fractal generation
-        print "pixel: (%g,%g,%g,%g) %d %d %d %d %d %g %d %d (%d %d %d %d)" % \
-              (params[0],params[1],params[2],params[3],x,y,aa,maxIters,nNoPeriodIters,dist,fate,nIters,r,g,b,a)
+        print("pixel: (%g,%g,%g,%g) %d %d %d %d %d %g %d %d (%d %d %d %d)" % \
+              (params[0],params[1],params[2],params[3],x,y,aa,maxIters,nNoPeriodIters,dist,fate,nIters,r,g,b,a))
 
     def epsilon_tolerance(self,w,h):
         #5% of the size of a pixel
@@ -843,13 +843,13 @@ class T(fctutils.T):
         
     def drawpoint(self):
         self.init_pfunc()
-        print "x:\t\t%.17f\ny:\t\t%.17f\nz:\t\t%.17f\nw:\t\t%.17f\n" % tuple(self.params[0:4])
+        print("x:\t\t%.17f\ny:\t\t%.17f\nz:\t\t%.17f\nw:\t\t%.17f\n" % tuple(self.params[0:4]))
         startTime = now()
         result = fract4dc.pf_calc(
             self.pfunc,self.params[0:4],self.maxiter,0,0,0,100 *1000 *1000)
         duration = now() - startTime
-        print "iterations:\t%s\nfate:\t\t%s\ndistance:\t%s\nsolid:\t\t%s" % result
-        print "duration:\t%.4g" % duration
+        print("iterations:\t%s\nfate:\t\t%s\ndistance:\t%s\nsolid:\t\t%s" % result)
+        print("duration:\t%.4g" % duration)
 
     def draw(self,image,nthreads=1):
         self.init_pfunc()
@@ -882,7 +882,7 @@ class T(fctutils.T):
         try:
             (major,minor) = tuple([int(a) for a in s.split(".")])
             return major * 1000.0 + minor
-        except Exception, exn:
+        except Exception as exn:
             raise ValueError("Invalid version number %s" % s)
 
     def parse_version(self,val,f):
@@ -904,7 +904,7 @@ The image may not display correctly. Please upgrade to version %s or higher.'''
 
             self.warn(warning % val)
     def warn(self,msg):
-        print msg
+        print(msg)
 
     def parse_bailfunc(self,val,f):
         # can't set function directly because formula hasn't been parsed yet
@@ -1016,7 +1016,7 @@ The image may not display correctly. Please upgrade to version %s or higher.'''
         # new gradient is read in after the gradient params have been set,
         # so this is needed to fix any which are using that default
         p = self.forms[0].params
-        for i in xrange(len(p)):
+        for i in range(len(p)):
             if p[i] == old_gradient:
                 p[i] = self.get_gradient()
         

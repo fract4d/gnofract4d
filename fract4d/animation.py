@@ -5,7 +5,7 @@ import os, sys, copy, math
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
 
-import fracttypes, fractal, fractconfig
+from  import fracttypes, fractal, fractconfig
 
 #interpolation type constants
 INT_LINEAR=    0
@@ -214,7 +214,7 @@ class T:
             ah = AnimationHandler(self)
             parser.setContentHandler(ah)
             parser.parse(open(file))
-        except Exception, err:
+        except Exception as err:
             #retrieve previous__dict__
             self.__dict__=odict
             raise
@@ -234,7 +234,7 @@ class T:
 
     #leftover from debugging purposes
     def pr(self):
-        print self.__dict__
+        print(self.__dict__)
 
     def get_image_filename(self,n):
         "The filename of the image containing the Nth frame"
@@ -277,7 +277,7 @@ class T:
 
     def get_keyframe_durations(self):
         durations = []
-        for i in xrange(self.keyframes_count()):
+        for i in range(self.keyframes_count()):
             durations.append(self.get_keyframe_duration(i))
 
         return durations
@@ -285,7 +285,7 @@ class T:
     def get_total_frames(self):
         count = 0
         nframes = self.keyframes_count()
-        for i in xrange(nframes):
+        for i in range(nframes):
             count += self.get_keyframe_stop(i)
             if i < nframes - 1:
                 # don't count the last frame's duration

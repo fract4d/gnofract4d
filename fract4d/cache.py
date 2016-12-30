@@ -2,7 +2,7 @@
 
 import os
 import stat
-import cPickle
+import pickle
 import hashlib
 
 class TimeStampedObject:
@@ -57,7 +57,7 @@ class T:
     def createPickledFile(self,file,contents):
         f = open(file,"wb")
         try:
-            cPickle.dump(contents,f,True)
+            pickle.dump(contents,f,True)
             #print "created %s" % file
         finally:
             f.close()
@@ -65,7 +65,7 @@ class T:
     def loadPickledFile(self,file):
         f = open(file, "rb")
         try:
-            contents = cPickle.load(f)
+            contents = pickle.load(f)
         finally:
             f.close()
         return contents

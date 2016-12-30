@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 "Tests for fctutils"
 import string
-import StringIO
+import io
 import unittest
 import gzip
 import base64
@@ -29,7 +29,7 @@ parishioner=arse
         comp.close()
         data = comp.getvalue()
         full_input = "fish=wiggle\n" + data
-        in_f = StringIO.StringIO(full_input)
+        in_f = io.StringIO(full_input)
 
         fct = fctutils.ParamBag()
         fct.load(in_f)

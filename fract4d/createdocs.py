@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # create a DocBook XML document documenting the standard library
 
@@ -31,20 +31,19 @@ class SymbolPrinter:
                 self.funcs[key] = val
 
     def output_entry(self,nrows=1):
-        print >>self.f, \
-           '<entry valign="top" align="left" morerows="%d">' % (nrows-1)
+        print('<entry valign="top" align="left" morerows="%d">' % (nrows-1), file=self.f)
         
     def output_refentry_header(self,key,val,type,nrows=1):
-        print >>self.f, '<row>'
+        print('<row>', file=self.f)
         self.output_entry(nrows)
-        print >>self.f, '%s</entry>' % escape(key)
+        print('%s</entry>' % escape(key), file=self.f)
 
     def output_overload(self,func):
         self.output_entry()
-        print >>self.f,  ", ".join(map(strOfType,func.args))
-        print >>self.f,  '</entry>'
+        print(", ".join(map(strOfType,func.args)), file=self.f)
+        print('</entry>', file=self.f)
         self.output_entry()
-        print >>self.f,  '%s</entry>' % strOfType(func.ret)
+        print('%s</entry>' % strOfType(func.ret), file=self.f)
 
     def output_function(self,val):
         nrows = len(val)
@@ -52,19 +51,19 @@ class SymbolPrinter:
         self.output_overload(val[0])
         
         for func in val[1:]:
-             print >>self.f,  '</row>'
-             print >>self.f,  '<row>'
+             print('</row>', file=self.f)
+             print('<row>', file=self.f)
              self.output_overload(func)
         
     def output_refentry_footer(self):
-        print >>self.f,  '</row>'
+        print('</row>', file=self.f)
         #print >>self.f, '<row><entry>&nbsp;</entry></row>'
         
     def output_refentry_body(self,val,nrows=1):
         self.output_entry(nrows)
         text = val.__doc__ or "No documentation yet."
-        print >>self.f,  escape(text)
-        print >>self.f,  '</entry>'
+        print(escape(text), file=self.f)
+        print('</entry>', file=self.f)
         
     def output_symbol(self,key,val,type):
         if isinstance(val,fsymbol.OverloadList):
@@ -75,7 +74,7 @@ class SymbolPrinter:
         else:
             self.output_refentry_header(key,val,type)
             self.output_refentry_body(val)
-            print >>self.f,  '<entry>%s</entry>' % strOfType(val.type)
+            print('<entry>%s</entry>' % strOfType(val.type), file=self.f)
 
         self.output_refentry_footer()
 
@@ -86,11 +85,11 @@ class SymbolPrinter:
 
         
     def output_table(self,table,name,type):
-        print >>self.f,  '<sect2 id="%s">' % name
-        print >>self.f,  '<title>%s</title>' % name
-        print >>self.f,  '<para><informaltable frame="all">'
-        print >>self.f, '<tgroup cols="4">'
-        print >>self.f,  '''
+        print('<sect2 id="%s">' % name, file=self.f)
+        print('<title>%s</title>' % name, file=self.f)
+        print('<para><informaltable frame="all">', file=self.f)
+        print('<tgroup cols="4">', file=self.f)
+        print('''
 <thead>
 <row>
                     <entry>Name</entry>
@@ -98,24 +97,24 @@ class SymbolPrinter:
                     <entry>Argument Types</entry>
                     <entry>Return Type</entry>
 </row>
-</thead>'''
-        print >>self.f,  '<tbody>'
+</thead>''', file=self.f)
+        print('<tbody>', file=self.f)
 
-        keys = table.keys()
+        keys = list(table.keys())
         keys.sort()
         for k in keys:
             self.output_symbol(k,table[k],type)
-        print >>self.f,  '</tbody>'
-        print >>self.f,  '</tgroup>'
-        print >>self.f,  '</informaltable></para>'
-        print >>self.f,  '</sect2>'
+        print('</tbody>', file=self.f)
+        print('</tgroup>', file=self.f)
+        print('</informaltable></para>', file=self.f)
+        print('</sect2>', file=self.f)
         
 def main(outfile):
     out = open(outfile,"w")
     d = fsymbol.T()
     printer = SymbolPrinter(out)
 
-    for k in d.default_dict.keys():
+    for k in list(d.default_dict.keys()):
         printer.add_symbol(d.demangle(k),d[k])
 
     printer.output_all()

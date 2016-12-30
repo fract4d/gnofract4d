@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import string
-import StringIO
+import io
 import unittest
 import copy
 
@@ -210,7 +210,7 @@ Name: burning_coals
         fs1.set_formula("standard.ucl","DirectOrbitTraps",g_grad)
         
         bag = fctutils.ParamBag()
-        bag.load(StringIO.StringIO("""formulafile=stdexp.cfrm
+        bag.load(io.StringIO("""formulafile=stdexp.cfrm
 function=DirectOrbitTraps
 @_transfer=ident
 @trapmergemode=mergenormal

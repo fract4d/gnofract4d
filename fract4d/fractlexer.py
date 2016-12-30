@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # ------------------------------------------------------------
 # fractlexer.py
 #
@@ -108,7 +108,7 @@ types = ["bool",
 consts = ["true", "false", "yes", "no"]
 
 lookup = {}
-for k in keywords: lookup[k] = string.upper(k)
+for k in keywords: lookup[k] = k.upper()
 for t in types: lookup[t] = "TYPE"
 for c in consts: lookup[c] = "CONST"
 
@@ -193,8 +193,8 @@ def t_SECT_STM(t):
 def t_ID(t):
     r'[@#]?[a-zA-Z_][a-zA-Z0-9_]*'
     global lookup
-    lookfor = string.lower(t.value) # case insensitive lookup
-    if lookup.has_key(lookfor): t.type = lookup[lookfor]
+    lookfor = t.value.lower() # case insensitive lookup
+    if lookfor in lookup: t.type = lookup[lookfor]
     return t
     
 # don't produce tokens for newlines preceded by \
@@ -251,4 +251,4 @@ if __name__ == '__main__': #pragma: no cover
     while 1:
         tok = lex.token()
         if not tok: break      # No more input
-        print tok
+        print(tok)

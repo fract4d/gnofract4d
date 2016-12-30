@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Generate C code from a linearized IR trace
 
@@ -27,10 +27,10 @@ class Formatter:
     def __getitem__(self,key):
         try:
             out = self.tree.output_sections[key]
-            str_output = string.join(map(lambda x : x.format(), out),"\n")
+            str_output = string.join([x.format() for x in out],"\n")
             return str_output
 
-        except KeyError, err:
+        except KeyError as err:
             #print "missed %s" % key
             return self.lookup.get(key,"")
 
@@ -477,7 +477,7 @@ extern "C" {
     def emit_func_n(self,n,op,srcs,type):
         dst = self.newTemp(type)
         srcstrings = []
-        for i in xrange(n):
+        for i in range(n):
             srcstrings.append("%%(s%d)s" % i)
             
         assem = "%(d0)s = " + op + "(" + ",".join(srcstrings) + ");"
@@ -541,7 +541,7 @@ extern "C" {
         parts = sym.part_names
         vals = sym.init_val()
         decls = [None] * len(parts)
-        for i in xrange(len(parts)):
+        for i in range(len(parts)):
             decls[i] = Decl(
                 "%s %s%s = %s;"% (sym.ctype,sym.cname,parts[i],vals[i]))
 
@@ -560,7 +560,7 @@ extern "C" {
         initvals = sym.init_val()
         parts = sym.part_names
         returns = [None] * len(parts)
-        for i in xrange(len(parts)):
+        for i in range(len(parts)):
             returns[i] = Move(
                 [ Literal( sym.cname + parts[i])], [Literal(initvals[i]) ],
                 self.generate_trace)
@@ -605,12 +605,12 @@ extern "C" {
             "t__h_inside" : ""            
             }
         
-        for (k,v) in user_overrides.items():
+        for (k,v) in list(user_overrides.items()):
             overrides[k] = v
             
         out = []
 
-        for (key,sym) in ir.symbols.items():
+        for (key,sym) in list(ir.symbols.items()):
             self.output_decl(key,sym,out,overrides)
 
         if hasattr(ir,"output_sections"):
@@ -637,12 +637,12 @@ extern "C" {
                 double t__h_center_im = t__pfo->pos_params[1];"""
             }
         
-        for (k,v) in user_overrides.items():
+        for (k,v) in list(user_overrides.items()):
             #print "%s = %s" % (k,v)
             overrides[k] = v
             
         out = []
-        for (key,sym) in ir.symbols.items():
+        for (key,sym) in list(ir.symbols.items()):
             self.output_symbol(key,sym,out,overrides)
 
         if hasattr(ir,"output_sections"):
@@ -652,7 +652,7 @@ extern "C" {
 
     def output_return_syms(self,ir):
         out = []
-        for (key,sym) in ir.symbols.items():
+        for (key,sym) in list(ir.symbols.items()):
             if self.symbols.is_param(key) and isinstance(sym,fracttypes.Var):
                 out += self.return_sym(sym)
 
@@ -670,7 +670,7 @@ extern "C" {
         t.output_sections[section] = self.out
     
     def output_all(self,t):
-        for k in t.canon_sections.keys():
+        for k in list(t.canon_sections.keys()):
             self.output_section(t,k)
 
     def output_decls(self,t,overrides={}):
@@ -702,7 +702,7 @@ extern "C" {
             inserts["done_inserts"] = 'printf("\\n");'
             
         # can only do periodicity if formula uses z
-        if self.symbols.data.has_key("z"):
+        if "z" in self.symbols.data:
             inserts["decl_period"] = '''
                 double old_z_re;
                 double old_z_im;
@@ -769,14 +769,14 @@ extern "C" {
     def findOp(self,t):
         ' find the most appropriate overload for this op'
         overloadList = self.symbols[t.op]
-        typelist = map(lambda n : n.datatype , t.children)
+        typelist = [n.datatype for n in t.children]
         try:
             for ol in overloadList:
                 if ol.matchesArgs(typelist):
                     return ol
-        except TypeError, err:
-            print overloadList
-            print err
+        except TypeError as err:
+            print(overloadList)
+            print(err)
             
         raise fracttypes.TranslationError(
             "Internal Compiler Error: Invalid argument types %s for %s" % \
@@ -840,7 +840,7 @@ extern "C" {
                 assem = "%(d0)s = ((double)%(s0)s);"
                 self.out.append(Oper(assem,[src], [dst.parts[0]]))
                 assem = "%(d0)s = 0.0;"
-                for i in xrange(1,4):
+                for i in range(1,4):
                     self.out.append(Oper(assem,[src], [dst.parts[i]]))
             elif child.datatype == Complex:
                 assem = "%(d0)s = ((double)%(s0)s);"
@@ -876,7 +876,7 @@ extern "C" {
             self.emit_move(src.re,dst.re)
             self.emit_move(src.im,dst.im)
         elif t.datatype == Hyper or t.datatype == Color:
-            for i in xrange(4):
+            for i in range(4):
                 self.emit_move(src.parts[i],dst.parts[i])
         else:
             self.emit_move(src,dst)
@@ -908,7 +908,7 @@ extern "C" {
         op = self.findOp(t)
         try:
             dst = op.genFunc(self, t, srcs)
-        except TypeError, err:
+        except TypeError as err:
             msg = "Internal Compiler Error: missing stdlib function %s" % \
                   op.genFunc
             raise fracttypes.TranslationError(msg)
@@ -922,10 +922,10 @@ extern "C" {
         op = self.findOp(t)
         try:
             dst = op.genFunc(self,t,srcs)
-        except TypeError, err:
+        except TypeError as err:
             msg = "Internal Compiler Error: missing stdlib function %s" % \
                   op.genFunc
-            print msg
+            print(msg)
             raise fracttypes.TranslationError(msg)
         return dst
     
@@ -955,10 +955,10 @@ extern "C" {
         
     def generate_code(self,tree):
         action = self.match(tree)
-        return apply(action,(self,tree))
+        return action(*(self,tree))
 
     def expand_templates(self,list):
-        return map(lambda x : [self.expand(x[0]), x[1]], list)
+        return [[self.expand(x[0]), x[1]] for x in list]
 
     def expand(self, template):
         return eval(re.sub(r'(\w+)',r'ir.\1',template))
@@ -966,7 +966,7 @@ extern "C" {
     # implement naive tree matching. We match an ir tree against a
     # nested list of classes
     def match_template(self, tree, template):
-        if isinstance(template,types.ListType):
+        if isinstance(template,list):
             object = template[0]
             children = template[1:]
 

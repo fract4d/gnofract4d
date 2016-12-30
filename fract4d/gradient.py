@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import math
 import re
-import StringIO
+import io
 import copy
 import random
 import types
@@ -43,7 +43,7 @@ import colorsys
 rgb_re = re.compile(r'\s*(\d+)\s+(\d+)\s+(\d+)')
 
 class FileType:
-    MAP, GGR, CS, UGR = range(4)
+    MAP, GGR, CS, UGR = list(range(4))
     def guess(s):
         s = s.lower()
         if s.endswith(".map"):
@@ -59,10 +59,10 @@ class FileType:
     guess = staticmethod(guess)
     
 class Blend:
-    LINEAR, CURVED, SINE, SPHERE_INCREASING, SPHERE_DECREASING = range(5)
+    LINEAR, CURVED, SINE, SPHERE_INCREASING, SPHERE_DECREASING = list(range(5))
 
 class ColorMode:
-    RGB, HSV_CCW, HSV_CW = range(3)
+    RGB, HSV_CCW, HSV_CW = list(range(3))
 
 class Error(Exception):
     def __init__(self, msg):
@@ -127,7 +127,7 @@ class Segment:
     
     def close(self, a, b):
         # True if a is nearly == b
-        if isinstance(a, types.ListType):
+        if isinstance(a, list):
             for (ax,bx) in zip(a,b):
                 if abs(ax-bx) > 1.0E-5:
                     return False
@@ -221,15 +221,15 @@ class Segment:
     def save(self,f,skip_left=False):
         if skip_left:
             # this segment's left end == previous right, so leave it out
-            print >>f, "+%6f %6f" % (self.mid, self.right),
+            print("+%6f %6f" % (self.mid, self.right), end=' ', file=f)
             for x in self.right_color:
-                print >>f, "%6f" % x,
+                print("%6f" % x, end=' ', file=f)
         else:
-            print >>f, "%6f %6f %6f" % (self.left, self.mid, self.right),
+            print("%6f %6f %6f" % (self.left, self.mid, self.right), end=' ', file=f)
             for x in self.left_color + self.right_color:
-                print >>f, "%6f" % x,
+                print("%6f" % x, end=' ', file=f)
         
-        print >>f, "%d %d" % (self.bmode, self.cmode)
+        print("%d %d" % (self.bmode, self.cmode), file=f)
             
 class Gradient:
     def __init__(self):
@@ -260,15 +260,15 @@ class Gradient:
         return not self.__eq__(other)
     
     def serialize(self):
-        s = StringIO.StringIO()
+        s = io.StringIO()
         self.save(s,True)
         return s.getvalue()
 
     def save(self,f,compress=False):
-        print >>f, "GIMP Gradient"
+        print("GIMP Gradient", file=f)
         if self.name:
-            print >>f, "Name:", self.name
-        print >>f, len(self.segments)
+            print("Name:", self.name, file=f)
+        print(len(self.segments), file=f)
         last = None
         for seg in self.segments:
             compress_seg = compress and last != None and seg.right_of(last)
@@ -281,7 +281,7 @@ class Gradient:
         # so there may be cases unaccounted for
         (ncolors,) = struct.unpack("2xB5x",f.read(8))
         list = []
-        for i in xrange(ncolors):
+        for i in range(ncolors):
             (r,g,b,skip) = struct.unpack("<BBBxI", f.read(8))
             entry = (i/float(ncolors), r,g,b,255)
             f.read(skip)
@@ -340,7 +340,7 @@ class Gradient:
             name = line[5:].strip()
             line = f.readline()
         num_vals = int(line)
-        for i in xrange(num_vals):
+        for i in range(num_vals):
             line = f.readline()
             if line[:1] == "+":
                 # a compressed continuation, use last vals
@@ -525,7 +525,7 @@ class Gradient:
         prev_index = 0.0
         prev_color = colors[0]
         first_color = prev_color
-        for i in xrange(9-1):
+        for i in range(9-1):
             index = float(i+1)/length
             color = colors[i]
             self.segments.append(
@@ -548,7 +548,7 @@ class Gradient:
         prev_index = 0.0
         prev_color = self.random_bright_color()
         first_color = prev_color
-        for i in xrange(length-1):
+        for i in range(length-1):
             index = float(i+1)/length
             if i % 2 == 1:                
                 color = self.random_bright_color()
@@ -585,7 +585,7 @@ class Gradient:
         if pos < 0.0:
             raise IndexError("Must be between 0 and 1")
         length = len(self.segments)
-        for i in xrange(length):
+        for i in range(length):
             if pos <= self.segments[i].right:
                 return i
         

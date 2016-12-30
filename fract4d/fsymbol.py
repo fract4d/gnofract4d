@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Trivial symbol table implementation
 
 import copy
-from UserDict import UserDict
-from UserList import UserList
+from collections import UserDict
+from collections import UserList
 import string
 import types
 import re
@@ -59,13 +59,13 @@ def mkf(args, ret, fname):
     # create a function
     return Func(args,ret,fname)
 
-def mkfl(dict, name, list, **kwds):
+def mkfl(dict, name, lst, **kwds):
     "make a list of functions"
     fname = kwds.get("fname",name) # fname overrides name if present
     # avoid having to provide list of one element
-    if not isinstance(list[0][0],types.ListType):
-        list = [list]
-    funclist = map(lambda x : mkf(x[0],x[1],fname), list)
+    if not isinstance(lst[0][0],list):
+        lst = [lst]
+    funclist = [mkf(x[0],x[1],fname) for x in lst]
 
     implicit = kwds.get("implicit",None)
     if implicit:
@@ -602,13 +602,13 @@ by the 3rd parameter.''')
       doc='''Modulus operator. Computes the remainder when x is divided by y. Not to be confused with the complex modulus.'''),
     
     # predefined parameters
-    for p in xrange(1,7):
+    for p in range(1,7):
         name = "p%d" % p
         d[name] = Alias("t__a_" + name)
         d["t__a_" + name]  = Var(Complex,doc="Predefined parameter used by Fractint formulas")
         
     # predefined functions
-    for p in xrange(1,5):
+    for p in range(1,5):
         name = "fn%d" % p
         d[name] = Alias("t__a_" + name)
         d["t__a_" + name ] = OverloadList(
@@ -623,7 +623,7 @@ by the 3rd parameter.''')
 
     d["t__a__gradient"] = Var(Gradient)
     
-    for (k,v) in d.items():
+    for (k,v) in list(d.items()):
         if hasattr(v,"cname") and v.cname == None:
             v.cname = k
             
@@ -631,7 +631,7 @@ by the 3rd parameter.''')
 
 
 def mangle(k,prefix=""):
-    l = string.lower(k)
+    l = k.lower()
     if l[0] == '#':
         l = "t__h_" + prefix + l[1:]
     elif l[0] == '@':
@@ -655,7 +655,7 @@ class T(UserDict):
         c = T(self.prefix)
         c.nextlabel = self.nextlabel
         c.nextTemp = self.nextTemp
-        for k in self.data.keys():
+        for k in list(self.data.keys()):
             c.data[k] = copy.copy(self.data[k])
 
         return c
@@ -663,7 +663,7 @@ class T(UserDict):
     def merge(self,other):
         # self = union(self,other)
         # any clashes are won by self
-        for k in other.data.keys():
+        for k in list(other.data.keys()):
             #print "key",k
             if self.data.get(k) == None:
                 #print "don't already have", k
@@ -689,12 +689,12 @@ class T(UserDict):
         self.nextParamSlot += other.nextParamSlot
         
     def has_user_key(self,key):
-        return self.data.has_key(mangle(key))
+        return mangle(key) in self.data
     
     def has_key(self,key):
-        if self.data.has_key(mangle(key)):
+        if mangle(key) in self.data:
             return True        
-        return self.default_dict.has_key(mangle(key))
+        return mangle(key) in self.default_dict
 
     def is_user(self,key):
         val = self.data.get(mangle(key),None)
@@ -773,7 +773,7 @@ class T(UserDict):
 
     def record_param(self,value):
         if value.cname == "z":
-            print value
+            print(value)
             assert False
         value.param_slot = self.nextParamSlot
         self.nextParamSlot += slotsForType(value.type)
@@ -781,35 +781,34 @@ class T(UserDict):
         
     def __setitem__(self,key,value):
         k = mangle(key)
-        if self.data.has_key(k):
+        if k in self.data:
             pre_type = self.data[k].type
             if  pre_type != value.type:                
                 l = self.data[k].pos
                 msg = ("was already defined as %s on line %d" % \
                        (strOfType(pre_type), l))
-                raise KeyError, ("symbol '%s' %s" % (key,msg))
+                raise KeyError("symbol '%s' %s" % (key,msg))
             return
-        elif T.default_dict.has_key(k):
+        elif k in T.default_dict:
             pre_var = T.default_dict[k]
             #print "in default",k
             if isinstance(pre_var,OverloadList):
                 msg = "is predefined as a function"
-                raise KeyError, ("symbol '%s' %s" % (key,msg))
+                raise KeyError("symbol '%s' %s" % (key,msg))
             else:
                 if pre_var.type != value.type:
                     msg = "is predefined as %s" % \
                           strOfType(T.default_dict[k].type)
-                    raise KeyError, ("symbol '%s' %s" % (key,msg))
+                    raise KeyError("symbol '%s' %s" % (key,msg))
 
                 if self.is_param(k):
                     self.record_param(pre_var)
             return
         elif self.is_builtin(key):
             msg = "symbol '%s': only predefined symbols can begin with #" % key
-            raise KeyError, msg                  
+            raise KeyError(msg)                  
         elif self.clashes_with_private(k,key):
-            raise KeyError, \
-                  ("symbol '%s': no symbol starting with t__ is allowed" % key)
+            raise KeyError("symbol '%s': no symbol starting with t__ is allowed" % key)
         self.data[k] = value
         if self.is_param(k) and isinstance(value,Var):
             #print "recording",k
@@ -827,13 +826,13 @@ class T(UserDict):
         
     def parameters(self,varOnly=False):
         params = {}
-        for (name,sym) in self.data.items():
+        for (name,sym) in list(self.data.items()):
             if self.is_param(name):
                 if not varOnly or isinstance(sym,Var):
                     try:
                         params[name] = sym.first()
                     except AttributeError:
-                        print sym, name
+                        print(sym, name)
                         raise
                         
         return params
@@ -858,7 +857,7 @@ class T(UserDict):
         params = self.parameters()
 
         names = []
-        for (name,param) in params.items():
+        for (name,param) in list(params.items()):
             if isinstance(param,Var):
                 names.append(self.demangle(name))
 
@@ -868,7 +867,7 @@ class T(UserDict):
         params = self.parameters()
 
         func_names = []
-        for (name,param) in params.items():
+        for (name,param) in list(params.items()):
             if isinstance(param,Func):
                 func_names.append(self.demangle(name))
         return func_names
@@ -877,7 +876,7 @@ class T(UserDict):
         # a list of all function names which take args of type 'args'
         # and return 'ret' (for GUI to select a function)
         flist = []
-        for (name,func) in self.default_dict.items():
+        for (name,func) in list(self.default_dict.items()):
             try:
                 for f in func:
                     if f.ret == ret and f.args == args and \
@@ -895,7 +894,7 @@ class T(UserDict):
         p = self.parameters(True)
 
         op = {}; 
-        for k in p.keys():
+        for k in list(p.keys()):
             op[k] = self[k].param_slot
 
         op["__SIZE__"]=self.nextParamSlot
@@ -907,7 +906,7 @@ class T(UserDict):
         p = self.parameters(True)
 
         tp = [ None] * self.nextParamSlot; 
-        for k in p.keys():
+        for k in list(p.keys()):
             i = self[k].param_slot
             t = p[k].type
             if t == Complex:
@@ -933,7 +932,7 @@ class T(UserDict):
         op = self.order_of_params()
         defaults = [0.0] * op["__SIZE__"]
 
-        for (k,i) in op.items():
+        for (k,i) in list(op.items()):
             param = self.get(k)
             if not param: continue
             defval = getattr(param,"default",None)
@@ -945,7 +944,7 @@ class T(UserDict):
                     defaults[i] = defval.value[0].value
                     defaults[i+1] = defval.value[1].value
             elif param.type == Hyper or param.type == Color:
-                for j in xrange(len(defval.value)):
+                for j in range(len(defval.value)):
                     defaults[i+j] = defval.value[j].value
             elif param.type == Image:
                 defaults[i] = 0

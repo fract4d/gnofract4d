@@ -1,16 +1,14 @@
-import ConfigParser
+import configparser
 import os
 import sys
 
-class T(ConfigParser.ConfigParser):    
+class T(configparser.ConfigParser):    
     "Holds preference data"
     def __init__(self, file):
         _shared_formula_dir = self.get_data_path("formulas")
         _shared_map_dir = self.get_data_path("maps")
-        if 'win' == sys.platform[:3]:
-            comp = 'cl'
-        else:
-            comp = 'gcc'
+        comp = 'gcc'
+
         _defaults = {
             "compiler" : {
               "name" : comp,
@@ -71,7 +69,7 @@ class T(ConfigParser.ConfigParser):
             "compiler" : True
             }
 
-        ConfigParser.ConfigParser.__init__(self)
+        configparser.ConfigParser.__init__(self)
 
         self.file = os.path.expanduser(file)
         self.read(self.file)
@@ -79,10 +77,10 @@ class T(ConfigParser.ConfigParser):
         # we don't use the normal ConfigParser default stuff because
         # we want sectionized defaults
 
-        for (section,entries) in _defaults.items():
+        for (section,entries) in list(_defaults.items()):
             if not self.has_section(section):
                 self.add_section(section)
-            for (key,val) in entries.items():
+            for (key,val) in list(entries.items()):
                 if not self.has_option(section,key):
                     self.set(section,key,val)
 
@@ -137,18 +135,15 @@ class T(ConfigParser.ConfigParser):
 
     def get_default_compiler_options(self):
         # appears to work for most unixes
-		if 'win' == sys.platform[:3]:
-			return "/Ox /EHsc /Gd /nologo /W3 /LD /MT /TP /DWIN32 /DWINDOWS /D_USE_MATH_DEFINES"
-		else:
-			return "-fPIC -DPIC -D_REENTRANT -O2 -shared -ffast-math"
-        
+        return "-fPIC -DPIC -D_REENTRANT -O2 -shared -ffast-math"
+
     def set(self,section,key,val):
         if self.has_section(section) and \
            self.has_option(section,key) and \
            self.get(section,key) == val:
             return
 
-        ConfigParser.ConfigParser.set(self,section,key,val)
+        configparser.ConfigParser.set(self,section,key,val)
         self.changed(section)
 
     def set_size(self,width,height):
@@ -156,8 +151,8 @@ class T(ConfigParser.ConfigParser):
            self.getint("display","width") == width:
             return
         
-        ConfigParser.ConfigParser.set(self,"display","height",str(height))
-        ConfigParser.ConfigParser.set(self,"display","width",str(width))
+        configparser.ConfigParser.set(self,"display","height",str(height))
+        configparser.ConfigParser.set(self,"display","width",str(width))
         self.changed("display")
 
     def get_list(self, name):
@@ -169,7 +164,7 @@ class T(ConfigParser.ConfigParser):
                 val = self.get(name,key)
                 list.append(val)
                 i += 1
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 return list
 
     def remove_all_in_list_section(self,name):
@@ -184,7 +179,7 @@ class T(ConfigParser.ConfigParser):
 
         i = 0        
         for item in list:
-            ConfigParser.ConfigParser.set(self, name,"%d" % i, item)
+            configparser.ConfigParser.set(self, name,"%d" % i, item)
             i += 1
 
         self.changed(name)

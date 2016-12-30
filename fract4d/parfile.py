@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # rudimentary read-only support for Fractint PAR files
 
@@ -23,7 +23,7 @@ def parse(file,f):
     formulafile = pairs.get("formulafile","gf4d.frm")
 
     f.set_formula(formulafile, formulaname)
-    for (k,v) in pairs.items():
+    for (k,v) in list(pairs.items()):
         if k == "maxiter": parse_maxiter(v,f)
         elif k == "center-mag" : parse_center_mag(v,f)
         elif k == "colors" : parse_colors(v,f)
@@ -33,7 +33,7 @@ def parse(file,f):
 def parse_params(val,f):
     paramlist = val.split("/")
     l = len(paramlist)/2
-    for i in xrange(l):
+    for i in range(l):
         (re,im) = (paramlist[i*2],paramlist[i*2+1])
         name = "@p%d" % (i+1)
         val = "(%s,%s)" % (re,im)
@@ -86,7 +86,7 @@ def setup_log_table(log_flag, maxltsize, colors, save_release):
     (lf,mlf) = get_log_table_limits(log_flag, maxltsize, colors, save_release)
     table = [
         calc_log_table_entry(x,log_flag,lf,mlf, save_release) \
-        for x in xrange(maxltsize)
+        for x in range(maxltsize)
         ]
     return table
 
@@ -139,7 +139,7 @@ def decode_val(c):
     elif c >= 'a' and c <= 'z':
         return 4 * (ord(c) - ord('a') + 38)
     else:
-        raise RuntimeError, "Invalid character %s in colors" % c
+        raise RuntimeError("Invalid character %s in colors" % c)
     
 def colorRange(s):
     '''From help4.src:
@@ -172,23 +172,23 @@ def colorRange(s):
         if c == '<':
             j = string.find(s,">", i)
             if j == -1:
-                raise RuntimeError, "No > after < in colors"
+                raise RuntimeError("No > after < in colors")
             runlength = string.atoi(s[i+1:j])
             if runlength == 0:
-                raise RuntimeError, "Zero runlength"
+                raise RuntimeError("Zero runlength")
             i = j+1
         else:
             if len(s) < i+3:
-                raise RuntimeError, "invalid color string"
-            rgb = map(decode_val, list(s[i:i+3]))
+                raise RuntimeError("invalid color string")
+            rgb = list(map(decode_val, list(s[i:i+3])))
             if runlength > 0:
                 if len(colors) == 0:
-                    raise RuntimeError, "run with no preceding color"
-                pairs = zip(colors[-1],rgb)
+                    raise RuntimeError("run with no preceding color")
+                pairs = list(zip(colors[-1],rgb))
                 for k in range(0,runlength):
                     ratio = (k+1.0) / runlength
                     nratio = 1.0 - ratio
-                    col = map(lambda (x,y) : int(x * nratio + y * ratio), pairs)
+                    col = [int(x_y[0] * nratio + x_y[1] * ratio) for x_y in pairs]
                     colors.append(col)
                     
             colors.append(rgb)

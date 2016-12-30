@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import string
@@ -9,7 +9,7 @@ import struct
 import math
 import types
 import filecmp
-import commands
+import subprocess
 
 import testbase
 
@@ -20,14 +20,14 @@ class Test(testbase.TestBase):
         try:
             im = image.T(400000,300000)
             self.fail("Should have raised an exception")
-        except MemoryError, err:
+        except MemoryError as err:
             pass
 
         im = image.T(40,30)
         try:
             im.resize_full(400000,300000)
             self.fail("Should have raised an exception")
-        except MemoryError, err:
+        except MemoryError as err:
             # retains large size even if allocation fails
             self.assertEqual(400000, im.xsize)
             self.assertEqual(300000, im.ysize)
@@ -121,7 +121,7 @@ class Test(testbase.TestBase):
 
     def testFileMatches(self):
         matches = image.file_matches()
-        self.failUnless("*.tga" in matches)
+        self.assertTrue("*.tga" in matches)
         
     def assertImageFileFormat(self, name, format):
         # this doesn't work reliably enough - some people don't
@@ -129,7 +129,7 @@ class Test(testbase.TestBase):
         return
     
         # run ImageMagick to test file contents
-        (status,output) = commands.getstatusoutput("identify %s" % name)
+        (status,output) = subprocess.getstatusoutput("identify %s" % name)
         self.assertEqual(status,0)
         fields = output.split()
         self.assertEqual(fields[0],name)
@@ -176,7 +176,7 @@ class Test(testbase.TestBase):
         try:
             im = image.T(640,400)
             im.save(f1)
-            self.failUnless(os.path.exists(f1))
+            self.assertTrue(os.path.exists(f1))
             self.assertImageFileFormat(f1,format)
             
             im = image.T(640,40,640,400)
@@ -186,7 +186,7 @@ class Test(testbase.TestBase):
                 im.set_offset(xoff,yoff)
                 im.save_tile()
             im.finish_save()
-            self.failUnless(os.path.exists(f2))
+            self.assertTrue(os.path.exists(f2))
             self.assertImageFileFormat(f2,format)
             
             self.assertEqual(True, filecmp.cmp(f1,f2,False))
@@ -200,14 +200,14 @@ class Test(testbase.TestBase):
     def saveAndCheck(self,name,format):
         im = image.T(640,400)
         im.save(name)
-        self.failUnless(os.path.exists(name))
+        self.assertTrue(os.path.exists(name))
         self.assertImageFileFormat(name,format)
             
     def testBadSaves(self):
         try:
             self.saveAndCheck("test.gif","GIF")
             self.fail("No exception thrown")
-        except ValueError, err:
+        except ValueError as err:
             self.assertEqual(
                 str(err),
                 "Unsupported file format '.gif'. Please use one of: .JPEG, .JPG, .PNG, .TGA")
@@ -215,7 +215,7 @@ class Test(testbase.TestBase):
         try:
             self.saveAndCheck("no_extension","GIF")
             self.fail("No exception thrown")
-        except ValueError, err:
+        except ValueError as err:
             self.assertEqual(
                 str(err),
                 "No file extension in 'no_extension'. " +
@@ -225,7 +225,7 @@ class Test(testbase.TestBase):
         try:
             self.saveAndCheck("no_such_dir/test.png","PNG")
             self.fail("No exception thrown")
-        except IOError, err:
+        except IOError as err:
             self.assertEqual(
                 str(err),
                 "Unable to save image to 'no_such_dir/test.png' : " +
@@ -252,7 +252,7 @@ class Test(testbase.TestBase):
         self.assertEqual(
             list(fate_buf), [chr(im.UNKNOWN)] * im.FATE_SIZE * xsize * ysize)
 
-        bytes = map(ord,list(buf))
+        bytes = list(map(ord,list(buf)))
         self.assertEqual(bytes, [0] * xsize * ysize * im.COL_SIZE)
 
     def testBufferBounds(self):
@@ -356,7 +356,7 @@ class Test(testbase.TestBase):
         buf1 = im1.image_buffer()
         buf2 = im2.image_buffer()
 
-        for i in xrange(len(buf1)):
+        for i in range(len(buf1)):
             self.assertEqual(
                 buf1[i], buf2[i], "Difference at %d: %d != %d" % \
                 (i, ord(buf1[i]), ord(buf2[i])))

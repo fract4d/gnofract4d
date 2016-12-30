@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # A compiler from UltraFractal or Fractint formula files to C code
 
@@ -24,7 +24,7 @@
 
 import getopt
 import sys
-import commands
+import subprocess
 import os.path
 import stat
 import random
@@ -82,7 +82,7 @@ class FormulaTypes:
     guess_type_from_filename = staticmethod(guess_type_from_filename)
 
     def guess_formula_type_from_filename(filename):
-        for i in xrange(FormulaTypes.NTYPES):
+        for i in range(FormulaTypes.NTYPES):
             if FormulaTypes.matches[i].search(filename):
                 return i
         raise ValueError("Unknown file type for '%s'" % filename)
@@ -130,7 +130,7 @@ class FormulaFile:
         '''return all the coloring funcs except those marked as only suitable
         for the OTHER kind (inside vs outside)'''
         names = []
-        for name in self.formulas.keys():
+        for name in list(self.formulas.keys()):
             sym = self.formulas[name].symmetry
             if sym == None  or sym == "BOTH" or sym != skip_type:
                 names.append(name)
@@ -200,7 +200,7 @@ class Compiler:
             for file in os.listdir(dir):
                 if os.path.isfile(os.path.join(dir,file)):
                     files[file] = 1
-        return files.keys()
+        return list(files.keys())
 
     def find_files_of_type(self,type):
         matcher = FormulaTypes.matches[type]
@@ -301,7 +301,7 @@ class Compiler:
             return
 
         l = len(result.children)
-        for i in xrange(l):
+        for i in range(l):
             if i == l - 1:
                 result.children[i].last_line = final_line
             else:
@@ -313,7 +313,7 @@ class Compiler:
         try:
             pp = preprocessor.T(s)
             result = self.parser.parse(pp.out())
-        except preprocessor.Error, err:
+        except preprocessor.Error as err:
             # create an Error formula listing the problem
             result = self.parser.parse('error {\n}\n')
 
@@ -350,7 +350,7 @@ class Compiler:
             self.files[basefile] = ff 
 
             return ff
-        except Exception, err:
+        except Exception as err:
             #print "Error parsing '%s' : %s" % (filename, err)
             raise
 
@@ -424,7 +424,7 @@ class Compiler:
         cmd += " %s" % self.libs
         #print "cmd: %s" % cmd
 
-        (status,output) = commands.getstatusoutput(cmd)
+        (status,output) = subprocess.getstatusoutput(cmd)
         if status != 0:
             raise fracttypes.TranslationError(
                 "Error reported by C compiler:%s" % output)
@@ -467,7 +467,7 @@ class Compiler:
         
         if gradient.FileType.guess(file) == gradient.FileType.UGR:
             ff = self.get_file(file)
-            formulas = ff.formulas.keys()
+            formulas = list(ff.formulas.keys())
             formula = random.choice(formulas)
         else:
             formula = None
@@ -484,8 +484,8 @@ instance = Compiler()
 instance.update_from_prefs(fractconfig.instance)
 
 def usage():
-    print "FC : a compiler from Fractint .frm files to C code"
-    print "fc.py -o [outfile] -f [formula] infile"
+    print("FC : a compiler from Fractint .frm files to C code")
+    print("fc.py -o [outfile] -f [formula] infile")
     sys.exit(1)
 
 def generate(fc,formulafile, formula, outputfile, cfile):
@@ -496,9 +496,9 @@ def generate(fc,formulafile, formula, outputfile, cfile):
               (formula, formulafile))
 
     if ir.errors != []:
-        print "Errors during translation"
+        print("Errors during translation")
         for e in ir.errors:
-            print e
+            print(e)
         raise Exception("Errors during translation")
 
     cg = fc.compile(ir)
@@ -510,7 +510,7 @@ def main(args):
     for arg in args:
         ff = fc.load_formula_file(arg)
         for name in ff.get_formula_names():
-            print name
+            print(name)
             form = fc.get_formula(arg,name)
             cg = fc.compile(form)
             

@@ -1,6 +1,6 @@
 
 import re
-import httplib
+import http.client
 
 from fractutils import slave, fetch
 

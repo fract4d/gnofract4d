@@ -87,7 +87,7 @@ class T(fctutils.T):
             entry = line.split("=")
             
             if len(entry) != 2:
-                raise ValueError, "invalid color %s in file" % line
+                raise ValueError("invalid color %s in file" % line)
 
             cols = self.extract_color(entry[1],0,True)            
             index = float(entry[0])
@@ -120,10 +120,10 @@ class T(fctutils.T):
             if result:
                 self.solids[0] = result
             self.read_gradient = True
-        except gradient.HsvError, err:
+        except gradient.HsvError as err:
             if self.parent:
                 self.parent.warn("Error reading colormap: %s" % str(err))            
-        except Exception, err:
+        except Exception as err:
             if self.parent:
                 self.parent.warn("Error reading colormap: %s" % str(err))
 

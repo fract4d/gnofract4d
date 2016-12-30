@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # utility script. When compiled with DEBUG_CREATION and/or DEBUG_ALLOCATION,
 # we output debug spew whenever C objects used from Python are created or deleted
@@ -52,12 +52,12 @@ for line in lines:
                 raise Exception("different dealloc type for %s" % pointer)
             del ops[pointer]
         else:
-            print "unrecognized op %s" % op
+            print("unrecognized op %s" % op)
     else:
-        print "skipped: %s" % line,
+        print("skipped: %s" % line, end=' ')
 
-print ops.items()
-for (k,v) in ops.items():
+print(list(ops.items()))
+for (k,v) in list(ops.items()):
     raise Exception("%s(%s) never freed" % (k,v))
 
-print "ok!"
+print("ok!")

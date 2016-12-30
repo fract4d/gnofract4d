@@ -2,7 +2,7 @@
 
 import string
 import base64
-import StringIO
+import io
 import gzip
 import struct
 
@@ -72,7 +72,7 @@ class T:
     def decompress(self,b64string):
         # decompress remaining codes
         bytes = base64.decodestring(b64string)
-        embedded_file = gzip.GzipFile(None,"rb",9,StringIO.StringIO(bytes))
+        embedded_file = gzip.GzipFile(None,"rb",9,io.StringIO(bytes))
         self.load(embedded_file)
 
     def nameval(self,line):
@@ -86,7 +86,7 @@ class T:
 
 class Compressor(gzip.GzipFile):
     def __init__(self):
-        self.sio = StringIO.StringIO("")
+        self.sio = io.StringIO("")
         gzip.GzipFile.__init__(self,None,"wb",9,self.sio)
 
     def getvalue(self):

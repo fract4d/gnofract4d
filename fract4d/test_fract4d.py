@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import string
@@ -87,7 +87,7 @@ class Test(testbase.TestBase):
 
         ret = fract4dc.pf_defaults(
             pfunc,0.001,pos_params, [self.gradient, 0.0, 0.0])
-        self.failUnless(isinstance(ret, types.ListType))
+        self.assertTrue(isinstance(ret, list))
         self.assertEqual(3,len(ret))
         self.assertEqual([None,4.0,1.0],ret)
 
@@ -358,14 +358,14 @@ class Test(testbase.TestBase):
         self.assertEqual(siteobj.progress_list[-1], 0.0)
         self.assertEqual(siteobj.progress_list[-2], 1.0)                        
 
-        self.failUnless(siteobj.image_list[-1]==(0,0,xsize,ysize))
+        self.assertTrue(siteobj.image_list[-1]==(0,0,xsize,ysize))
 
-        self.failUnless(siteobj.status_list[0]== 1 and \
+        self.assertTrue(siteobj.status_list[0]== 1 and \
                          siteobj.status_list[-1]== 0)
 
-        self.failUnless(not os.path.exists("test.tga"))
+        self.assertTrue(not os.path.exists("test.tga"))
         im.save("test.tga")
-        self.failUnless(os.path.exists("test.tga"))
+        self.assertTrue(os.path.exists("test.tga"))
         os.remove('test.tga')
 
         # fate of all non-aa pixels should be known, aa-pixels unknown
@@ -433,14 +433,14 @@ class Test(testbase.TestBase):
         self.assertEqual(siteobj.progress_list[-1], 0.0)
         self.assertEqual(siteobj.progress_list[-2], 1.0)                        
 
-        self.failUnless(siteobj.image_list[-1]==(0,0,xsize,ysize))
+        self.assertTrue(siteobj.image_list[-1]==(0,0,xsize,ysize))
 
-        self.failUnless(siteobj.status_list[0]== 1 and \
+        self.assertTrue(siteobj.status_list[0]== 1 and \
                          siteobj.status_list[-1]== 0)
 
-        self.failUnless(not os.path.exists("test.tga"))
+        self.assertTrue(not os.path.exists("test.tga"))
         im.save("test.tga")
-        self.failUnless(os.path.exists("test.tga"))
+        self.assertTrue(os.path.exists("test.tga"))
         os.remove('test.tga')
 
         # fate of all non-aa pixels should be known, aa-pixels unknown
@@ -546,7 +546,7 @@ class Test(testbase.TestBase):
 
         file = self.compileColorMandel()
 
-        for x in xrange(2):
+        for x in range(2):
             handle = fract4dc.pf_load(file)
             pfunc = fract4dc.pf_create(handle)
             fract4dc.pf_init(pfunc,pos_params,self.color_mandel_params)
@@ -617,7 +617,7 @@ class Test(testbase.TestBase):
         i=0
         for (a,b) in zip(list(buf1), list(buf2)):
             if a != b:
-                print "%s != %s at %d" % (a,b,i)
+                print("%s != %s at %d" % (a,b,i))
                 self.assertEqual(a,b)
             i += 1
 
@@ -630,7 +630,7 @@ class Test(testbase.TestBase):
         i=0
         for (a,b) in zip(list(buf1), list(buf2)):
             if a != b:
-                print "%s != %s at %d" % (a,b,i)
+                print("%s != %s at %d" % (a,b,i))
                 self.assertEqual(a,b)
             i += 1
 
@@ -702,9 +702,9 @@ class Test(testbase.TestBase):
         pfunc = fract4dc.pf_create(handle)
         fract4dc.pf_init(pfunc,pos_params,[0,4.0])
         image = []
-        for y in xrange(-20,20):
+        for y in range(-20,20):
             line = []
-            for x in xrange(-20,20):
+            for x in range(-20,20):
                 (iter,fate,dist,solid) = fract4dc.pf_calc(pfunc,[x/10.0,y/10.0,0,0],100)
                 if(fate == 32):
                     line.append("#")
@@ -781,11 +781,11 @@ class Test(testbase.TestBase):
         self.assertEqual(fract4dc.cmap_lookup(cmap,0.4),expc1)
         
         colors = []
-        for i in xrange(256):
+        for i in range(256):
             colors.append((i/255.0,(i*17)%256,255-i,i/2,i/2+127))
 
         cmap = fract4dc.cmap_create(colors)
-        for i in xrange(256):
+        for i in range(256):
             self.assertEqual(fract4dc.cmap_lookup(cmap,i/255.0),colors[i][1:],i)
             
     def testTransfers(self):
@@ -954,7 +954,7 @@ class Test(testbase.TestBase):
         
     def testMultipleAllocs(self):
         arena = fract4dc.arena_create(10,1)
-        for i in xrange(5):
+        for i in range(5):
             fract4dc.arena_alloc(arena,8,1,1)
 
         # should be full now        
@@ -964,7 +964,7 @@ class Test(testbase.TestBase):
         arena = fract4dc.arena_create(10,1)
         alloc = fract4dc.arena_alloc(arena, 4, 1, 10)
 
-        for i in xrange(10):
+        for i in range(10):
             result = fract4dc.array_get_int(alloc,1,i)
             self.assertEqual(
                 (0,1), result,
@@ -977,12 +977,12 @@ class Test(testbase.TestBase):
         arena = fract4dc.arena_create(10,1)
         alloc = fract4dc.arena_alloc(arena, 4, 1, 10)
 
-        for i in xrange(10):
+        for i in range(10):
             val = i
             result = fract4dc.array_set_int(alloc,1, i,val)
             self.assertEqual(1,result)
             
-        for i in xrange(10):
+        for i in range(10):
             result = fract4dc.array_get_int(alloc,1, i)
             self.assertEqual(
                 (i,1), result,
@@ -1016,8 +1016,8 @@ class Test(testbase.TestBase):
         alloc = fract4dc.arena_alloc(arena, 8, 2, 2, 3)
 
         i = 0
-        for y in xrange(2):
-            for x in xrange(3):
+        for y in range(2):
+            for x in range(3):
                 result = fract4dc.array_set_int(alloc,2, i, y, x)
                 self.assertEqual(
                     1,result,
@@ -1026,8 +1026,8 @@ class Test(testbase.TestBase):
                 i += 1
 
         i = 0
-        for y in xrange(2):
-            for x in xrange(3):
+        for y in range(2):
+            for x in range(3):
                 val = fract4dc.array_get_int(alloc,2, y, x)
                 #print "%d,%d <= %d" % (x,y,i)
                 self.assertEqual(

@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import tempfile
 import os
-import commands
+import subprocess
 import math
 import cmath
 import sys
@@ -161,10 +161,10 @@ int main()
     def printAsm(self):
         for i in self.codegen.out:
             try:
-                print i
-                print i.format()
-            except Exception, e:
-                print "Can't format %s:%s" % (i,e)
+                print(i)
+                print(i.format())
+            except Exception as e:
+                print("Can't format %s:%s" % (i,e))
                 raise
 
     def makeC(self,user_preamble="", user_postamble=""):
@@ -227,8 +227,8 @@ int main()
         '''
 
         codegen_symbols = self.codegen.output_local_vars(self.codegen,{})
-        decls = string.join(map(lambda x: x.format(), codegen_symbols),"\n")
-        str_output = string.join(map(lambda x : x.format(), self.codegen.out),"\n")
+        decls = string.join([x.format() for x in codegen_symbols],"\n")
+        str_output = string.join([x.format() for x in self.codegen.out],"\n")
         postamble = "\nreturn 0;}\n"
 
         return string.join([preamble,decls,"\n",
@@ -241,12 +241,12 @@ int main()
         #print c_code
         cmd = "g++ -g -Wall %s -o %s -Ic -lm" % (cFileName, oFileName)
         #print cmd
-        (status,output) = commands.getstatusoutput(cmd)
+        (status,output) = subprocess.getstatusoutput(cmd)
         self.assertEqual(status,0,"C error:\n%s\nProgram:\n%s\n" % \
                          ( output,c_code))
         #print "status: %s\noutput:\n%s" % (status, output)
         cmd = oFileName
-        (status,output) = commands.getstatusoutput(cmd)
+        (status,output) = subprocess.getstatusoutput(cmd)
         self.assertEqual(status,0, "Runtime error:\n" + output)
         #print "status: %s\noutput:\n%s" % (status, output)
         return output
@@ -351,7 +351,7 @@ BINOP(+,[Temp(t__2),Temp(t__3)],[Temp(t__5)])""")
 
         self.assertEqual(len(self.codegen.out),1)
         op = self.codegen.out[0]
-        self.failUnless(isinstance(self.codegen.out[0],codegen.Oper))
+        self.assertTrue(isinstance(self.codegen.out[0],codegen.Oper))
         self.assertEqual(op.format(),"t__0 = 0 + a;",op.format())
 
     def testHyperGen(self):
@@ -382,7 +382,7 @@ BINOP(+,[Temp(t__2),Temp(t__3)],[Temp(t__5)])""")
         tree = self.binop([self.var("a",Complex),self.const([1,3],Complex)],"+",Complex)
         self.codegen.generate_code(tree)
         self.assertEqual(len(self.codegen.out),2)
-        self.failUnless(isinstance(self.codegen.out[0],codegen.Oper))
+        self.assertTrue(isinstance(self.codegen.out[0],codegen.Oper))
 
         expAdd = "t__0 = a_re + 1.00000000000000000;\n" + \
                  "t__1 = a_im + 3.00000000000000000;"
@@ -398,7 +398,7 @@ BINOP(+,[Temp(t__2),Temp(t__3)],[Temp(t__5)])""")
             self.var("c", Complex)],"+",Complex)
         self.codegen.generate_code(tree)
         self.assertEqual(len(self.codegen.out),4)
-        self.failUnless(isinstance(self.codegen.out[0],codegen.Oper))
+        self.assertTrue(isinstance(self.codegen.out[0],codegen.Oper))
 
         expAdd = "t__0 = a_re + b_re;\n" + \
                  "t__1 = a_im + b_im;\n" + \
@@ -506,20 +506,20 @@ goto t__end_finit;''')
         z = self.codegen.symbols["q"] # ping z to get it in output list
         out = self.codegen.output_local_vars(self.codegen,{})
         l = [x for x in out if x.assem == "double q_re = 0.00000000000000000;"]
-        self.failUnless(len(l)==1,l)
+        self.assertTrue(len(l)==1,l)
 
     def testOverrideSymbol(self):
         z = self.codegen.symbols["z"] # ping z to get it in output list
         out = self.codegen.output_local_vars(self.codegen,{ "z" : "foo"})
         l = [x for x in out if x.assem == "foo"]
-        self.failUnless(len(l)==1)
+        self.assertTrue(len(l)==1)
 
     def testTempSymbol(self):
         x = self.codegen.newTemp(Float)
         dummy = self.codegen.symbols[x.value]
         out = self.codegen.output_local_vars(self.codegen, {})
         l = [x for x in out if x.assem == "double t__0 = 0.00000000000000000;"]
-        self.failUnless(len(l)==1)
+        self.assertTrue(len(l)==1)
         
     def testBailoutVars(self):
         t = self.translate('''t{
@@ -1559,7 +1559,7 @@ endparam
 
         # check we just assign 0 to x instead of doing any math
         move_insn = asm[1]
-        self.failUnless(isinstance(move_insn, instructions.Move))
+        self.assertTrue(isinstance(move_insn, instructions.Move))
         self.assertEqual(0.0, move_insn.source()[0][0].value)
         
     def testEnum(self):
@@ -1698,7 +1698,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         return self.inspect_hyper(name, prefix)
 
     def inspect_colors(self,namelist):
-        return "".join(map(lambda x : self.inspect_color(x), namelist))
+        return "".join([self.inspect_color(x) for x in namelist])
     
     def predict(self,f,arg1=0,arg2=1):
         # compare our compiler results to Python stdlib
@@ -1732,8 +1732,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         
     def manufacture_tests(self,myfunc,pyfunc):
         vals = [ 0+0j, 0+1j, 1+0j, 1+1j, 3+2j, 1-0j, 0-1j, -3+2j, -2-2j, -1+0j ]
-        return map(lambda (x,y) : self.make_test(myfunc,pyfunc,x,y), \
-                   zip(vals,range(1,len(vals))))
+        return [self.make_test(myfunc,pyfunc,x_y[0],x_y[1]) for x_y in zip(vals,list(range(1,len(vals))))]
 
     def cotantests(self):
         def mycotan(z):
@@ -1787,11 +1786,11 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
     def atantests(self):
         tests = self.manufacture_tests("atan",cmath.atan)
 
-        print "before", tests
+        print("before", tests)
         tests[0][2] = "(-nan,-nan)" # changed in python 2.7
         #tests[1][2] = "(nan,nan)"
         #tests[6][2] = "(nan,-inf)" # not really sure who's right on this
-        print "after", tests
+        print("after", tests)
         return tests
 
     def atanhtests(self):
@@ -1968,10 +1967,10 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         # construct a formula calculating all of the above,
         # run it and compare results with expected values
         src = 't_c6{\ninit: y = (1,2)\n' + \
-              string.join(map(lambda x : x[0], tests),"\n") + "\n}"
+              string.join([x[0] for x in tests],"\n") + "\n}"
 
-        check = string.join(map(lambda x :self.inspect_complex(x[1]),tests),"\n")
-        exp = map(lambda x : "%s = %s" % (x[1],x[2]), tests)
+        check = string.join([self.inspect_complex(x[1]) for x in tests],"\n")
+        exp = ["%s = %s" % (x[1],x[2]) for x in tests]
         self.assertCSays(src,"init",check,exp)
 
     def testExpression(self):
@@ -1985,7 +1984,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         postamble = "t__end_finit:\nprintf(\"(%g,%g)\\n\",fresult_re,fresult_im);"
         c_code = self.makeC("", postamble)
         output = self.compileAndRun(c_code)
-        print output
+        print(output)
 
     def testPeriodicity(self):
         'test that periodicity actually short-circuits calculations'
@@ -2045,7 +2044,7 @@ bailout:
     def complexFromLine(self,str):
         cmplx_re = re.compile(r'\((.*?),(.*?)\)')
         m = cmplx_re.match(str)
-        self.failUnless(m != None)
+        self.assertTrue(m != None)
         real = float(m.group(1)); imag = float(m.group(2))
         return real + imag * 1j
 
@@ -2084,7 +2083,7 @@ bailout:
         p2 = self.complexFromLine(lines[-3])
         
         diff = max(math.fabs(p1.real - p2.real),math.fabs(p1.imag - p2.imag))
-        self.failUnless(diff < 0.001)
+        self.assertTrue(diff < 0.001)
 
         # try again with sqr function and check results match
         src = '''t_mandel{
@@ -2175,7 +2174,7 @@ Newton4(XYAXIS) {; Mark Peterson
         oFileName = self.codegen.writeToTempFile(None,".so")
         #print c_code
         cmd = "gcc -Wall -fPIC -DPIC -shared %s -o %s -lm" % (cFileName, oFileName)
-        (status,output) = commands.getstatusoutput(cmd)
+        (status,output) = subprocess.getstatusoutput(cmd)
         
         self.assertEqual(status,0,"C error:\n%s\nProgram:\n%s\n" % \
                          ( output,c_code))
@@ -2283,7 +2282,7 @@ Newton4(XYAXIS) {; Mark Peterson
         output = self.compileAndRun(c_code)
 
         #print c_code
-        if isinstance(result,types.ListType):
+        if isinstance(result,list):
             outputs = string.split(output,"\n")
             for (exp,res) in zip(result,outputs):
                 self.assertEqual(exp,res)
@@ -2291,7 +2290,7 @@ Newton4(XYAXIS) {; Mark Peterson
             self.assertEqual(output,result)
         
     def assertOutputMatch(self,exp):
-        str_output = string.join(map(lambda x : x.format(), self.codegen.out),"\n")
+        str_output = string.join([x.format() for x in self.codegen.out],"\n")
         self.assertEqual(str_output,exp)
 
     def assertMatchResult(self, tree, template,result):

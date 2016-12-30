@@ -123,8 +123,8 @@ class Insn:
                     lookup[dname] = dst.format()
                     i = i+1
             return self.assem % lookup
-        except Exception, exn:
-            print exn
+        except Exception as exn:
+            print(exn)
             msg = "%s with %s" % (self, lookup)
             raise TranslationError(
                 "Internal Compiler Error: can't format " + msg)

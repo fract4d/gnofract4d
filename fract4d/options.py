@@ -136,7 +136,7 @@ Debugging and Profiling settings (most only work with --nogui):
             (opts, self.args) = getopt.getopt(
                 args,
                 "p:m:i:j:a:s:f:qhP:Xv", T.longparams)
-        except getopt.GetoptError, err:
+        except getopt.GetoptError as err:
             raise OptionError(err)
         
         for (name, val) in opts:

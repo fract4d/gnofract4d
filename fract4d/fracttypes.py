@@ -1,7 +1,6 @@
 # fract compiler datatypes
 
 import string
-import exceptions
 import types
 import copy
 
@@ -69,7 +68,7 @@ class QuadType(Type):
         else:
             return [
                 "t__pfo->p[%d].doubleval" % \
-                x for x in xrange(var.param_slot,var.param_slot+4)]
+                x for x in range(var.param_slot,var.param_slot+4)]
 
 class IntType(Type):
     def __init__(self,**kwds):
@@ -277,7 +276,7 @@ def elementTypeOf(t,node=None):
 
 def typeOfStr(tname):
     if not tname: return None
-    return _typeOfStr[string.lower(tname)]
+    return _typeOfStr[tname.lower()]
 
 def strOfType(t):
     return _strOfType[t]
@@ -313,7 +312,7 @@ def canBeCast(t1,t2):
     return _canBeCast[t1][t2]
 
 # a convenient place to put this.
-class TranslationError(exceptions.Exception):
+class TranslationError(Exception):
     def __init__(self,msg):
         exceptions.Exception.__init__(self,msg)
         self.msg = msg
@@ -421,7 +420,7 @@ class Var:
         try:
             return self._typeobj.init_val(self)
         except AttributeError:
-            print "%s type for %s" % (self._typeobj.typename, self.cname)
+            print("%s type for %s" % (self._typeobj.typename, self.cname))
             raise
 
     def _get_part_names(self):

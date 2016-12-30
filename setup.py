@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import shutil
 from distutils.core import setup, Extension
@@ -10,9 +10,9 @@ import sys
 
 gnofract4d_version = '3.14.1'
 
-if float(sys.version[:3]) < 2.4:
-    print "Sorry, you need Python 2.4 or higher to run Gnofract 4D."
-    print "You have version %s. Please upgrade." % sys.version
+if float(sys.version[:3]) < 3.5:
+    print("Sorry, you need Python 3.5 or higher to run Gnofract 4D.")
+    print("You have version %s. Please upgrade." % sys.version)
     sys.exit(1)
 
 # by default python uses all the args which were used to compile it. But Python is C and some

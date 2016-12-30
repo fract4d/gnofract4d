@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # functions to tidy up ir trees in various ways
 
@@ -25,7 +25,7 @@ class T:
         self.dumpTrace = 0
 
         if dump != None:
-            for k in dump.keys():
+            for k in list(dump.keys()):
                 self.__dict__[k]=1
             
     def stms(self, eseq):
@@ -35,23 +35,23 @@ class T:
         # top-level driver function
         ltree = self.linearize(tree)
         if self.dumpLinear != 0:
-            print "Linearized Tree"
-            print ltree.pretty()
+            print("Linearized Tree")
+            print(ltree.pretty())
 
         blocks = self.basic_blocks(ltree,startLabel,endLabel)
 
         if self.dumpBlocks != 0:
-            print "Basic Blocks"
+            print("Basic Blocks")
             for b in blocks:
                 for stm in b:
-                    print stm.pretty(),
-                print
+                    print(stm.pretty(), end=' ')
+                print()
                 
         trace = self.schedule_trace(blocks,endLabel)
 
         if self.dumpTrace != 0:
-            print "Scheduled Trace"
-            for stm in trace: print stm.pretty(),
+            print("Scheduled Trace")
+            for stm in trace: print(stm.pretty(), end=' ')
             
         return trace
 
@@ -238,7 +238,7 @@ class T:
         return children
     
     def linearize_list(self,l):
-        return map(self.linearize,l)
+        return list(map(self.linearize,l))
 
     def is_block_boundary(self, irNode):
         return self.is_jump(irNode) or isinstance(irNode, ir.Label)

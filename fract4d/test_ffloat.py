@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import types
@@ -23,12 +23,12 @@ class NoBigMathTest(testbase.TestBase):
         
     def testCreate(self):
         f = Float(0.0) 
-        self.assertEqual(type(f), types.FloatType)
+        self.assertEqual(type(f), float)
         self.assertEqual(0.0, f)
 
     def testCreateWithValue(self):
         f = Float(-1.0e40) 
-        self.assertEqual(type(f), types.FloatType)
+        self.assertEqual(type(f), float)
         self.assertEqual(-1.0e40, f)
 
     def testCreateWithDefaultPrecision(self):

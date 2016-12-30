@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Parser for UltraFractal + Fractint input files
 
 import re
@@ -23,7 +23,7 @@ precedence = (
 )
 
 def formatError(t,i):
-     if(isinstance(t[i],types.StringType)):
+     if(isinstance(t[i],bytes)):
           e = [absyn.Error2(t[i],t.lineno(i))]
      else:
           e = [absyn.Error(t[i].type, t[i].value, t[i].lineno)]
@@ -353,21 +353,21 @@ if __name__ == '__main__': #pragma: no cover
     for arg in sys.argv[1:]:
         s = open(arg,"r").read() # read in a whole file
         result = yacc.parse(s)
-        print result.pretty()
+        print(result.pretty())
 
     if len(sys.argv) == 1:
         while 1:
             try:
-                s = raw_input('calc > ')
+                s = input('calc > ')
             except EOFError:
                 break
             if not s: continue
             if s[0] == '#':
                 s = open(s[1:],"r").read() # read in a whole file
-                print s
+                print(s)
             else:
                 s += "\n"
             result = yacc.parse(s)
-            print "result",result
-            print result.pretty()
+            print("result",result)
+            print(result.pretty())
 

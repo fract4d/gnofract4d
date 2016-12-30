@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # test harness for translate module
 
 import string
 import unittest
 import types
-import cPickle
+import pickle
 
 import testbase
 
@@ -257,7 +257,7 @@ switch:
                             #index = #numiter / 256.0
                             }''')
 
-        self.failUnless(isinstance(
+        self.assertTrue(isinstance(
             t1.sections["final"].children[-1],ir.Move))
         
         t2 = self.translatecf('c1 {\n#index = #numiter / 256.0\n}')
@@ -633,7 +633,7 @@ default:
 
         defval_re = t.symbols["@complex_of_ints"].default.value[0].value
         
-        self.failUnless(isinstance(defval_re,types.FloatType))
+        self.assertTrue(isinstance(defval_re,float))
         
     def testFractintSections(self):
         t1 = self.translate("t1 {\na=1,a=2:\nb=2\nc=3}")
@@ -712,7 +712,7 @@ default:
         }''')
 
         self.assertWarning(t, "No bailout expression found" )
-        self.assertEqual(True, t.symbols.has_key("__bailout"))
+        self.assertEqual(True, "__bailout" in t.symbols)
         self.assertNoErrors(t)
 
         # uncastable bailout
@@ -731,7 +731,7 @@ default:
         }''')
 
         move = t.sections["bailout"].children[-1]
-        self.failUnless(isinstance(move, ir.Move))
+        self.assertTrue(isinstance(move, ir.Move))
         self.assertEqual(move.children[0].name, "__bailout")
 
         # a complex expression
@@ -741,7 +741,7 @@ default:
         }''')
 
         move = t.sections["bailout"].children[-1]
-        self.failUnless(isinstance(move, ir.Move))
+        self.assertTrue(isinstance(move, ir.Move))
         self.assertEqual(move.children[0].name, "__bailout")
 
         
@@ -864,8 +864,8 @@ default:
         endparam
         }''')
 
-        print t.symbols.parameters(True)
-        print t.symbols.default_params()
+        print(t.symbols.parameters(True))
+        print(t.symbols.default_params())
         
     def testFuncWithCaption(self):
         t = self.translate('''t {
@@ -919,7 +919,7 @@ default:
         self.assertEqual(t.defaults["title"].value,"Hello World")
         self.assertEqual("random", t.defaults["point_mode"].value)
         
-        k = t.symbols.parameters().keys()
+        k = list(t.symbols.parameters().keys())
         k.sort()
         exp_k = [
             "t__a__gradient",
@@ -1026,7 +1026,7 @@ default:
         complex y = @fn1((1,0)) + fn2((2,0)) + @my_func((1,0))
         }''')
         self.assertNoErrors(t12)
-        k = t12.symbols.parameters().keys()
+        k = list(t12.symbols.parameters().keys())
         k.sort()
         exp_k = ["t__a__gradient",
                  "t__a_p1", "t__a_p2", "t__a_my_param",
@@ -1049,7 +1049,7 @@ default:
         
         op = t12.symbols.order_of_params()
 
-        for (key,ord) in op.items():
+        for (key,ord) in list(op.items()):
             self.assertEqual(op[key],exp_ord[key])
 
 
@@ -1128,7 +1128,7 @@ default:
         #print t13.sections["loop"].pretty()
         self.assertNoProbs(t13)
         result = t13.sections["loop"]
-        self.failUnless(isinstance(result.children[-1],ir.Move))
+        self.assertTrue(isinstance(result.children[-1],ir.Move))
         # some coercions
         t = self.translate('''t_binop_2 {
         loop:
@@ -1163,11 +1163,11 @@ default:
         self.assertNoErrors(t)
         ifseq = t.sections["loop"].children[0]
 
-        self.failUnless(ifseq.children[0].op == ">" and \
+        self.assertTrue(ifseq.children[0].op == ">" and \
                         ifseq.children[0].trueDest == "flabel0" and \
                         ifseq.children[0].falseDest == "flabel1")
 
-        self.failUnless(ifseq.children[1].children[0].name == "flabel0" and \
+        self.assertTrue(ifseq.children[1].children[0].name == "flabel0" and \
                         ifseq.children[1].children[-1].dest == "flabel2" and \
                         ifseq.children[2].children[0].name == "flabel1" and \
                         ifseq.children[3].name == "flabel2")
@@ -1181,14 +1181,14 @@ default:
 
         self.assertNoErrors(t)
         ifseq = t.sections["loop"].children[0]
-        self.failUnless(ifseq.children[0].op == "!=")
+        self.assertTrue(ifseq.children[0].op == "!=")
         
-        self.failUnless(ifseq.children[1].children[0].name == "flabel0" and \
+        self.assertTrue(ifseq.children[1].children[0].name == "flabel0" and \
                         ifseq.children[1].children[-1].dest == "flabel2" and \
                         ifseq.children[2].children[0].name == "flabel1" and \
                         ifseq.children[3].name == "flabel2")
 
-        self.failUnless(len(ifseq.children[2].children)==1)
+        self.assertTrue(len(ifseq.children[2].children)==1)
 
         expectedLabs = [
             'CJ:flabel0,flabel1',
@@ -1297,7 +1297,7 @@ default:
         }''')
 
         self.assertNoErrors(t)
-        cPickle.dumps(t.canonicalizer.symbols,True)
+        pickle.dumps(t.canonicalizer.symbols,True)
         
     def testHyperOps(self):
         t = self.translate('''t_c8{

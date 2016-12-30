@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # test director bean class implementation
 
@@ -104,7 +104,7 @@ class Test(unittest.TestCase):
         self.assertEqual(anim.get_keyframe_stop(1),20)
         self.assertEqual(anim.get_keyframe_int(1),1)
         #output stuff
-        self.assertEqual(anim.get_avi_file(),u"output.avi")
+        self.assertEqual(anim.get_avi_file(),"output.avi")
         self.assertEqual(anim.get_framerate(),28)
         self.assertEqual(anim.get_width(),320)
         self.assertEqual(anim.get_height(),240)
@@ -142,7 +142,7 @@ class Test(unittest.TestCase):
 		self.anim.get_fractal_filename(64))
 
     def testMu(self):
-        for x in xrange(animation.INT_LINEAR, animation.INT_COS+1):
+        for x in range(animation.INT_LINEAR, animation.INT_COS+1):
 		# for all interpolation types, 0 -> 0 and 1.0 -> 1.0
 		self.assertEqual(0.0, self.anim.get_mu(x, 0.0))
 		self.assertEqual(1.0, self.anim.get_mu(x, 1.0))

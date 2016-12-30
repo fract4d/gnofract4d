@@ -1,4 +1,4 @@
-import exceptions
+
 
 has_bigmath = False
 
@@ -8,9 +8,9 @@ try:
 except:
     pass
 
-class PrecisionError(exceptions.Exception):
+class PrecisionError(Exception):
     def __init__(self):
-        exceptions.Exception.__init__(
+        Exception.__init__(
             self,"Cannot process number: arbitrary precision math is not enabled")
 
 def Float(num,precision=64):

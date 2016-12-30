@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # unit tests for canon module
 
 import unittest
-import cPickle
+import pickle
 
 import testbase
 
@@ -44,7 +44,7 @@ class CanonTest(testbase.TestBase):
         return ir.Label(name,self.fakeNode)
 
     def testPickle(self):
-        cPickle.dumps(self.canon,True)
+        pickle.dumps(self.canon,True)
         
     def testEmptyTree(self):
         self.assertEqual(self.canon.linearize(None),None)
@@ -63,7 +63,7 @@ class CanonTest(testbase.TestBase):
                            self.const()])
 
         ltree = self.canon.linearize(tree)
-        self.failUnless(isinstance(ltree,ir.ESeq) and \
+        self.assertTrue(isinstance(ltree,ir.ESeq) and \
                         isinstance(ltree.children[0],ir.Move) and \
                         isinstance(ltree.children[1],ir.Binop) and \
                         isinstance(ltree.children[1].children[0],ir.Var))
@@ -86,7 +86,7 @@ class CanonTest(testbase.TestBase):
                                                 self.var("b"))])
         ltree = self.canon.linearize(tree)
         self.assertESeqsNotNested(ltree,1)
-        self.failUnless(isinstance(ltree.children[0].children[0], ir.Var) and \
+        self.assertTrue(isinstance(ltree.children[0].children[0], ir.Var) and \
                         ltree.children[0].children[0].name == \
                         ltree.children[2].children[0].name)
 
@@ -96,7 +96,7 @@ class CanonTest(testbase.TestBase):
                                                 self.var("b"))])
         ltree = self.canon.linearize(tree)
         self.assertESeqsNotNested(ltree,1)
-        self.failUnless(isinstance(ltree.children[1].children[0],ir.Const))
+        self.assertTrue(isinstance(ltree.children[1].children[0],ir.Const))
 
     def testNestRHBinop(self):
         # nested right-hand eseq
@@ -292,10 +292,10 @@ class CanonTest(testbase.TestBase):
         blocks = self.canon.basic_blocks(seq, "t__start", "t__end")
         trace = self.canon.schedule_trace(blocks,"t__end")
         self.assertValidTrace(trace)
-        self.failUnless(trace[2].name == "b1" and \
+        self.assertTrue(trace[2].name == "b1" and \
                         trace[3].name == "b1" and \
                         trace[4].name == "b2")
-        self.failUnless(trace[7].name == "a1" and \
+        self.assertTrue(trace[7].name == "a1" and \
                         trace[8].name == "a1" and \
                         trace[9].name == "a2")
 
@@ -312,8 +312,8 @@ class CanonTest(testbase.TestBase):
         
     def printAllBlocks(self,blocks):
         for b in blocks:
-            for stm in b: print stm.pretty(),
-            print
+            for stm in b: print(stm.pretty(), end=' ')
+            print()
 
 #     def assertValidTrace(self,trace):
 #         # must have each cjump followed by false case

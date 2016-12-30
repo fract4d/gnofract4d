@@ -5,7 +5,7 @@ import os
 
 try:
     import fract4dcgmp as fract4dc
-except ImportError, err:
+except ImportError as err:
     import fract4dc
 
 file_types = {
@@ -16,7 +16,7 @@ file_types = {
     }
 
 def file_matches():
-    return [ "*" + x for x in file_types.keys()]
+    return [ "*" + x for x in list(file_types.keys())]
 
 class T:
     FATE_SIZE = 4
@@ -62,7 +62,7 @@ class T:
     yoffset = property(get_yoffset)
 
     def get_suggest_string(self):
-        k = file_types.keys()
+        k = list(file_types.keys())
         k.sort()
         available_types = ", ".join(k).upper()
         suggest_string = "Please use one of: " + available_types
@@ -100,7 +100,7 @@ class T:
         ft = self.file_type(name)
         try:
             self.fp = open(name, "wb")
-        except IOError, err:
+        except IOError as err:
             raise IOError("Unable to save image to '%s' : %s" % (name,err.strerror))
         self.writer = fract4dc.image_writer_create(self._img, self.fp, ft)
         fract4dc.image_save_header(self.writer)
@@ -176,11 +176,11 @@ class T:
 
     def get_all_fates(self,x,y):
         pos = self.pos(x,y,T.FATE_SIZE)
-        return map(ord,list(self.fate_buf[pos:pos+T.FATE_SIZE]))
+        return list(map(ord,list(self.fate_buf[pos:pos+T.FATE_SIZE])))
 
     def get_color(self,x,y):
         pos = self.pos(x,y,T.COL_SIZE)
-        return map(ord,list(self.image_buf[pos:pos+T.COL_SIZE]))
+        return list(map(ord,list(self.image_buf[pos:pos+T.COL_SIZE])))
 
     def get_color_index(self,x,y,sub=0):
         return fract4dc.image_get_color_index(self._img,x,y,sub)

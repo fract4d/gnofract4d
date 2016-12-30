@@ -24,12 +24,12 @@ class T:
             else:
                 try:
                     r.append(child.pretty(depth+1))
-                except Exception, exn:
-                    print "self",self
-                    print len(child)
+                except Exception as exn:
+                    print("self",self)
+                    print(len(child))
                     for c in child:
-                        print c
-                    print "<Error printing child '%s'>" % child
+                        print(c)
+                    print("<Error printing child '%s'>" % child)
                     raise
                 
         return string.join(r,"")    

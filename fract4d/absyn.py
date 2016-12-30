@@ -84,7 +84,7 @@ class NodeIter:
         else:
             return node.children[child]
         
-    def next(self):
+    def __next__(self):
         #print map(lambda (n,x) :"%s %s" % (n,x), self.nodestack)
         if self.nodestack == []:
             raise StopIteration
@@ -106,10 +106,10 @@ def CheckTree(tree, nullOK=0):
     if nullOK and tree == None:
         return 1
     if not isinstance(tree,Node):
-        raise Exception, "bad node type %s" % tree
+        raise Exception("bad node type %s" % tree)
     if tree.children:
-        if not isinstance(tree.children, types.ListType):
-            raise Exception, ("children not a list: %s instead" % tree.children)
+        if not isinstance(tree.children, list):
+            raise Exception("children not a list: %s instead" % tree.children)
         for child in tree.children:
             CheckTree(child,0)
     return 1
@@ -131,12 +131,12 @@ def Number(n,pos):
         n = Float(n)
     else:
         t = fracttypes.Int
-        n = string.atoi(n)
+        n = int(n)
 
     return Node("const", pos, None, n, t)
 
 def Const(n,pos):
-    if isinstance(n,types.StringType):
+    if isinstance(n,bytes):
         n = n.lower()
     return Node("const", pos, None, n=="true" or n=="yes", fracttypes.Bool)
 
@@ -178,10 +178,10 @@ def ArrayLookup(id, indexes, pos):
     return Node("arraylookup", pos, indexes, id)
 
 def Stmlist(id, list,pos):
-    return Node("stmlist", pos,list, string.lower(id))
+    return Node("stmlist", pos,list, id.lower())
 
 def Setlist(id, list,pos):
-    return Node("setlist", pos, list, string.lower(id))
+    return Node("setlist", pos, list, id.lower())
 
 def Empty(pos):
     return Node("empty", pos, None, "")
@@ -237,7 +237,7 @@ def Error(type, value, pos):
 
     return Node("error", pos, None,
                 "%d: Syntax error: unexpected %s '%s'" %
-                (pos, string.lower(type), value))
+                (pos, type.lower(), value))
 
 def PreprocessorError(value,pos):
     return Node("error", pos, None, value)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Translate an abstract syntax tree into tree-structured intermediate
 # code, performing type checking as a side effect
@@ -43,34 +43,34 @@ class TBase:
         self.dumpPreCanon = 0
 
         if dump != None:
-            for k in dump.keys():
-                print k
+            for k in list(dump.keys()):
+                print(k)
                 self.__dict__[k]=1
 
     def post_init(self):
         if self.dumpProbs:
-            print self.errors
-            print self.warnings
+            print(self.errors)
+            print(self.warnings)
             
         if self.dumpDecorated:
-            print f.pretty()
+            print(f.pretty())
 
         if self.dumpVars:
-            for (name,sym) in self.symbols.items():
+            for (name,sym) in list(self.symbols.items()):
                 if self.symbols.is_user(name):
                     try:
-                        print name,": ",sym
-                    except Exception, err:
-                        print "Error \"%s\" dumping %s" %(err,name)
+                        print(name,": ",sym)
+                    except Exception as err:
+                        print("Error \"%s\" dumping %s" %(err,name))
 
         if self.dumpTranslation:
-            print self.dumpSections(f,self.canon_sections)
+            print(self.dumpSections(f,self.canon_sections))
 
     def is_direct(self):
         return self.symbols.is_direct()
     
     def merge(self,other,name):
-        for (k,s) in other.output_sections.items():
+        for (k,s) in list(other.output_sections.items()):
             existing_section = self.output_sections.get(name + k)
             if existing_section:
                 existing_section.extend(s)
@@ -79,31 +79,31 @@ class TBase:
         self.symbols.merge(other.symbols)
 
     def dumpSections(self,f,dict):
-        print f.leaf + "{"
-        for (name,tree) in dict.items():
+        print(f.leaf + "{")
+        for (name,tree) in list(dict.items()):
             if isinstance(tree,ir.T):
-                print " " + name + "("
-                print tree.pretty(2) + " )"
-            elif isinstance(tree,types.ListType):
-                print " " + name + "("
+                print(" " + name + "(")
+                print(tree.pretty(2) + " )")
+            elif isinstance(tree,list):
+                print(" " + name + "(")
                 for t in tree:
-                    print t.pretty(2)
-                print " )"
+                    print(t.pretty(2))
+                print(" )")
             elif tree == None:
                 pass
             else:
-                print "Unknown tree %s in section %s" % (tree, name)
-        print "}\n"
+                print("Unknown tree %s in section %s" % (tree, name))
+        print("}\n")
 
     def pretty(self):
         if self.errors:
             return string.join(self.errors,"\n")
         out = []
-        for (name,tree) in self.sections.items():
+        for (name,tree) in list(self.sections.items()):
             if isinstance(tree,ir.T):
                 out.append( " " + name + "(")
                 out.append(tree.pretty(2) + " )")
-            elif isinstance(tree,types.ListType):
+            elif isinstance(tree,list):
                 out.append(" " + name + "(")
                 for t in tree:
                     out.append(t.pretty(2))
@@ -120,7 +120,7 @@ class TBase:
         self.warnings.append(msg)
             
     def canonicalize(self):
-        for (k,tree) in self.sections.items():
+        for (k,tree) in list(self.sections.items()):
             startLabel = "t__start_" + self.symbols.prefix + k
             endLabel = "t__end_" + self.symbols.prefix + k
             self.canon_sections[k] = self.canonicalizer.canonicalize(
@@ -133,7 +133,7 @@ class TBase:
                     "Using explicit section.") % (sect,sect))
         
     def sectionOrNone(self,sectname):
-        if self.sections.has_key(sectname):
+        if sectname in self.sections:
             return self.sections[sectname]
         return None
 
@@ -158,9 +158,9 @@ class TBase:
         self.add_to_section("final",self.stmlist(node))
 
     def setlist(self, node):
-        children = filter(lambda c : c.type != "empty", node.children)
-        settings = map(lambda c: self.setting(c), children)        
-        seq = ir.Seq(filter(lambda c: c != None, settings), node)
+        children = [c for c in node.children if c.type != "empty"]
+        settings = [self.setting(c) for c in children]        
+        seq = ir.Seq([c for c in settings if c != None], node)
         return seq
 
     def paramsetting(self,node,var):
@@ -361,7 +361,7 @@ class TBase:
 
     def make_const(self, node, type):
         parts = []
-        for i in xrange(len(node.children)):
+        for i in range(len(node.children)):
             parts.append(self.const_convert(
                 self.const_exp(node.children[i]), fracttypes.Float))
         return ir.Const(parts, node, type)
@@ -374,7 +374,7 @@ class TBase:
         vals = self.string(node)
         
         strings = [node.leaf]
-        strings += map(lambda n : n.leaf, node.children)
+        strings += [n.leaf for n in node.children]
         
         i = 0
         for s in strings:
@@ -475,8 +475,8 @@ class TBase:
         self.defaults[name] = self.const_exp(val)
     
     def stmlist(self, node):
-        children = filter(lambda c : c.type != "empty", node.children)
-        seq = ir.Seq(map(lambda c: self.stm(c), children), node)
+        children = [c for c in node.children if c.type != "empty"]
+        seq = ir.Seq([self.stm(c) for c in children], node)
         return seq
 
     def stmlist_with_label(self, node, label):        
@@ -537,7 +537,7 @@ class TBase:
         node.children[0] = self.makeCompare(node.children[0])
 
         # convert boolean operation
-        children = map(lambda n : self.exp(n) , node.children[0].children)
+        children = [self.exp(n) for n in node.children[0].children]
         op = self.findOp(node.children[0].leaf, node.children[0].pos,children)
         convertedChildren = self.coerceList(op.args,children)
 
@@ -571,7 +571,7 @@ class TBase:
         node.children[0] = self.makeCompare(node.children[0])
         
         # convert boolean operation
-        children = map(lambda n : self.exp(n) , node.children[0].children)
+        children = [self.exp(n) for n in node.children[0].children]
         op = self.findOp(node.children[0].leaf, node.children[0].pos,children)
         convertedChildren = self.coerceList(op.args,children)
 
@@ -598,9 +598,9 @@ class TBase:
             if len(indexes) != arity:                   
                 raise TranslationError("%d: wrong number of indexes for %s" % (pos, name))
 
-        except KeyError, err:
+        except KeyError as err:
             raise TranslationError("%d: %s not declared as an array" % (pos,name))
-        except AttributeError, err:
+        except AttributeError as err:
             # not an array
             raise TranslationError("%d: %s is not an array" % (pos, name))
                                
@@ -625,7 +625,7 @@ class TBase:
         
         if lvalue.type == "id" or lvalue.type == "arraylookup":
             name = lvalue.leaf
-            if not self.symbols.has_key(name):
+            if name not in self.symbols:
                 # implicitly create a new var - a warning?
                 self.symbols[name] = \
                     Var(Complex,None,lvalue.pos)
@@ -686,7 +686,7 @@ class TBase:
         if isinstance(overloadList, fracttypes.Var):
             return self.findPseudoOp(overloadList, func, pos)
         
-        typelist = map(lambda ir : ir.datatype , list)
+        typelist = [ir.datatype for ir in list]
         
         for ol in overloadList:
             if ol.matchesArgs(typelist):
@@ -694,7 +694,7 @@ class TBase:
         
         raise TranslationError(
             "Invalid argument types %s for %s on line %s" % \
-            (map(fracttypes.strOfType,typelist), func, pos))
+            (list(map(fracttypes.strOfType,typelist)), func, pos))
     
     def decl(self,node):
         if node.children:
@@ -710,7 +710,7 @@ class TBase:
                 self.coerce(exp, node.datatype),
                 node, node.datatype)
         
-        except KeyError, e:
+        except KeyError as e:
             self.error("Invalid declaration on line %d: %s" % (node.pos,e))
 
     def indexes(self,node):
@@ -733,7 +733,7 @@ class TBase:
             var.arity = len(indexes)
             self.symbols[node.leaf] = var
             
-        except KeyError, e:
+        except KeyError as e:
             self.error("Invalid declaration on line %d: %s" % (node.pos,e))
 
         arena = ir.Var("t__p_stub->arena",node,fracttypes.VoidArray)
@@ -785,16 +785,16 @@ class TBase:
         return ir.Seq([label, stm], node)
 
     def unop(self, node):
-        children = map(lambda n: self.exp(n) , node.children)
+        children = [self.exp(n) for n in node.children]
         op = self.findOp(node.leaf, node.pos,children)
         children = self.coerceList(op.args,children)
         return ir.Unop(node.leaf, children, node, op.ret)
 
     def funcall(self, node):
-        children = map(lambda n: self.exp(n) , node.children)
+        children = [self.exp(n) for n in node.children]
         try:
             op = self.findOp(node.leaf, node.pos, children)
-        except TranslationError, err:
+        except TranslationError as err:
             # hack to support old Fractint formulas which use exp(1,0)
             # instead of exp((1,0))
             # convert the args into a single complex and see if call works
@@ -803,10 +803,10 @@ class TBase:
                 children = self.coerceList(cop.args,children)
                 children = [ir.Binop("complex", children, node, cop.ret)]
                 op = self.findOp(node.leaf, node.pos,children)
-            except Exception, err2:
+            except Exception as err2:
                 raise err
             
-        except KeyError, err:
+        except KeyError as err:
             raise TranslationError(
                     "Unknown function %s on line %d" % (node.leaf,node.pos))
 
@@ -831,7 +831,7 @@ class TBase:
         
         node.children[0] = self.makeCompare(node.children[0])
 
-        children = map(lambda n : self.exp(n) , node.children)        
+        children = [self.exp(n) for n in node.children]        
         op = self.findOp(node.leaf, node.pos ,children)
         children = self.coerceList(op.args,children)
 
@@ -886,13 +886,13 @@ class TBase:
             if item.lower() == v:
                 return i
             i += 1
-        raise ValueError, "not found"
+        raise ValueError("not found")
     
     def binop(self, node):
         if self.isShortcut(node):
             return self.shortcut(node)
         else:
-            children = map(lambda n : self.exp(n) , node.children)
+            children = [self.exp(n) for n in node.children]
             op = self.findOp(node.leaf, node.pos,children)
             children = self.coerceList(op.args,children)
 
@@ -903,14 +903,14 @@ class TBase:
     def id(self, node):
         try:
             node.datatype = self.symbols[node.leaf].type
-        except KeyError, e:
+        except KeyError as e:
             self.warning(
                 "Uninitialized variable %s referenced on line %d" % \
                 (node.leaf, node.pos))
             try:
                 self.symbols[node.leaf] = Var(
                     fracttypes.Complex, None, node.pos)
-            except KeyError, e:
+            except KeyError as e:
                 raise TranslationError("%d: %s" % (node.pos, e.args[0]))
             
             node.datatype = fracttypes.Complex
@@ -938,20 +938,19 @@ class TBase:
             return ir.Const(node.leaf, node, node.datatype)
         else:
             strings = [node.leaf]
-            strings += map(lambda n : n.leaf, node.children)
+            strings += [n.leaf for n in node.children]
             return ir.Enum(strings, node, node.datatype)
 
     def enum_lookup(self,node):
         try:
             val = self.symbols["__enum_" + node.leaf].value
             return ir.Const(val, node, fracttypes.Int)
-        except KeyError, err:            
+        except KeyError as err:            
             msg = "%d: Unknown enumeration value '%s'" % (node.pos,node.leaf)
             raise TranslationError(msg)
         
     def coerceList(self,expList,typeList):
-        return map( lambda (exp,ty) : self.coerce(exp,ty) ,
-                    zip(typeList, expList))
+        return [self.coerce(exp_ty[0],exp_ty[1]) for exp_ty in zip(typeList, expList)]
     
     def coerce(self, exp, expectedType):
         '''insert code to cast exp to expectedType 
@@ -1018,7 +1017,7 @@ class T(TBase):
             if self.dumpPreCanon:
                 self.dumpSections(f,self.sections)
             self.canonicalize()
-        except TranslationError, e:
+        except TranslationError as e:
             self.errors.append(e.msg)
 
         self.post_init()
@@ -1094,7 +1093,7 @@ class T(TBase):
         f.children.remove(s)
 
         if self.dumpCanon:
-            print f.pretty()
+            print(f.pretty())
 
 class Transform(TBase):
     "For transforms (.uxf files)"
@@ -1106,7 +1105,7 @@ class Transform(TBase):
             if self.dumpPreCanon:
                 self.dumpSections(f,self.sections)
             self.canonicalize()
-        except TranslationError, e:
+        except TranslationError as e:
             self.errors.append(e.msg)
 
         self.post_init()
@@ -1206,7 +1205,7 @@ class ColorFunc(TBase):
             if self.dumpPreCanon:
                 self.dumpSections(f,self.sections)
             self.canonicalize()
-        except TranslationError, e:
+        except TranslationError as e:
             self.errors.append(e.msg)
 
         self.post_init()
@@ -1284,7 +1283,7 @@ class ColorFunc(TBase):
                 s.leaf = "final"
 
         if self.dumpCanon:
-            print f.pretty()
+            print(f.pretty())
 
 parser = fractparser.parser
 
@@ -1293,12 +1292,12 @@ def main(args):
         s = open(arg,"r").read() # read in a whole file
         result = parser.parse(s)
         for formula in result.children:
-            print formula.leaf
+            print(formula.leaf)
             t = T(formula)
             if t.errors != []:
-                print "Errors translating %s:" % formula.leaf
+                print("Errors translating %s:" % formula.leaf)
                 for e in t.errors:
-                    print "\t",e
+                    print("\t",e)
 
 # debugging
 if __name__ == '__main__':

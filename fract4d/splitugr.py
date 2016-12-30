@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 
@@ -25,7 +25,7 @@ class T:
             g.load_ugr(t)
             out_name = g.name + ".ggr"
             f = open("gradients/" + out_name, "w")
-            print >>f, g.serialize()
+            print(g.serialize(), file=f)
             f.close()
 
 def main(args):

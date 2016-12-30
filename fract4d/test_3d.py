@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import math
@@ -141,8 +141,8 @@ class Test(testbase.TestBase):
         self.assertNearlyEqual(root, lookfor, 1.0e-10)
 
         # check each pixel against closed-form results
-        for y in xrange(0,30):
-            for x in xrange(0,40):
+        for y in range(0,30):
+            for x in range(0,40):
                 look = fract4dc.ff_look_vector(self.ff,x,y)
                 (is_hit,root) = fract4dc.fw_find_root(self.fw, [0,0,-40.0,0],look)
                 (should_be_hit, real_root) = self.intersect_sphere(eye,look)

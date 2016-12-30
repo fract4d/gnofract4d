@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # test types which are used by formula authors
 
@@ -78,7 +78,7 @@ class Test(unittest.TestCase):
 
         
     def testTypeIDs(self):
-        for i in xrange(len(fracttypes.typeObjectList)):
+        for i in range(len(fracttypes.typeObjectList)):
             self.assertEqual(i,fracttypes.typeObjectList[i].typeid)
             
     def testPrintfOfType(self):
@@ -116,7 +116,7 @@ class Test(unittest.TestCase):
             fracttypes.IntArray : "int *"
             }
 
-        for (k,v) in expected.items():            
+        for (k,v) in list(expected.items()):            
             self.assertEqual(v,fracttypes.typeObjectList[k].cname)
 
     def testFloatInitVal(self):

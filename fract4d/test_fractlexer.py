@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import fractlexer
@@ -67,10 +67,10 @@ default:
    baz"
 }
 ''')
-        self.failUnless(tokens[0].type == tokens[1].type == "NEWLINE","first 2 should be newlines")
+        self.assertTrue(tokens[0].type == tokens[1].type == "NEWLINE","first 2 should be newlines")
 
         str = [ tok for tok in tokens if tok.type == "STRING"]
-        self.failUnless(len(str) == 1 and str[0].value == "foo;barbaz", "string literal parsing problem" and str[0].lineno == 14)
+        self.assertTrue(len(str) == 1 and str[0].value == "foo;barbaz", "string literal parsing problem" and str[0].lineno == 14)
 
         sections = [ tok for tok in tokens if tok.type == "SECT_STM"]
         self.assertEqual(len(sections),3, "wrong number of sections")
@@ -79,8 +79,8 @@ default:
 
     def testBadChars(self):
         tokens = self.tokensFromString("$ hello ~\n ` ' goodbye")
-        self.failUnless(tokens[0].type == "error" and tokens[0].value == "$")
-        self.failUnless(tokens[4].type == "error" and
+        self.assertTrue(tokens[0].type == "error" and tokens[0].value == "$")
+        self.assertTrue(tokens[4].type == "error" and
                         tokens[4].value == "`" and
                         tokens[4].lineno == 2)
 
@@ -91,14 +91,14 @@ default:
 -fred- { }
 ''')
         for token in tokens:
-            self.failUnless(token.type == "FORM_ID" or
+            self.assertTrue(token.type == "FORM_ID" or
                             token.type == "FORM_END" or
                             token.type == "NEWLINE")
 
     def testIDs(self):
         tokens = self.tokensFromString("@_bailout_part _314159 #__ hello f_i7")
         for t in tokens:
-            self.failUnless(t.type == "ID")
+            self.assertTrue(t.type == "ID")
         
     def testCommentFormula(self):
         tokens = self.tokensFromString('''
@@ -107,20 +107,20 @@ default:
 @#$%554""}
 myComment {}
 ''')
-        tokens = filter(lambda tok : tok.type != "NEWLINE", tokens)
-        self.failUnless(tokens[0].type == "FORM_ID" and
+        tokens = [tok for tok in tokens if tok.type != "NEWLINE"]
+        self.assertTrue(tokens[0].type == "FORM_ID" and
                         tokens[0].value == "myComment" and
                         tokens[0].lineno == 5)
 
     def testKeywords(self):
         ts = self.tokensFromString('if a elseif b else c')
-        self.failUnless(ts[0].type == "IF" and
+        self.assertTrue(ts[0].type == "IF" and
                         ts[2].type == "ELSEIF" and
                         ts[4].type == "ELSE" and
                         ts[1].type == ts[3].type == ts[5].type == "ID")
     def testNumbers(self):
         ts = self.tokensFromString('1.0 0.5e+7 1i 1 i')
-        self.failUnless(ts[0].type == ts[1].type == ts[3].type == "NUMBER" and
+        self.assertTrue(ts[0].type == ts[1].type == ts[3].type == "NUMBER" and
                         ts[2].type == "COMPLEX" and ts[2].value == "1" and
                         ts[4].type == "ID")
 
@@ -129,7 +129,7 @@ myComment {}
         # this is handled by the preprocessor, not the lexer
         pp = preprocessor.T('&\\\n&')
         ts = self.tokensFromString(pp.out())
-        self.failUnless(ts[0].type == "BOOL_AND")
+        self.assertTrue(ts[0].type == "BOOL_AND")
         
 def suite():
     return unittest.makeSuite(Test,'test')

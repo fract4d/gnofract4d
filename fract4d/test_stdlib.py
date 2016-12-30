@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # tests the standard library of math functions
 import unittest
 import math
 import cmath
 import string
-import commands
+import subprocess
 import types
 
 import testbase
@@ -30,14 +30,14 @@ class Test(testbase.TestBase):
         #print c_code
         cmd = "g++ -Wall %s -o %s -Ic -lm" % (cFileName, oFileName)
         #print cmd
-        (status,output) = commands.getstatusoutput(cmd)
+        (status,output) = subprocess.getstatusoutput(cmd)
         self.assertEqual(status,0,"C error:\n%s\nProgram:\n%s\n" % \
                          ( output,c_code))
         #print "status: %s\noutput:\n%s" % (status, output)
         cmd = oFileName
-        (status,output) = commands.getstatusoutput(cmd)
+        (status,output) = subprocess.getstatusoutput(cmd)
         self.assertEqual(status,0, "Runtime error:\n" + output)
-        print "status: %s\noutput:\n%s" % (status, output)
+        print("status: %s\noutput:\n%s" % (status, output))
         return output
 
     def makeC(self,user_preamble="", user_postamble=""):
@@ -111,8 +111,8 @@ class Test(testbase.TestBase):
         '''
 
         codegen_symbols = self.codegen.output_symbols(self.codegen,{})
-        decls = string.join(map(lambda x: x.format(), codegen_symbols),"\n")
-        str_output = string.join(map(lambda x : x.format(), self.codegen.out),"\n")
+        decls = string.join([x.format() for x in codegen_symbols],"\n")
+        str_output = string.join([x.format() for x in self.codegen.out],"\n")
         postamble = "}\nreturn 0;}\n"
 
         return string.join([preamble,decls,"\n",
@@ -142,7 +142,7 @@ class Test(testbase.TestBase):
         return self.inspect_hyper(name, prefix)
 
     def inspect_colors(self,namelist):
-        return "".join(map(lambda x : self.inspect_color(x), namelist))
+        return "".join([self.inspect_color(x) for x in namelist])
     
     def predict(self,f,arg1=0,arg2=1):
         # compare our compiler results to Python stdlib
@@ -174,8 +174,7 @@ class Test(testbase.TestBase):
         
     def manufacture_tests(self,myfunc,pyfunc):
         vals = [ 0+0j, 0+1j, 1+0j, 1+1j, 3+2j, 1-0j, 0-1j, -3+2j, -2-2j, -1+0j ]
-        return map(lambda (x,y) : self.make_test(myfunc,pyfunc,x,y), \
-                   zip(vals,range(1,len(vals))))
+        return [self.make_test(myfunc,pyfunc,x_y[0],x_y[1]) for x_y in zip(vals,list(range(1,len(vals))))]
 
     def cotantests(self):
         def mycotan(z):
@@ -357,10 +356,10 @@ class Test(testbase.TestBase):
         # construct a formula calculating all of the above,
         # run it and compare results with expected values
         src = 't_c6{\ninit: y = (1,2)\n' + \
-              string.join(map(lambda x : x[0], tests),"\n") + "\n}"
+              string.join([x[0] for x in tests],"\n") + "\n}"
 
-        check = string.join(map(lambda x :self.inspect_complex(x[1]),tests),"\n")
-        exp = map(lambda x : "%s = %s" % (x[1],x[2]), tests)
+        check = string.join([self.inspect_complex(x[1]) for x in tests],"\n")
+        exp = ["%s = %s" % (x[1],x[2]) for x in tests]
         self.assertCSays(src,"init",check,exp)
 
     def assertCSays(self,source,section,check,result,dump=None):
@@ -368,7 +367,7 @@ class Test(testbase.TestBase):
         postamble = "t__end_f%s:\n%s\n" % (section,check)
         c_code = self.makeC("", postamble)        
         output = self.compileAndRun(c_code)
-        if isinstance(result,types.ListType):
+        if isinstance(result,list):
             outputs = string.split(output,"\n")
             for (exp,res) in zip(result,outputs):
                 self.assertEqual(exp,res)

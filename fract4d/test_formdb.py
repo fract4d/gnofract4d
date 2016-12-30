@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # this is deliberately not included in test.py since it hits a live website
 # and I don't want to screw up their bandwidth allocation
@@ -7,12 +7,12 @@ import sys
 sys.path.insert(1,"..")
 
 import unittest
-import StringIO
-import SocketServer
-import SimpleHTTPServer
+import io
+import socketserver
+import http.server
 import posixpath
-import urllib
-import httplib
+import urllib.request, urllib.parse, urllib.error
+import http.client
 import os
 import threading, time
 import zipfile
@@ -25,7 +25,7 @@ import formdb
 # we run a temporary fake web server
 formdb.target_base = "http://localhost:8090/"
 
-class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
     # same as a simplehttprequesthandler, but with a different base dir
     def translate_path(self, path):
         """Translate a /-separated PATH to the local filename syntax.
@@ -35,9 +35,9 @@ class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         probably be diagnosed.)
 
         """
-        path = posixpath.normpath(urllib.unquote(path))
+        path = posixpath.normpath(urllib.parse.unquote(path))
         words = path.split('/')
-        words = filter(None, words)
+        words = [_f for _f in words if _f]
         path = posixpath.normpath("../testdata")
         for word in words:
             drive, word = os.path.splitdrive(word)
@@ -52,7 +52,7 @@ class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     
 def threadStart():
     handler = MyRequestHandler
-    httpd = SocketServer.TCPServer(("",8090), handler)
+    httpd = socketserver.TCPServer(("",8090), handler)
     httpd.serve_forever()
 
 thread = threading.Thread(target=threadStart)
@@ -63,7 +63,7 @@ time.sleep(0.5)
 
 class Test(unittest.TestCase):
     def testFetch(self):
-        conn = httplib.HTTPConnection('localhost',8090)
+        conn = http.client.HTTPConnection('localhost',8090)
         conn.request("GET", "/trigcentric.fct")
         response = conn.getresponse()
         self.assertEqual(200, response.status)
@@ -73,11 +73,11 @@ class Test(unittest.TestCase):
         self.assertEqual("http://localhost:8090/test.zip", url)
         
     def testFetchAndUnpack(self):        
-        conn = httplib.HTTPConnection('localhost',8090)
+        conn = http.client.HTTPConnection('localhost',8090)
         conn.request("GET", "/test.zip")
         response = conn.getresponse()
         self.assertEqual(200, response.status)
-        zf = zipfile.ZipFile(StringIO.StringIO(response.read()),"r")
+        zf = zipfile.ZipFile(io.StringIO(response.read()),"r")
         info = zf.infolist()
         self.assertEqual("trigcentric.fct", info[0].filename)
         
