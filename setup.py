@@ -131,19 +131,11 @@ module_fract4dgmp = Extension(
     undef_macros = [ 'NDEBUG']    
     )
 
-if 'win' == sys.platform[:3]:
-    warnings = '/W3'
-    libs = [ 'pthreadVC2', 'libdl' ]
-    osdep = [ '/DWIN32', '/DWINDOWS', '/D_USE_MATH_DEFINES', '/D_CRT_SECURE_NO_WARNINGS', '/EHsc', '/Ox' ]
-    osdep += [ '/I"F:/Gamma/GTK+/Win32/include/glib-2.0/"', '/I"F:/Gamma/GTK+/Win32/lib/glib-2.0/include/"' ]
-    extra_source = [ 'fract4d/c/win32func.cpp', 'fract4d/c/fract4d_stdlib_exports.cpp' ]
-    extra_link = [ '/LIBPATH:"F:/Gamma/GTK+/Win32/lib"' ]
-else:
-    warnings = '-Wall'
-    libs = [ 'stdc++' ]
-    osdep = []
-    extra_source = []
-    extra_link = []
+warnings = '-Wall'
+libs = [ 'stdc++' ]
+osdep = []
+extra_source = []
+extra_link = []
 
 fract4d_sources += extra_source
 
@@ -155,7 +147,7 @@ module_fract4dc = Extension(
     ],
     libraries = libs + jpg_libs,
     extra_compile_args = [
-    warnings,
+    warnings, '-O0'
     ] + osdep + png_flags,
     extra_link_args = extra_link + png_libs,
     define_macros = defines + extra_macros,

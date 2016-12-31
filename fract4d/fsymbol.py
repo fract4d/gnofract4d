@@ -765,7 +765,7 @@ class T(UserDict):
         return key[0] == '#'
 
     def clashes_with_private(self,mangled_key,old_key):
-        if string.find(mangled_key,"t__",0,3)!=0:
+        if mangled_key.find("t__",0,3)!=0:
             return False
         if old_key[0]=='@':
             return False

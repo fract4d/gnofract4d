@@ -2807,11 +2807,7 @@ static struct PyModuleDef moduledef = {
 };
 
 extern "C" PyMODINIT_FUNC
-#ifdef USE_GMP
-initfract4dcgmp(void)
-#else
-initfract4dc(void)
-#endif
+PyInit_fract4dc(void)
 {
     PyObject *pymod = PyModule_Create(&moduledef);
 
@@ -2865,7 +2861,7 @@ initfract4dc(void)
     PyModule_AddIntConstant(pymod, "MESSAGE_TYPE_TOLERANCE", TOLERANCE);
     PyModule_AddIntConstant(pymod, "MESSAGE_TYPE_STATS", STATS);
 
-    ensure_cmap_loaded(pymod);
+    //ensure_cmap_loaded(pymod);
     
     return pymod;
 }
