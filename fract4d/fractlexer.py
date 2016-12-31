@@ -142,7 +142,7 @@ t_FORM_END= r'\}'
 def t_COMMENT_FORMULA(t):
     r';?[Cc]omment\s*{[^}]*}'
     newlines = re.findall(r'\n',t.value)
-    t.lineno += len(newlines)
+    t.lexer.lineno += len(newlines)
     pass 
 
 # may seem weird, but this includes the starting {
@@ -200,7 +200,7 @@ def t_ID(t):
 # don't produce tokens for newlines preceded by \
 def t_ESCAPED_NL(t):
     r'\\\r?\s*\n'
-    t.lineno += 1
+    t.lexer.lineno += 1
 
 def t_COMMENT(t):
     r';[^\n]*'
@@ -209,7 +209,7 @@ def t_COMMENT(t):
     
 def t_NEWLINE(t):
     r'\r*\n'
-    t.lineno += 1 # track line numbers
+    t.lexer.lineno += 1 # track line numbers
     return t
 
 def t_STRING(t):
@@ -217,7 +217,7 @@ def t_STRING(t):
     if not keep_all:
         t.value = re.sub(r'(^")|("$)',"",t.value) # remove trailing and leading "
         newlines = re.findall(r'\n',t.value)
-        t.lineno += len(newlines)
+        t.lexer.lineno += len(newlines)
         t.value = re.sub(r'\\\r?\n[ \t\v]*',"",t.value) # hide \-split lines
     return t
     
@@ -228,7 +228,7 @@ t_ignore  = ' \t\r'
 def t_error(t):
     #print "Illegal character '%s' on line %d" % (t.value[0], t.lineno)
     t.value = t.value[0]
-    t.skip(1)
+    t.lexer.skip(1)
     return t
     
 # Build the lexer

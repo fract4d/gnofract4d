@@ -791,7 +791,7 @@ class T(UserDict):
             return
         elif k in T.default_dict:
             pre_var = T.default_dict[k]
-            #print "in default",k
+            #print("in default: %s" % k)
             if isinstance(pre_var,OverloadList):
                 msg = "is predefined as a function"
                 raise KeyError("symbol '%s' %s" % (key,msg))

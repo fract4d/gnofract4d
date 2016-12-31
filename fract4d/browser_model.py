@@ -24,7 +24,7 @@ class TypeInfo:
 
     def update_files(self):
         self.files = self.compiler.find_files_of_type(self.formula_type)
-        self.files.sort(stricmp)
+        self.files.sort(key=lambda s : s.lower())
         
     def set_file(self,fname):
         if self.fname == fname:

@@ -223,12 +223,12 @@ class T:
                 self.changed()
         elif t == fracttypes.Bool:
             # don't use bool(val) - that makes "0" = True
-	    try:
+            try:
                i = int(val)
-	       i = (i != 0)
-	    except ValueError:
-	       # an old release included a 'True' or 'False' string
-	       if val == "True": i = 1
+               i = (i != 0)
+            except ValueError:
+               # an old release included a 'True' or 'False' string
+               if val == "True": i = 1
                else: i = 0
             if self.params[ord] != i:                
                 self.params[ord] = i

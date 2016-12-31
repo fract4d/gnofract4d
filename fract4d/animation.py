@@ -5,7 +5,7 @@ import os, sys, copy, math
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
 
-from  import fracttypes, fractal, fractconfig
+import fracttypes, fractal, fractconfig
 
 #interpolation type constants
 INT_LINEAR=    0
@@ -267,13 +267,13 @@ class T:
             for j in range(self.get_keyframe_stop(i)): #output keyframe 'stop' times
                 framelist.append(self.get_image_filename(current-1))
 
-	    if i < self.keyframes_count()-1:
+            if i < self.keyframes_count()-1:
                 # final frame has no transitions following it
                 for j in range(self.get_keyframe_duration(i)): #output all transition files
                     framelist.append(self.get_image_filename(current))
                     current=current+1
-	
-	return framelist
+        
+        return framelist
 
     def get_keyframe_durations(self):
         durations = []
@@ -307,5 +307,4 @@ class AnimationHandler(ContentHandler):
             kf= KeyFrame.load_from_xml(attrs)
             self.animation.keyframes.append(kf)
         return
-
 

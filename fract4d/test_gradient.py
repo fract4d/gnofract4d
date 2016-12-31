@@ -206,6 +206,7 @@ opacity:
                     colorlist.append(((i-1)/255.0,r,g,b,255))
             i += 1
 
+        f.close()
         return colorlist
 
     def testCopy(self):
