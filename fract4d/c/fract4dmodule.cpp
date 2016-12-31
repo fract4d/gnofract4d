@@ -32,7 +32,7 @@
 #define PyMODINIT_FUNC void
 #endif
 
-#define CMAP_NAME "/fract4d_stdlib.so"
+#define CMAP_NAME "/fract4d_stdlib.cpython-35m-x86_64-linux-gnu.so"
 
 #ifdef USE_GMP
 #define MODULE_NAME "fract4dcgmp"
@@ -125,15 +125,20 @@ ensure_cmap_loaded(PyObject *pymod)
 	return 1; // already loaded
     }
 
-    const char *filename = PyModule_GetFilename(pymod);
+    const char *filename = NULL; // doesn't work! PyModule_GetFilename(pymod);
+    const char *path_end = NULL;
     //fprintf(stderr,"base name: %s\n",filename);
-    const char *path_end = strrchr(filename,'/');
-    if(path_end == NULL)
+    if (filename != NULL)
+    {
+	path_end = strrchr(filename,'/');
+    }
+
+    if (path_end == NULL)
     {
 	filename = getcwd(cwd,sizeof(cwd));
 	path_end = filename + strlen(filename);
     }
-
+    
     int path_len = strlen(filename) - strlen(path_end);
     int len = path_len + strlen(CMAP_NAME);
 
@@ -234,7 +239,7 @@ pf_create(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    dlHandle = pf_fromcapsule(pyobj);
+    dlHandle = module_fromcapsule(pyobj);
     pfn = (pf_obj *(*)(void))dlsym(dlHandle,"pf_new");
     if(NULL == pfn)
     {
@@ -2861,7 +2866,7 @@ PyInit_fract4dc(void)
     PyModule_AddIntConstant(pymod, "MESSAGE_TYPE_TOLERANCE", TOLERANCE);
     PyModule_AddIntConstant(pymod, "MESSAGE_TYPE_STATS", STATS);
 
-    //ensure_cmap_loaded(pymod);
+    ensure_cmap_loaded(pymod);
     
     return pymod;
 }

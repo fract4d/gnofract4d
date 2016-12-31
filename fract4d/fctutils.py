@@ -9,7 +9,7 @@ import struct
 class T:
     def __init__(self,parent=None):
         self.endsect = "[endsection]"
-        self.tr = string.maketrans("[] ","___")
+        self.tr = str.maketrans("[] ","___")
         self.parent = parent
         
     def warn(self,msg):
