@@ -130,7 +130,7 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
     def testCompile(self):
         'Check we can compile a fractal and the resulting .so looks ok'
         ff = self.compiler.files["gf4d.frm"]
-        self.assertNotEqual(string.index(ff.contents,"Modified for Gf4D"),-1)
+        self.assertNotEqual(ff.contents.index("Modified for Gf4D"),-1)
         self.assertNotEqual(ff.get_formula("T03-01-G4"),None)
         self.assertEqual(len(ff.formulas) > 0,1)
         f = self.compiler.get_formula("gf4d.frm","T03-01-G4")
@@ -141,10 +141,10 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
         # check the output contains the right functions
         (status,output) = subprocess.getstatusoutput('nm test-out.so')
         self.assertEqual(status,0)
-        self.assertEqual(string.count(output,"pf_new"),1)
-        self.assertEqual(string.count(output,"pf_calc"),1)
-        self.assertEqual(string.count(output,"pf_init"),1)
-        self.assertEqual(string.count(output,"pf_kill"),1)
+        self.assertEqual(output.count("pf_new"),1)
+        self.assertEqual(output.count("pf_calc"),1)
+        self.assertEqual(output.count("pf_init"),1)
+        self.assertEqual(output.count("pf_kill"),1)
 
     def testErrors(self):
         'Check we raise appropriate exns when formulas are busted'

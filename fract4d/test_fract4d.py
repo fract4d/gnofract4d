@@ -710,8 +710,8 @@ class Test(testbase.TestBase):
                     line.append("#")
                 else:
                     line.append(" ")
-            image.append(string.join(line,""))
-        printable_image = string.join(image,"\n")
+            image.append("".join(line))
+        printable_image = "\n".join(image)
         self.assertEqual(printable_image[0], " ", printable_image)
         self.assertEqual(printable_image[20*41+20],"#", printable_image) # in the middle
         #print printable_image # shows low-res mbrot in text mode 

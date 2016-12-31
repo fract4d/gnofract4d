@@ -168,7 +168,7 @@ Debugging and Profiling settings (most only work with --nogui):
             elif name=="--outer":
                 (self.outername,self.outerfunc) = self.splitarg(val,name)
             elif name=="--transforms":
-                tlist = string.split(val,",")
+                tlist = val.split(",")
                 for t in tlist:
                     self.transforms.append(self.splitarg(t,name))
             elif (name=="--map"):

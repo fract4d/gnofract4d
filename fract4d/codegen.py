@@ -27,7 +27,7 @@ class Formatter:
     def __getitem__(self,key):
         try:
             out = self.tree.output_sections[key]
-            str_output = string.join([x.format() for x in out],"\n")
+            str_output = "\n".join([x.format() for x in out])
             return str_output
 
         except KeyError as err:

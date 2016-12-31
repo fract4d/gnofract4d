@@ -227,13 +227,13 @@ int main()
         '''
 
         codegen_symbols = self.codegen.output_local_vars(self.codegen,{})
-        decls = string.join([x.format() for x in codegen_symbols],"\n")
-        str_output = string.join([x.format() for x in self.codegen.out],"\n")
+        decls = "\n".join([x.format() for x in codegen_symbols])
+        str_output = "\n".join([x.format() for x in self.codegen.out])
         postamble = "\nreturn 0;}\n"
 
-        return string.join([preamble,decls,"\n",
+        return "".join([preamble,decls,"\n",
                             user_preamble,str_output,"\n",
-                            user_postamble,postamble],"")
+                            user_postamble,postamble])
 
     def compileAndRun(self,c_code):
         cFileName = self.codegen.writeToTempFile(c_code,".cpp")
@@ -590,7 +590,7 @@ bailout:
         c_code = self.codegen.output_c(t,inserts)
         #print c_code
         output = self.compileAndRun(c_code)
-        lines = string.split(output,"\n")
+        lines = output.split("\n")
         # 1st point we try should bail out 
         self.assertEqual(lines[0:3],["(1.5,0)","(3.75,0)", "(1,0,0)"],output)
 
@@ -1521,7 +1521,7 @@ endparam
         
         }'''
 
-        tests = string.join([
+        tests = "".join([
             self.inspect_bool("t"),
             self.inspect_bool("f"),
             self.inspect_complex("c_from_bt"),
@@ -1533,7 +1533,7 @@ endparam
             self.inspect_float("f_from_bf"),
             ])
         
-        results = string.join([
+        results = "".join([
             "t = 1",
             "f = 0",
             "c_from_bt = (1,0)",
@@ -1579,13 +1579,13 @@ endparam
         endparam
         }'''
 
-        tests = string.join([
+        tests = "".join([
             self.inspect_bool("b"),
             self.inspect_bool("b2"),
             self.inspect_int("zval"),
             ])
         
-        results = string.join([
+        results = "".join([
             "b = 1",
             "b2 = 0",
             "zval = 773",
@@ -1967,9 +1967,9 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         # construct a formula calculating all of the above,
         # run it and compare results with expected values
         src = 't_c6{\ninit: y = (1,2)\n' + \
-              string.join([x[0] for x in tests],"\n") + "\n}"
+              "\n".join([x[0] for x in tests]) + "\n}"
 
-        check = string.join([self.inspect_complex(x[1]) for x in tests],"\n")
+        check = "\n".join([self.inspect_complex(x[1]) for x in tests])
         exp = ["%s = %s" % (x[1],x[2]) for x in tests]
         self.assertCSays(src,"init",check,exp)
 
@@ -2008,7 +2008,7 @@ bailout:
             }
         c_code = self.codegen.output_c(t,inserts)
         output = self.compileAndRun(c_code)
-        lines = string.split(output,"\n")
+        lines = output.split("\n")
 
         self.assertEqual('34', lines[0])
         self.assertEqual('(33,32,0)', lines[1])
@@ -2036,7 +2036,7 @@ bailout:
             }
         c_code = self.codegen.output_c(t,inserts)
         output = self.compileAndRun(c_code)
-        lines = string.split(output,"\n")
+        lines = output.split("\n")
 
         self.assertEqual(lines[0],'10')
         self.assertEqual(lines[1],'(9,32,0)')
@@ -2070,7 +2070,7 @@ bailout:
         c_code = self.codegen.output_c(t,inserts)
         #print c_code
         output = self.compileAndRun(c_code)
-        lines = string.split(output,"\n")
+        lines = output.split("\n")
         # 1st point we try should bail out 
         self.assertEqual(lines[0:3],["(1.5,0)","(3.75,0)", "(1,0,0)"],output)
 
@@ -2099,7 +2099,7 @@ bailout:
         self.codegen.output_decls(t)
         c_code = self.codegen.output_c(t,inserts)
         output2 = self.compileAndRun(c_code)
-        lines2 = string.split(output2,"\n")
+        lines2 = output2.split("\n")
         # 1st point we try should bail out 
         self.assertEqual(lines, lines2, output2)
 
@@ -2117,7 +2117,7 @@ bailout:
         self.codegen.output_decls(t)
         c_code = self.codegen.output_c(t,inserts)
         output3 = self.compileAndRun(c_code)
-        lines3 = string.split(output2,"\n")
+        lines3 = output2.split("\n")
         # 1st point we try should bail out 
         self.assertEqual(lines, lines3, output3)
 
@@ -2145,7 +2145,7 @@ float t = #tolerance
         c_code = self.codegen.output_c(t,inserts)
         #print c_code
         output = self.compileAndRun(c_code)
-        lines = string.split(output,"\n")
+        lines = output.split("\n")
         self.assertEqual(lines[1],"(-77,9,1e-09)")
         self.assertEqual(lines[4],"(-77,9,1e-09)")
 
@@ -2283,14 +2283,14 @@ Newton4(XYAXIS) {; Mark Peterson
 
         #print c_code
         if isinstance(result,list):
-            outputs = string.split(output,"\n")
+            outputs = output.split("\n")
             for (exp,res) in zip(result,outputs):
                 self.assertEqual(exp,res)
         else:
             self.assertEqual(output,result)
         
     def assertOutputMatch(self,exp):
-        str_output = string.join([x.format() for x in self.codegen.out],"\n")
+        str_output = "\n".join([x.format() for x in self.codegen.out])
         self.assertEqual(str_output,exp)
 
     def assertMatchResult(self, tree, template,result):

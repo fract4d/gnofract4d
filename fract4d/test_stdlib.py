@@ -111,13 +111,13 @@ class Test(testbase.TestBase):
         '''
 
         codegen_symbols = self.codegen.output_symbols(self.codegen,{})
-        decls = string.join([x.format() for x in codegen_symbols],"\n")
-        str_output = string.join([x.format() for x in self.codegen.out],"\n")
+        decls = "\n".join([x.format() for x in codegen_symbols])
+        str_output = "\n".join([x.format() for x in self.codegen.out])
         postamble = "}\nreturn 0;}\n"
 
-        return string.join([preamble,decls,"\n",
+        return "".join([preamble,decls,"\n",
                             user_preamble,str_output,"\n",
-                            user_postamble,postamble],"")
+                            user_postamble,postamble])
 
 
     def inspect_bool(self,name):
@@ -356,9 +356,9 @@ class Test(testbase.TestBase):
         # construct a formula calculating all of the above,
         # run it and compare results with expected values
         src = 't_c6{\ninit: y = (1,2)\n' + \
-              string.join([x[0] for x in tests],"\n") + "\n}"
+              "\n".join([x[0] for x in tests]) + "\n}"
 
-        check = string.join([self.inspect_complex(x[1]) for x in tests],"\n")
+        check = "\n".join([self.inspect_complex(x[1]) for x in tests])
         exp = ["%s = %s" % (x[1],x[2]) for x in tests]
         self.assertCSays(src,"init",check,exp)
 
@@ -368,7 +368,7 @@ class Test(testbase.TestBase):
         c_code = self.makeC("", postamble)        
         output = self.compileAndRun(c_code)
         if isinstance(result,list):
-            outputs = string.split(output,"\n")
+            outputs = output.split("\n")
             for (exp,res) in zip(result,outputs):
                 self.assertEqual(exp,res)
         else:

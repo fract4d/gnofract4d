@@ -97,7 +97,7 @@ class TBase:
 
     def pretty(self):
         if self.errors:
-            return string.join(self.errors,"\n")
+            return "\n".join(self.errors)
         out = []
         for (name,tree) in list(self.sections.items()):
             if isinstance(tree,ir.T):
@@ -112,7 +112,7 @@ class TBase:
                 pass
             else:
                 out.append("Unknown tree %s in section %s" % (tree, name))
-        return string.join(out,"\n")
+        return "\n".join(out)
     
     def error(self,msg):
         self.errors.append(msg)

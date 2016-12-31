@@ -170,10 +170,10 @@ def colorRange(s):
     while i < len(s):
         c = s[i]
         if c == '<':
-            j = string.find(s,">", i)
+            j = s.find(">", i)
             if j == -1:
                 raise RuntimeError("No > after < in colors")
-            runlength = string.atoi(s[i+1:j])
+            runlength = int(s[i+1:j])
             if runlength == 0:
                 raise RuntimeError("Zero runlength")
             i = j+1

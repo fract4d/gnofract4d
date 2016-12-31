@@ -391,10 +391,10 @@ class Compiler:
 
     def hashcode(self,c_code):
         hash = hashlib.md5()
-        hash.update(c_code)
-        hash.update(self.compiler_name)
-        hash.update(self.flags)
-        hash.update(self.libs)
+        hash.update(c_code.encode('utf-8'))
+        hash.update(self.compiler_name.encode('utf-8'))
+        hash.update(self.flags.encode('utf-8'))
+        hash.update(self.libs.encode('utf-8'))
         return hash.hexdigest()
         
     def generate_code(self,ir, cg, outputfile=None,cfile=None):

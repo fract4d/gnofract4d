@@ -24,14 +24,14 @@ class TestBase(unittest.TestCase):
     def assertError(self,t,str):
         self.assertNotEqual(len(t.errors),0)
         for e in t.errors:
-            if string.find(e,str) != -1:
+            if e.find(str) != -1:
                 return
         self.fail(("No error matching '%s' raised, errors were %s" % (str, t.errors)))
 
     def assertWarning(self,t,str):
         self.assertNotEqual(len(t.warnings),0)
         for e in t.warnings:
-            if string.find(e,str) != -1:
+            if e.find(str) != -1:
                 return
         self.fail(("No warning matching '%s' raised, warnings were %s" % (str, t.warnings)))
 

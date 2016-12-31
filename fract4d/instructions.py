@@ -156,8 +156,8 @@ class Oper(Insn):
     def __str__(self):
         return "OPER(%s,[%s],[%s],%s)" % \
                (self.assem,
-                string.join([x.__str__() for x in self.src],","),
-                string.join([x.__str__() for x in self.dst],","),
+                ",".join([x.__str__() for x in self.src]),
+                ",".join([x.__str__() for x in self.dst]),
                 self.jumps)
 
 class Binop(Oper):
@@ -190,8 +190,8 @@ class Binop(Oper):
     def __str__(self):
         return "BINOP(%s,[%s],[%s])" % \
                (self.op,
-                string.join([x.__str__() for x in self.src],","),
-                string.join([x.__str__() for x in self.dst],","))
+                ",".join([x.__str__() for x in self.src]),
+                ",".join([x.__str__() for x in self.dst]))
         
     def format(self):
         result = "%s = %s %s %s;" % (
