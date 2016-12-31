@@ -743,10 +743,13 @@ class T(UserDict):
         except KeyError:
             return None
 
-    def __getitem__(self,key):
-        #print "called getitem with", key
+    def __contains__(self, key):
         k = mangle(key)
-        #print "getting:%s" % k
+        val = self.data.get(k, None)
+        return val
+    
+    def __getitem__(self,key):
+        k = mangle(key)
         val = self.data.get(k,None)
         if val == None:
             val = self.default_dict[k]

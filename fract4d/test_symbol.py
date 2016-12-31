@@ -163,7 +163,9 @@ class SymbolTest(unittest.TestCase):
         self.assertTrue("fish" in self.t)
         self.assertTrue("FisH" in self.t)
         x = self.t["fish"]
-        self.assertTrue(isinstance(x,Var) and x.value == 1 and x.type == Int)
+        self.assertTrue(isinstance(x,Var))
+        self.assertEqual(x.value, 1)
+        self.assertEqual(x.type, Int)
 
     def test_user(self):
         self.t["fish"] = Var(Int,1,1)
