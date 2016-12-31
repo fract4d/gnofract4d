@@ -332,7 +332,9 @@ class Compiler:
         try:
             type = FormulaTypes.guess_formula_type_from_filename(filename)            
             filename = self.find_file(filename,type)
-            s = open(filename,"r").read() # read in a whole file
+            f = open(filename,"r")
+            s = f.read() # read in a whole file
+            f.close()
             basefile = os.path.basename(filename)
             mtime = os.stat(filename)[stat.ST_MTIME]
 
@@ -414,8 +416,10 @@ class Compiler:
             if 'win' in sys.platform:
                 objfile = self.cache.makefilename(hash, ".obj")
 
-        open(cfile,"w").write(self.c_code)
-
+        f = open(cfile,"w")
+        f.write(self.c_code)
+        f.close()
+        
         # -march=i686 for 10% speed gain
         cmd = "%s \"%s\" %s %s\"%s\"" % \
               (self.compiler_name, cfile, self.flags, self.output_flag, outputfile)
