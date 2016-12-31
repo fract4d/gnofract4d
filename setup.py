@@ -5,7 +5,7 @@ from distutils.core import setup, Extension
 import distutils.sysconfig
 import os
 import stat
-import commands
+import subprocess
 import sys
 
 gnofract4d_version = '3.14.1'
@@ -30,7 +30,7 @@ def call_package_config(package,option,optional=False):
     '''invoke pkg-config, if it exists, to find the appropriate
     arguments for a library'''
     cmd = "pkg-config %s %s" % (package, option)
-    (status,output) = commands.getstatusoutput(cmd)
+    (status,output) = subprocess.getstatusoutput(cmd)
     if status != 0:
         if optional:
             print >>sys.stderr, "Can't find '%s'" % package
@@ -195,7 +195,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
        author = 'Edwin Young',
        author_email = 'edwin@bathysphere.org',
        maintainer = 'Edwin Young',
-       maintainer_email = 'catenary@users.sourceforge.net',
+       maintainer_email = 'edwin@bathysphere.org',
        keywords = "edwin@bathysphere.org",
        url = 'http://github.com/edyoung/gnofract4d/',
        packages = ['fract4d', 'fract4dgui', 'fractutils'], 
@@ -272,7 +272,7 @@ def copy_libs(dummy,dirpath,namelist):
              name = os.path.join(dirpath, name)
              shutil.copy(name, target)
             
-os.path.walk("build",copy_libs,None)
+os.walk("build",copy_libs,None)
 if 'win' == sys.platform[:3]:
     shutil.copy("fract4d/fract4d_stdlib.pyd", "fract4d_stdlib.pyd")
 

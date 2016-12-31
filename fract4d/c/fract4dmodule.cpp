@@ -41,11 +41,11 @@
 #define MODULE_NAME "fract4dc"
 #endif
 
-/* 
- * pointfuncs
- */
+struct module_state {
+    int dummy;
+};
 
-PyObject *pymod=NULL;
+// really should be in module_state - one day
 void *cmap_module_handle=NULL;
 
 typedef enum {
@@ -55,19 +55,67 @@ typedef enum {
 } vec_type_t;
 
 
-static void
-pf_unload(void *p)
+#define OBTYPE_MODULE "module"
+#define OBTYPE_POINTFUNC "pf"
+#define OBTYPE_CMAP "cmap"
+#define OBTYPE_IMAGE "image"
+#define OBTYPE_SITE "site"
+#define OBTYPE_WORKER "worker"
+#define OBTYPE_IMAGE_WRITER "image_writer"
+#define OBTYPE_FFH "ffh"
+#define OBTYPE_ARENA "arena"
+
+static void *
+module_fromcapsule(PyObject *p)
 {
+    void *vp = PyCapsule_GetPointer(p, OBTYPE_MODULE);
+    if(NULL == vp)
+    {
+	fprintf(stderr,"%p : SO : BAD\n",p);
+    }
+    
+    return vp;
+}
+
+static ImageWriter *
+image_writer_fromcapsule(PyObject *p)
+{
+    ImageWriter *iw = (ImageWriter *)PyCapsule_GetPointer(p, OBTYPE_IMAGE_WRITER);
+    if(NULL == iw)
+    {
+	fprintf(stderr,"%p : IW : BAD\n",p);
+    }
+    
+    return iw;
+}
+
+static arena_t
+arena_fromcapsule(PyObject *p)
+{
+    arena_t arena = (arena_t)PyCapsule_GetPointer(p,OBTYPE_ARENA);
+    if(NULL == arena)
+    {
+	fprintf(stderr,"%p : AR : BAD\n",p);
+    }
+    
+    return arena;
+}
+
+static void
+module_unload(PyObject *p)
+{
+    void *vp = module_fromcapsule(p);
 #ifdef DEBUG_CREATION
-    fprintf(stderr,"%p : SO : DEREF\n",p);
+    fprintf(stderr,"%p : SO : CLOSE\n",vp);
 #endif
-    #ifndef STATIC_CALC    
-    dlclose(p);
-    #endif
+
+#ifndef STATIC_CALC
+    dlclose(vp);
+#endif
 }
 
 static int 
-ensure_cmap_loaded()
+ensure_cmap_loaded(PyObject *pymod)
 {
     char cwd[PATH_MAX+1];
     // load the cmap module so fract funcs we compile later
@@ -77,9 +125,9 @@ ensure_cmap_loaded()
 	return 1; // already loaded
     }
 
-    char *filename = PyModule_GetFilename(pymod);
+    const char *filename = PyModule_GetFilename(pymod);
     //fprintf(stderr,"base name: %s\n",filename);
-    char *path_end = strrchr(filename,'/');
+    const char *path_end = strrchr(filename,'/');
     if(path_end == NULL)
     {
 	filename = getcwd(cwd,sizeof(cwd));
@@ -92,6 +140,7 @@ ensure_cmap_loaded()
     char *new_filename = (char *)malloc(len+1);
     strncpy(new_filename, filename, path_len);
     new_filename[path_len] = '\0';
+
     strcat(new_filename, CMAP_NAME);
     //fprintf(stderr,"Filename: %s\n", new_filename);
 
@@ -106,16 +155,12 @@ ensure_cmap_loaded()
 }
 
 static PyObject *
-pf_load(PyObject *self, PyObject *args)
+module_load(PyObject *self, PyObject *args)
 {
     #ifdef STATIC_CALC
     Py_INCREF(Py_None);
     return Py_None;
     #else
-    if(!ensure_cmap_loaded())
-    {
-	return NULL;
-    }
 
     char *so_filename;
     if(!PyArg_ParseTuple(args,"s",&so_filename))
@@ -133,7 +178,7 @@ pf_load(PyObject *self, PyObject *args)
 	PyErr_SetString(PyExc_ValueError,dlerror());
 	return NULL;
     }
-    return PyCObject_FromVoidPtr(dlHandle,pf_unload);
+    return PyCapsule_New(dlHandle, OBTYPE_MODULE, module_unload);
     #endif
 }
 
@@ -143,10 +188,21 @@ struct pfHandle
     pf_obj *pfo;
 } ;
 
-static void
-pf_delete(void *p)
+static struct pfHandle*
+pf_fromcapsule(PyObject *capsule)
 {
-    struct pfHandle *pfh = (struct pfHandle *)p;
+    struct pfHandle *pfHandle = (struct pfHandle *)PyCapsule_GetPointer(capsule, OBTYPE_POINTFUNC);
+    if(NULL == pfHandle)
+    {
+fprintf(stderr, "%p : PF : BAD\n", capsule);
+    }
+return pfHandle;
+}
+
+static void
+pf_delete(PyObject *p)
+{
+struct pfHandle *pfh = pf_fromcapsule(p);
 #ifdef DEBUG_CREATION
     fprintf(stderr,"%p : PF : DTOR\n",pfh);
 #endif
@@ -172,13 +228,13 @@ pf_create(PyObject *self, PyObject *args)
     {
 	return NULL;
     }
-    if(!PyCObject_Check(pyobj))
+    if(!PyCapsule_CheckExact(pyobj))
     {
 	PyErr_SetString(PyExc_ValueError,"Not a valid handle");
 	return NULL;
     }
 
-    dlHandle = PyCObject_AsVoidPtr(pyobj);
+    dlHandle = pf_fromcapsule(pyobj);
     pfn = (pf_obj *(*)(void))dlsym(dlHandle,"pf_new");
     if(NULL == pfn)
     {
@@ -194,7 +250,7 @@ pf_create(PyObject *self, PyObject *args)
 #endif
     // refcount module so it can't be unloaded before all funcs are gone
     Py_INCREF(pyobj); 
-    return PyCObject_FromVoidPtr(pfh,pf_delete);
+    return PyCapsule_New(pfh, OBTYPE_POINTFUNC,pf_delete);
 }
 
 void *
@@ -265,7 +321,7 @@ get_int_field(PyObject *pyitem, const char *name, int *pVal)
 	PyErr_SetString(PyExc_ValueError, "Bad segment object");
 	return NULL;
     }
-    *pVal = PyInt_AsLong(pyfield);
+    *pVal = PyLong_AsLong(pyfield);
     Py_DECREF(pyfield);
 
     return pVal;
@@ -331,6 +387,24 @@ cmap_from_pyobject(PyObject *pyarray)
     return cmap;
 }
 
+static ColorMap *
+cmap_fromcapsule(PyObject *capsule)
+{
+    ColorMap *cmap = (ColorMap *)PyCapsule_GetPointer(capsule, OBTYPE_CMAP);
+    if (NULL == cmap)
+    {
+	fprintf(stderr, "%p : CM : BAD", capsule);
+    }
+    return cmap;
+}
+
+static void
+pycmap_delete(PyObject *capsule)
+{
+    ColorMap *cmap = cmap_fromcapsule(capsule);    
+    cmap_delete(cmap);
+}
+
 static PyObject *
 cmap_create_gradient(PyObject *self, PyObject *args)
 {
@@ -359,7 +433,7 @@ cmap_create_gradient(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    pyret = PyCObject_FromVoidPtr(cmap,(void (*)(void *))cmap_delete);
+    pyret = PyCapsule_New(cmap,OBTYPE_CMAP, pycmap_delete);
 
     return pyret;
 }
@@ -444,10 +518,10 @@ parse_params(PyObject *pyarray, int *plen)
 		params[i].doubleval = PyFloat_AsDouble(pyitem);
 		//fprintf(stderr,"%d = float(%g)\n",i,params[i].doubleval);
 	    }
-	    else if(PyInt_Check(pyitem))
+	    else if(PyLong_Check(pyitem))
 	    {
 		params[i].t = INT;
-		params[i].intval = PyInt_AS_LONG(pyitem);
+		params[i].intval = PyLong_AS_LONG(pyitem);
 		//fprintf(stderr,"%d = int(%d)\n",i,params[i].intval);
 	    }
 	    else if(
@@ -482,8 +556,7 @@ parse_params(PyObject *pyarray, int *plen)
 			return NULL;
 		    }
 
-		    pycob = PyCObject_FromVoidPtr(
-			cmap, (void (*)(void *))cmap_delete);
+		    pycob = PyCapsule_New(cmap, OBTYPE_CMAP, pycmap_delete);
 
 		    if(NULL != pycob)
 		    {
@@ -494,7 +567,7 @@ parse_params(PyObject *pyarray, int *plen)
 		    }
 		}
 		params[i].t = GRADIENT;
-		params[i].gradient = PyCObject_AsVoidPtr(pycob);
+		params[i].gradient = cmap_fromcapsule(pycob);
 		//fprintf(stderr,"%d = gradient(%p)\n",i,params[i].gradient);
 		Py_XDECREF(pycob);
 	    }
@@ -503,7 +576,7 @@ parse_params(PyObject *pyarray, int *plen)
 	    {
 		PyObject *pycob = PyObject_GetAttrString(pyitem,"_img");
 		params[i].t = PARAM_IMAGE;
-		params[i].image = PyCObject_AsVoidPtr(pycob);
+		params[i].image = PyCapsule_GetPointer(pycob,OBTYPE_IMAGE);
 		Py_XDECREF(pycob);
 	    }
 	    else
@@ -535,13 +608,13 @@ pf_init(PyObject *self, PyObject *args)
     {
 	return NULL;
     }
-    if(!PyCObject_Check(pyobj))
+    if(!PyCapsule_CheckExact(pyobj))
     {
 	PyErr_SetString(PyExc_ValueError,"Not a valid handle");
 	return NULL;
     }
 
-    pfh = (struct pfHandle *)PyCObject_AsVoidPtr(pyobj);
+    pfh = pf_fromcapsule(pyobj);
 
     if(!parse_posparams(py_posparams, pos_params))
     {
@@ -583,7 +656,7 @@ params_to_python(struct s_param *params, int len)
 	    PyList_SET_ITEM(pyret,i,PyFloat_FromDouble(params[i].doubleval));
 	    break;
 	case INT:
-	    PyList_SET_ITEM(pyret,i,PyInt_FromLong(params[i].intval));
+	    PyList_SET_ITEM(pyret,i,PyLong_FromLong(params[i].intval));
 	    break;
 	case GRADIENT:
 	    Py_INCREF(Py_None);
@@ -611,13 +684,13 @@ pf_defaults(PyObject *self, PyObject *args)
     {
 	return NULL;
     }
-    if(!PyCObject_Check(pyobj))
+    if(!PyCapsule_CheckExact(pyobj))
     {
 	PyErr_SetString(PyExc_ValueError,"Not a valid handle");
 	return NULL;
     }
 
-    pfh = (struct pfHandle *)PyCObject_AsVoidPtr(pyobj);
+    pfh = pf_fromcapsule(pyobj);
 
     if(!parse_posparams(py_posparams, pos_params))
     {
@@ -666,13 +739,13 @@ pf_calc(PyObject *self, PyObject *args)
     {
 	return NULL;
     }
-    if(!PyCObject_Check(pyobj))
+    if(!PyCapsule_CheckExact(pyobj))
     {
 	PyErr_SetString(PyExc_ValueError,"Not a valid handle");
 	return NULL;
     }
 
-    pfh = (struct pfHandle *)PyCObject_AsVoidPtr(pyobj);
+    pfh = pf_fromcapsule(pyobj);
 #ifdef DEBUG_THREADS
     fprintf(stderr,"%p : PF : CALC\n",pfh);
 #endif
@@ -751,7 +824,7 @@ cmap_create(PyObject *self, PyObject *args)
 	cmap->set(i,d,r,g,b,a);
 	Py_DECREF(pyitem);
     }
-    pyret = PyCObject_FromVoidPtr(cmap,(void (*)(void *))cmap_delete);
+    pyret = PyCapsule_New(cmap, OBTYPE_CMAP, pycmap_delete);
 
     return pyret;
 }
@@ -768,7 +841,7 @@ pycmap_set_solid(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    cmap = (ColorMap *)PyCObject_AsVoidPtr(pycmap);
+    cmap = cmap_fromcapsule(pycmap);
     if(!cmap)
     {
 	return NULL;
@@ -793,7 +866,7 @@ pycmap_set_transfer(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    cmap = (ColorMap *)PyCObject_AsVoidPtr(pycmap);
+    cmap = cmap_fromcapsule(pycmap);
     if(!cmap)
     {
 	return NULL;
@@ -818,7 +891,7 @@ cmap_pylookup(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    cmap = (ColorMap *)PyCObject_AsVoidPtr(pyobj);
+    cmap = cmap_fromcapsule(pyobj);
     if(!cmap)
     {
 	return NULL;
@@ -846,7 +919,7 @@ cmap_pylookup_with_flags(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    cmap = (ColorMap *)PyCObject_AsVoidPtr(pyobj);
+    cmap = cmap_fromcapsule(pyobj);
     if(!cmap)
     {
 	return NULL;
@@ -979,9 +1052,9 @@ public:
 		const_cast<char *>("is_interrupted"),NULL);
 
 	    bool ret = false;
-	    if(pyret != NULL && PyInt_Check(pyret))
+	    if(pyret != NULL && PyLong_Check(pyret))
 	    {
-		long i = PyInt_AsLong(pyret);
+		long i = PyLong_AsLong(pyret);
 		//fprintf(stderr,"ret: %ld\n",i);
 		ret = (i != 0);
 	    }
@@ -1055,7 +1128,30 @@ typedef enum
     TOLERANCE,
     STATS,
 } msg_type_t;
-    
+
+static IImage *
+image_fromcapsule(PyObject *pyimage)
+{
+    IImage *image = (IImage *)PyCapsule_GetPointer(pyimage, OBTYPE_IMAGE);
+    if (NULL == image)
+    {
+	fprintf(stderr, "%p : IM : BAD\n", pyimage);
+    }
+    return image;
+}
+
+static IFractalSite *
+site_fromcapsule(PyObject *pysite)
+{
+    IFractalSite *site = (IFractalSite *)PyCapsule_GetPointer(pysite, OBTYPE_SITE);
+    if (NULL == site)
+    {
+	fprintf(stderr, "%p : ST : BAD\n", pysite);
+    }
+    return site;
+}
+
+
 struct calc_args
 {
     double params[N_PARAMS];
@@ -1097,7 +1193,7 @@ struct calc_args
     void set_cmap(PyObject *pycmap_)
 	{
 	    pycmap = pycmap_;
-	    cmap = (ColorMap *)PyCObject_AsVoidPtr(pycmap);
+	    cmap = cmap_fromcapsule(pycmap);
 	    Py_XINCREF(pycmap);
 	}
 
@@ -1105,20 +1201,20 @@ struct calc_args
 	{
 	    pypfo = pypfo_;
 
-	    pfo = ((pfHandle *)PyCObject_AsVoidPtr(pypfo))->pfo;
+	    pfo = (pf_fromcapsule(pypfo))->pfo;
 	    Py_XINCREF(pypfo);
 	}
 
     void set_im(PyObject *pyim_)
 	{
 	    pyim = pyim_;
-	    im = (IImage *)PyCObject_AsVoidPtr(pyim);
+	    im = image_fromcapsule(pyim);
 	    Py_XINCREF(pyim);
 	}
     void set_site(PyObject *pysite_)
 	{
 	    pysite = pysite_;
-	    site = (IFractalSite *)PyCObject_AsVoidPtr(pysite);
+	    site = site_fromcapsule(pysite);
 	    Py_XINCREF(pysite);
 	}
 
@@ -1276,6 +1372,7 @@ site_delete(IFractalSite *site)
     delete site;
 }
 
+    
 static void
 fw_delete(IFractWorker *worker)
 {
@@ -1299,6 +1396,14 @@ ff_delete(struct ffHandle *ffh)
     delete ffh;
 }
 
+static void
+pysite_delete(PyObject *pysite)
+{
+    IFractalSite *site = site_fromcapsule(pysite);
+    site_delete(site);
+}
+
+
 static PyObject *
 pysite_create(PyObject *self, PyObject *args)
 {
@@ -1314,7 +1419,7 @@ pysite_create(PyObject *self, PyObject *args)
     IFractalSite *site = new PySite(pysite);
 
     //fprintf(stderr,"pysite_create: %p\n",site);
-    PyObject *pyret = PyCObject_FromVoidPtr(site,(void (*)(void *))site_delete);
+    PyObject *pyret = PyCapsule_New(site, OBTYPE_SITE, pysite_delete);
 
     return pyret;
 }
@@ -1330,7 +1435,7 @@ pyfdsite_create(PyObject *self, PyObject *args)
 
     IFractalSite *site = new FDSite(fd);
 
-    PyObject *pyret = PyCObject_FromVoidPtr(site,(void (*)(void *))site_delete);
+    PyObject *pyret = PyCapsule_New(site, OBTYPE_SITE, pysite_delete);
 
     return pyret;
 }
@@ -1347,7 +1452,7 @@ pystop_calc(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    IFractalSite *site = (IFractalSite *)PyCObject_AsVoidPtr(pysite);
+    IFractalSite *site = site_fromcapsule(pysite);
     if(!site)
     {
 	return NULL;
@@ -1359,6 +1464,20 @@ pystop_calc(PyObject *self, PyObject *args)
     return Py_None;
 }
 
+static IFractWorker *
+fw_fromcapsule(PyObject *capsule)
+{
+    IFractWorker *worker = (IFractWorker *)PyCapsule_GetPointer(capsule, OBTYPE_WORKER);
+    return worker;
+}
+
+static void
+pyfw_delete(PyObject *pyworker)
+{
+    IFractWorker *worker = fw_fromcapsule(pyworker);
+    fw_delete(worker);
+}
+    
 static PyObject *
 fw_create(PyObject *self, PyObject *args)
 {
@@ -1380,10 +1499,10 @@ fw_create(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    cmap = (ColorMap *)PyCObject_AsVoidPtr(pycmap);
-    pfo = ((pfHandle *)PyCObject_AsVoidPtr(pypfo))->pfo;
-    im = (IImage *)PyCObject_AsVoidPtr(pyim);
-    site = (IFractalSite *)PyCObject_AsVoidPtr(pysite);
+    cmap = cmap_fromcapsule(pycmap);
+    pfo = (pf_fromcapsule(pypfo))->pfo;
+    im = image_fromcapsule(pyim);
+    site = site_fromcapsule(pysite);
     if(!cmap || !pfo || !im || !im->ok() || !site)
     {
 	return NULL;
@@ -1399,8 +1518,7 @@ fw_create(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    PyObject *pyret = PyCObject_FromVoidPtr(
-	worker,(void (*)(void *))fw_delete);
+    PyObject *pyret = PyCapsule_New(worker, OBTYPE_WORKER, pyfw_delete);
 
     return pyret;
 }
@@ -1418,7 +1536,7 @@ fw_pixel(PyObject *self, PyObject *args)
 	return NULL;
     }
     
-    IFractWorker *worker = (IFractWorker *)PyCObject_AsVoidPtr(pyworker);
+    IFractWorker *worker = fw_fromcapsule(pyworker);
     worker->pixel(x,y,w,h);
 
     Py_INCREF(Py_None);
@@ -1438,7 +1556,7 @@ fw_pixel_aa(PyObject *self, PyObject *args)
 	return NULL;
     }
     
-    IFractWorker *worker = (IFractWorker *)PyCObject_AsVoidPtr(pyworker);
+    IFractWorker *worker = fw_fromcapsule(pyworker);
     worker->pixel_aa(x,y);
 
     Py_INCREF(Py_None);
@@ -1459,13 +1577,31 @@ fw_find_root(PyObject *self, PyObject *args)
 	return NULL;
     }
     
-    IFractWorker *worker = (IFractWorker *)PyCObject_AsVoidPtr(pyworker);
+    IFractWorker *worker = fw_fromcapsule(pyworker);
     dvec4 root;
     int ok = worker->find_root(eye,look,root);
 
     return Py_BuildValue(
 	"i(dddd)",
 	ok,root[0], root[1], root[2], root[3]);
+}
+
+static ffHandle *
+ff_fromcapsule(PyObject *pyff)
+{
+    ffHandle *ff = (ffHandle *)PyCapsule_GetPointer(pyff, OBTYPE_FFH);
+    if(NULL == ff)
+    {
+	fprintf(stderr,"%p : FF : CTOR\n",ff);
+    }
+    return ff;
+}
+
+static void
+pyff_delete(PyObject *pyff)
+{
+    ffHandle *ff = (ffHandle *)PyCapsule_GetPointer(pyff, OBTYPE_FFH);
+    ff_delete(ff);
 }
 
 static PyObject *
@@ -1504,11 +1640,11 @@ ff_create(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    cmap = (ColorMap *)PyCObject_AsVoidPtr(pycmap);
-    pfo = ((pfHandle *)PyCObject_AsVoidPtr(pypfo))->pfo;
-    im = (IImage *)PyCObject_AsVoidPtr(pyim);
-    site = (IFractalSite *)PyCObject_AsVoidPtr(pysite);
-    worker = (IFractWorker *)PyCObject_AsVoidPtr(pyworker);
+    cmap = cmap_fromcapsule(pycmap);
+    pfo = (pf_fromcapsule(pypfo))->pfo;
+    im = image_fromcapsule(pyim);
+    site = site_fromcapsule(pysite);
+    worker = fw_fromcapsule(pyworker);
 
     if(!cmap || !pfo || !im || !site || !worker)
     {
@@ -1544,8 +1680,7 @@ ff_create(PyObject *self, PyObject *args)
     fprintf(stderr,"%p : FF : CTOR\n",ffh);
 #endif
 
-    PyObject *pyret = PyCObject_FromVoidPtr(
-	ffh,(void (*)(void *))ff_delete);
+    PyObject *pyret = PyCapsule_New(ffh, OBTYPE_FFH, pyff_delete);
 
     Py_INCREF(pyworker);
 
@@ -1748,6 +1883,13 @@ image_delete(IImage *image)
     delete image;
 }
 
+static void
+pyimage_delete(PyObject *pyimage)
+{
+    IImage *im = image_fromcapsule(pyimage);
+    image_delete(im);
+}
+
 static PyObject *
 image_create(PyObject *self, PyObject *args)
 {
@@ -1773,7 +1915,7 @@ image_create(PyObject *self, PyObject *args)
     fprintf(stderr,"%p : IM : CTOR\n",i);
 #endif
 
-    PyObject *pyret = PyCObject_FromVoidPtr(i,(void (*)(void *))image_delete);
+    PyObject *pyret = PyCapsule_New(i, OBTYPE_IMAGE, pyimage_delete);
 
     return pyret;
 }
@@ -1790,7 +1932,7 @@ image_resize(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    IImage *i = (IImage *)PyCObject_AsVoidPtr(pyim);
+    IImage *i = image_fromcapsule(pyim);
     if(NULL == i)
     {
 	return NULL;
@@ -1818,7 +1960,7 @@ image_dims(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    IImage *i = (IImage *)PyCObject_AsVoidPtr(pyim);
+    IImage *i = image_fromcapsule(pyim);
     if(NULL == i)
     {
 	return NULL;
@@ -1849,7 +1991,7 @@ image_set_offset(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    IImage *i = (IImage *)PyCObject_AsVoidPtr(pyim);
+    IImage *i = image_fromcapsule(pyim);
     if(NULL == i)
     {
 	return NULL;
@@ -1876,7 +2018,7 @@ image_clear(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    IImage *i = (IImage *)PyCObject_AsVoidPtr(pyim);
+    IImage *i = image_fromcapsule(pyim);
     if(NULL == i)
     {
 	return NULL;
@@ -1894,27 +2036,31 @@ image_writer_delete(ImageWriter *im)
     delete im;
 }
 
+
+static void
+pyimage_writer_delete(PyObject *pyim)
+{
+    ImageWriter *im = image_writer_fromcapsule(pyim);
+    image_writer_delete(im);
+}
+
+
 static PyObject *
 image_writer_create(PyObject *self,PyObject *args)
 {
     PyObject *pyim;
-    PyObject *pyFP;
+    char *filename;
     int file_type;
-    if(!PyArg_ParseTuple(args,"OOi",&pyim,&pyFP,&file_type))
+    if(!PyArg_ParseTuple(args,"Osi",&pyim,&filename,&file_type))
     {
 	return NULL;
     }
 
-    if(!PyFile_Check(pyFP))
-    {
-	return NULL;
-    }
+    IImage *i = image_fromcapsule(pyim);
+    
+    FILE *fp = fopen(filename,"wb");
 
-    image *i = (image *)PyCObject_AsVoidPtr(pyim);
-
-    FILE *fp = PyFile_AsFile(pyFP);
-
-    if(!fp || !i)
+    if(!fp)
     {
 	PyErr_SetString(PyExc_ValueError, "Bad arguments");
 	return NULL;
@@ -1927,29 +2073,23 @@ image_writer_create(PyObject *self,PyObject *args)
 	return NULL;
     }
 
-    return PyCObject_FromVoidPtr(
-	writer, (void (*)(void *))image_writer_delete);
+    return PyCapsule_New(writer, OBTYPE_IMAGE_WRITER, pyimage_writer_delete);
 }
 
 static PyObject *
 image_read(PyObject *self,PyObject *args)
 {
     PyObject *pyim;
-    PyObject *pyFP;
+    char *filename;
     int file_type;
-    if(!PyArg_ParseTuple(args,"OOi",&pyim,&pyFP,&file_type))
+    if(!PyArg_ParseTuple(args,"Osi",&pyim,&filename,&file_type))
     {
 	return NULL;
     }
 
-    if(!PyFile_Check(pyFP))
-    {
-	return NULL;
-    }
+    IImage *i = image_fromcapsule(pyim);
 
-    image *i = (image *)PyCObject_AsVoidPtr(pyim);
-
-    FILE *fp = PyFile_AsFile(pyFP);
+    FILE *fp = fopen(filename,"rb");
 
     if(!fp || !i)
     {
@@ -1958,12 +2098,6 @@ image_read(PyObject *self,PyObject *args)
     }
     
     ImageReader *reader = ImageReader::create((image_file_t)file_type, fp, i);
-    //if(!reader->ok())
-    //{
-    //	PyErr_SetString(PyExc_IOError, "Couldn't create image reader");
-    //	delete reader;
-    //	return NULL;
-    //}
 
     if(!reader->read())
     {
@@ -1986,7 +2120,7 @@ image_save_header(PyObject *self,PyObject *args)
 	return NULL;
     }
 
-    ImageWriter *i = (ImageWriter *)PyCObject_AsVoidPtr(pyimwriter);
+    ImageWriter *i = image_writer_fromcapsule(pyimwriter);
 
     if(!i || !i->save_header())
     {
@@ -2007,7 +2141,7 @@ image_save_tile(PyObject *self,PyObject *args)
 	return NULL;
     }
 
-    ImageWriter *i = (ImageWriter *)PyCObject_AsVoidPtr(pyimwriter);
+    ImageWriter *i = image_writer_fromcapsule(pyimwriter);
 
     if(!i || !i->save_tile())
     {
@@ -2028,7 +2162,7 @@ image_save_footer(PyObject *self,PyObject *args)
 	return NULL;
     }
 
-    ImageWriter *i = (ImageWriter *)PyCObject_AsVoidPtr(pyimwriter);
+    ImageWriter *i = image_writer_fromcapsule(pyimwriter);
 
     if(!i || !i->save_footer())
     {
@@ -2052,7 +2186,7 @@ image_buffer(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    image *i = (image *)PyCObject_AsVoidPtr(pyim);
+    image *i = (image *)image_fromcapsule(pyim);
 
 #ifdef DEBUG_CREATION
     fprintf(stderr,"%p : IM : BUF\n",i);
@@ -2071,7 +2205,9 @@ image_buffer(PyObject *self, PyObject *args)
     }
     int offset = 3 * (y * i->Xres() + x);
     assert(offset > -1 && offset < i->bytes());
-    pybuf = PyBuffer_FromReadWriteMemory(i->getBuffer()+offset,i->bytes()-offset);
+    Py_buffer *buffer = new Py_buffer;
+    PyBuffer_FillInfo(buffer, NULL, i->getBuffer()+offset,i->bytes()-offset,0, PyBUF_WRITABLE);
+    pybuf = PyMemoryView_FromBuffer(buffer);
     Py_XINCREF(pybuf);
     //Py_XINCREF(pyim);
 
@@ -2090,7 +2226,7 @@ image_fate_buffer(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    image *i = (image *)PyCObject_AsVoidPtr(pyim);
+    image *i = (image *)image_fromcapsule(pyim);
 
 #ifdef DEBUG_CREATION
     fprintf(stderr,"%p : IM : BUF\n",i);
@@ -2112,10 +2248,10 @@ image_fate_buffer(PyObject *self, PyObject *args)
     int last_index = i->index_of_sentinel_subpixel();
     assert(index > -1 && index < last_index);
 
-    pybuf = PyBuffer_FromReadWriteMemory(
-	i->getFateBuffer()+index,
-	(last_index - index)  * sizeof(fate_t));
-
+    Py_buffer *buffer = new Py_buffer;
+    PyBuffer_FillInfo(buffer, NULL, i->getFateBuffer()+index,(last_index - index) * sizeof(fate_t),0, PyBUF_WRITABLE);
+    pybuf = PyMemoryView_FromBuffer(buffer);
+    
     Py_XINCREF(pybuf);
 
     return pybuf;
@@ -2132,7 +2268,7 @@ image_get_color_index(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    image *i = (image *)PyCObject_AsVoidPtr(pyim);
+    image *i = (image *)image_fromcapsule(pyim);
     
     if(NULL == i)
     {
@@ -2165,7 +2301,7 @@ image_get_fate(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    image *i = (image *)PyCObject_AsVoidPtr(pyim);
+    image *i = (image *)image_fromcapsule(pyim);
     
     if(NULL == i)
     {
@@ -2254,7 +2390,7 @@ ff_get_vector(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    struct ffHandle *ffh = (struct ffHandle *)PyCObject_AsVoidPtr(pyFF);
+    struct ffHandle *ffh = ff_fromcapsule(pyFF);
     if(ffh == NULL)
     {
 	return NULL;
@@ -2303,7 +2439,7 @@ ff_look_vector(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    struct ffHandle *ffh = (struct ffHandle *)PyCObject_AsVoidPtr(pyFF);
+    struct ffHandle *ffh = ff_fromcapsule(pyFF);
     if(ffh == NULL)
     {
 	return NULL;
@@ -2338,7 +2474,7 @@ pyimage_lookup(PyObject *self, PyObject *args)
 	return NULL;
     }    
 
-    image *i = (image *)PyCObject_AsVoidPtr(pyimage);
+    image *i = (image *)image_fromcapsule(pyimage);
     
     image_lookup(i,x,y,&r,&g,&b);
 
@@ -2404,6 +2540,13 @@ pyhsl_to_rgb(PyObject *self, PyObject *args)
 	r,g,b,a);
 }
 
+static void
+pyarena_delete(PyObject *pyarena)
+{
+    arena_t arena = arena_fromcapsule(pyarena);
+    arena_delete(arena);
+}
+
 static PyObject *
 pyarena_create(PyObject *self, PyObject *args)
 {
@@ -2424,8 +2567,7 @@ pyarena_create(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    PyObject *pyarena = PyCObject_FromVoidPtr(
-	arena,(void (*)(void *))arena_delete);
+    PyObject *pyarena = PyCapsule_New(arena, OBTYPE_ARENA, pyarena_delete);
 
     return pyarena;
 }
@@ -2452,7 +2594,7 @@ pyarena_alloc(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    arena_t arena = (arena_t)PyCObject_AsVoidPtr(pyArena);
+    arena_t arena = arena_fromcapsule(pyArena);
     if(arena == NULL)
     {
 	return NULL;
@@ -2468,7 +2610,7 @@ pyarena_alloc(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    PyObject *pyAlloc = PyCObject_FromVoidPtr(allocation, NULL);
+    PyObject *pyAlloc = PyCapsule_New(allocation, NULL, NULL);
 
     return pyAlloc;
 }
@@ -2489,7 +2631,7 @@ pyarray_get(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    void *allocation = PyCObject_AsVoidPtr(pyAllocation);
+    void *allocation = PyCapsule_GetPointer(pyAllocation, NULL);
     if(allocation == NULL)
     {
 	return NULL;
@@ -2523,7 +2665,7 @@ pyarray_set(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    void *allocation = PyCObject_AsVoidPtr(pyAllocation);
+    void *allocation = PyCapsule_GetPointer(pyAllocation, NULL);
     if(allocation == NULL)
     {
 	return NULL;
@@ -2537,7 +2679,7 @@ pyarray_set(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef PfMethods[] = {
-    {"pf_load",  pf_load, METH_VARARGS, 
+    {"pf_load",  module_load, METH_VARARGS, 
      "Load a new point function shared library"},
     {"pf_create", pf_create, METH_VARARGS,
      "Create a new point function"},
@@ -2652,6 +2794,18 @@ static PyMethodDef PfMethods[] = {
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "fract4dc",
+    NULL,
+    sizeof(struct module_state),
+    PfMethods,
+    NULL,
+    NULL, // extension_traverse
+    NULL, // extension_clear
+    NULL
+};
+
 extern "C" PyMODINIT_FUNC
 #ifdef USE_GMP
 initfract4dcgmp(void)
@@ -2659,11 +2813,9 @@ initfract4dcgmp(void)
 initfract4dc(void)
 #endif
 {
-    pymod = Py_InitModule(MODULE_NAME, PfMethods);
+    PyObject *pymod = PyModule_Create(&moduledef);
 
-#ifdef THREADS
     PyEval_InitThreads();
-#endif
 
 #ifdef USE_GMP
     mpf_t x;
@@ -2712,4 +2864,8 @@ initfract4dc(void)
     PyModule_AddIntConstant(pymod, "MESSAGE_TYPE_PIXEL", PIXEL);
     PyModule_AddIntConstant(pymod, "MESSAGE_TYPE_TOLERANCE", TOLERANCE);
     PyModule_AddIntConstant(pymod, "MESSAGE_TYPE_STATS", STATS);
+
+    ensure_cmap_loaded(pymod);
+    
+    return pymod;
 }
