@@ -314,7 +314,7 @@ def canBeCast(t1,t2):
 # a convenient place to put this.
 class TranslationError(Exception):
     def __init__(self,msg):
-        exceptions.Exception.__init__(self,msg)
+        Exception.__init__(self,msg)
         self.msg = msg
 
 class InternalCompilerError(TranslationError):
