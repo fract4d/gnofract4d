@@ -35,6 +35,10 @@ class Node:
         else:
             str += "]"
         return str
+
+    def _ordLeaf(self):
+        if self.leaf == None: return 0
+        return self.leaf
     
     def __iter__(self):
         return NodeIter(self)
@@ -47,11 +51,14 @@ class Node:
         return None
     
     def DeepCmp(self,other):
+        if not self: return -1
+        if not other: return 1
+        
         if self.type < other.type: return -1
         if self.type > other.type: return 1
 
-        if self.leaf < other.leaf: return -1
-        if self.leaf > other.leaf: return 1
+        if self._ordLeaf() < other._ordLeaf(): return -1
+        if self._ordLeaf() > other._ordLeaf(): return 1
         
         #if len(self.children) < len(other.children): return -1
         #if len(self.children) > len(other.children): return 1
@@ -229,9 +236,7 @@ def Error2(str, pos):
                 "%d: Syntax error: unexpected '%s' " % (pos,str))
 
 def Error(type, value, pos):
-    # get complaints about NEWLINE tokens on right line
     if type == "NEWLINE":
-        pos -= 1
         return Node("error", pos, None,
                     "%d: Syntax error: unexpected newline" % pos)
 

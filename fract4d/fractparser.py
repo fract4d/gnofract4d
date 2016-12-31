@@ -23,7 +23,7 @@ precedence = (
 )
 
 def formatError(t,i):
-     if(isinstance(t[i],bytes)):
+     if(isinstance(t[i],str)):
           e = [absyn.Error2(t[i],t.lineno(i))]
      else:
           e = [absyn.Error(t[i].type, t[i].value, t[i].lineno)]

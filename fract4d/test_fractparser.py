@@ -1008,7 +1008,6 @@ default:
         
     def assertIsBadFormula(self,s,message,line):
         t1 = self.parse(s)
-        #print t1.pretty()
         self.assertTrue(absyn.CheckTree(t1), "invalid tree created")
         formula = t1.children[0]
         self.assertTrue(formula.type == "formula")
@@ -1028,6 +1027,8 @@ default:
     def assertParsesEqual(self, s1, s2):
         t1 = self.parse(self.makeMinimalFormula(s1))
         t2 = self.parse(self.makeMinimalFormula(s2))
+        #print(t1.pretty())
+        #print(t2.pretty())
         self.assertTreesEqual(t1,t2)
         
     def assertTreesEqual(self, t1, t2):

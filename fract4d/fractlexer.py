@@ -226,7 +226,7 @@ t_ignore  = ' \t\r'
 
 # Error handling rule
 def t_error(t):
-    #print "Illegal character '%s' on line %d" % (t.value[0], t.lineno)
+    #print("Illegal character '%s' on line %d" % (t.value[0], t.lexer.lineno))
     t.value = t.value[0]
     t.lexer.skip(1)
     return t
