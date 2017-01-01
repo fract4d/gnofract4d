@@ -194,7 +194,8 @@ def t_ID(t):
     r'[@#]?[a-zA-Z_][a-zA-Z0-9_]*'
     global lookup
     lookfor = t.value.lower() # case insensitive lookup
-    if lookfor in lookup: t.type = lookup[lookfor]
+    if lookfor in lookup:
+        t.type = lookup[lookfor]
     return t
     
 # don't produce tokens for newlines preceded by \

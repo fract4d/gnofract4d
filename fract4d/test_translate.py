@@ -27,6 +27,7 @@ class Test(testbase.TestBase):
     def translate(self,s,prefix="f",dump=None):
         fractlexer.lexer.lineno = 1
         pt = self.parser.parse(s)
+        #print(pt.pretty(0,True))
         return translate.T(pt.children[0], prefix, dump)
 
     def translatecf(self,s,dump=None):
@@ -848,6 +849,17 @@ default:
         default:
         bool param x
             default = True
+        endparam        
+        }''')
+
+        self.assertNoErrors(t)
+        self.assertEqual(True, t.symbols["@x"].default.value)
+
+    def testLowerCaseDefaultBool(self):
+        t = self.translate('''t {
+        default:
+        bool param x
+            default = true
         endparam        
         }''')
 

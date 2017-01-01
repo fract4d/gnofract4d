@@ -192,7 +192,7 @@ def p_empty(t):
 
 def p_stm_decl_array(t):
     'stm : TYPE ID LARRAY arglist RARRAY'
-    t[0] = absyn.DeclArray(t[1], t[2], t[4], t.lineno(0))
+    t[0] = absyn.DeclArray(t[1], t[2], t[4], t.lineno(3))
 
 def p_stm_decl(t):
     'stm : TYPE ID'

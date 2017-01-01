@@ -32,7 +32,7 @@ class T:
                     print("<Error printing child '%s'>" % child)
                     raise
                 
-        return string.join(r,"")    
+        return "".join(r)    
     def __iter__(self):
         return absyn.NodeIter(self)
     def pretty(self,depth=0):

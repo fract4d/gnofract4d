@@ -205,7 +205,7 @@ class TestBase(unittest.TestCase):
                 if isinstance(node,ir.T):
                     ob = node
                     dt = node.datatype
-                elif isinstance(node,bytes):
+                elif isinstance(node,str):
                     try:
                         sym = t.symbols[node]
                     except KeyError as err:

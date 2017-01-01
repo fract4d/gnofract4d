@@ -745,8 +745,12 @@ class T(UserDict):
 
     def __contains__(self, key):
         k = mangle(key)
-        val = self.data.get(k, None)
+        val = self.data.get(k,None)
+        if val == None:
+            val = self.default_dict.get(k,None)
+
         return val
+
     
     def __getitem__(self,key):
         k = mangle(key)

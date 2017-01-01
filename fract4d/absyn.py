@@ -22,15 +22,17 @@ class Node:
     def __str__(self):
         return "[%s : %s]" % (self.type , self.leaf)
     
-    def pretty(self,depth=0):
+    def pretty(self,depth=0,pos=False):
         str = " " * depth + "[%s : %s" % (self.type , self.leaf)
+        if pos:
+            str += "<%s>" % self.pos
         if self.datatype != None:
             str += "(%s)" % fracttypes.strOfType(self.datatype)
         if self.children:
             str += "\n"
             for child in self.children:
                 assert(isinstance(child,Node))
-                str += child.pretty(depth+1) + "\n"
+                str += child.pretty(depth+1,pos) + "\n"
             str += " " * depth + "]" 
         else:
             str += "]"
@@ -143,7 +145,7 @@ def Number(n,pos):
     return Node("const", pos, None, n, t)
 
 def Const(n,pos):
-    if isinstance(n,bytes):
+    if isinstance(n,str):
         n = n.lower()
     return Node("const", pos, None, n=="true" or n=="yes", fracttypes.Bool)
 

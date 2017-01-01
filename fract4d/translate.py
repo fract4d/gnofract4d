@@ -670,7 +670,7 @@ class TBase:
             raise TranslationError(
                 "%s: '%s' is not a function and cannot be called" % (pos, name))
         
-    def findOp(self, func, pos, list):
+    def findOp(self, func, pos, alist):
         ' find the most appropriate overload for this op'
         try:
             overloadList = self.symbols[func]
@@ -686,7 +686,7 @@ class TBase:
         if isinstance(overloadList, fracttypes.Var):
             return self.findPseudoOp(overloadList, func, pos)
         
-        typelist = [ir.datatype for ir in list]
+        typelist = [ir.datatype for ir in alist]
         
         for ol in overloadList:
             if ol.matchesArgs(typelist):
