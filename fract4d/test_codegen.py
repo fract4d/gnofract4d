@@ -889,7 +889,7 @@ func fn1
 
         return_syms = t.output_sections["return_syms"]
         self.assertEqual("t__pfo->p[1].doubleval = t__a_fx_re;",
-                         return_syms[0].format())
+                         return_syms[1].format())
 
 
     def testStructMembers(self):

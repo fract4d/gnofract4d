@@ -652,7 +652,8 @@ extern "C" {
 
     def output_return_syms(self,ir):
         out = []
-        for (key,sym) in list(ir.symbols.items()):
+        for key in sorted(ir.symbols):
+            sym = ir.symbols[key]
             if self.symbols.is_param(key) and isinstance(sym,fracttypes.Var):
                 out += self.return_sym(sym)
 
