@@ -280,13 +280,17 @@ int main()
         
     def testPFHeader(self):
         'Check inline copy of pf.h is up-to-date'
-        pfh = open('c/pf.h').read()
-        self.assertEqual(pfh,self.codegen.pf_header)
+        pfh = open('c/pf.h')
+        header_contents = pfh.read()
+        pfh.close()
+        self.assertEqual(header_contents,self.codegen.pf_header)
 
     def testStdlibHeader(self):
         'Check inline copy of fract_stdlib.h is up-to-date'
-        pfh = open('c/fract_stdlib.h').read()
-        self.assertEqual(pfh,self.codegen.fract_stdlib_header)
+        header = open('c/fract_stdlib.h')
+        header_contents = header.read()
+        header.close()
+        self.assertEqual(header_contents,self.codegen.fract_stdlib_header)
 
     def testMatching(self):
         'test tree matching works'
@@ -1533,7 +1537,7 @@ endparam
             self.inspect_float("f_from_bf"),
             ])
         
-        results = "".join([
+        results = "\n".join([
             "t = 1",
             "f = 0",
             "c_from_bt = (1,0)",
@@ -1543,7 +1547,7 @@ endparam
             "i_from_bf = 0",
             "f_from_bt = 1",
             "f_from_bf = 0",
-            ],"\n")
+            ])
         self.assertCSays(src,"init",tests,results)
 
     def testOptimizeFlagsWork(self):
@@ -1585,11 +1589,11 @@ endparam
             self.inspect_int("zval"),
             ])
         
-        results = "".join([
+        results = "\n".join([
             "b = 1",
             "b2 = 0",
             "zval = 773",
-            ],"\n")
+            ])
         self.assertCSays(src,"init",tests,results)
 
     def testParams(self):
