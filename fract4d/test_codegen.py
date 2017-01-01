@@ -1790,11 +1790,10 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
     def atantests(self):
         tests = self.manufacture_tests("atan",cmath.atan)
 
-        print("before", tests)
-        tests[0][2] = "(-nan,-nan)" # changed in python 2.7
-        #tests[1][2] = "(nan,nan)"
-        #tests[6][2] = "(nan,-inf)" # not really sure who's right on this
-        print("after", tests)
+        #print("before", tests)
+        tests[1][2] = "(-nan,-nan)"
+        tests[6][2] = "(-nan,-inf)" # not really sure who's right on this
+        #print("after", tests)
         return tests
 
     def atanhtests(self):

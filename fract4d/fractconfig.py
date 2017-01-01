@@ -69,7 +69,7 @@ class T(configparser.ConfigParser):
             "compiler" : True
             }
 
-        configparser.ConfigParser.__init__(self)
+        configparser.ConfigParser.__init__(self,interpolation=None)
 
         self.file = os.path.expanduser(file)
         self.read(self.file)
