@@ -373,17 +373,17 @@ class Test(testbase.TestBase):
         i = 0
         for byte in fate_buf:
             d = im.get_color_index(
-                    (i % (im.FATE_SIZE * xsize)) / im.FATE_SIZE,
-                    i / (im.FATE_SIZE * xsize),
+                    (i % (im.FATE_SIZE * xsize)) // im.FATE_SIZE,
+                    i // (im.FATE_SIZE * xsize),
                     i % im.FATE_SIZE)
             
             if i % 4 == 0:
                 # no-aa
-                self.assertNotEqual(ord(byte), 255,
-                                    "pixel %d is %d" % (i,ord(byte)))
+                self.assertNotEqual(byte, 255,
+                                    "pixel %d is %d" % (i,byte))
                 self.assertNotEqual("%g" % d,"inf")
             else:
-                self.assertEqual(ord(byte), 255)
+                self.assertEqual(byte, 255)
             i+= 1
 
         self.assertPixelCount(xsize,ysize,siteobj)
@@ -448,17 +448,17 @@ class Test(testbase.TestBase):
         i = 0
         for byte in fate_buf:
             d = im.get_color_index(
-                    (i % (im.FATE_SIZE * xsize)) / im.FATE_SIZE,
-                    i / (im.FATE_SIZE * xsize),
+                    (i % (im.FATE_SIZE * xsize)) // im.FATE_SIZE,
+                    i // (im.FATE_SIZE * xsize),
                     i % im.FATE_SIZE)
             
             if i % 4 == 0:
                 # no-aa
-                self.assertNotEqual(ord(byte), 255,
-                                    "pixel %d is %d" % (i,ord(byte)))
+                self.assertNotEqual(byte, 255,
+                                    "pixel %d is %d" % (i,byte))
                 self.assertNotEqual("%g" % d,"inf")
             else:
-                self.assertEqual(ord(byte), 255)
+                self.assertEqual(byte, 255)
             i+= 1
 
         self.assertPixelCount(xsize,ysize,siteobj)
@@ -504,13 +504,13 @@ class Test(testbase.TestBase):
         i = 0
         for byte in fate_buf:
             d = im.get_color_index(
-                    (i % (im.FATE_SIZE * xsize)) / im.FATE_SIZE,
-                    i / (im.FATE_SIZE * xsize),
+                    (i % (im.FATE_SIZE * xsize)) // im.FATE_SIZE,
+                    i // (im.FATE_SIZE * xsize),
                     i % im.FATE_SIZE)
 
             self.assertNotEqual("%g" % d,"inf", "index %d is %g" % (i,d))
-            self.assertNotEqual(ord(byte), 255,
-                                "pixel %d is %d" % (i,ord(byte)))
+            self.assertNotEqual(byte, 255,
+                                "pixel %d is %d" % (i, byte))
             i+= 1
 
     def testRotMatrix(self):
@@ -782,7 +782,7 @@ class Test(testbase.TestBase):
         
         colors = []
         for i in range(256):
-            colors.append((i/255.0,(i*17)%256,255-i,i/2,i/2+127))
+            colors.append((i/255.0,(i*17)%256,255-i,i//2,i//2+127))
 
         cmap = fract4dc.cmap_create(colors)
         for i in range(256):

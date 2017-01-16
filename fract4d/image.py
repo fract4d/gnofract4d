@@ -168,11 +168,11 @@ class T:
 
     def get_all_fates(self,x,y):
         pos = self.pos(x,y,T.FATE_SIZE)
-        return list(map(ord,list(self.fate_buf[pos:pos+T.FATE_SIZE])))
+        return list(self.fate_buf[pos:pos+T.FATE_SIZE])
 
     def get_color(self,x,y):
         pos = self.pos(x,y,T.COL_SIZE)
-        return list(map(ord,list(self.image_buf[pos:pos+T.COL_SIZE])))
+        return list(self.image_buf[pos:pos+T.COL_SIZE])
 
     def get_color_index(self,x,y,sub=0):
         return fract4dc.image_get_color_index(self._img,x,y,sub)
