@@ -1104,11 +1104,11 @@ blue=0.3
             self.assertWhite(buf,w-1,h-1,w)
 
             # center is black
-            self.assertBlack(buf,w/2,h/2,w)        
+            self.assertBlack(buf,w//2,h//2,w)        
 
             # and vertically symmetrical
             for x in range(w):
-                for y in range(h/2):
+                for y in range(h//2):
                     apos = (y*w+x)*3
                     bpos = ((h-y-1)*w+x)*3
                     a = buf[apos:apos+3]
@@ -1286,7 +1286,7 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
                 else:
                     # pixels on boundary should be antialiased to 25% grey
                     # because 3 subpixels are white and 1 black
-                    self.assertColor(buf,x,y,w,(255*3)/4)
+                    self.assertColor(buf,x,y,w,(255*3)//4)
 
         
     def testRecolor(self):
@@ -1311,7 +1311,7 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
                 else:
                     # pixels on boundary should be antialiased to 25% grey
                     # because 3 subpixels are white and 1 black
-                    self.assertColor(buf,x,y,w,(255*3)/4)
+                    self.assertColor(buf,x,y,w,(255*3)//4)
         
     def testDiagonalWithColorFuncs(self):
         f = fractal.T(self.compiler)
@@ -1472,9 +1472,9 @@ solids=[
 
     def assertColor(self,buf,x,y,w,c):
         off = (x+y*w)*3
-        r = ord(buf[off])
-        g = ord(buf[off+1])
-        b = ord(buf[off+2])
+        r = buf[off]
+        g = buf[off+1]
+        b = buf[off+2]
         self.assertEqual(r,c)
         self.assertEqual(g,c)
         self.assertEqual(b,c)

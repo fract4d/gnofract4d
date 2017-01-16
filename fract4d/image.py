@@ -156,7 +156,7 @@ class T:
         return fract4dc.image_buffer(self._img, x, y)
         
     def get_fate(self,x,y):
-        n = ord(self.fate_buf[self.pos(x,y,T.FATE_SIZE)])
+        n = self.fate_buf[self.pos(x,y,T.FATE_SIZE)]
         if n == T.UNKNOWN:
             return None
         elif n & T.SOLID:
