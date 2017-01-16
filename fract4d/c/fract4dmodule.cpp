@@ -2067,7 +2067,7 @@ image_writer_create(PyObject *self,PyObject *args)
 
     if(!fp)
     {
-	PyErr_SetString(PyExc_ValueError, "Bad arguments");
+	PyErr_SetFromErrnoWithFilename(PyExc_OSError, filename);
 	return NULL;
     }
     
@@ -2098,7 +2098,7 @@ image_read(PyObject *self,PyObject *args)
 
     if(!fp || !i)
     {
-	PyErr_SetString(PyExc_ValueError, "Bad arguments");
+	PyErr_SetFromErrnoWithFilename(PyExc_OSError, "filename");
 	return NULL;
     }
     

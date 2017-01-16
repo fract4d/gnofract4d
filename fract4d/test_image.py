@@ -140,9 +140,9 @@ class Test(testbase.TestBase):
         # image is [ black, white, green, red]
         im = image.T(2,2)
         buf = im.image_buffer()
-        buf[3] = buf[4] = buf[5] = chr(255) # white
-        buf[7] = chr(255) # green
-        buf[9] = chr(255) # red
+        buf[3] = buf[4] = buf[5] = 255 # white
+        buf[7] = 255 # green
+        buf[9] = 255 # red
         return im
 
     def saveTestImage(self,filename):
@@ -225,11 +225,10 @@ class Test(testbase.TestBase):
         try:
             self.saveAndCheck("no_such_dir/test.png","PNG")
             self.fail("No exception thrown")
-        except IOError as err:
+        except FileNotFoundError as err:
             self.assertEqual(
                 str(err),
-                "Unable to save image to 'no_such_dir/test.png' : " +
-                "No such file or directory")
+                "[Errno 2] No such file or directory: 'no_such_dir/test.png'")
 
     def testResize(self):
         im = image.T(10,20)
@@ -247,13 +246,13 @@ class Test(testbase.TestBase):
         (xsize,ysize) = (61,33)
         im = image.T(xsize, ysize)
         im.clear()
-        buf = im.image_buffer()
+
         fate_buf = im.fate_buffer()
         self.assertEqual(
-            list(fate_buf), [chr(im.UNKNOWN)] * im.FATE_SIZE * xsize * ysize)
+            list(fate_buf), [im.UNKNOWN] * im.FATE_SIZE * xsize * ysize)
 
-        bytes = list(map(ord,list(buf)))
-        self.assertEqual(bytes, [0] * xsize * ysize * im.COL_SIZE)
+        buf = im.image_buffer()
+        self.assertEqual(list(buf), [0] * xsize * ysize * im.COL_SIZE)
 
     def testBufferBounds(self):
         im = image.T(40,30)
@@ -281,9 +280,9 @@ class Test(testbase.TestBase):
         self.assertEqual((0,0,0,1.0), rgba)
 
         buf = im.image_buffer()
-        buf[0] = chr(20)
-        buf[1] = chr(80)
-        buf[2] = chr(160)
+        buf[0] = 20
+        buf[1] = 80
+        buf[2] = 160
 
         rgba = im.lookup(0,0)
         self.assertEqual((20.0/255.0,80.0/255.0,160.0/255.0,1.0), rgba)
@@ -307,12 +306,12 @@ class Test(testbase.TestBase):
         self.assertEqual((0,0,0,1.0), rgba)
 
         buf = im.image_buffer()
-        buf[0] = chr(0)
-        buf[1] = chr(0)
-        buf[2] = chr(0)
-        buf[3] = chr(255)
-        buf[4] = chr(255)
-        buf[5] = chr(255)
+        buf[0] = 0
+        buf[1] = 0
+        buf[2] = 0
+        buf[3] = 255
+        buf[4] = 255
+        buf[5] = 255
 
         self.assertEqual(self.grey_pixel(0.5), im.lookup(0,0))
         self.assertEqual(self.grey_pixel(0.0), im.lookup(0.25,0.25))
@@ -321,18 +320,18 @@ class Test(testbase.TestBase):
     def testLookupFourPixels(self):
         im = image.T(2,2)
         buf = im.image_buffer()
-        buf[0] = chr(0) # top left = black
-        buf[1] = chr(0)
-        buf[2] = chr(0)
-        buf[3] = chr(255) # top right = red
-        buf[4] = chr(0)
-        buf[5] = chr(0)
-        buf[6] = chr(0) # bottom left = green
-        buf[7] = chr(255)
-        buf[8] = chr(0)
-        buf[9] = chr(255) # bottom right = white
-        buf[10] = chr(255)
-        buf[11] = chr(255)
+        buf[0] = 0 # top left = black
+        buf[1] = 0
+        buf[2] = 0
+        buf[3] = 255 # top right = red
+        buf[4] = 0
+        buf[5] = 0
+        buf[6] = 0 # bottom left = green
+        buf[7] = 255
+        buf[8] = 0
+        buf[9] = 255 # bottom right = white
+        buf[10] = 255
+        buf[11] = 255
 
         # halfway across middle of top pixel = half red
         self.assertEqual((0.5,0.0,0.0,1.0), im.lookup(0.5,0.25))
@@ -356,10 +355,8 @@ class Test(testbase.TestBase):
         buf1 = im1.image_buffer()
         buf2 = im2.image_buffer()
 
-        for i in range(len(buf1)):
-            self.assertEqual(
-                buf1[i], buf2[i], "Difference at %d: %d != %d" % \
-                (i, ord(buf1[i]), ord(buf2[i])))
+        self.assertEqual(buf1, buf2)
+
 def suite():
     return unittest.makeSuite(Test,'test')
 
