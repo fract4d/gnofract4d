@@ -34,7 +34,7 @@ class TypeInfo:
         else:
             ff = self.compiler.get_file(fname)
             self.formulas = ff.get_formula_names(self.exclude)
-            self.formulas.sort(stricmp)
+            self.formulas.sort(key=lambda s : s.lower())
         self.fname = fname
         self.set_formula(None)
         self.file_changed()
