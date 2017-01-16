@@ -99,7 +99,6 @@ class T:
         ft = self.file_type(name)
         self.writer = fract4dc.image_writer_create(self._img, name, ft)
         fract4dc.image_save_header(self.writer)
-        return file
 
     def save_tile(self):
         if None == self.writer:

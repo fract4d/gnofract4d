@@ -1241,23 +1241,23 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         # check that result is horizontally symmetrical
         buf = im.image_buffer(0,0)
         for y in range(h):
-            line = list(map(ord,list(buf[y*w*3:(y*w+w)*3])))
+            line = buf[y*w*3:(y*w+w)*3].tolist()
             line.reverse()
             revline = line
-            line = list(map(ord,list(buf[y*w*3:(y*w+w)*3])))
+            line = buf[y*w*3:(y*w+w)*3].tolist()
             for x in range(w):
                 a = line[x*3:(x+1)*3]
                 b = revline[x*3:(x+1)*3]
 
                 if a != b:
                     fate_buf = im.fate_buffer(0,y)
-                    print(list(map(ord,list(fate_buf[0:w]))))
+                    print(fate_buf[0:w].tolist())
                     self.assertEqual(a,b,"%s != %s, %d != %d" % (a,b,x,w-x))
 
 
         # and vertically symmetrical
         for x in range(w):
-            for y in range(h/2):
+            for y in range(h//2):
                 apos = (y*w+x)*3
                 bpos = ((h-y-1)*w+x)*3
                 a = buf[apos:apos+3]
