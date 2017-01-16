@@ -396,8 +396,10 @@ class Test(unittest.TestCase):
 
     def testLoadGradientFunc(self):
         f = fractal.T(self.compiler)
-        f.loadFctFile(open("../testdata/gradient_func.fct"))
-
+        file = open("../testdata/gradient_func.fct")
+        f.loadFctFile(file)
+        file.close()
+        
         f.compile()
         (w,h) = (40,30)
         im = image.T(w,h)
@@ -615,7 +617,9 @@ colorlist=[
         boolean param can\'t be loaded by 2.8'''
 
         f = fractal.T(self.compiler)
-        f.loadFctFile(open("../testdata/chainsoflight.fct"))
+        file = open("../testdata/chainsoflight.fct")
+        f.loadFctFile(file)
+        file.close()
         self.assertEqual(f.periodicity, True)
         
     def testSaveFlag(self):
@@ -1506,6 +1510,7 @@ solids=[
         file = open("../testdata/test.fct")
         f = fractal.T(self.compiler);
         f.loadFctFile(file)
+        file.close()
         f.compile()
         im = image.T(64,48)
         f.draw(im)
@@ -1560,7 +1565,9 @@ solids=[
         '''There was a bug where copy() would reset func values.
         Check for recurrence'''
         f = fractal.T(self.compiler)
-        f.loadFctFile(open("../testdata/julfn.fct"))
+        file = open("../testdata/julfn.fct")
+        f.loadFctFile(file)
+        file.close()
         f.forms[0].set_named_item("@fn1","sinh")
 
         self.assertEqual(f.forms[0].get_func_value("@fn1"),"sinh")
@@ -1596,7 +1603,9 @@ solids=[
     def testLoadGivesCorrectParameters(self):
         f = fractal.T(self.compiler)
         self.assertEqual(len(f.forms[0].formula.symbols.parameters()),3)
-        f.loadFctFile(open("../testdata/elfglow.fct"))
+        file = open("../testdata/elfglow.fct")
+        f.loadFctFile(file)
+        file.close()
         self.assertEqual(len(f.forms[0].formula.symbols.parameters()),5)
         
     def testFractalBadness(self):
@@ -1611,7 +1620,9 @@ solids=[
 
     def testTumorCrash(self):
         f = fractal.T(self.compiler)
-        f.loadFctFile(open("../testdata/tumor.fct"))
+        file = open("../testdata/tumor.fct")
+        f.loadFctFile(file)
+        file.close()
         f.compile()
         f.set_formula("gf4d.frm", "Buffalo")
         f.compile()
