@@ -65,7 +65,8 @@ class T:
             if compressed:
                 if uncompressed_re.match(line):
                     compressed = False
-                    dc = base64.decodestring("".join(data))
+                    bytes = base64.b64decode("".join(data))
+                    dc = bytes.decode("latin_1")
                     #chars = [ "%x" % ord(ch) for ch in dc]
                     #out_lines.append("".join(chars))
                     out_lines.append(dc)
