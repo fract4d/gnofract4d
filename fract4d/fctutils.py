@@ -71,8 +71,8 @@ class T:
 
     def decompress(self,b64string):
         # decompress remaining codes
-        bytes = base64.decodestring(b64string)
-        embedded_file = gzip.GzipFile(None,"rb",9,io.StringIO(bytes))
+        bytes = base64.b64decode(b64string.encode("latin_1"))
+        embedded_file = io.TextIOWrapper(gzip.GzipFile(None,"rb",9,io.BytesIO(bytes)))
         self.load(embedded_file)
 
     def nameval(self,line):
@@ -84,14 +84,17 @@ class T:
             val = x[1]
         return (x[0],val)
 
-class Compressor(gzip.GzipFile):
+class Compressor(io.TextIOWrapper):
     def __init__(self):
-        self.sio = io.StringIO("")
-        gzip.GzipFile.__init__(self,None,"wb",9,self.sio)
+        self.sio = io.BytesIO()
+        self.gzipfile = gzip.GzipFile(None,"w",9,self.sio)
+        io.TextIOWrapper.__init__(self,self.gzipfile)
 
     def getvalue(self):
-        b64 = base64.encodestring(self.sio.getvalue())
-        return "compressed=[\n%s\n]" % b64 
+        zippedval = self.sio.getvalue()
+        b64 = base64.encodebytes(zippedval)
+        val = "compressed=[\n%s\n]" % b64.decode("latin_1")
+        return val
     
 class ParamBag(T):
     "A class for reading in and holding a bag of name-value pairs"
