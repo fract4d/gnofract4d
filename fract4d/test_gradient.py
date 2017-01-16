@@ -322,7 +322,7 @@ opacity:
             fx = oracle(x,midpoint)
 
             self.assertTrue(0.0 <= fx <= 1.0,
-                            "dubious value %f for %x" % (fx,x))
+                            "dubious value %f for %f" % (fx,x))
             
             col = g.get_color_at(x)
             expected = [fx,fx,fx,1.0]
@@ -675,7 +675,7 @@ opacity:
 
     def testLoadCS(self):
         g = gradient.Gradient()
-        f = open("../testdata/test.cs")
+        f = open("../testdata/test.cs","rb")
 
         g.load_cs(f)
         self.assertEqual(8,len(g.segments))
@@ -685,7 +685,8 @@ opacity:
 
         f.seek(0)
         g.load(f)
-
+        f.close()
+        
     def testSetColor(self):
         g = gradient.Gradient()
         self.assertEqual(True, g.set_color(0,True,0.2,0.7,0.9))

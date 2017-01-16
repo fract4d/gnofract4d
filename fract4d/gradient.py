@@ -370,7 +370,7 @@ class Gradient:
             line = f.readline()
             if line == "GIMP Gradient\n":
                 return self.load_gimp_gradient(f)
-            elif line[:2] == "\x03\x00":
+            elif line[:2] == b'\x03\x00':
                 # a .cs file, we suspect
                 f.seek(0)
                 return self.load_cs(f)
