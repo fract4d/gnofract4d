@@ -44,9 +44,9 @@ class T:
         return os.path.join(self.dir, "fract4d_%s%s" % (name, ext))
 
     def hashcode(self,s,*extras):
-        hash = hashlib.md5(s)
+        hash = hashlib.md5(s.encode("utf-8"))
         for x in extras:
-            hash.update(x)
+            hash.update(x.encode("utf-8"))
 
         return hash.hexdigest()
 

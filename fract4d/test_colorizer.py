@@ -35,8 +35,10 @@ and most of them are included in the allmaps file.""")
 
     def testReadMapFile(self):
         c = colorizer.T()
-        c.parse_map_file(open("../maps/4zebbowx.map"))
-
+        file = open("../maps/4zebbowx.map")
+        c.parse_map_file(file)
+        file.close()
+        
         self.assertEqual(len(c.gradient.segments), 255)        
 
     def testSolids(self):

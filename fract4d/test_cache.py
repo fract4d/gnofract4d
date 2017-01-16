@@ -55,8 +55,9 @@ class Test(testbase.TestBase):
     def testAddFile(self):
         c = cache.T("experiment")
         c.init()
-        f = open("experiment/file1.txt","w").write("fish")
-
+        f = open("experiment/file1.txt","w")
+        f.write("fish")
+        f.close()
         self.readall_called = False
         
         contents = c.getcontents("experiment/file1.txt", self.readall)        
@@ -72,8 +73,10 @@ class Test(testbase.TestBase):
     def testUpdateFileOnDisk(self):
         c = cache.T("experiment")
         c.init()
-        f = open("experiment/file1.txt","w").write("fish")
-
+        f = open("experiment/file1.txt","w")
+        f.write("fish")
+        f.close()
+        
         self.readall_called = False
         
         contents = c.getcontents("experiment/file1.txt", self.readall)        
@@ -83,8 +86,10 @@ class Test(testbase.TestBase):
         self.readall_called = False
         time.sleep(1.0) # ensure filesystem will have a different time
         
-        open("experiment/file1.txt","w").write("wibble")
-
+        f = open("experiment/file1.txt","w")
+        f.write("wibble")
+        f.close()
+        
         contents = c.getcontents("experiment/file1.txt", self.readall)
         self.assertEqual("wibble",contents)
         self.assertTrue(
@@ -93,8 +98,10 @@ class Test(testbase.TestBase):
     def disabled_testPickleFile(self):
         c = cache.T("experiment")
         c.init()
-        f = open("experiment/file1.txt","w").write("fish")
-
+        f = open("experiment/file1.txt","w")
+        f.write("fish")
+        f.close()
+        
         contents = c.getcontents("experiment/file1.txt", self.readall)        
         self.assertEqual(
             "experiment/0de8fb66544e4ae95935a50ab783fdba.pkl",
