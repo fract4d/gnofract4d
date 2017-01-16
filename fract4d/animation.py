@@ -28,7 +28,7 @@ def getAttrOrElse(attrs, name):
 
 class KeyFrame:
     def __init__(self,filename,duration,stop,int_type,flags=(0,0,0,0,0,0)):
-        self.filename = filename.encode()
+        self.filename = filename
         self.duration = duration
         self.stop = stop
         self.int_type = int_type
