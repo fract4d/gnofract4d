@@ -112,7 +112,8 @@ class T(fctutils.T):
             mapfile = open(fname)
 
         self.parse_map_file(mapfile)
-
+        mapfile.close()
+        
     def parse_map_file(self,mapfile, maxdiff=0):
         x = mapfile.tell()
         try:

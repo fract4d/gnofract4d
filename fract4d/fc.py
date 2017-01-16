@@ -460,7 +460,9 @@ class Compiler:
     def get_gradient(self, filename, formname):
         g = gradient.Gradient()
         if formname == None:
-            g.load(open(self.find_file(filename, 3))) # FIXME
+            file = open(self.find_file(filename, 3))
+            g.load(file)
+            file.close()
         else:
             compiled_gradient = self.get_formula(filename,formname)
             g.load_ugr(compiled_gradient)

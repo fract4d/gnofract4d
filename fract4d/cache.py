@@ -78,9 +78,11 @@ class T:
         if tso:            
             if tso.time == mtime:
                 return tso.obj
-        
-        val = parser(open(file))
 
+        f = open(file)
+        val = parser(f)
+        f.close()
+        
         hashname = self.makePickleName(file)
         #self.createPickledFile(hashname,val)
         self.files[file] = TimeStampedObject(val,mtime,hashname)
