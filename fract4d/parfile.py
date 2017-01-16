@@ -32,7 +32,7 @@ def parse(file,f):
         
 def parse_params(val,f):
     paramlist = val.split("/")
-    l = len(paramlist)/2
+    l = len(paramlist)//2
     for i in range(l):
         (re,im) = (paramlist[i*2],paramlist[i*2+1])
         name = "@p%d" % (i+1)

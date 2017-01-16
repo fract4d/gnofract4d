@@ -79,7 +79,6 @@ default:
 
     def testBadChars(self):
         tokens = self.tokensFromString("$ hello ~\n ` ' goodbye")
-        print(tokens)
         self.assertTrue(tokens[0].type == "error" and tokens[0].value == "$")
         self.assertEqual(tokens[4].type, "error")
         self.assertEqual(tokens[4].value, "`")

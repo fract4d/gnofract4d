@@ -197,7 +197,11 @@ class T(configparser.ConfigParser):
         pass
             
     def save(self):
-        self.write(open(self.file,"w"))        
+        f = open(self.file,"w")
+        try:
+            self.write(f)
+        finally:
+            f.close()
 
 class DarwinConfig(T):
     def __init__(self,file):

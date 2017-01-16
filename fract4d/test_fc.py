@@ -264,7 +264,6 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
 
     def testGetFormulaText(self):
         t = self.compiler.get_formula_text("gf4d.frm","Mandelbrot")
-        print(t)
         self.assertTrue(t.startswith("Mandelbrot {"))
 
 def suite():

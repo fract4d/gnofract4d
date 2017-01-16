@@ -485,7 +485,8 @@ class Compiler:
         return (file,formula)
     
     def clear_cache(self):
-        self.cache.clear()
+        if self.cache:
+            self.cache.clear()
 
     def __del__(self):
         if not self.leave_dirty:

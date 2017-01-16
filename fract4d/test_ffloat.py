@@ -10,7 +10,7 @@ import ffloat
 from ffloat import Float, PrecisionError
 
 if ffloat.has_bigmath:
-    import gmpy
+    import gmpy2
 
 save_has_bigmath = ffloat.has_bigmath
 

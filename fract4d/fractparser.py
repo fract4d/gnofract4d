@@ -26,7 +26,7 @@ def formatError(t,i):
      if(isinstance(t[i],str)):
           e = [absyn.Error2(t[i],t.lineno(i))]
      else:
-          e = [absyn.Error(t[i].type, t[i].value, t[i].lineno)]
+          e = [absyn.Error(t[i].type, t[i].value, t.lineno(i))]
      return e
 
 def p_file(t):
@@ -49,10 +49,12 @@ def p_formlist_empty(t):
 
 def p_formid(t):
      'formid : FORM_ID'
+     t.set_lineno(0,t.lineno(1))
      t[0] = t[1]
      
 def p_formula(t):
      'formula : formid formbody'
+     #print("formula %s at %s" % (t[1], t.lineno(1)))
      t[0] = absyn.Formula(t[1],t[2],t.lineno(1))
 
 def p_formula_err(t):

@@ -3,7 +3,7 @@
 has_bigmath = False
 
 try:
-    import gmpy
+    import gmpy2
     has_bigmath = True
 except:
     pass
