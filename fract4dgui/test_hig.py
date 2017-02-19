@@ -6,8 +6,8 @@ import math
 import gettext
 import os
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 from . import hig
 
 os.environ.setdefault('LANG', 'en')
@@ -27,9 +27,9 @@ class MockIgnoreInfo:
     def is_ignore_suggested(self):
         return self.suggest_ignore
 
-class MockDialog(gtk.Dialog,hig.MessagePopper):
+class MockDialog(Gtk.Dialog,hig.MessagePopper):
     def __init__(self):
-        gtk.Dialog.__init__(
+        GObject.GObject.__init__(
             self,"Title",None, 0, ())
         hig.MessagePopper.__init__(self)
         
@@ -41,20 +41,20 @@ class Test(unittest.TestCase):
         pass
 
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testCreate(self):
-        d = hig.Alert(image=gtk.STOCK_DIALOG_INFO,primary="Hello!")
+        d = hig.Alert(image=Gtk.STOCK_DIALOG_INFO,primary="Hello!")
         self.assertNotEqual(d,None)
 
         self.runAndDismiss(d)
 
         d = hig.Alert(
-            image=gtk.image_new_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DIALOG),
+            image=Gtk.Image.new_from_stock(Gtk.STOCK_DIALOG_ERROR, Gtk.IconSize.DIALOG),
             primary="Oh no!",
             secondary="A terrible thing has happened")
 
@@ -98,14 +98,14 @@ class Test(unittest.TestCase):
 
     def runAndDismiss(self,d):
         def dismiss():
-            d.response(gtk.RESPONSE_ACCEPT)
+            d.response(Gtk.ResponseType.ACCEPT)
             return False
 
         # increase timeout to see what dialogs look like
         try:
-            gobject.timeout_add(10,dismiss)
+            GObject.timeout_add(10,dismiss)
         except AttributeError:
-            gtk.timeout_add(10,dismiss)
+            Gtk.timeout_add(10,dismiss)
         r = d.run()
         d.destroy()
         
@@ -131,10 +131,10 @@ class Test(unittest.TestCase):
         ii = MockIgnoreInfo(False,True)
         
         d = hig.Alert(            
-            image=gtk.STOCK_DIALOG_INFO,
+            image=Gtk.STOCK_DIALOG_INFO,
             primary="Foo",
             secondary="Bar",
-            buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT),
+            buttons=(Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT),
             ignore=ii)
 
         self.assertEqual(ii.is_ignored(), False)

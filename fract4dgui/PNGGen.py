@@ -5,8 +5,8 @@
 
 
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 import re
 import math
 import sys
@@ -19,21 +19,21 @@ from fract4d import fractal,fracttypes, animation
 running=False
 thread_error=False
 
-class PNGGeneration(gtk.Dialog,hig.MessagePopper):
+class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
     def __init__(self,animation,compiler):
-        gtk.Dialog.__init__(self,
+        GObject.GObject.__init__(self,
             "Generating images...",None,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL))
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL))
 
         hig.MessagePopper.__init__(self)
-        self.lbl_image=gtk.Label("Current image progress")
+        self.lbl_image=Gtk.Label(label="Current image progress")
         self.vbox.pack_start(self.lbl_image,True,True,0)
-        self.pbar_image = gtk.ProgressBar()
+        self.pbar_image = Gtk.ProgressBar()
         self.vbox.pack_start(self.pbar_image,True,True,0)
-        self.lbl_overall=gtk.Label("Overall progress")
+        self.lbl_overall=Gtk.Label(label="Overall progress")
         self.vbox.pack_start(self.lbl_overall,True,True,0)
-        self.pbar_overall = gtk.ProgressBar()
+        self.pbar_overall = Gtk.ProgressBar()
         self.vbox.pack_start(self.pbar_overall,True,True,0)
         self.set_geometry_hints(None,min_aspect=3.5,max_aspect=3.5)
         self.anim=animation
@@ -84,7 +84,7 @@ class PNGGeneration(gtk.Dialog,hig.MessagePopper):
         filelist = self.anim.create_list()
 	for f in filelist:		
             if os.path.exists(f):
-                gtk.threads_enter()
+                Gtk.threads_enter()
                 try:
 		    folder_png = self.anim.get_png_dir()
                     response = self.ask_question(
@@ -93,12 +93,12 @@ class PNGGeneration(gtk.Dialog,hig.MessagePopper):
 
                 except Exception as err:
                     print(err)
-		    gtk.threads_leave()
+		    Gtk.threads_leave()
                     raise
 
-		gtk.threads_leave()
+		Gtk.threads_leave()
 		    
-                if response==gtk.RESPONSE_ACCEPT:
+                if response==Gtk.ResponseType.ACCEPT:
                     create=False
                 else:
                     create=True
@@ -109,15 +109,15 @@ class PNGGeneration(gtk.Dialog,hig.MessagePopper):
     def show_error(self,message,secondary):
         running=False
         self.error=True
-        gtk.gdk.threads_enter()
+        Gdk.threads_enter()
         error_dlg = hig.ErrorAlert(
             parent=self,
             primary=message,
             secondary=secondary)
         error_dlg.run()
         error_dlg.destroy()
-        gtk.gdk.threads_leave()
-        event = gtk.gdk.Event(gtk.gdk.DELETE)
+        Gdk.threads_leave()
+        event = Gdk.Event(Gdk.DELETE)
         self.emit('delete_event', event)
 
     def show(self):
@@ -126,9 +126,9 @@ class PNGGeneration(gtk.Dialog,hig.MessagePopper):
         running=True
         self.error=False
         task=self.generate_png()
-        gobject.idle_add(task.__next__)
+        GObject.idle_add(task.__next__)
         response = self.run()
-        if response != gtk.RESPONSE_CANCEL:
+        if response != Gtk.ResponseType.CANCEL:
             if running==True: #destroy by user
                 running=False
                 self.destroy()

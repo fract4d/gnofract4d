@@ -1,8 +1,8 @@
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 
-class T(gtk.Adjustment):
+class T(Gtk.Adjustment):
     def __init__(self):
-        gtk.Adjustment.__init__(self)
+        GObject.GObject.__init__(self)
         

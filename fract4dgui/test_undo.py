@@ -6,7 +6,7 @@ import unittest
 import copy
 import math
 
-import gtk
+from gi.repository import Gtk
 
 from . import undo
 
@@ -22,11 +22,11 @@ class UndoTest(unittest.TestCase):
         pass
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def assertUndoStatus(self,undoer,should_undo,should_redo):
         self.assertEqual(undoer.can_undo(),should_undo)

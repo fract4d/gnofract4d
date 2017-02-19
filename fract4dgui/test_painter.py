@@ -8,7 +8,7 @@ import math
 import os
 import sys
 
-import gtk
+from gi.repository import Gtk
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
@@ -35,11 +35,11 @@ class Test(unittest.TestCase):
         pass
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testPaintOnUnknown(self):
         self.assertEqual(True, self.f.paint_mode)

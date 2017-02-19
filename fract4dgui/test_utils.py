@@ -8,7 +8,7 @@ import os
 import subprocess
 import warnings
 
-import gtk
+from gi.repository import Gtk
 
 sys.path.insert(1, "..")
 
@@ -66,15 +66,15 @@ class Test(unittest.TestCase):
         chooser.set_preview_widget_active(active)
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def runAndDismiss(self,d, time=1):
         def dismiss():
-            d.response(gtk.RESPONSE_ACCEPT)
+            d.response(Gtk.ResponseType.ACCEPT)
             d.hide()
             return False
 

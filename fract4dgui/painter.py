@@ -1,6 +1,6 @@
 # GUI for painting colors onto the fractal
 
-import gtk
+from gi.repository import Gtk
 
 from . import dialog
 from . import browser
@@ -20,15 +20,15 @@ class PainterDialog(dialog.T):
             self,
             _("Painter"),
             main_window,
-            gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+            Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
 
         self.main_window = main_window
         self.f = f
-        self.paint_toggle = gtk.ToggleButton(_("Painting"))
+        self.paint_toggle = Gtk.ToggleButton(_("Painting"))
         self.paint_toggle.set_active(True)
         self.paint_toggle.connect('toggled',self.onChangePaintMode)
-        self.csel = gtk.ColorSelection()
+        self.csel = Gtk.ColorSelection()
         self.vbox.add(self.csel)
         self.vbox.add(self.paint_toggle)
         self.vbox.show_all()
@@ -38,8 +38,8 @@ class PainterDialog(dialog.T):
         self.f.set_paint_mode(self.paint_toggle.get_active(), self.csel)
         
     def onResponse(self,widget,id):
-        if id == gtk.RESPONSE_CLOSE or \
-               id == gtk.RESPONSE_NONE or \
-               id == gtk.RESPONSE_DELETE_EVENT:
+        if id == Gtk.ResponseType.CLOSE or \
+               id == Gtk.ResponseType.NONE or \
+               id == Gtk.ResponseType.DELETE_EVENT:
             self.hide()
             self.f.set_paint_mode(False,None) 

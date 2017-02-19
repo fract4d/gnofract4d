@@ -1,6 +1,6 @@
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 
 class HistoryEntry:
     def __init__(self,redo,redo_data,undo,undo_data):
@@ -15,16 +15,16 @@ class HistoryEntry:
     def redo(self):
         self.redo_action(self.redo_data)
         
-class Sequence(gobject.GObject):
+class Sequence(GObject.GObject):
     __gsignals__ = {
         'can-undo' : (
-        gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,)),
+        GObject.SignalFlags.RUN_FIRST, None, (GObject.TYPE_BOOLEAN,)),
         'can-redo' : (
-        gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,))
+        GObject.SignalFlags.RUN_FIRST, None, (GObject.TYPE_BOOLEAN,))
         }
     
     def __init__(self):
-        gobject.GObject.__init__(self)
+        GObject.GObject.__init__(self)
         self.pos = 0 # the position after the current item
         self.history = []
 
@@ -84,4 +84,4 @@ class Sequence(gobject.GObject):
         self.connect('can-redo',set_sensitivity)
         self.emit('can-redo', self.can_redo())
 
-gobject.type_register(Sequence)
+GObject.type_register(Sequence)

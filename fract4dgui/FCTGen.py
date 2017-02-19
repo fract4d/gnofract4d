@@ -22,8 +22,8 @@
 
 
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 import re
 import math
 import sys
@@ -33,12 +33,12 @@ from fract4d import animation, fractal, fc, fractconfig
 
 class FCTGeneration:    
     def __init__(self,dir_bean,parent):
-        self.dialog=gtk.Dialog(
+        self.dialog=Gtk.Dialog(
             "Generating .fct files...",parent,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL))
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL))
         
-        self.pbar = gtk.ProgressBar()
+        self.pbar = Gtk.ProgressBar()
         self.dialog.vbox.pack_start(self.pbar,True,True,0)
         self.dialog.set_geometry_hints(None,min_aspect=3.5,max_aspect=3.5)
         self.dir_bean=dir_bean
@@ -356,15 +356,15 @@ class FCTGeneration:
     def show_error(self,s):
         self.running=False
         self.error=True
-        gtk.threads_enter()
-        error_dlg = gtk.MessageDialog(
+        Gtk.threads_enter()
+        error_dlg = Gtk.MessageDialog(
             self.dialog,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            gtk.MESSAGE_ERROR, gtk.BUTTONS_OK,s)
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            Gtk.MessageType.ERROR, Gtk.ButtonsType.OK,s)
         error_dlg.run()
         error_dlg.destroy()
-        gtk.threads_leave()
-        event = gtk.gdk.Event(gtk.gdk.DELETE)
+        Gtk.threads_leave()
+        event = Gdk.Event(Gdk.DELETE)
         self.dialog.emit('delete_event', event)
     
     def show(self):
@@ -372,9 +372,9 @@ class FCTGeneration:
         self.running=True
         self.error=False
         task=self.generate_fct()
-        gobject.idle_add(task.__next__)
+        GObject.idle_add(task.__next__)
         response = self.dialog.run()
-        if response != gtk.RESPONSE_CANCEL:
+        if response != Gtk.ResponseType.CANCEL:
             if self.running==True: #destroy by user
                 self.running=False
                 self.dialog.destroy()

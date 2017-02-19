@@ -8,7 +8,7 @@ import math
 import os
 import sys
 
-import gtk
+from gi.repository import Gtk
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
@@ -30,11 +30,11 @@ class Test(unittest.TestCase):
         browser._model = None
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testCreate(self):        
         b = browser.BrowserDialog(None,self.f)

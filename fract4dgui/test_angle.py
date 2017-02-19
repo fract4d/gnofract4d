@@ -5,8 +5,8 @@
 import unittest
 import math
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 
 from . import angle
 
@@ -28,11 +28,11 @@ class Test(unittest.TestCase):
         pass
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testCreate(self):
         a = angle.T("hello")

@@ -37,20 +37,20 @@ class MainWindow:
 
         self.set_icon()
         
-        self.window = gtk.Window()
+        self.window = Gtk.Window()
         self.window.set_default_size(900,700)
         self.window.connect('delete-event', self.quit)
 
         # keyboard handling
         self.keymap = {
-            gtk.keysyms.Left : self.on_key_left,
-            gtk.keysyms.Right : self.on_key_right,
-            gtk.keysyms.Up : self.on_key_up,
-            gtk.keysyms.Down : self.on_key_down,
-            gtk.keysyms.Escape : self.on_key_escape
+            Gdk.KEY_Left : self.on_key_left,
+            Gdk.KEY_Right : self.on_key_right,
+            Gdk.KEY_Up : self.on_key_up,
+            Gdk.KEY_Down : self.on_key_down,
+            Gdk.KEY_Escape : self.on_key_escape
             }
 
-        self.accelgroup = gtk.AccelGroup()
+        self.accelgroup = Gtk.AccelGroup()
         self.window.add_accel_group(self.accelgroup)
         self.window.connect('key-release-event', self.on_key_release)
 
@@ -63,7 +63,7 @@ class MainWindow:
 
         self.recent_files = preferences.userPrefs.get_list("recent_files")
         
-        self.vbox = gtk.VBox()
+        self.vbox = Gtk.VBox()
         self.window.add(self.vbox)
         
         self.f = gtkfractal.T(self.compiler,self)            
@@ -119,45 +119,45 @@ class MainWindow:
         self.f.set_saved(True)
 
     def create_rtd_widgets(self):
-        table = gtk.Table(2,3,False)
-        table.width = width = gtk.Entry()
-        table.height = height = gtk.Entry()
+        table = Gtk.Table(2,3,False)
+        table.width = width = Gtk.Entry()
+        table.height = height = Gtk.Entry()
         width.set_text("2048")
         height.set_text("1536")
-        wlabel = gtk.Label(_("Width:"))
-        hlabel = gtk.Label(_("Height:"))
+        wlabel = Gtk.Label(label=_("Width:"))
+        hlabel = Gtk.Label(label=_("Height:"))
         table.attach(
             wlabel,
             0, 1, 0, 1,
-            gtk.EXPAND | gtk.FILL,
-            gtk.EXPAND | gtk.FILL,
+            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
             1,1)
         table.attach(
             hlabel,
             0, 1, 1, 2,
-            gtk.EXPAND | gtk.FILL,
-            gtk.EXPAND | gtk.FILL,
+            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
             1,1)
         table.attach(
             width,
             1, 2, 0, 1,
-            gtk.EXPAND | gtk.FILL,
-            gtk.EXPAND | gtk.FILL,
+            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
             1,1)
         table.attach(
             height,
             1, 2, 1, 2,
-            gtk.EXPAND | gtk.FILL,
-            gtk.EXPAND | gtk.FILL,
+            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
             1,1)        
         return table
     
     def get_file_save_chooser(self, title, parent, patterns=[]):
-        chooser = gtk.FileChooserDialog(
-            title, parent, gtk.FILE_CHOOSER_ACTION_SAVE,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        chooser = Gtk.FileChooserDialog(
+            title, parent, Gtk.FileChooserAction.SAVE,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         for pattern in patterns:
             filter.add_pattern(pattern)
 
@@ -166,7 +166,7 @@ class MainWindow:
         return chooser
 
     def get_filter(self,name,patterns):
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name(name)
         for pattern in patterns:
             filter.add_pattern(pattern)
@@ -198,10 +198,10 @@ class MainWindow:
         chooser.set_filter(all_filter)
 
     def get_file_open_chooser(self, parent):
-        chooser = gtk.FileChooserDialog(
-            title, parent, gtk.FILE_CHOOSER_ACTION_OPEN,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK, 
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        chooser = Gtk.FileChooserDialog(
+            title, parent, Gtk.FileChooserAction.OPEN,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK, 
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
         self.add_filters(chooser)
 
@@ -239,11 +239,11 @@ class MainWindow:
         if self.open_fs != None:
             return self.open_fs
 
-        self.open_fs = gtk.FileChooserDialog(
+        self.open_fs = Gtk.FileChooserDialog(
             _("Open File"), self.window, 
-            gtk.FILE_CHOOSER_ACTION_OPEN,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK, 
-             gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+            Gtk.FileChooserAction.OPEN,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK, 
+             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
         self.add_filters(self.open_fs)
 
@@ -268,10 +268,10 @@ class MainWindow:
     def set_icon(self):
         return # can't get this to work
         try:
-            gtk.window_set_default_icon_list([icons.logo.pixbuf])
+            Gtk.window_set_default_icon_list([icons.logo.pixbuf])
         except Exception as err:
             print(err)
-            # not supported in this pygtk. Oh well...
+            # not supported in this pyGtk. Oh well...
             pass
         
     def update_subfract_visibility(self,visible):
@@ -315,8 +315,8 @@ class MainWindow:
         self.ftable.attach(
             self.subfracts[i].widget,
             x, x+1, y, y+1,
-            gtk.EXPAND | gtk.FILL,
-            gtk.EXPAND | gtk.FILL,
+            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
             1,1)
 
     def on_formula_change(self, f):
@@ -326,22 +326,22 @@ class MainWindow:
         self.fourd_actiongroup.set_sensitive(is4d)
 
     def create_fractal(self,f):
-        self.swindow = gtk.ScrolledWindow()
-        self.swindow.set_policy(gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
+        self.swindow = Gtk.ScrolledWindow()
+        self.swindow.set_policy(Gtk.PolicyType.AUTOMATIC,Gtk.PolicyType.AUTOMATIC)
         
         f.connect('parameters-changed', self.on_fractal_change)
         f.connect('formula-changed', self.on_formula_change)
         
         #self.swindow.set_size_request(640+8,400+8)
 
-        self.fixed = gtk.Fixed()
-        self.ftable = gtk.Table(4,4,False)
+        self.fixed = Gtk.Fixed()
+        self.ftable = Gtk.Table(4,4,False)
         self.fixed.put(self.ftable,0,0)
         self.ftable.attach(
             f.widget,
             1,3,1,3,
-            gtk.EXPAND | gtk.FILL,
-            gtk.EXPAND | gtk.FILL,
+            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
+            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
             0,0) #1,1)
 
         self.attach_subfract(0,0,0)
@@ -360,17 +360,17 @@ class MainWindow:
         self.attach_subfract(11,3,3)
 
         self.swindow.add_with_viewport(self.fixed)
-        self.swindow.get_child().set_shadow_type(gtk.SHADOW_NONE)
+        self.swindow.get_child().set_shadow_type(Gtk.ShadowType.NONE)
                 
         f.connect('progress_changed', self.progress_changed)
         f.connect('status_changed',self.status_changed)
         f.connect('stats-changed', self.stats_changed)
 
-        hbox = gtk.HBox()
-        hbox.pack_start(self.swindow)
-        self.control_box = gtk.VBox()
+        hbox = Gtk.HBox()
+        hbox.pack_start(self.swindow, True, True, 0)
+        self.control_box = Gtk.VBox()
         hbox.pack_start(self.control_box,False,False)
-        self.vbox.pack_start(hbox)
+        self.vbox.pack_start(hbox, True, True, 0)
 
     def draw(self):        
         nt = preferences.userPrefs.getint("general","threads") 
@@ -466,9 +466,9 @@ class MainWindow:
 
     def nudge(self,x,y,state):
         axis = 0
-        if state & gtk.gdk.SHIFT_MASK:
+        if state & Gdk.ModifierType.SHIFT_MASK:
             axis = 2
-        if state & gtk.gdk.CONTROL_MASK:
+        if state & Gdk.ModifierType.CONTROL_MASK:
             x *= 10.0
             y *= 10.0
         self.f.nudge(x,y,axis)
@@ -487,12 +487,12 @@ class MainWindow:
         
     def on_key_release(self, widget, event):
         current_widget = self.window.get_focus()
-        if isinstance(current_widget, gtk.Entry) or isinstance(current_widget,gtk.TextView):
+        if isinstance(current_widget, Gtk.Entry) or isinstance(current_widget,Gtk.TextView):
             # otherwise we steal cursor motion through entry
             return
         fn = self.keymap.get(event.keyval)
         if fn:
-            fn(event.state)
+            fn(event.get_state())
         elif not self.menubar.get_property("visible"):
             self.menubar.emit("key-release-event",event)
             
@@ -537,7 +537,7 @@ class MainWindow:
         name = None
         while True:
             result = fs.run()
-            if result == gtk.RESPONSE_OK:
+            if result == Gtk.ResponseType.OK:
                 name = fs.get_filename()
             else:
                 break
@@ -563,11 +563,11 @@ class MainWindow:
     def get_main_actions(self):
         return [
             ('FileMenuAction', None, _('_File')),
-            ('FileOpenAction', gtk.STOCK_OPEN, _('_Open...'), 
+            ('FileOpenAction', Gtk.STOCK_OPEN, _('_Open...'), 
              None, _('Open a Parameter or Formula File'), self.open),
-            ('FileSaveAction', gtk.STOCK_SAVE, None, 
+            ('FileSaveAction', Gtk.STOCK_SAVE, None, 
              None, _("Save current parameters"), self.save),
-            ('FileSaveAsAction', gtk.STOCK_SAVE_AS, None,
+            ('FileSaveAsAction', Gtk.STOCK_SAVE_AS, None,
              '<control><shift>S', _("Save current parameters in a new location"), self.saveas),
             ('FileSaveImageAction', None, _('Save Current _Image'),
              '<control>I', _('Save the current image'), self.save_image),
@@ -587,25 +587,25 @@ class MainWindow:
             ('FileRecent4Action', None, _('_4'), None, None, 
              lambda *args : self.load_recent_file(4)),
 
-            ('FileQuitAction', gtk.STOCK_QUIT, None, 
+            ('FileQuitAction', Gtk.STOCK_QUIT, None, 
              None, _('Quit'), self.quit),
 
             ('EditMenuAction', None, _('_Edit')),                
-            ('EditFractalSettingsAction', gtk.STOCK_PROPERTIES, _('_Fractal Settings...'),
+            ('EditFractalSettingsAction', Gtk.STOCK_PROPERTIES, _('_Fractal Settings...'),
              '<control>F', _('Edit the fractal\'s settings'), self.settings),
-            ('EditPreferencesAction', gtk.STOCK_PREFERENCES, None,
+            ('EditPreferencesAction', Gtk.STOCK_PREFERENCES, None,
              None, _('Edit user preferences'), self.preferences),
-            ('EditUndoAction', gtk.STOCK_UNDO, None,
+            ('EditUndoAction', Gtk.STOCK_UNDO, None,
              '<control>Z', _('Undo the last command'), self.undo),
-            ('EditRedoAction', gtk.STOCK_REDO, None,
+            ('EditRedoAction', Gtk.STOCK_REDO, None,
              '<control><shift>Z', _('Redo the last undone command'), self.redo),
-            ('EditResetAction', gtk.STOCK_HOME,_('_Reset'),
+            ('EditResetAction', Gtk.STOCK_HOME,_('_Reset'),
              'Home', _('Reset all parameters to defaults'), self.reset),
-            ('EditResetZoomAction', gtk.STOCK_ZOOM_100, _('Re_set Zoom'),
+            ('EditResetZoomAction', Gtk.STOCK_ZOOM_100, _('Re_set Zoom'),
              '<control>Home', _('Reset magnification'), self.reset_zoom),
 
             ('ViewMenuAction', None, _('_View')),
-            ('ViewFullScreenAction', gtk.STOCK_FULLSCREEN, _('_Full Screen'),
+            ('ViewFullScreenAction', Gtk.STOCK_FULLSCREEN, _('_Full Screen'),
              'F11', _('Full Screen (press Esc to finish)'), self.full_screen),
 
             ('ShareMenuAction', None, _('_Share')),
@@ -632,7 +632,7 @@ class MainWindow:
              None, _('Change colors interactively'), self.painter),
 
             ('HelpMenuAction', None, _('_Help')),
-            ('HelpContentsAction', gtk.STOCK_HELP, _('_Contents'),
+            ('HelpContentsAction', Gtk.STOCK_HELP, _('_Contents'),
              'F1', _('Display manual'), self.contents),
             ('HelpCommandReferenceAction', None, _('Command _Reference'),
              None, _('A list of keyboard and mouse shortcuts'), self.command_reference),
@@ -641,7 +641,7 @@ class MainWindow:
              self.formula_reference),
             ('HelpReportBugAction', icons.face_sad.stock_name, _('_Report a Bug'),
              '', _('Report a bug you\'ve found'), self.report_bug),
-            ('HelpAboutAction', gtk.STOCK_ABOUT, _('_About'), 
+            ('HelpAboutAction', Gtk.STOCK_ABOUT, _('_About'), 
              None, _('About Gnofract 4D'), self.about)
             ]
 
@@ -663,11 +663,11 @@ class MainWindow:
             ]
 
     def create_ui(self):
-        self.manager = gtk.UIManager()
+        self.manager = Gtk.UIManager()
         accelgroup = self.manager.get_accel_group()
         self.window.add_accel_group(accelgroup)
 
-        main_actiongroup = gtk.ActionGroup('Gnofract4D')
+        main_actiongroup = Gtk.ActionGroup('Gnofract4D')
         self.main_actiongroup = main_actiongroup
 
         main_actiongroup.add_toggle_actions(self.get_toggle_actions())
@@ -677,7 +677,7 @@ class MainWindow:
         self.manager.insert_action_group(main_actiongroup, 0)
 
         # actions which are only available if we're in 4D mode
-        self.fourd_actiongroup = gtk.ActionGroup('4D-sensitive widgets')
+        self.fourd_actiongroup = Gtk.ActionGroup('4D-sensitive widgets')
 
         self.fourd_actiongroup.add_actions(self.get_fourd_actions())
 
@@ -746,7 +746,7 @@ class MainWindow:
             self.menubar.hide()
             self.toolbar.hide()
             self.bar.hide()
-            self.swindow.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
+            self.swindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
             self.window.move(0, 0)
 
             screen = self.window.get_screen()
@@ -755,19 +755,19 @@ class MainWindow:
                 screen.get_height())
             
             # TODO: may be useful for 'desktop mode' one day
-            #self.window.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DESKTOP)
+            #self.set_type_hint(Gdk.WindowTypeHint.DESKTOP)
             #self.window.set_keep_below(True)
         else:
             self.window.set_decorated(True)
-            self.swindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+            self.swindow.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
             self.menubar.show()
             self.toolbar.show()
             self.bar.show()
             self.window.unfullscreen()
             
     def create_status_bar(self):
-        self.bar = gtk.ProgressBar()        
-        self.vbox.pack_end(self.bar, expand=False)
+        self.bar = Gtk.ProgressBar()        
+        self.vbox.pack_end(self.bar, False, True, 0)
 
     def update_preview(self,f,flip2julia=False):
         if self.use_preview:
@@ -857,14 +857,14 @@ class MainWindow:
         self.toolbar.add_space()
 
         self.toolbar.add_stock(
-            gtk.STOCK_UNDO,
+            Gtk.STOCK_UNDO,
             _("Undo the last change"),
             self.undo)
 
         self.model.seq.make_undo_sensitive(self.toolbar.get_children()[-1])
         
         self.toolbar.add_stock(
-            gtk.STOCK_REDO,
+            Gtk.STOCK_REDO,
             _("Redo the last undone change"),
             self.redo)
         
@@ -879,44 +879,44 @@ class MainWindow:
             _("Toggle Explorer Mode"),
             self.toolbar_toggle_explorer)
         
-        self.weirdness_adjustment = gtk.Adjustment(
+        self.weirdness_adjustment = Gtk.Adjustment(
             20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
 
-        self.weirdness = gtk.HScale(self.weirdness_adjustment)
+        self.weirdness = Gtk.HScale(self.weirdness_adjustment)
         self.weirdness.set_size_request(100, 20)
-        self.weirdness.set_property("value-pos",gtk.POS_RIGHT)
+        self.weirdness.set_property("value-pos",Gtk.PositionType.RIGHT)
         
         self.weirdness.set_update_policy(
-            gtk.UPDATE_DISCONTINUOUS)
+            Gtk.UPDATE_DISCONTINUOUS)
 
-        self.weirdbox = gtk.VBox()
-        shapebox = gtk.HBox(False,2)
-        shape_label = gtk.Label(_("Shape:"))
-        shapebox.pack_start(shape_label)
-        shapebox.pack_start(self.weirdness)
+        self.weirdbox = Gtk.VBox()
+        shapebox = Gtk.HBox(False,2)
+        shape_label = Gtk.Label(label=_("Shape:"))
+        shapebox.pack_start(shape_label, True, True, 0)
+        shapebox.pack_start(self.weirdness, True, True, 0)
 
-        self.weirdbox.pack_start(shapebox)
+        self.weirdbox.pack_start(shapebox, True, True, 0)
         
         self.toolbar.add_widget(
             self.weirdbox,
             _("Weirdness"),
             _("How different to make the random mutant fractals"))
 
-        self.color_weirdness_adjustment = gtk.Adjustment(
+        self.color_weirdness_adjustment = Gtk.Adjustment(
             20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
 
-        self.color_weirdness = gtk.HScale(self.color_weirdness_adjustment)
+        self.color_weirdness = Gtk.HScale(self.color_weirdness_adjustment)
         self.color_weirdness.set_size_request(100, 20)
-        self.color_weirdness.set_property("value-pos",gtk.POS_RIGHT)
+        self.color_weirdness.set_property("value-pos",Gtk.PositionType.RIGHT)
 
-        colorbox = gtk.HBox(False,2)
-        color_label = gtk.Label(_("Color:"))
-        colorbox.pack_start(color_label)
-        colorbox.pack_start(self.color_weirdness)
-        self.weirdbox.pack_start(colorbox)
+        colorbox = Gtk.HBox(False,2)
+        color_label = Gtk.Label(label=_("Color:"))
+        colorbox.pack_start(color_label, True, True, 0)
+        colorbox.pack_start(self.color_weirdness, True, True, 0)
+        self.weirdbox.pack_start(colorbox, True, True, 0)
         
         self.color_weirdness.set_update_policy(
-            gtk.UPDATE_DISCONTINUOUS)
+            Gtk.UPDATE_DISCONTINUOUS)
 
         def on_weirdness_changed(adjustment):
             self.update_subfracts()
@@ -1123,7 +1123,7 @@ class MainWindow:
         name = None
         while True:
             result = fs.run()
-            if result == gtk.RESPONSE_OK:
+            if result == Gtk.ResponseType.OK:
                 name = fs.get_filename()
             else:
                 break
@@ -1145,13 +1145,13 @@ class MainWindow:
 
             response = d.run()                
             d.destroy()
-            return response == gtk.RESPONSE_ACCEPT
+            return response == Gtk.ResponseType.ACCEPT
         else:
             return True
 
     def show_warning(self,message):
-        d = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL,
-                              gtk.MESSAGE_WARNING, gtk.BUTTONS_OK,
+        d = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
+                              Gtk.MessageType.WARNING, Gtk.ButtonsType.OK,
                               message)
         d.run()
         d.destroy()
@@ -1217,7 +1217,7 @@ class MainWindow:
         name = None
         while True:
             result = fs.run()
-            if result == gtk.RESPONSE_OK:
+            if result == Gtk.ResponseType.OK:
                 name = fs.get_filename()
             else:
                 break
@@ -1361,7 +1361,7 @@ class MainWindow:
         
         while True:
             result = fs.run()            
-            if result == gtk.RESPONSE_OK:
+            if result == Gtk.ResponseType.OK:
                 if self.load(fs.get_filename()):
                     break
             else:
@@ -1405,9 +1405,9 @@ class MainWindow:
 
             response = d.run()                
             d.destroy()
-            if response == gtk.RESPONSE_ACCEPT:
+            if response == Gtk.ResponseType.ACCEPT:
                 self.save(None,None)
-            elif response == gtk.RESPONSE_CANCEL:
+            elif response == Gtk.ResponseType.CANCEL:
                 return False
             elif response == hig.SaveConfirmationAlert.NOSAVE:
                 break
@@ -1420,9 +1420,9 @@ class MainWindow:
                 
             response = d.run()                
             d.destroy()
-            if response == gtk.RESPONSE_ACCEPT:
+            if response == Gtk.ResponseType.ACCEPT:
                 break
-            elif response == gtk.RESPONSE_CANCEL:
+            elif response == Gtk.ResponseType.CANCEL:
                 return False
             else:
                 break
@@ -1447,7 +1447,7 @@ class MainWindow:
                 del f
             self.compiler.clear_cache()
         finally:
-            gtk.main_quit()
+            Gtk.main_quit()
             if 'win' == sys.platform[:3]:
                 exit(0);
 #            return False

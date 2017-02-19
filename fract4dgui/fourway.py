@@ -1,21 +1,19 @@
 # Sort of a widget which controls 2 linear dimensions of the fractal
-# I say sort of, because this doesn't actually inherit from gtk.Widget,
+# I say sort of, because this doesn't actually inherit from Gtk.Widget,
 # so it's not really a widget. This is because if I attempt to do that
 # pygtk crashes. Hence I delegate to a member which actually is a widget
 # with some stuff drawn on it - basically an ungodly hack.
 
-import gtk
-import gobject
-import pango
+from gi.repository import Gtk, GObject, Pango
 
-class T(gobject.GObject):
+class T(GObject.GObject):
     __gsignals__ = {
         'value-changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, (gobject.TYPE_INT, gobject.TYPE_INT)),
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, (GObject.TYPE_INT, GObject.TYPE_INT)),
         'value-slightly-changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, (gobject.TYPE_INT, gobject.TYPE_INT))
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, (GObject.TYPE_INT, GObject.TYPE_INT))
         }
 
     def __init__(self,text):        
@@ -24,19 +22,19 @@ class T(gobject.GObject):
         self.last_x = 0
         self.last_y = 0        
         self.text=text
-        gobject.GObject.__init__(self)
+        GObject.GObject.__init__(self)
         
-        self.widget = gtk.DrawingArea()
+        self.widget = Gtk.DrawingArea()
         self.widget.set_size_request(53,53)
 
         self.widget.set_events(
-            gtk.gdk.BUTTON_RELEASE_MASK |
-            gtk.gdk.BUTTON1_MOTION_MASK |
-            gtk.gdk.POINTER_MOTION_HINT_MASK |
-            gtk.gdk.ENTER_NOTIFY_MASK |
-            gtk.gdk.LEAVE_NOTIFY_MASK |
-            gtk.gdk.BUTTON_PRESS_MASK |
-            gtk.gdk.EXPOSURE_MASK
+            Gdk.EventMask.BUTTON_RELEASE_MASK |
+            Gdk.EventMask.BUTTON1_MOTION_MASK |
+            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
+            Gdk.EventMask.ENTER_NOTIFY_MASK |
+            Gdk.EventMask.LEAVE_NOTIFY_MASK |
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.EXPOSURE_MASK
             )
 
         self.notice_mouse = False
@@ -89,7 +87,7 @@ class T(gobject.GObject):
         style = widget.get_style()
         (w,h) = (widget.allocation.width, widget.allocation.height)
         style.paint_box(widget.window, widget.state,
-                        gtk.SHADOW_IN, r, widget, "",
+                        Gtk.ShadowType.IN, r, widget, "",
                         0, 0, w-1, h-1)
 
         xc = w//2
@@ -131,7 +129,7 @@ class T(gobject.GObject):
         widget.window.draw_polygon(gc, True, points)
 
         context = widget.get_pango_context()
-        layout = pango.Layout(context)
+        layout = Pango.Layout(context)
 
         drawtext = self.text
         while True:
@@ -156,4 +154,4 @@ class T(gobject.GObject):
 
         
 # explain our existence to GTK's object system
-gobject.type_register(T)
+GObject.type_register(T)

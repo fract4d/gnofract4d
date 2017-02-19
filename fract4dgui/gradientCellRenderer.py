@@ -3,24 +3,24 @@ from fract4d import gradient
 
 import gtk, gobject
 
-class GradientCellRenderer(gtk.GenericCellRenderer):
+class GradientCellRenderer(Gtk.GenericCellRenderer):
     __gproperties__ = {
-        'filename': (gobject.TYPE_STRING,
+        'filename': (GObject.TYPE_STRING,
                  'Text to be displayed',
                  'Text to be displayed',
                  '',
-                 gobject.PARAM_READWRITE
+                 GObject.PARAM_READWRITE
                  ),
-        'formname': (gobject.TYPE_STRING,
+        'formname': (GObject.TYPE_STRING,
                  'Text to be displayed',
                  'Text to be displayed',
                  '',
-                 gobject.PARAM_READWRITE
+                 GObject.PARAM_READWRITE
                  ),
         }
 
     def __init__(self,model,compiler):
-        gtk.GenericCellRenderer.__init__(self)
+        GObject.GObject.__init__(self)
         self.model = model
         self.compiler = compiler
         self.__properties = {}
@@ -47,7 +47,7 @@ class GradientCellRenderer(gtk.GenericCellRenderer):
         (w,h) = (cell_area.width, cell_area.height)
         #style.paint_box(
         #    window, widget.state,
-        #    gtk.SHADOW_IN, expose_area, widget, "",
+        #    Gtk.ShadowType.IN, expose_area, widget, "",
         #    cell_area.x, cell_area.y, w-1, h-1)
 
         formname = self.__properties["formname"]
@@ -63,7 +63,7 @@ class GradientCellRenderer(gtk.GenericCellRenderer):
         colorband_height = cell_area.height
         
         colormap = widget.get_colormap()
-        gradgc = widget.window.new_gc(fill=gtk.gdk.SOLID)
+        gradgc = widget.window.new_gc(fill=Gdk.SOLID)
 
         for i in range(cell_area.x, cell_area.x + cell_area.width):
             pos_in_gradient = float(i-cell_area.x)/wwidth

@@ -11,8 +11,8 @@ import os
 import sys
 import inspect
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 
 try:
 	from fract4d import fract4dcgmp as fract4dc
@@ -37,11 +37,11 @@ def _throwback():
     
 def threads_enter():
     if threads_enabled:
-        gtk.gdk.threads_enter()
+        Gdk.threads_enter()
 
 def threads_leave():
     if threads_enabled:
-        gtk.gdk.threads_leave()
+        Gdk.threads_leave()
 
 def idle_wrapper(callable, *args):
     threads_enter()
@@ -49,32 +49,32 @@ def idle_wrapper(callable, *args):
     threads_leave()
 
 def idle_add(callable, *args):
-    """A wrapper around gtk.idle_add which wraps the callback in
+    """A wrapper around Gtk.idle_add which wraps the callback in
     threads_enter/threads_leave if required"""
     try:
         _throwback()
-        gobject.idle_add(idle_wrapper, callable, *args)
+        GObject.idle_add(idle_wrapper, callable, *args)
     except AttributeError:
-        gtk.idle_add(idle_wrapper, callable, *args)
+        Gtk.idle_add(idle_wrapper, callable, *args)
 
 def timeout_add(time,callable):
     try:
         _throwback()
-        gobject.timeout_add(time,callable)
+        GObject.timeout_add(time,callable)
     except AttributeError:
-        gtk.timeout_add(time,callable)
+        Gtk.timeout_add(time,callable)
 
 if 'win' != sys.platform[:3]:
     def input_add(fd,cb):
         try:
             _throwback()
-            return gobject.io_add_watch(fd, gobject.IO_IN | gobject.IO_HUP, cb)
+            return GObject.io_add_watch(fd, GObject.IO_IN | GObject.IO_HUP, cb)
         except AttributeError as err:
-            return gtk.input_add(fd, gtk.gdk.INPUT_READ, cb)
+            return Gtk.input_add(fd, Gdk.INPUT_READ, cb)
 else:
     def input_add(fd, cb):
         # fd = %i; cb = %o
-        return fract4dc.io_add_watch(fd, gobject.IO_IN | gobject.IO_HUP, cb)
+        return fract4dc.io_add_watch(fd, GObject.IO_IN | GObject.IO_HUP, cb)
 
 def find_in_path(exe):
     # find an executable along PATH env var
@@ -104,22 +104,22 @@ def stack_trace():
     
 def get_rgb_colormap():
     # work around a difference between pygtk versions
-    if hasattr(gtk.gdk,'rgb_get_colormap'):
-        c = gtk.gdk.rgb_get_colormap()
+    if hasattr(Gtk.gdk,'rgb_get_colormap'):
+        c = Gdk.rgb_get_colormap()
     else:
-        c = gtk.gdk.rgb_get_cmap()
+        c = Gdk.rgb_get_cmap()
     return c
 
 def get_directory_chooser(title,parent):
     try:
         _throwback()
-        chooser = gtk.FileChooserDialog(
-            title, parent, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
-            (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+        chooser = Gtk.FileChooserDialog(
+            title, parent, Gtk.FileChooserAction.SELECT_FOLDER,
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
         return chooser
     except:
-        return gtk.FileSelection(title)
+        return Gtk.FileSelection(title)
     
 def get_file_chooser_extra_widget(chooser):
     try:
@@ -140,16 +140,16 @@ def set_file_chooser_filename(chooser,name):
 def create_option_menu(items):
     try:
         _throwback()
-        widget = gtk.combo_box_new_text()
+        widget = Gtk.ComboBoxText()
         for item in items:
             widget.append_text(item)
         
     except Exception as exn:
-        widget = gtk.OptionMenu()
+        widget = Gtk.OptionMenu()
         widget.item_list = items # for get_selected_value
-        menu = gtk.Menu()
+        menu = Gtk.Menu()
         for item in items:
-            mi = gtk.MenuItem(item)
+            mi = Gtk.MenuItem(item)
             menu.append(mi)
         widget.set_menu(menu)
         
@@ -158,7 +158,7 @@ def create_option_menu(items):
 def set_menu_from_list(menu, items):
     try:
         _throwback()
-        model = gtk.ListStore(gobject.TYPE_STRING)
+        model = Gtk.ListStore(GObject.TYPE_STRING)
         for item in items:
             model.append((item,))
         menu.set_model(model)
@@ -169,7 +169,7 @@ def set_menu_from_list(menu, items):
             submenu.remove(child)
 
         for item in items:
-            mi = gtk.MenuItem(item)
+            mi = Gtk.MenuItem(item)
             submenu.append(mi)
         
 def add_menu_item(menu, item):
@@ -177,7 +177,7 @@ def add_menu_item(menu, item):
         _throwback()
         menu.append_text(item)
     except:
-        menu.get_menu().append(gtk.MenuItem(item))
+        menu.get_menu().append(Gtk.MenuItem(item))
 
 def set_selected(menu, i):
     try:
@@ -226,10 +226,10 @@ def create_color(r,g,b):
     # multiply up to match range expected by gtk
     try:
         _throwback()
-        return gtk.gdk.Color(int(r*65535),int(g*65535),int(b*65535))
+        return Gdk.Color(int(r*65535),int(g*65535),int(b*65535))
     except Exception as exn:
         # old gtk doesn't have direct color constructor
-        return gtk.gdk.color_parse(
+        return Gdk.color_parse(
             "#%04X%04X%04X" % (int(r*65535),int(g*65535),int(b*65535)))
 
 def floatColorFrom256(rgba):
@@ -260,7 +260,7 @@ class ColorButton:
         self.is_left = is_left
         try:
             _throwback()
-            self.widget = gtk.ColorButton(self.color)
+            self.widget = Gtk.ColorButton(self.color)
 
             def color_set(widget):
                 color = widget.get_color()
@@ -269,12 +269,12 @@ class ColorButton:
             self.widget.connect('color-set', self.on_color_set)
         except:
             # This GTK is too old to support ColorButton directly, fake one
-            self.widget = gtk.Button()
-            self.area = gtk.DrawingArea()
+            self.widget = Gtk.Button()
+            self.area = Gtk.DrawingArea()
             self.area.set_size_request(16,10)
             self.widget.add(self.area)
             self.area.connect('expose_event', self.on_expose_event)
-            self.csel_dialog = gtk.ColorSelectionDialog(_("Select a Color"))
+            self.csel_dialog = Gtk.ColorSelectionDialog(_("Select a Color"))
 
             self.widget.connect('clicked', self.run_colorsel)
 
@@ -302,7 +302,7 @@ class ColorButton:
     def area_expose(self, widget, x, y, w, h):
         if not widget.window:
             return
-        gc = widget.window.new_gc(fill=gtk.gdk.SOLID)
+        gc = widget.window.new_gc(fill=Gdk.SOLID)
         self.color = widget.get_colormap().alloc_color(
             self.color.red, self.color.green, self.color.blue)
         gc.set_foreground(self.color)
@@ -312,7 +312,7 @@ class ColorButton:
         dlg = self.csel_dialog
         dlg.colorsel.set_current_color(self.color)
         result = dlg.run()
-        if result == gtk.RESPONSE_OK:
+        if result == Gtk.ResponseType.OK:
             self.color = dlg.colorsel.get_current_color()
             self.color_changed(self.color)
         self.csel_dialog.hide()

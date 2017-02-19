@@ -4,8 +4,8 @@
 import string
 import os
 
-import gobject
-import gtk
+from gi.repository import GObject
+from gi.repository import Gtk
 
 from fract4d import fc, gradient, browser_model
 
@@ -35,27 +35,27 @@ class BrowserDialog(dialog.T):
             self,
             _("Formula Browser"),
             main_window,
-            gtk.DIALOG_DESTROY_WITH_PARENT,
+            Gtk.DialogFlags.DESTROY_WITH_PARENT,
             (#_("Co_mpile"), BrowserDialog.RESPONSE_COMPILE,
-             gtk.STOCK_REFRESH, BrowserDialog.RESPONSE_REFRESH,
-             gtk.STOCK_APPLY, gtk.RESPONSE_APPLY,
-             gtk.STOCK_OK, gtk.RESPONSE_OK,
-             gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+             Gtk.STOCK_REFRESH, BrowserDialog.RESPONSE_REFRESH,
+             Gtk.STOCK_APPLY, Gtk.ResponseType.APPLY,
+             Gtk.STOCK_OK, Gtk.ResponseType.OK,
+             Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
 
-        self.set_default_response(gtk.RESPONSE_OK)
+        self.set_default_response(Gtk.ResponseType.OK)
 
         self.model = browser_model.instance
         self.model.type_changed += self.on_type_changed
         self.model.file_changed += self.on_file_changed
         self.model.formula_changed += self.on_formula_changed
         
-        self.formula_list = gtk.ListStore(
-            gobject.TYPE_STRING)
+        self.formula_list = Gtk.ListStore(
+            GObject.TYPE_STRING)
 
-        self.file_list = gtk.ListStore(
-            gobject.TYPE_STRING, #formname
-            gobject.TYPE_STRING,
-            gobject.TYPE_INT)
+        self.file_list = Gtk.ListStore(
+            GObject.TYPE_STRING, #formname
+            GObject.TYPE_STRING,
+            GObject.TYPE_INT)
 
         self.f = f
         self.compiler = f.compiler
@@ -77,13 +77,13 @@ class BrowserDialog(dialog.T):
     show = staticmethod(show)
 
     def onResponse(self,widget,id):
-        if id == gtk.RESPONSE_CLOSE or \
-               id == gtk.RESPONSE_NONE or \
-               id == gtk.RESPONSE_DELETE_EVENT:
+        if id == Gtk.ResponseType.CLOSE or \
+               id == Gtk.ResponseType.NONE or \
+               id == Gtk.ResponseType.DELETE_EVENT:
             self.hide()
-        elif id == gtk.RESPONSE_APPLY:
+        elif id == Gtk.ResponseType.APPLY:
             self.onApply()
-        elif id == gtk.RESPONSE_OK:
+        elif id == Gtk.ResponseType.OK:
             self.onApply()
             self.hide()
         elif id == BrowserDialog.RESPONSE_REFRESH:
@@ -115,25 +115,25 @@ class BrowserDialog(dialog.T):
         self.model.set_type(type)
         
     def create_file_list(self):
-        sw = gtk.ScrolledWindow ()
+        sw = Gtk.ScrolledWindow ()
 
-        sw.set_shadow_type (gtk.SHADOW_ETCHED_IN)
-        sw.set_policy (gtk.POLICY_NEVER,
-                       gtk.POLICY_AUTOMATIC)
+        sw.set_shadow_type (Gtk.ShadowType.ETCHED_IN)
+        sw.set_policy (Gtk.PolicyType.NEVER,
+                       Gtk.PolicyType.AUTOMATIC)
 
-        self.filetreeview = gtk.TreeView (self.file_list)
+        self.filetreeview = Gtk.TreeView (self.file_list)
         self.filetreeview.set_tooltip_text(
             _("A list of files containing fractal formulas"))
         
         sw.add(self.filetreeview)
 
-        renderer = gtk.CellRendererText ()
-        column = gtk.TreeViewColumn ('_File', renderer, text=0)
+        renderer = Gtk.CellRendererText ()
+        column = Gtk.TreeViewColumn ('_File', renderer, text=0)
         
         self.filetreeview.append_column (column)
 
         #renderer = gradientCellRenderer.GradientCellRenderer(self.model, self.compiler)
-        #column = gtk.TreeViewColumn (_('_Preview'), renderer)
+        #column = Gtk.TreeViewColumn (_('_Preview'), renderer)
         #self.filetreeview.append_column (column)
 
         selection = self.filetreeview.get_selection()
@@ -184,23 +184,23 @@ class BrowserDialog(dialog.T):
             i += 1
             
     def create_formula_list(self):
-        sw = gtk.ScrolledWindow ()
-        sw.set_shadow_type (gtk.SHADOW_ETCHED_IN)
-        sw.set_policy (gtk.POLICY_NEVER,
-                       gtk.POLICY_AUTOMATIC)
+        sw = Gtk.ScrolledWindow ()
+        sw.set_shadow_type (Gtk.ShadowType.ETCHED_IN)
+        sw.set_policy (Gtk.PolicyType.NEVER,
+                       Gtk.PolicyType.AUTOMATIC)
 
-        self.treeview = gtk.TreeView (self.formula_list)
+        self.treeview = Gtk.TreeView (self.formula_list)
 
         self.treeview.set_tooltip_text(
             _("A list of formulas in the selected file"))
 
         sw.add(self.treeview)
 
-        renderer = gtk.CellRendererText ()
-        column = gtk.TreeViewColumn (_('F_ormula'), renderer, text=0)
+        renderer = Gtk.CellRendererText ()
+        column = Gtk.TreeViewColumn (_('F_ormula'), renderer, text=0)
         self.treeview.append_column (column)
         #renderer = gradientCellRenderer.GradientCellRenderer(self.model, self.compiler)
-        #column = gtk.TreeViewColumn (_('_Preview'), renderer)
+        #column = Gtk.TreeViewColumn (_('_Preview'), renderer)
         #column.add_attribute(renderer, "formname", 0)
         #self.treeview.append_column (column)
 
@@ -209,11 +209,11 @@ class BrowserDialog(dialog.T):
         return sw
 
     def create_scrolled_textview(self,tip):
-        sw = gtk.ScrolledWindow ()
-        sw.set_shadow_type (gtk.SHADOW_ETCHED_IN)
-        sw.set_policy (gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        sw = Gtk.ScrolledWindow ()
+        sw.set_shadow_type (Gtk.ShadowType.ETCHED_IN)
+        sw.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
-        textview = gtk.TextView()
+        textview = Gtk.TextView()
         textview.set_tooltip_text(tip)
         textview.set_editable(False)
         
@@ -237,8 +237,8 @@ class BrowserDialog(dialog.T):
         self.funcTypeMenu.connect('changed',self.set_type_cb)
 
         # label for the menu
-        hbox = gtk.HBox()
-        label = gtk.Label(_("Function _Type to Modify : "))
+        hbox = Gtk.HBox()
+        label = Gtk.Label(label=_("Function _Type to Modify : "))
         label.set_use_underline(True)
         label.set_mnemonic_widget(self.funcTypeMenu)
         
@@ -248,14 +248,14 @@ class BrowserDialog(dialog.T):
         self.vbox.pack_start(hbox,False, False)
         
         # 3 panes: files, formulas, formula contents
-        panes1 = gtk.HPaned()
+        panes1 = Gtk.HPaned()
         self.vbox.pack_start(panes1, True, True)
         panes1.set_border_width(5)
 
         file_list = self.create_file_list()
         formula_list = self.create_formula_list()
         
-        panes2 = gtk.HPaned()
+        panes2 = Gtk.HPaned()
         # left-hand pane displays file list
         panes2.add1(file_list)
         # middle is formula list for that file
@@ -263,10 +263,10 @@ class BrowserDialog(dialog.T):
         panes1.add1(panes2)
 
         # right-hand pane is details of current formula
-        notebook = gtk.Notebook()
+        notebook = Gtk.Notebook()
 
         # preview
-        label = gtk.Label(_('_Preview'))
+        label = Gtk.Label(label=_('_Preview'))
         label.set_use_underline(True)
         notebook.append_page(self.preview.widget, label)
         
@@ -274,7 +274,7 @@ class BrowserDialog(dialog.T):
         (self.sourcetext,sw) = self.create_scrolled_textview(
             _("The contents of the currently selected formula file"))
         
-        label = gtk.Label(_('_Source'))
+        label = Gtk.Label(label=_('_Source'))
         label.set_use_underline(True)
         notebook.append_page(sw, label)
 
@@ -282,7 +282,7 @@ class BrowserDialog(dialog.T):
         (self.msgtext, sw) = self.create_scrolled_textview(
             _("Any compiler warnings or errors in the current function"))
         
-        label = gtk.Label(_('_Messages'))
+        label = Gtk.Label(label=_('_Messages'))
         label.set_use_underline(True)
         notebook.append_page(sw, label)
 
@@ -362,8 +362,8 @@ class BrowserDialog(dialog.T):
 
     def set_apply_sensitivity(self):
         can_apply = self.model.current.can_apply
-        self.set_response_sensitive(gtk.RESPONSE_APPLY,can_apply)
-        self.set_response_sensitive(gtk.RESPONSE_OK,can_apply)
+        self.set_response_sensitive(Gtk.ResponseType.APPLY,can_apply)
+        self.set_response_sensitive(Gtk.ResponseType.OK,can_apply)
 
         if can_apply:
             self.model.apply(self.preview)

@@ -68,71 +68,71 @@ class FlickrUploadDialog(dialog.T):
             self,
             _("Upload to Flickr"),
             main_window,
-            gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+            Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
 
         self.f = f
         self.main_window = main_window
-        self.controls = gtk.VBox()
-        self.vbox.pack_start(self.controls)
+        self.controls = Gtk.VBox()
+        self.vbox.pack_start(self.controls, True, True, 0)
         self.slave = None
         
-        table = gtk.Table(5,2,False)
-        self.controls.pack_start(table)
+        table = Gtk.Table(5,2,False)
+        self.controls.pack_start(table, True, True, 0)
 
-        self.title_entry = gtk.Entry()
-        table.attach(self.title_entry,1,2,0,1,gtk.EXPAND | gtk.FILL, 0, 2, 2)
-        title_label = gtk.Label(_("Tit_le:"))
+        self.title_entry = Gtk.Entry()
+        table.attach(self.title_entry,1,2,0,1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        title_label = Gtk.Label(label=_("Tit_le:"))
         title_label.set_mnemonic_widget(self.title_entry)
         title_label.set_use_underline(True)
-        table.attach(title_label,0,1,0,1,gtk.EXPAND | gtk.FILL, 0, 2, 2)
+        table.attach(title_label,0,1,0,1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
 
-        self.tags = gtk.Entry()
-        table.attach(self.tags,1,2,1,2,gtk.EXPAND | gtk.FILL, 0, 2, 2)
-        tag_label = gtk.Label(_("Ta_gs:"))
+        self.tags = Gtk.Entry()
+        table.attach(self.tags,1,2,1,2,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        tag_label = Gtk.Label(label=_("Ta_gs:"))
         tag_label.set_mnemonic_widget(self.tags)
         tag_label.set_use_underline(True)
-        table.attach(tag_label,0,1,1,2,gtk.EXPAND | gtk.FILL, 0, 2, 2)
+        table.attach(tag_label,0,1,1,2,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
         
-        self.description = gtk.TextView()
-        self.description.set_wrap_mode(gtk.WRAP_WORD)
+        self.description = Gtk.TextView()
+        self.description.set_wrap_mode(Gtk.WrapMode.WORD)
 
-        sw = gtk.ScrolledWindow ()
-        sw.set_shadow_type (gtk.SHADOW_ETCHED_IN)
-        sw.set_policy (gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        sw = Gtk.ScrolledWindow ()
+        sw.set_shadow_type (Gtk.ShadowType.ETCHED_IN)
+        sw.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         sw.add(self.description)
         
-        table.attach(sw,1,2,2,3,gtk.EXPAND | gtk.FILL, 0, 2, 2)
-        desc_label = gtk.Label(_("_Description:"))
+        table.attach(sw,1,2,2,3,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        desc_label = Gtk.Label(label=_("_Description:"))
         desc_label.set_mnemonic_widget(self.description)
         desc_label.set_use_underline(True)
-        table.attach(desc_label,0,1,2,3,gtk.EXPAND | gtk.FILL, 0, 2, 2)
+        table.attach(desc_label,0,1,2,3,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
 
-        self.include_params = gtk.CheckButton(
+        self.include_params = Gtk.CheckButton(
             _("_Include parameters in description"))
-        table.attach(self.include_params,0,2,3,4,gtk.EXPAND | gtk.FILL, 0, 2, 2)
+        table.attach(self.include_params,0,2,3,4,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
 
         self.blog_menu = utils.create_option_menu([_("<None>")])
-        table.attach(self.blog_menu, 1,2,4,5,gtk.EXPAND | gtk.FILL, 0, 2, 2)
+        table.attach(self.blog_menu, 1,2,4,5,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
         
         self.get_blogs()
     
-        blog_label = gtk.Label(_("_Blog To:"))
+        blog_label = Gtk.Label(label=_("_Blog To:"))
         blog_label.set_mnemonic_widget(self.blog_menu)
         blog_label.set_use_underline(True)
-        table.attach(blog_label,0,1,4,5,gtk.EXPAND | gtk.FILL, 0, 2, 2)
+        table.attach(blog_label,0,1,4,5,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
 
-        self.upload_button = gtk.Button(_("_Upload"))
+        self.upload_button = Gtk.Button(_("_Upload"))
         self.upload_button.connect("clicked", self.onUpload)
-        table.attach(self.upload_button, 0,2,5,6,gtk.EXPAND | gtk.FILL, 0, 2, 2)
+        table.attach(self.upload_button, 0,2,5,6,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
 
-        self.cancel_button = gtk.Button(_("_Cancel Upload"))
+        self.cancel_button = Gtk.Button(_("_Cancel Upload"))
         self.cancel_button.connect("clicked", self.onCancelUpload)
-        table.attach(self.cancel_button, 0,2,6,7,gtk.EXPAND | gtk.FILL, 0, 2, 2)
+        table.attach(self.cancel_button, 0,2,6,7,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
         self.set_upload_mode(True)
 
 
-        self.bar = gtk.ProgressBar()
+        self.bar = Gtk.ProgressBar()
         self.vbox.pack_end(self.bar,False,False)
 
     def init_title(self):
@@ -233,7 +233,7 @@ class FlickrUploadDialog(dialog.T):
                     primary=_("Can't Post to Group"),
                     secondary=_("Your image has been uploaded to Flickr, but you aren't a member of the Gnofract 4D group, so your image hasn't been added to the group pool. You can join the group at http://www.flickr.com/groups_join.gne?id=46555832@N00 ."),
                     parent = self,
-                    ignore=ignore_info.T("cannot_post", True, gtk.RESPONSE_ACCEPT))
+                    ignore=ignore_info.T("cannot_post", True, Gtk.ResponseType.ACCEPT))
 
                 d.run()
                 d.destroy()
@@ -290,19 +290,19 @@ Click Finish to save your credentials and proceed.""")
             self,
             _("Flickr Integration Setup"),
             main_window,
-            gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_CANCEL, gtk.RESPONSE_CLOSE,
+            Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CLOSE,
              _("_Next"), FlickrAssistantDialog.NEXT))
 
         self.main_window = main_window
 
-        self.textview = gtk.TextView()
-        self.textview.set_wrap_mode(gtk.WRAP_WORD)
+        self.textview = Gtk.TextView()
+        self.textview.set_wrap_mode(Gtk.WrapMode.WORD)
         self.textbuffer = self.textview.get_buffer()
         self.textview.connect("button_release_event",self.onClick)
-        self.vbox.pack_start(self.textview)
+        self.vbox.pack_start(self.textview, True, True, 0)
 
-        self.bar = gtk.ProgressBar()
+        self.bar = Gtk.ProgressBar()
         self.vbox.pack_end(self.bar,False,False)
 
         req = flickr.requestFrob()
@@ -337,7 +337,7 @@ Click Finish to save your credentials and proceed.""")
         self.auth_url = flickr.getAuthUrl(self.frob)
 
         self.href_tag = self.textbuffer.create_tag(
-            "href",foreground="blue",underline=pango.UNDERLINE_SINGLE)
+            "href",foreground="blue",underline=Pango.Underline.SINGLE)
         
         self.textbuffer.set_text(FlickrAssistantDialog.intro_text,-1)
         self.textbuffer.insert_with_tags(
@@ -351,7 +351,7 @@ Click Finish to save your credentials and proceed.""")
             return
         
         (x,y) = (event.x, event.y)
-        (bx, by) = widget.window_to_buffer_coords(gtk.TEXT_WINDOW_TEXT,int(x),int(y))
+        (bx, by) = widget.window_to_buffer_coords(Gtk.TextWindowType.TEXT,int(x),int(y))
         
         iter = widget.get_iter_at_location(bx,by)
 
@@ -364,12 +364,12 @@ Click Finish to save your credentials and proceed.""")
             preferences.userPrefs, self.auth_url, self.main_window)
 
     def onResponse(self,widget,id):
-        if id == gtk.RESPONSE_CLOSE or \
-               id == gtk.RESPONSE_NONE or \
-               id == gtk.RESPONSE_DELETE_EVENT:
+        if id == Gtk.ResponseType.CLOSE or \
+               id == Gtk.ResponseType.NONE or \
+               id == Gtk.ResponseType.DELETE_EVENT:
             self.slave.terminate()
             self.hide()
-        elif id == gtk.RESPONSE_ACCEPT:
+        elif id == Gtk.ResponseType.ACCEPT:
             self.onAccept()
         elif id == FlickrAssistantDialog.NEXT:
             self.onCheck()

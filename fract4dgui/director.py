@@ -4,8 +4,8 @@
 #TODO: change default directory when selecting new according to already set item
 #(for temp dirs, avi and fct files selections)
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 import os
 import fnmatch
 import pickle
@@ -80,7 +80,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
                 response = self.ask_question(
                     _("Directory for temporary .fct files contains other .fct files"),
                     _("These may be overwritten. Proceed?"))
-                if response!=gtk.RESPONSE_ACCEPT:
+                if response!=Gtk.ResponseType.ACCEPT:
                     raise UserCancelledError()
             return
 
@@ -110,21 +110,21 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     #returns selected file or empty string
     def get_fct_file(self):
         temp_file=""
-        dialog = gtk.FileChooserDialog("Choose keyframe...",None,gtk.FILE_CHOOSER_ACTION_OPEN,
-            (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        dialog.set_default_response(gtk.RESPONSE_OK)
+        dialog = Gtk.FileChooserDialog("Choose keyframe...",None,Gtk.FileChooserAction.OPEN,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog.set_default_response(Gtk.ResponseType.OK)
         #----setting filters---------
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name("gnofract4d files (*.fct)")
         filter.add_pattern("*.fct")
         dialog.add_filter(filter)
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name("All files")
         filter.add_pattern("*")
         dialog.add_filter(filter)
         #----------------------------
         response = dialog.run()
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             temp_file=dialog.get_filename()
         dialog.destroy()
         return temp_file
@@ -133,11 +133,11 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     #returns selected file or empty string
     def get_avi_file(self):
         temp_file=""
-        dialog = gtk.FileChooserDialog("Save AVI file...",None,gtk.FILE_CHOOSER_ACTION_SAVE,
-            (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        dialog.set_default_response(gtk.RESPONSE_OK)
+        dialog = Gtk.FileChooserDialog("Save AVI file...",None,Gtk.FileChooserAction.SAVE,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog.set_default_response(Gtk.ResponseType.OK)
         response = dialog.run()
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             temp_file=dialog.get_filename()
         dialog.destroy()
         return temp_file
@@ -146,22 +146,22 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     #returns selected file or empty string
     def get_cfg_file_save(self):
         temp_file=""
-        dialog = gtk.FileChooserDialog("Save animation...",None,gtk.FILE_CHOOSER_ACTION_SAVE,
-            (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        dialog.set_default_response(gtk.RESPONSE_OK)
+        dialog = Gtk.FileChooserDialog("Save animation...",None,Gtk.FileChooserAction.SAVE,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_current_name("animation.fcta")
         #----setting filters---------
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name("gnofract4d animation files (*.fcta)")
         filter.add_pattern("*.fcta")
         dialog.add_filter(filter)
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name("All files")
         filter.add_pattern("*")
         dialog.add_filter(filter)
         #----------------------------
         response = dialog.run()
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             temp_file=dialog.get_filename()
         dialog.destroy()
         return temp_file
@@ -170,23 +170,23 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     #returns selected file or empty string
     def get_cfg_file_open(self):
         temp_file=""
-        dialog = gtk.FileChooserDialog("Choose animation...",None,gtk.FILE_CHOOSER_ACTION_OPEN,
-            (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        dialog.set_default_response(gtk.RESPONSE_OK)
+        dialog = Gtk.FileChooserDialog("Choose animation...",None,Gtk.FileChooserAction.OPEN,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog.set_default_response(Gtk.ResponseType.OK)
         #----setting filters---------
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name("gnofract4d animation files (*.fcta)")
         filter.add_pattern("*.fcta")
         dialog.add_filter(filter)
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name("All files")
         filter.add_pattern("*")
         dialog.add_filter(filter)
         #----------------------------
         response = dialog.run()
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             temp_file=dialog.get_filename()
-        #elif response == gtk.RESPONSE_CANCEL:
+        #elif response == Gtk.ResponseType.CANCEL:
         #    print 'Closed, no files selected'
         dialog.destroy()
         return temp_file
@@ -359,7 +359,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
             self.cmb_interpolation_type.set_active(animation.INT_LINEAR)
 
     def add_keyframe_clicked(self,widget, event):
-        if event.type == gtk.gdk.BUTTON_PRESS:
+        if event.type == Gdk.EventType.BUTTON_PRESS:
             widget.popup(None, None, None, event.button, event.time)
             # Tell calling code that we have handled this event the buck
             # stops here.
@@ -447,9 +447,9 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
             self,
             _("Director"),
             main_window,
-            gtk.DIALOG_DESTROY_WITH_PARENT,
+            Gtk.DialogFlags.DESTROY_WITH_PARENT,
             (_("_Render"), DirectorDialog.RESPONSE_RENDER,
-             gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+             Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
 
         hig.MessagePopper.__init__(self)
         self.animation=animation.T(f.compiler)
@@ -460,24 +460,24 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.main_window = main_window
 
         #main VBox
-        self.box_main=gtk.VBox(False,0)
+        self.box_main=Gtk.VBox(False,0)
         #--------------------menu-------------------------------
-        self.manager = gtk.UIManager()
+        self.manager = Gtk.UIManager()
         accelgroup = self.manager.get_accel_group()
         self.add_accel_group(accelgroup)
 
-        actiongroup = gtk.ActionGroup("Director")
+        actiongroup = Gtk.ActionGroup("Director")
         actiongroup.add_actions([
                 ('DirectorMenuAction', None, _('_Director')),
                 ('DirectorEditAction', None, _('_Edit')),
 
-                ('DirectorNewAction', gtk.STOCK_NEW, _('_New Animation'),
+                ('DirectorNewAction', Gtk.STOCK_NEW, _('_New Animation'),
                  '<control>N', None, self.new_configuration_clicked),
-                ('DirectorOpenAction', gtk.STOCK_OPEN, _('_Open Animation'),
+                ('DirectorOpenAction', Gtk.STOCK_OPEN, _('_Open Animation'),
                  '<control>O', None, self.load_configuration_clicked),
-                ('DirectorSaveAction', gtk.STOCK_SAVE, _('_Save Animation'),
+                ('DirectorSaveAction', Gtk.STOCK_SAVE, _('_Save Animation'),
                  '<control>S', None, self.save_configuration_clicked),
-                ('DirectorEditPrefsAction', gtk.STOCK_PREFERENCES, _('_Preferences'),
+                ('DirectorEditPrefsAction', Gtk.STOCK_PREFERENCES, _('_Preferences'),
                  '<control>P', None, self.preferences_clicked),
                 ])
 
@@ -505,53 +505,53 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 
         #-----------creating popup menu-------------------------------
         #popup menu for keyframes
-        self.popup_menu=gtk.Menu()
-        self.mnu_pop_add_file=gtk.MenuItem("From file")
+        self.popup_menu=Gtk.Menu()
+        self.mnu_pop_add_file=Gtk.MenuItem("From file")
         self.popup_menu.append(self.mnu_pop_add_file)
         self.mnu_pop_add_file.connect("activate", self.add_from_file, None)
         self.mnu_pop_add_file.show()
-        self.mnu_pop_add_current=gtk.MenuItem("From current fractal")
+        self.mnu_pop_add_current=Gtk.MenuItem("From current fractal")
         self.popup_menu.append(self.mnu_pop_add_current)
         self.mnu_pop_add_current.connect("activate", self.add_from_current, None)
         self.mnu_pop_add_current.show()
 
         #--------------Keyframes box-----------------------------------
-        self.frm_kf=gtk.Frame("Keyframes")
+        self.frm_kf=Gtk.Frame("Keyframes")
         self.frm_kf.set_border_width(10)
-        self.hbox_kfs=gtk.HBox(False,0)
-        self.tbl_keyframes_left=gtk.Table(2,2,False)
+        self.hbox_kfs=Gtk.HBox(False,0)
+        self.tbl_keyframes_left=Gtk.Table(2,2,False)
         self.tbl_keyframes_left.set_row_spacings(10)
         self.tbl_keyframes_left.set_col_spacings(10)
         self.tbl_keyframes_left.set_border_width(10)
 
-        self.sw=gtk.ScrolledWindow()
-        self.sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-#        filenames=gtk.ListStore(gobject.TYPE_STRING,
-#            gobject.TYPE_STRING)
-#        self.tv_keyframes=gtk.TreeView(filenames)
-#        self.tv_column_name = gtk.TreeViewColumn('Keyframes')
+        self.sw=Gtk.ScrolledWindow()
+        self.sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+#        filenames=Gtk.ListStore(GObject.TYPE_STRING,
+#            GObject.TYPE_STRING)
+#        self.tv_keyframes=Gtk.TreeView(filenames)
+#        self.tv_column_name = Gtk.TreeViewColumn('Keyframes')
 #        self.tv_keyframes.append_column(self.tv_column_name)
-#        self.tv_column_duration = gtk.TreeViewColumn('Duration')
+#        self.tv_column_duration = Gtk.TreeViewColumn('Duration')
 #        self.tv_keyframes.append_column(self.tv_column_duration)
-#        self.cell_name = gtk.CellRendererText()
+#        self.cell_name = Gtk.CellRendererText()
 #        self.tv_column_name.pack_start(self.cell_name, True)
 #        self.tv_column_name.add_attribute(self.cell_name, 'text', 0)
-#        self.cell_duration = gtk.CellRendererText()
+#        self.cell_duration = Gtk.CellRendererText()
 #        self.tv_column_name.pack_start(self.cell_duration, True)
 #        self.tv_column_name.add_attribute(self.cell_duration, 'text', 0)
-        filenames=gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_UINT,
-                            gobject.TYPE_UINT, gobject.TYPE_STRING)
-        self.tv_keyframes = gtk.TreeView(filenames)
-        column = gtk.TreeViewColumn('Keyframes', gtk.CellRendererText(),text=0)
+        filenames=Gtk.ListStore(GObject.TYPE_STRING, GObject.TYPE_UINT,
+                            GObject.TYPE_UINT, GObject.TYPE_STRING)
+        self.tv_keyframes = Gtk.TreeView(filenames)
+        column = Gtk.TreeViewColumn('Keyframes', Gtk.CellRendererText(),text=0)
         self.tv_keyframes.append_column(column)
 
-        column = gtk.TreeViewColumn('Duration', gtk.CellRendererText(),text=1)
+        column = Gtk.TreeViewColumn('Duration', Gtk.CellRendererText(),text=1)
         self.tv_keyframes.append_column(column)
 
-        column = gtk.TreeViewColumn('Stopped for', gtk.CellRendererText(),text=2)
+        column = Gtk.TreeViewColumn('Stopped for', Gtk.CellRendererText(),text=2)
         self.tv_keyframes.append_column(column)
 
-        column = gtk.TreeViewColumn('Interpolation type', gtk.CellRendererText(),text=3)
+        column = Gtk.TreeViewColumn('Interpolation type', Gtk.CellRendererText(),text=3)
         self.tv_keyframes.append_column(column)
 
         self.sw.add_with_viewport(self.tv_keyframes)
@@ -560,12 +560,12 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.current_select=-1
         self.tbl_keyframes_left.attach(self.sw,0,2,0,1)
 
-        self.btn_add_keyframe=gtk.Button("Add",gtk.STOCK_ADD)
+        self.btn_add_keyframe=Gtk.Button("Add",Gtk.STOCK_ADD)
         #self.btn_add_keyframe.connect("clicked",self.add_keyframe_clicked,None)
         self.btn_add_keyframe.connect_object("event",self.add_keyframe_clicked,self.popup_menu)
         self.tbl_keyframes_left.attach(self.btn_add_keyframe,0,1,1,2,0,0)
 
-        self.btn_remove_keyframe=gtk.Button("Remove",gtk.STOCK_REMOVE)
+        self.btn_remove_keyframe=Gtk.Button("Remove",Gtk.STOCK_REMOVE)
         self.btn_remove_keyframe.connect("clicked",self.remove_keyframe_clicked,None)
         self.tbl_keyframes_left.attach(self.btn_remove_keyframe,1,2,1,2,0,0)
         self.hbox_kfs.pack_start(self.tbl_keyframes_left,True,True,10)
@@ -574,36 +574,36 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.box_main.pack_start(self.frm_kf,True,True,0)
 
         # current keyframe box
-        self.current_kf=gtk.Frame("Current Keyframe")
+        self.current_kf=Gtk.Frame("Current Keyframe")
         self.current_kf.set_border_width(10)
 
         self.box_main.pack_start(self.current_kf,True,True,0)
 
-        self.tbl_keyframes_right=gtk.Table(4,2,True)
+        self.tbl_keyframes_right=Gtk.Table(4,2,True)
         self.tbl_keyframes_right.set_row_spacings(10)
         self.tbl_keyframes_right.set_col_spacings(10)
         self.tbl_keyframes_right.set_border_width(10)
 
-        self.lbl_duration=gtk.Label("Duration")
+        self.lbl_duration=Gtk.Label(label="Duration")
         self.tbl_keyframes_right.attach(self.lbl_duration,0,1,0,1)
 
-        adj_duration=gtk.Adjustment(25,1,10000,1,10)
-        self.spin_duration=gtk.SpinButton(adj_duration)
+        adj_duration=Gtk.Adjustment(25,1,10000,1,10)
+        self.spin_duration=Gtk.SpinButton(adj_duration)
         self.spin_duration.connect("output",self.duration_changed,None)
         self.tbl_keyframes_right.attach(self.spin_duration,1,2,0,1)
 
-        self.lbl_kf_stop=gtk.Label("Keyframe stopped for:")
+        self.lbl_kf_stop=Gtk.Label(label="Keyframe stopped for:")
         self.tbl_keyframes_right.attach(self.lbl_kf_stop,0,1,1,2)
 
-        adj_kf_stop=gtk.Adjustment(1,1,10000,1,10)
-        self.spin_kf_stop=gtk.SpinButton(adj_kf_stop)
+        adj_kf_stop=Gtk.Adjustment(1,1,10000,1,10)
+        self.spin_kf_stop=Gtk.SpinButton(adj_kf_stop)
         self.spin_kf_stop.connect("output",self.stop_changed,None)
         self.tbl_keyframes_right.attach(self.spin_kf_stop,1,2,1,2)
 
-        self.lbl_int_type=gtk.Label("Interpolation type:")
+        self.lbl_int_type=Gtk.Label(label="Interpolation type:")
         self.tbl_keyframes_right.attach(self.lbl_int_type,0,1,2,3)
 
-        self.cmb_interpolation_type=gtk.combo_box_new_text() #gtk.ComboBox()
+        self.cmb_interpolation_type=Gtk.ComboBoxText() #Gtk.ComboBox()
         self.cmb_interpolation_type.append_text("Linear")
         self.cmb_interpolation_type.append_text("Logarithmic")
         self.cmb_interpolation_type.append_text("Inverse logarithmic")
@@ -612,63 +612,63 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.cmb_interpolation_type.connect("changed",self.interpolation_type_changed,None)
         self.tbl_keyframes_right.attach(self.cmb_interpolation_type,1,2,2,3)
 
-        self.btn_adv_opt=gtk.Button("Advanced options")
+        self.btn_adv_opt=Gtk.Button("Advanced options")
         self.btn_adv_opt.connect("clicked",self.adv_opt_clicked,None)
         self.tbl_keyframes_right.attach(self.btn_adv_opt,0,2,3,4)
 
         self.current_kf.add(self.tbl_keyframes_right) #,False,False,10)
         #-------------------------------------------------------------------
         #----------------------output box-----------------------------------
-        self.frm_output=gtk.Frame("Output options")
+        self.frm_output=Gtk.Frame("Output options")
         self.frm_output.set_border_width(10)
 
-        self.box_output_main=gtk.VBox(True,10)
-        self.box_output_file=gtk.HBox(False,10)
+        self.box_output_main=Gtk.VBox(True,10)
+        self.box_output_file=Gtk.HBox(False,10)
 
-        self.lbl_temp_avi=gtk.Label("Resulting video file:")
+        self.lbl_temp_avi=Gtk.Label(label="Resulting video file:")
         self.box_output_file.pack_start(self.lbl_temp_avi,False,False,10)
 
-        self.txt_temp_avi=gtk.Entry(0)
+        self.txt_temp_avi=Gtk.Entry(0)
         self.txt_temp_avi.set_editable(False)
         self.box_output_file.pack_start(self.txt_temp_avi,True,True,10)
 
-        self.btn_temp_avi=gtk.Button("Browse")
+        self.btn_temp_avi=Gtk.Button("Browse")
         self.btn_temp_avi.connect("clicked",self.temp_avi_clicked,None)
         self.box_output_file.pack_start(self.btn_temp_avi,True,True,10)
 
         self.box_output_main.pack_start(self.box_output_file,True,True,0)
 
-        self.box_output_res=gtk.HBox(False,10)
+        self.box_output_res=Gtk.HBox(False,10)
 
-        self.lbl_res=gtk.Label("Resolution:")
+        self.lbl_res=Gtk.Label(label="Resolution:")
         self.box_output_res.pack_start(self.lbl_res,False,False,10)
 
-        adj_width=gtk.Adjustment(640,320,2048,10,100,0)
-        self.spin_width=gtk.SpinButton(adj_width)
+        adj_width=Gtk.Adjustment(640,320,2048,10,100,0)
+        self.spin_width=Gtk.SpinButton(adj_width)
         self.spin_width.connect("output",self.output_width_changed,None)
         self.box_output_res.pack_start(self.spin_width,False,False,10)
 
-        self.lbl_x=gtk.Label("x")
+        self.lbl_x=Gtk.Label(label="x")
         self.box_output_res.pack_start(self.lbl_x,False,False,10)
 
-        adj_height=gtk.Adjustment(480,240,1536,10,100,0)
-        self.spin_height=gtk.SpinButton(adj_height)
+        adj_height=Gtk.Adjustment(480,240,1536,10,100,0)
+        self.spin_height=Gtk.SpinButton(adj_height)
         self.spin_height.connect("output",self.output_height_changed,None)
         self.box_output_res.pack_start(self.spin_height,False,False,10)
 
         self.box_output_main.pack_start(self.box_output_res,True,True,0)
 
-        self.box_output_framerate=gtk.HBox(False,10)
+        self.box_output_framerate=Gtk.HBox(False,10)
 
-        self.lbl_framerate=gtk.Label("Frame rate:")
+        self.lbl_framerate=Gtk.Label(label="Frame rate:")
         self.box_output_framerate.pack_start(self.lbl_framerate,False,False,10)
 
-        adj_framerate=gtk.Adjustment(25,5,100,1,5,0)
-        self.spin_framerate=gtk.SpinButton(adj_framerate)
+        adj_framerate=Gtk.Adjustment(25,5,100,1,5,0)
+        self.spin_framerate=Gtk.SpinButton(adj_framerate)
         self.spin_framerate.connect("output",self.output_framerate_changed,None)
         self.box_output_framerate.pack_start(self.spin_framerate,False,False,10)
 
-        self.chk_swapRB=gtk.CheckButton("Swap red and blue component")
+        self.chk_swapRB=Gtk.CheckButton("Swap red and blue component")
         self.chk_swapRB.set_active(True)
         self.chk_swapRB.connect("toggled",self.swap_redblue_clicked,None)
         self.box_output_framerate.pack_start(self.chk_swapRB,False,False,50)
@@ -683,18 +683,18 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.transpath = fractconfig.instance.find_on_path("transcode")
         if not self.transpath:
             # put a message at the bottom to warn user
-            warning_box = gtk.HBox()
-            image = gtk.image_new_from_stock(
-                gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_BUTTON)
+            warning_box = Gtk.HBox()
+            image = Gtk.Image.new_from_stock(
+                Gtk.STOCK_DIALOG_WARNING, Gtk.IconSize.BUTTON)
 
-            warning_box.pack_start(image)
+            warning_box.pack_start(image, True, True, 0)
             
-            message = gtk.Label(
+            message = Gtk.Label(label=
                 _("Transcode utility not found. Without it we can't generate any video but can still save sequences of still images."))
 
             message.set_line_wrap(True)
-            warning_box.pack_start(message)
-            self.box_main.pack_end(warning_box)
+            warning_box.pack_start(message, True, True, 0)
+            self.box_main.pack_end(warning_box, True, True, 0)
 
         #--------------showing all-------------------------------
         self.vbox.add(self.box_main)
@@ -703,19 +703,19 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
             self.load_configuration(conf_file)
 
     def onResponse(self,widget,id):
-        if id == gtk.RESPONSE_CLOSE or \
-               id == gtk.RESPONSE_NONE or \
-               id == gtk.RESPONSE_DELETE_EVENT:
+        if id == Gtk.ResponseType.CLOSE or \
+               id == Gtk.ResponseType.NONE or \
+               id == Gtk.ResponseType.DELETE_EVENT:
             self.hide()
         elif id == DirectorDialog.RESPONSE_RENDER:
             self.generate(self.transpath != None)
 
     def main(self):
-        gtk.main()
+        Gtk.main()
 
 
 if __name__ == "__main__":
-    gobject.threads_init()
-    gtk.threads_init()
+    GObject.threads_init()
+    Gtk.threads_init()
     fracwin = DirectorDialog()
     fracwin.main()

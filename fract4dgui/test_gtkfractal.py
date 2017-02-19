@@ -13,7 +13,8 @@ import fract4d
 from fract4d import fc, fractal
 
 import gtkfractal
-import gtk
+
+from gi.repository import Gtk
 
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
@@ -47,11 +48,11 @@ class TestHidden(unittest.TestCase):
         self.compiler = g_comp
 
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testCreate(self):
         # draw a default fractal
@@ -90,7 +91,7 @@ class TestHidden(unittest.TestCase):
         f.set_size(57,211)
         f.set_size(57,211)
         while cc.count < 3:
-            gtk.main_iteration()
+            Gtk.main_iteration()
 
     def testLoad(self):
         f = gtkfractal.Hidden(self.compiler,64,40)
@@ -111,7 +112,7 @@ class Test(unittest.TestCase):
     def setUp(self):
         global g_comp
         self.compiler = g_comp
-        self.window = gtk.Window()
+        self.window = Gtk.Window()
         self.f = gtkfractal.T(self.compiler)
         self.window.add(self.f.widget)
         self.f.widget.realize()
@@ -121,11 +122,11 @@ class Test(unittest.TestCase):
         self.f = None
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testCreate(self):
         # draw a default fractal
@@ -146,13 +147,13 @@ class Test(unittest.TestCase):
         self.f.set_formula("test.frm","test_func")
         self.f.set_outer("test.cfrm","flat")
         
-        table = gtk.Table()
+        table = Gtk.Table()
         self.f.populate_formula_settings(table, 0)
 
         children = table.get_children()
         list.reverse(children)
 
-        names = [x.get_text() for x in children if isinstance(x,gtk.Label)]
+        names = [x.get_text() for x in children if isinstance(x,Gtk.Label)]
 
         self.assertEqual(names[0],"Max Iterations")
         self.assertEqual(names[1],"Bailfunc")
@@ -160,13 +161,13 @@ class Test(unittest.TestCase):
         self.assertEqual(names[3],"Param with min and max")
         self.assertEqual(names[4],"Myfunc")
         
-        table = gtk.Table()
+        table = Gtk.Table()
         self.f.populate_formula_settings(table, 1)
 
         children = table.get_children()
         list.reverse(children)
 
-        names = [x.get_text() for x in children if isinstance(x,gtk.Label)]
+        names = [x.get_text() for x in children if isinstance(x,Gtk.Label)]
 
         self.assertEqual(
             names,
@@ -177,13 +178,13 @@ class Test(unittest.TestCase):
     def testIntParamSetting(self):
         self.f.set_formula("test.frm","fn_with_intparam")
 
-        table = gtk.Table()
+        table = Gtk.Table()
         self.f.populate_formula_settings(table, 0)
 
     def testAllSettingsTypes(self):
         self.f.set_formula("test.frm","test_all_types")
         
-        table = gtk.Table()
+        table = Gtk.Table()
         self.f.populate_formula_settings(table, 0)
         
     def testButton1(self):
@@ -234,7 +235,7 @@ class Test(unittest.TestCase):
         tparams = copy.copy(f.params())
 
         f.onButtonRelease(f.widget,
-                          FakeEvent(button=1,state=gtk.gdk.SHIFT_MASK))
+                          FakeEvent(button=1,state=Gdk.ModifierType.SHIFT_MASK))
         self.assertEqual(f.params(),tparams)
 
         

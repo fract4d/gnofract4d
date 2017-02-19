@@ -1,28 +1,28 @@
 # superclass for dialogs
 
-import gtk
+from gi.repository import Gtk
 import new
 
 _dialogs = {}
 
 def make_container(title):
-    label_box = gtk.HBox()
-    label = gtk.Label('<span weight="bold">%s</span>' % title)
+    label_box = Gtk.HBox()
+    label = Gtk.Label(label='<span weight="bold">%s</span>' % title)
     label.set_use_markup(True)
     label_box.pack_start(label, False, False)
-    close = gtk.Button(None, gtk.STOCK_CLOSE)
+    close = Gtk.Button(None, Gtk.STOCK_CLOSE)
     label_box.pack_end(close, False, False)
-    frame = gtk.VBox()
+    frame = Gtk.VBox()
     frame.pack_start(label_box, False, False, 1)
 
     close.connect('clicked', lambda x : frame.hide())
     return frame
 
-class T(gtk.Dialog):
+class T(Gtk.Dialog):
     def __init__(self,title=None,parent=None,flags=0,buttons=None):
-        gtk.Dialog.__init__(self,title,parent,flags,buttons)
+        GObject.GObject.__init__(self,title,parent,flags,buttons)
 
-        self.set_default_response(gtk.RESPONSE_CLOSE)
+        self.set_default_response(Gtk.ResponseType.CLOSE)
         self.connect('response',self.onResponse)
 
         self.connect('destroy-event', self.clear_global)
@@ -60,9 +60,9 @@ class T(gtk.Dialog):
     reveal = staticmethod(reveal)
 
     def onResponse(self,widget,id):
-        if id == gtk.RESPONSE_CLOSE or \
-               id == gtk.RESPONSE_NONE or \
-               id == gtk.RESPONSE_DELETE_EVENT:
+        if id == Gtk.ResponseType.CLOSE or \
+               id == Gtk.ResponseType.NONE or \
+               id == Gtk.ResponseType.DELETE_EVENT:
             self.hide()
         else:
             print("unexpected response %d" % id)

@@ -9,48 +9,47 @@ import math
 import copy
 import random
 
-import gtk
-import gobject
+from gi.repository import Gtk, GObject
 
 from fract4d import fractal,fract4dc,fracttypes, image, messages
 
-from . import utils, fourway
-from .gtkio import gtkio
+import utils, fourway
+from gtkio import gtkio
 
-class Hidden(gobject.GObject):
+class Hidden(GObject.GObject):
     """This class implements a fractal which calculates asynchronously
     and is integrated with the GTK main loop"""
     __gsignals__ = {
         'parameters-changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, ()),
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, ()),
         'iters-changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, (gobject.TYPE_INT,)),
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, (GObject.TYPE_INT,)),
         'tolerance-changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,)),    
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, (GObject.TYPE_FLOAT,)),    
         'formula-changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, ()),
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, ()),
         'status-changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, (gobject.TYPE_INT,)),
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, (GObject.TYPE_INT,)),
         'progress-changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,)),
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, (GObject.TYPE_FLOAT,)),
         'pointer-moved' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, (gobject.TYPE_INT,
-                            gobject.TYPE_FLOAT, gobject.TYPE_FLOAT)),
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, (GObject.TYPE_INT,
+                            GObject.TYPE_FLOAT, GObject.TYPE_FLOAT)),
         'stats-changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, (GObject.TYPE_PYOBJECT,))
             
         }
 
     def __init__(self,comp,width,height,total_width=-1,total_height=-1):
-        gobject.GObject.__init__(self)
+        GObject.GObject.__init__(self)
 
         if 'win' == sys.platform[:3]:
             (self.readfd, self.writefd) = fract4dc.pipe()
@@ -158,7 +157,7 @@ class Hidden(gobject.GObject):
         # wait for stream from worker to flush
         while self.running:
             n += 1
-            gtk.main_iteration(True)
+            Gtk.main_iteration(True)
 
         self.skip_updates = False
 
@@ -185,7 +184,7 @@ class Hidden(gobject.GObject):
         m = messages.parse(t,bytes)
 
         if utils.threads_enabled:
-            gtk.gdk.threads_enter()    
+            Gdk.threads_enter()    
 
         #print "msg: %s %d %d %d %d" % (m,p1,p2,p3,p4)
         if t == fract4dc.MESSAGE_TYPE_ITERS:
@@ -215,7 +214,7 @@ class Hidden(gobject.GObject):
             print("Unknown message from fractal thread; %s" % list(bytes))
 
         if utils.threads_enabled:
-            gtk.gdk.threads_leave()
+            Gdk.threads_leave()
         return True
     
     def __getattr__(self,name):
@@ -379,7 +378,7 @@ class Hidden(gobject.GObject):
         utils.idle_add(self.changed)
 
 # explain our existence to GTK's object system
-gobject.type_register(Hidden)
+GObject.type_register(Hidden)
 
 class HighResolution(Hidden):
     "An invisible GtkFractal which computes in multiple chunks"
@@ -448,16 +447,16 @@ class T(Hidden):
 
         self.paint_mode = False
                 
-        drawing_area = gtk.DrawingArea()
+        drawing_area = Gtk.DrawingArea()
         drawing_area.set_events(
-            gtk.gdk.BUTTON_RELEASE_MASK |
-            gtk.gdk.BUTTON1_MOTION_MASK |
-            gtk.gdk.POINTER_MOTION_MASK |
-            gtk.gdk.POINTER_MOTION_HINT_MASK |
-            gtk.gdk.BUTTON_PRESS_MASK |
-            gtk.gdk.KEY_PRESS_MASK |
-            gtk.gdk.KEY_RELEASE_MASK |
-            gtk.gdk.EXPOSURE_MASK
+            Gdk.EventMask.BUTTON_RELEASE_MASK |
+            Gdk.EventMask.BUTTON1_MOTION_MASK |
+            Gdk.EventMask.POINTER_MOTION_MASK |
+            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.KEY_PRESS_MASK |
+            Gdk.EventMask.KEY_RELEASE_MASK |
+            Gdk.EventMask.EXPOSURE_MASK
             )
 
         self.notice_mouse = False
@@ -494,7 +493,7 @@ class T(Hidden):
         else:
             fmt = "%.17f"
 
-        widget = gtk.Entry()
+        widget = Gtk.Entry()
         widget.set_activates_default(True)
 
         def set_entry():
@@ -524,7 +523,7 @@ class T(Hidden):
         
         if hasattr(param, "min") and hasattr(param, "max"):
             # add a slider
-            adj = gtk.Adjustment(
+            adj = Gtk.Adjustment(
                 0.0,param.min.value, param.max.value,
                 0.001, 
                 0.01)
@@ -540,13 +539,13 @@ class T(Hidden):
 
             adj.connect('value-changed', adj_changed, form, order)
 
-            hscale = gtk.HScale(adj)
+            hscale = Gtk.HScale(adj)
             hscale.set_draw_value(False)
-            hscale.set_update_policy(gtk.UPDATE_DELAYED)
+            hscale.set_update_policy(Gtk.UPDATE_DELAYED)
             hscale.set_data("update_function",set_adj)
-            vbox = gtk.VBox()
-            vbox.pack_start(widget)
-            vbox.pack_start(hscale)
+            vbox = Gtk.VBox()
+            vbox.pack_start(widget, True, True, 0)
+            vbox.pack_start(hscale, True, True, 0)
             return vbox
 
         return widget
@@ -554,9 +553,9 @@ class T(Hidden):
     def make_numeric_widget(
         self, table, i, form, name, part, param, order):
     
-        label = gtk.Label(self.param_display_name(name,param)+part)
+        label = Gtk.Label(self.param_display_name(name,param)+part)
         label.set_alignment(1.0, 0.0)
-        table.attach(label,0,1,i,i+1,gtk.EXPAND | gtk.FILL,0,0,0)
+        table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
         widget = self.make_numeric_entry(
             form, param, order)
@@ -566,7 +565,7 @@ class T(Hidden):
     
     def make_bool_widget(self, form, name, param, order):
 
-        widget = gtk.CheckButton(self.param_display_name(name,param))
+        widget = Gtk.CheckButton(self.param_display_name(name,param))
 
         def set_toggle(*args):
             is_set = form.params[order]
@@ -594,9 +593,9 @@ class T(Hidden):
     def make_color_widget(
         self, table, i, form, name, param, order):
 
-        label = gtk.Label(self.param_display_name(name,param))
+        label = Gtk.Label(self.param_display_name(name,param))
         label.set_alignment(1.0, 0.0)
-        table.attach(label,0,1,i,i+1,gtk.EXPAND | gtk.FILL,0,0,0)
+        table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
         def set_fractal(r, g, b, is_left):
             self.freeze()
@@ -629,9 +628,9 @@ class T(Hidden):
     def make_enumerated_widget(
         self, table, i, form, name, part, param, order):
 
-        label = gtk.Label(self.param_display_name(name,param))
+        label = Gtk.Label(self.param_display_name(name,param))
         label.set_alignment(1.0, 0.0)
-        table.attach(label,0,1,i,i+1,gtk.EXPAND | gtk.FILL,0,0,0)
+        table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
         widget = utils.create_option_menu(param.enum.value)
 
@@ -688,7 +687,7 @@ class T(Hidden):
         else:
             raise "Unsupported parameter type"
 
-        table.attach(widget,1,2,i,i+1,gtk.EXPAND | gtk.FILL ,0,0,0)
+        table.attach(widget,1,2,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL ,0,0,0)
 
 
     def add_complex_formula_setting(
@@ -697,12 +696,12 @@ class T(Hidden):
         widget = self.make_numeric_entry(
                 form,param,order)
 
-        table.attach(widget,1,2,i,i+1,gtk.EXPAND | gtk.FILL ,0,0,0)
+        table.attach(widget,1,2,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL ,0,0,0)
 
         widget = self.make_numeric_entry(
                 form,param,order+1)
 
-        table.attach(widget,1,2,i+1,i+2,gtk.EXPAND | gtk.FILL ,0,0,0)
+        table.attach(widget,1,2,i+1,i+2,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL ,0,0,0)
 
         name = self.param_display_name(name,param)
         fway = fourway.T(name)
@@ -716,7 +715,7 @@ class T(Hidden):
                 'value-slightly-changed',
                 self.parent.on_drag_param_fourway, order, param_type)
         
-        table.attach(fway.widget,0,1,i,i+2, gtk.EXPAND|gtk.FILL,0, 0,0)
+        table.attach(fway.widget,0,1,i,i+2, Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL,0, 0,0)
 
     def fourway_released(self,widget,x,y,order,form):
         form.nudge_param(order, x,y)
@@ -746,9 +745,9 @@ class T(Hidden):
             print("Warning: ", msg)
 
     def add_formula_function(self,table,i,name,param,form):
-        label = gtk.Label(self.param_display_name(name,param))
+        label = Gtk.Label(self.param_display_name(name,param))
         label.set_alignment(1.0, 0.0)
-        table.attach(label,0,1,i,i+1,gtk.EXPAND | gtk.FILL,0,0,0)
+        table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
         funclist = self.construct_function_menu(param,form)
         widget = utils.create_option_menu(funclist)
@@ -783,15 +782,15 @@ class T(Hidden):
 
         widget.connect('changed',set_fractal_function,self,param,formula)
         
-        table.attach(widget,1,2,i,i+1,gtk.EXPAND | gtk.FILL,0,0,0)
+        table.attach(widget,1,2,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
     def create_maxiter_widget(self,table,i):
-        label = gtk.Label("_Max Iterations")
+        label = Gtk.Label(label="_Max Iterations")
         label.set_alignment(1.0, 0.0)
         label.set_use_underline(True)
-        table.attach(label,0,1,i,i+1,gtk.EXPAND | gtk.FILL,0,0,0)
+        table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
-        widget = gtk.Entry()
+        widget = Gtk.Entry()
         widget.set_activates_default(True)
         
         def set_entry(*args):
@@ -817,7 +816,7 @@ class T(Hidden):
         widget.connect('focus-out-event',set_fractal)
 
         label.set_mnemonic_widget(widget)
-        table.attach(widget,1,2,i,i+1,gtk.EXPAND | gtk.FILL,0,0,0)
+        table.attach(widget,1,2,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
         return i+1
 
     def populate_formula_settings(self, table, param_type, row=0):
@@ -984,7 +983,7 @@ class T(Hidden):
                 y = 0.5 + (self.y + self.newy)/2.0;
 
             # with shift held, don't zoom
-            if hasattr(event,"state") and event.state & gtk.gdk.SHIFT_MASK:
+            if hasattr(event,"state") and event.get_state() & Gdk.ModifierType.SHIFT_MASK:
                 zoom = 1.0
             self.recenter(x,y,zoom)
             
@@ -996,7 +995,7 @@ class T(Hidden):
                 self.flip_to_julia()
             
         else:
-            if hasattr(event,"state") and event.state & gtk.gdk.CONTROL_MASK:
+            if hasattr(event,"state") and event.get_state() & Gdk.ModifierType.CONTROL_MASK:
                 zoom = 20.0
             else:
                 zoom = 2.0
@@ -1035,7 +1034,7 @@ class T(Hidden):
                 x, y,
                 min(self.width-x,w),
                 min(self.height-y,h),
-                gtk.gdk.RGB_DITHER_NONE,
+                Gdk.RGB_DITHER_NONE,
                 buf,
                 self.width*3)
 

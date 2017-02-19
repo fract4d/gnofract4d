@@ -1,22 +1,22 @@
 # Sort of a widget which controls an angle of the fractal
-# I say sort of, because this doesn't actually inherit from gtk.Widget,
+# I say sort of, because this doesn't actually inherit from Gtk.Widget,
 # so it's not really a widget. This is because if I attempt to do that
 # pygtk crashes. Hence I delegate to a member which actually is a widget
 # with some stuff drawn on it - basically an ungodly hack.
 
-import gtk
-import gobject
-import pango
+from gi.repository import Gtk
+from gi.repository import GObject
+from gi.repository import Pango
 import math
 
-class T(gobject.GObject):
+class T(GObject.GObject):
     __gsignals__ = {
         'value-changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, (gobject.TYPE_DOUBLE,)),
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, (GObject.TYPE_DOUBLE,)),
         'value-slightly-changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, (gobject.TYPE_DOUBLE,))
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, (GObject.TYPE_DOUBLE,))
         }
     two_pi = 2.0 * math.pi
     ptr_radius = 4
@@ -25,25 +25,25 @@ class T(gobject.GObject):
         self.radius = 0
         self.text=text
         
-        self.adjustment = gtk.Adjustment(0, -math.pi, math.pi, 0.01, 0.01, 0)
+        self.adjustment = Gtk.Adjustment(0, -math.pi, math.pi, 0.01, 0.01, 0)
 
         self.old_value = self.adjustment.get_value()
         
         self.adjustment.connect('value-changed', self.onAdjustmentValueChanged)
                 
-        gobject.GObject.__init__(self)
+        GObject.GObject.__init__(self)
         
-        self.widget = gtk.DrawingArea()
+        self.widget = Gtk.DrawingArea()
         self.widget.set_size_request(40,40)
 
         self.widget.set_events(
-            gtk.gdk.BUTTON_RELEASE_MASK |
-            gtk.gdk.BUTTON1_MOTION_MASK |
-            gtk.gdk.POINTER_MOTION_HINT_MASK |
-            gtk.gdk.ENTER_NOTIFY_MASK |
-            gtk.gdk.LEAVE_NOTIFY_MASK |                               
-            gtk.gdk.BUTTON_PRESS_MASK |
-            gtk.gdk.EXPOSURE_MASK
+            Gdk.EventMask.BUTTON_RELEASE_MASK |
+            Gdk.EventMask.BUTTON1_MOTION_MASK |
+            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
+            Gdk.EventMask.ENTER_NOTIFY_MASK |
+            Gdk.EventMask.LEAVE_NOTIFY_MASK |                               
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.EXPOSURE_MASK
             )
 
         self.notice_mouse = False
@@ -92,14 +92,14 @@ class T(gobject.GObject):
                 self.old_value = current_value
                 self.emit('value-changed',current_value)
 
-        self.widget.set_state(gtk.STATE_NORMAL)
+        self.widget.set_state(Gtk.StateType.NORMAL)
 
         
     def onButtonPress(self,widget,event):
         if event.button == 1:
             self.notice_mouse = True
             self.update_from_mouse(event.x, event.y)
-            self.widget.set_state(gtk.STATE_ACTIVE)
+            self.widget.set_state(Gtk.StateType.ACTIVE)
 
         
     def __del__(self):
@@ -134,7 +134,7 @@ class T(gobject.GObject):
 
         # text
         context = widget.get_pango_context()
-        layout = pango.Layout(context)
+        layout = Pango.Layout(context)
 
         # some pygtk versions want 2 args, some want 1. sigh
         try:
@@ -181,4 +181,4 @@ class T(gobject.GObject):
             360 * 64)
         
 # explain our existence to GTK's object system
-gobject.type_register(T)
+GObject.type_register(T)

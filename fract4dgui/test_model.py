@@ -7,7 +7,7 @@ import copy
 import sys
 import io
 
-import gtk
+from gi.repository import Gtk
 
 sys.path.insert(1, "..")
 
@@ -45,11 +45,11 @@ class Test(unittest.TestCase):
         self.f = self.m = None
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testCreate(self):
         self.assertTrue(self.f)

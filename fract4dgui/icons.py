@@ -1,12 +1,12 @@
 # our 'quasi-stock' icons
 
-import gobject
-import gtk
+from gi.repository import GObject
+from gi.repository import Gtk
 from . import utils
 
 from fract4d import fractconfig
 
-_iconfactory = gtk.IconFactory()
+_iconfactory = Gtk.IconFactory()
 _iconfactory.add_default()
     
 class StockThing:
@@ -15,22 +15,22 @@ class StockThing:
         self.stock_name = stock_name
         self.title = title
         try:
-            self.pixbuf = gtk.gdk.pixbuf_new_from_file(
+            self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(
                 fractconfig.instance.find_resource(
                     file,
                     'pixmaps',
                     '../pixmaps/gnofract4d'))
             
-            self.iconset = gtk.IconSet(self.pixbuf)
+            self.iconset = Gtk.IconSet(self.pixbuf)
             _iconfactory.add(stock_name, self.iconset)
 
-            gtk.stock_add(
-                [(stock_name, title, gtk.gdk.CONTROL_MASK, key, "c")])
+            Gtk.stock_add(
+                [(stock_name, title, Gdk.ModifierType.CONTROL_MASK, key, "c")])
 
         except ValueError:
             # can't find it
             self.pixbuf = None
-        except gobject.GError:
+        except GObject.GError:
             self.pixbuf = None
             
 explorer = StockThing('explorer_mode.png', 'explore', _('Explorer'), ord('e'))

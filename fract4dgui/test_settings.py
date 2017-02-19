@@ -8,7 +8,7 @@ import math
 import os
 import sys
 
-import gtk
+from gi.repository import Gtk
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
@@ -32,24 +32,24 @@ class Test(unittest.TestCase):
         pass
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def search_for_named_widget(self, page, label_name):
         for child in page.get_children():
-            if isinstance(child, gtk.Label):
+            if isinstance(child, Gtk.Label):
                 this_label_name = child.get_text()
                 #print this_label_name
                 if this_label_name == label_name:
                     entry = child.get_mnemonic_widget()
                     self.assertNotEqual(entry, None,
                                         "all widgets should have mnemonics")
-                    self.assertEqual(isinstance(entry,gtk.Entry),True)
+                    self.assertEqual(isinstance(entry,Gtk.Entry),True)
                     return entry
-            elif isinstance(child, gtk.Container):
+            elif isinstance(child, Gtk.Container):
                 widget = self.search_for_named_widget(child,label_name)
                 if widget:
                     return widget

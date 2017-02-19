@@ -1,4 +1,4 @@
-import gtk
+from gi.repository import Gtk
 from . import dialog
 from . import utils
 import random
@@ -15,8 +15,8 @@ class GradientDialog(dialog.T):
             self,
             _("Gradients"),
             main_window,
-            gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+            Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
         
         self.set_size_request(300, 320)
 
@@ -39,20 +39,20 @@ class GradientDialog(dialog.T):
         HSVCo = gradient.RGBtoHSV(hData.col)
     
         ###GRADIENT PREVIEW###
-        self.gradarea=gtk.DrawingArea()
+        self.gradarea=Gtk.DrawingArea()
         self.gradarea.set_size_request(256, 64)
         self.gradarea.connect('realize', self.gradarea_realized)
         self.gradarea.connect('expose_event', self.gradarea_expose)
 
         self.gradarea.add_events(
-            gtk.gdk.BUTTON_RELEASE_MASK |
-            gtk.gdk.BUTTON_PRESS_MASK |
-            gtk.gdk.POINTER_MOTION_MASK)
+            Gdk.EventMask.BUTTON_RELEASE_MASK |
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.POINTER_MOTION_MASK)
         
         self.gradarea.connect('button-press-event', self.gradarea_mousedown)
         self.gradarea.connect('button-release-event', self.gradarea_clicked)
         self.gradarea.connect('motion-notify-event', self.gradarea_mousemoved)
-        gradareaBox = gtk.HBox(False, 0)
+        gradareaBox = Gtk.HBox(False, 0)
         
         ###CONTEXT MENU###
         menu_items = ( 
@@ -69,59 +69,59 @@ class GradientDialog(dialog.T):
             ( "/Debug",        None,            self.printstuff,    0 )
             )
         
-        accel_group = gtk.AccelGroup()
-        self.item_factory= gtk.ItemFactory(gtk.Menu, "<gradients>", accel_group)
+        accel_group = Gtk.AccelGroup()
+        self.item_factory= Gtk.ItemFactory(Gtk.Menu, "<gradients>", accel_group)
         self.item_factory.create_items(menu_items)
         self.add_accel_group(accel_group)
         self.menu=self.item_factory.get_widget("<gradients>")
         
         ###COLOR SELECTION###
-        if gtk.pygtk_version[0] >= 2 and gtk.pygtk_version[1] >= 4:
-            lblCsel = gtk.Label("Color:")
-            self.csel = gtk.ColorButton(
+        if Gtk.pygtk_version[0] >= 2 and Gtk.pygtk_version[1] >= 4:
+            lblCsel = Gtk.Label(label="Color:")
+            self.csel = Gtk.ColorButton(
                     utils.create_color(hData.col[0], hData.col[1], hData.col[2]))
             self.csel.connect('color-set', self.colorchanged)
             self.colorbutton = True
         else:
-            self.csel = gtk.Button("Color...")
+            self.csel = Gtk.Button("Color...")
             self.csel.connect('clicked', self.cbutton_clicked)
-            self.csel_dialog = gtk.ColorSelectionDialog("Select a Color")
+            self.csel_dialog = Gtk.ColorSelectionDialog("Select a Color")
             self.csel_dialog.colorsel.set_current_color(
                     utils.create_color(hData.col[0], hData.col[1], hData.col[2]))
 
             self.csel_dialog.ok_button.connect('clicked', self.cdialog_response)
             self.colorbutton = False
-        synccolsB = gtk.Button("Sync Colors")
+        synccolsB = Gtk.Button("Sync Colors")
         synccolsB.connect('clicked', self.sync_colors)
             
-        CSelBox = gtk.HBox(False, 0)
+        CSelBox = Gtk.HBox(False, 0)
         
         ###ALTERNATION CONTROL###
-        lblAlternate = gtk.Label(_("Alternation:"))
-        alternate    = gtk.SpinButton(gtk.Adjustment(self.grad.getAlt(), 0, .5, 0.01, .5, 0.0))
+        lblAlternate = Gtk.Label(label=_("Alternation:"))
+        alternate    = Gtk.SpinButton(Gtk.Adjustment(self.grad.getAlt(), 0, .5, 0.01, .5, 0.0))
         alternate.set_digits(3)
         alternate.connect('value-changed', self.alternate_changed)
         
-        AlternateBox = gtk.HBox(False, 0)
+        AlternateBox = Gtk.HBox(False, 0)
         
         ###POSITION CONTROL###
-        lblPos    = gtk.Label(_("Position:"))
-        self.pos = gtk.SpinButton(gtk.Adjustment(hData.pos, 0, 1, 0.01, 0.1, 0.0))
+        lblPos    = Gtk.Label(label=_("Position:"))
+        self.pos = Gtk.SpinButton(Gtk.Adjustment(hData.pos, 0, 1, 0.01, 0.1, 0.0))
         self.pos.set_digits(2)
         self.pos.connect('value-changed', self.pos_changed)
         
-        PosBox = gtk.HBox(False, 0)
+        PosBox = Gtk.HBox(False, 0)
         
         ###RANDOMIZE BUTTON###
-        randomize = gtk.Button(_("Randomize"))
+        randomize = Gtk.Button(_("Randomize"))
         randomize.connect('clicked', self.randomize)
-        randBox = gtk.HBox(False, 0)
+        randBox = Gtk.HBox(False, 0)
         
         ###OFFSET CONTROL###
-        lblOffset = gtk.Label(_("Offset:"))
-        lblOffsetBox = gtk.HBox(False, 0)
+        lblOffset = Gtk.Label(label=_("Offset:"))
+        lblOffsetBox = Gtk.HBox(False, 0)
         
-        offset=gtk.HScale(gtk.Adjustment(self.grad.getOffset(), 0, 1, 0.001, 0.01, 0.0))
+        offset=Gtk.HScale(Gtk.Adjustment(self.grad.getOffset(), 0, 1, 0.001, 0.01, 0.0))
         offset.set_digits(3)
         offset.connect('value-changed', self.offset_changed)
         
@@ -238,7 +238,7 @@ class GradientDialog(dialog.T):
             "#FFFFFFFFFFFF", True, True)
         self.gradgc = widget.window.new_gc( foreground=self.gradcol,
                                             background=self.gradcol,
-                                            fill=gtk.gdk.SOLID)
+                                            fill=Gdk.SOLID)
                                 
         widget.window.draw_rectangle(widget.style.white_gc,
                                 True,

@@ -9,7 +9,7 @@ import os
 import sys
 import random
 
-import gtk
+from gi.repository import Gtk
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
@@ -40,11 +40,11 @@ class Test(unittest.TestCase):
         os.system("killall yelp > /dev/null 2>&1")
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testLoad(self):
         # load good file

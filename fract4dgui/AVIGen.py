@@ -7,8 +7,8 @@
 
 
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 import os
 import re
 from threading import *
@@ -17,12 +17,12 @@ from fract4d import animation, fractconfig
 
 class AVIGeneration:
     def __init__(self,animation):
-        self.dialog=gtk.Dialog(
+        self.dialog=Gtk.Dialog(
             "Generating AVI file...",None,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL))
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            (Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL))
 
-        self.pbar = gtk.ProgressBar()
+        self.pbar = Gtk.ProgressBar()
         self.pbar.set_text("Please wait...")
         self.dialog.vbox.pack_start(self.pbar,True,True,0)
         self.dialog.set_geometry_hints(None,min_aspect=3.5,max_aspect=3.5)
@@ -48,16 +48,16 @@ class AVIGeneration:
                 return
 
             if not(os.path.exists(folder_png+"list")):#check if image listing already exist
-                gtk.gdk.threads_enter()
-                error_dlg = gtk.MessageDialog(
+                Gdk.threads_enter()
+                error_dlg = Gtk.MessageDialog(
                     self.dialog,
-                    gtk.DIALOG_MODAL  | gtk.DIALOG_DESTROY_WITH_PARENT,
-                    gtk.MESSAGE_ERROR, gtk.BUTTONS_OK,
+                    Gtk.DialogFlags.MODAL  | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                    Gtk.MessageType.ERROR, Gtk.ButtonsType.OK,
                     "In directory: %s there is no listing file. Cannot continue" %(folder_png))
                 response=error_dlg.run()
                 error_dlg.destroy()
-                gtk.gdk.threads_leave()
-                event = gtk.gdk.Event(gtk.gdk.DELETE)
+                Gdk.threads_leave()
+                event = Gdk.Event(Gdk.DELETE)
                 self.dialog.emit('delete_event', event)
                 yield False
                 return
@@ -87,14 +87,14 @@ class AVIGeneration:
         except Exception as err:
             self.running=False
             self.error=True
-            gtk.gdk.threads_enter()
-            error_dlg = gtk.MessageDialog(self.dialog,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                    gtk.MESSAGE_ERROR, gtk.BUTTONS_OK,
+            Gdk.threads_enter()
+            error_dlg = Gtk.MessageDialog(self.dialog,Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                    Gtk.MessageType.ERROR, Gtk.ButtonsType.OK,
                     _("Error during generation of avi file: %s" % err))
             error_dlg.run()
             error_dlg.destroy()
-            gtk.gdk.threads_leave()
-            event = gtk.gdk.Event(gtk.gdk.DELETE)
+            Gdk.threads_leave()
+            event = Gdk.Event(Gdk.DELETE)
             self.dialog.emit('delete_event', event)
             yield False
             return
@@ -112,9 +112,9 @@ class AVIGeneration:
         self.running=True
         self.error=False
         task=self.generate_avi()
-        gobject.idle_add(task.__next__)
+        GObject.idle_add(task.__next__)
         response = self.dialog.run()
-        if response != gtk.RESPONSE_CANCEL:
+        if response != Gtk.ResponseType.CANCEL:
             if self.running==True: #destroy by user
                 self.running=False
                 self.dialog.destroy()

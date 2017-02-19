@@ -4,8 +4,8 @@
 
 import unittest
 
-import gtk
-import gobject
+from gi.repository import Gtk
+from gi.repository import GObject
 
 from . import fourway
 
@@ -23,22 +23,22 @@ class Test(unittest.TestCase):
         pass
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testCreate(self):
         f = fourway.T("hello")
         self.assertTrue(f)
         
     def testAddToWindow(self):
-        w = gtk.Window()
+        w = Gtk.Window()
         f = fourway.T("wibble")
         w.add(f.widget)
         w.show()
-        gtk.main_iteration()
+        Gtk.main_iteration()
 
 def suite():
     return unittest.makeSuite(Test,'test')

@@ -1,19 +1,19 @@
 # toolbar code. 
 
-import gtk
+from gi.repository import Gtk
 
-class T(gtk.Toolbar):
+class T(Gtk.Toolbar):
     def __init__(self):
-        gtk.Toolbar.__init__(self)
+        GObject.GObject.__init__(self)
 
         self.set_tooltips(True)
         self.set_border_width(1)
 
     def add_space(self):
-        self.insert(gtk.SeparatorToolItem(), -1)
+        self.insert(Gtk.SeparatorToolItem(), -1)
 
     def add_widget(self, widget, tip_text, private_text):
-        toolitem = gtk.ToolItem()
+        toolitem = Gtk.ToolItem()
         toolitem.add(widget)
         toolitem.set_expand(False)
         toolitem.set_homogeneous(False)
@@ -22,11 +22,11 @@ class T(gtk.Toolbar):
 
     def add_button(self, title, tip_text, image, cb):
         try:
-            toolitem = gtk.ToolButton(image,title)
+            toolitem = Gtk.ToolButton(image,title)
             self.insert(toolitem,-1)
         except:
             self.append_element(
-                gtk.TOOLBAR_CHILD_BUTTON,
+                Gtk.ToolbarStyle.CHILD_BUTTON,
                 None,
                 title,
                 tip_text,
@@ -36,13 +36,13 @@ class T(gtk.Toolbar):
                 None)
 
     def add_stock(self, stock_id, tip_text, cb):
-        toolitem = gtk.ToolButton(stock_id)
+        toolitem = Gtk.ToolButton(stock_id)
         toolitem.connect('clicked', cb)
         toolitem.set_tooltip_text(tip_text)
         self.insert(toolitem,-1)
 
     def add_toggle(self, stock_id, title, tip_text, cb):
-        toolitem = gtk.ToggleToolButton(stock_id)
+        toolitem = Gtk.ToggleToolButton(stock_id)
         toolitem.connect('toggled', cb)
         toolitem.set_tooltip_text(tip_text)
         self.insert(toolitem,-1)

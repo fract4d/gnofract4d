@@ -7,7 +7,7 @@ import sys
 import os
 import subprocess
 
-import gtk
+from gi.repository import Gtk
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
@@ -30,10 +30,10 @@ class Test(unittest.TestCase):
         pass
 
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,rq):
-        gtk.main_quit()
+        Gtk.main_quit()
 
     def testRQ(self):
         rq = renderqueue.T()
