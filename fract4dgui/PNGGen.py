@@ -3,7 +3,7 @@
 #in special thread, while it finds in-between values it call gtkfractal.HighResolution
 #to create images
 
-from __future__ import generators
+
 
 import gtk
 import gobject
@@ -13,7 +13,7 @@ import sys
 import os
 from threading import *
 
-import gtkfractal, hig
+from . import gtkfractal, hig
 from fract4d import fractal,fracttypes, animation
 
 running=False
@@ -48,7 +48,7 @@ class PNGGeneration(gtk.Dialog,hig.MessagePopper):
         #--------find values and duration from all keyframes------------
         try:
 	   durations = self.anim.get_keyframe_durations()
-        except Exception, err:
+        except Exception as err:
             self.show_error(_("Error processing keyframes"), str(err))
             yield False
             return
@@ -91,8 +91,8 @@ class PNGGeneration(gtk.Dialog,hig.MessagePopper):
                         _("The temporary directory: %s already contains at least one image" % folder_png),
                         _("Use them to speed up generation?"))
 
-                except Exception, err:
-                    print err
+                except Exception as err:
+                    print(err)
 		    gtk.threads_leave()
                     raise
 
@@ -126,7 +126,7 @@ class PNGGeneration(gtk.Dialog,hig.MessagePopper):
         running=True
         self.error=False
         task=self.generate_png()
-        gobject.idle_add(task.next)
+        gobject.idle_add(task.__next__)
         response = self.run()
         if response != gtk.RESPONSE_CANCEL:
             if running==True: #destroy by user
@@ -200,7 +200,7 @@ class GenerationThread(Thread):
             list = self.anim.create_list()
 	    lfilename = os.path.join(self.anim.get_png_dir(), "list")
 	    lfile = open(lfilename,"w")
-	    print >>lfile, "\n".join(list)
+	    print("\n".join(list), file=lfile)
 	    lfile.close()
 	    
         except:

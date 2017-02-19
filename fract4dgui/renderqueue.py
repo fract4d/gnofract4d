@@ -7,9 +7,9 @@ import copy
 import gobject
 import gtk
 
-import gtkfractal
-import dialog
-import preferences
+from . import gtkfractal
+from . import dialog
+from . import preferences
 
 class QueueEntry:
     def __init__(self, f, name, w, h):
@@ -44,12 +44,12 @@ class T(gobject.GObject):
         
     def start(self):
         if self.current == None:
-            self.next()
+            next(self)
 
     def empty(self):
         return self.queue == []
     
-    def next(self):
+    def __next__(self):
         if self.empty():
             self.current = None
             self.emit('done')
@@ -70,7 +70,7 @@ class T(gobject.GObject):
         if status == 0:
             self.queue.pop(0)
             self.emit('changed')
-            self.next()
+            next(self)
 
     def onProgressChanged(self,f,progress):
         self.emit('progress-changed',progress)

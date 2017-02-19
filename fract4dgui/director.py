@@ -12,10 +12,10 @@ import pickle
 import sys
 import tempfile
 
-import dialog, hig
+from . import dialog, hig
 from fract4d import animation, fractconfig
 
-import PNGGen,AVIGen,DlgAdvOpt,director_prefs
+from . import PNGGen,AVIGen,DlgAdvOpt,director_prefs
 
 def show(parent,alt_parent, f,dialog_mode,conf_file=""):
     DirectorDialog.show(parent,alt_parent, f,dialog_mode,conf_file)
@@ -229,7 +229,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     def generate(self,create_avi=True):
         try:
             self.check_sanity()
-        except SanityCheckError, exn:
+        except SanityCheckError as exn:
             self.show_error(_("Cannot Generate Animation"), str(exn))
             return
         except UserCancelledError:
@@ -406,7 +406,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
             return -1
         try:
             self.animation.load_animation(file)
-        except Exception, err:
+        except Exception as err:
             self.show_error(
                 _("Cannot load animation"),
                 str(err))
@@ -432,7 +432,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         if cfg!="":
             try:
                 result=self.animation.save_animation(cfg)
-            except Exception, err:
+            except Exception as err:
                 self.show_error(
                     _("Error saving animation"),
                     str(err))

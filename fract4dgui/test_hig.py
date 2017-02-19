@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import copy
@@ -8,7 +8,7 @@ import os
 
 import gtk
 import gobject
-import hig
+from . import hig
 
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')

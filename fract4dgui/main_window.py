@@ -6,7 +6,7 @@ import signal
 import copy
 import math
 import re
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 import gtk, gobject
 
@@ -17,9 +17,9 @@ sys.path.insert(1, "..")
 from fract4d import fractal,fc,fract4dc,image, fracttypes, fractconfig
 from fractutils import flickr
 
-import gtkfractal, model, preferences, autozoom, settings, toolbar
-import undo, browser, fourway, angle, utils, hig, ignore_info, painter
-import icons, flickr_assistant, renderqueue, director
+from . import gtkfractal, model, preferences, autozoom, settings, toolbar
+from . import undo, browser, fourway, angle, utils, hig, ignore_info, painter
+from . import icons, flickr_assistant, renderqueue, director
 
 re_ends_with_num = re.compile(r'\d+\Z')
 re_cleanup = re.compile(r'[\s\(\)]+')
@@ -78,7 +78,7 @@ class MainWindow:
                 "basic.map",
                 "maps",
                 "maps"))
-        except Exception, ex:
+        except Exception as ex:
             #print ex
             pass
             
@@ -255,7 +255,7 @@ class MainWindow:
                 preview.loadFctFile(open(filename))
                 preview.draw_image(False, False)
                 active=True
-            except Exception,err:
+            except Exception as err:
                 active=False
             chooser.set_preview_widget_active(active)
                 
@@ -269,8 +269,8 @@ class MainWindow:
         return # can't get this to work
         try:
             gtk.window_set_default_icon_list([icons.logo.pixbuf])
-        except Exception,err:
-            print err
+        except Exception as err:
+            print(err)
             # not supported in this pygtk. Oh well...
             pass
         
@@ -306,7 +306,7 @@ class MainWindow:
             
     def create_subfracts(self,f):
         self.subfracts = [ None ] * 12
-        for i in xrange(12):
+        for i in range(12):
             self.subfracts[i] = gtkfractal.SubFract(
                 self.compiler,f.width//4,f.height//4)
             self.subfracts[i].set_master(f)
@@ -1016,9 +1016,9 @@ class MainWindow:
     def on_drag_param_fourway(self, widget, dx, dy, order, param_type):
         try:
             self.preview.nudge_param(order, param_type, dx, dy)
-        except Exception, err:
-            print param_type
-            print err
+        except Exception as err:
+            print(param_type)
+            print(err)
             raise
         self.draw_preview()
                 
@@ -1100,7 +1100,7 @@ class MainWindow:
             self.set_filename(file)
             self.update_recent_files(file)
             return True
-        except Exception, err:
+        except Exception as err:
             self.show_error_message(
                 _("Error saving to file %s") % file, err)
             return False
@@ -1186,8 +1186,8 @@ class MainWindow:
             
         subject = os.path.basename(self.display_filename())
         url= '"mailto:gnofract4d-users@lists.sourceforge.net?subject=%s&body=%s"' % \
-             (urllib.quote(subject),
-              urllib.quote(self.f.serialize()))
+             (urllib.parse.quote(subject),
+              urllib.parse.quote(self.f.serialize()))
 
         os.system("%s &" % (mailer % url))
 
@@ -1226,7 +1226,7 @@ class MainWindow:
                 try:
                     self.save_image_file(name)
                     break
-                except Exception, err:
+                except Exception as err:
                     self.show_error_message(
                         _("Error saving image %s") % name, err)
         fs.hide()
@@ -1235,7 +1235,7 @@ class MainWindow:
         try:
             self.f.save_image(filename)
             return True
-        except Exception, err:
+        except Exception as err:
             self.show_error_message(
                 _("Error saving image to file %s") % filename, err)
             return False
@@ -1379,7 +1379,7 @@ class MainWindow:
             self.set_filename(file)
             browser.update(self.f.forms[0].funcFile, self.f.forms[0].funcName)
             return True
-        except Exception, err:
+        except Exception as err:
             self.show_error_message(_("Error opening %s") % file,err)
             return False
 
@@ -1392,7 +1392,7 @@ class MainWindow:
             browser.show(self.window, self.f, type)
 
             return True
-        except Exception, err:
+        except Exception as err:
             self.show_error_message(_("Error opening %s") % file, err)
             return False
 

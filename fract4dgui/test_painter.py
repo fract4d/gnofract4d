@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #unit tests for settings window
 
@@ -15,8 +15,8 @@ gettext.install('gnofract4d')
 sys.path.insert(1, "..")
 
 from fract4d import fc, fractal
-import painter
-import gtkfractal
+from . import painter
+from . import gtkfractal
 
 class FakeEvent:
     def __init__(self,**kwds):

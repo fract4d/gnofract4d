@@ -5,7 +5,7 @@
 
 #Limitations: user can destroy dialog, but it will not destroy transcode process!?
 
-from __future__ import generators
+
 
 import gtk
 import gobject
@@ -84,7 +84,7 @@ class AVIGeneration:
                 yield False
                 return
             yield True
-        except Exception, err:
+        except Exception as err:
             self.running=False
             self.error=True
             gtk.gdk.threads_enter()
@@ -112,7 +112,7 @@ class AVIGeneration:
         self.running=True
         self.error=False
         task=self.generate_avi()
-        gobject.idle_add(task.next)
+        gobject.idle_add(task.__next__)
         response = self.dialog.run()
         if response != gtk.RESPONSE_CANCEL:
             if self.running==True: #destroy by user

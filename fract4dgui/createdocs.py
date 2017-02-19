@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # create a DocBook XML document documenting the keyboard shortcuts & mouse clicks
 # by interrogating the code
@@ -6,7 +6,7 @@
 from xml.sax.saxutils import escape, quoteattr
 import os
 import sys
-import StringIO
+import io
 import re
 
 import gettext
@@ -14,7 +14,7 @@ os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
 sys.path.insert(1, "..")
 
-import main_window
+from . import main_window
 
 sort_re = re.compile(r'(?P<mod1><.*?>)?(?P<mod2><.*?>)?(?P<key>[^<>]*)')
 
@@ -61,38 +61,38 @@ class CommandPrinter:
     def output_command(self,command,type):
         key = ctrl_re.sub('Ctrl+',command.key)
         key = shift_re.sub('Shift+',key)
-        print >>self.f,  '<row>'
-        print >>self.f,  '<entry>%s</entry>' % escape(key)
-        print >>self.f,  '<entry>%s</entry>' % escape(command.val)
-        print >>self.f,  '</row>'
+        print('<row>', file=self.f)
+        print('<entry>%s</entry>' % escape(key), file=self.f)
+        print('<entry>%s</entry>' % escape(command.val), file=self.f)
+        print('</row>', file=self.f)
 
     def output_all(self):
         self.output_table(self.mouse_commands, "Mouse Commands", "Button")
-        keys = self.commands.keys()
+        keys = list(self.commands.keys())
         keys.sort(key_cmp)
         self.output_table([self.commands[k] for k in keys],"Keyboard Shortcuts","Key") 
         
     def output_table(self,commands,name,type):
         nospacename = name.replace(' ', '')
-        print >>self.f, '<sect2 id="%s">' % nospacename
-        print >>self.f, '<title>%s</title>' % name
-        print >>self.f, '<para><informaltable>'
-        print >>self.f, '<tgroup cols="2">'
-        print >>self.f, '''<thead><row>
+        print('<sect2 id="%s">' % nospacename, file=self.f)
+        print('<title>%s</title>' % name, file=self.f)
+        print('<para><informaltable>', file=self.f)
+        print('<tgroup cols="2">', file=self.f)
+        print('''<thead><row>
                     <entry>%s</entry>
                     <entry>Action</entry>
-                 </row></thead>''' % type
-        print >>self.f,  '<tbody>'
+                 </row></thead>''' % type, file=self.f)
+        print('<tbody>', file=self.f)
 
         for cmd in commands:
             self.output_command(cmd,type)
 
-        print >>self.f,  '</tbody>'
-        print >>self.f,  '</tgroup>'
-        print >>self.f,  '</informaltable>'
-        print >>self.f,  '</para>'
+        print('</tbody>', file=self.f)
+        print('</tgroup>', file=self.f)
+        print('</informaltable>', file=self.f)
+        print('</para>', file=self.f)
 
-        print >>self.f,  '</sect2>'
+        print('</sect2>', file=self.f)
         
 def main(outfile):
     out = open(outfile,"w")

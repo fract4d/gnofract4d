@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # unit tests for renderqueue module
 
 import unittest
 import sys
 import os
-import commands
+import subprocess
 
 import gtk
 import gettext
@@ -14,7 +14,7 @@ gettext.install('gnofract4d')
 
 sys.path.insert(1, "..")
 
-import renderqueue
+from . import renderqueue
 
 from fract4d import fractal, image, fc
 

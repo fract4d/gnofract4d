@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # unit tests for model
 
@@ -7,7 +7,7 @@ import unittest
 import gtk
 import gobject
 
-import fourway
+from . import fourway
 
 class EmitCounter:
     def __init__(self):
@@ -31,7 +31,7 @@ class Test(unittest.TestCase):
 
     def testCreate(self):
         f = fourway.T("hello")
-        self.failUnless(f)
+        self.assertTrue(f)
         
     def testAddToWindow(self):
         w = gtk.Window()

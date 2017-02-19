@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #unit tests for browser window
 
@@ -15,7 +15,7 @@ gettext.install('gnofract4d')
 sys.path.insert(1, "..")
 
 from fract4d import fc, fractal, browser_model
-import browser
+from . import browser
 
 
 class Test(unittest.TestCase):

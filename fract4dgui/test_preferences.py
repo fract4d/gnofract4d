@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # test classes for preferences logic
 
@@ -7,7 +7,7 @@ import sys
 import os
 
 sys.path.insert(1, "..")
-import preferences
+from . import preferences
 from fract4d import fractconfig
 
 class CallCounter:

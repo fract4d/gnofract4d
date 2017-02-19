@@ -2,12 +2,12 @@
 
 import gtk, gobject
 
-import hig
-import dialog
-import browser
-import utils
+from . import hig
+from . import dialog
+from . import browser
+from . import utils
 import copy
-from table import Table
+from .table import Table
 
 from fract4d import browser_model
 from fract4d.fc import FormulaTypes
@@ -86,7 +86,7 @@ class SettingsDialog(dialog.T):
         
         colormap = widget.get_colormap()
         grad = self.f.get_gradient()
-        for i in xrange(x, x+w):
+        for i in range(x, x+w):
             pos_in_gradient = float(i)/wwidth
             col = grad.get_color_at(pos_in_gradient)
             gtkcol = colormap.alloc_color(
@@ -108,7 +108,7 @@ class SettingsDialog(dialog.T):
             style.bg_gc[gtk.STATE_NORMAL], True,
             x, colorband_height, w, self.grad_handle_height)
 
-        for i in xrange(len(grad.segments)):
+        for i in range(len(grad.segments)):
             seg = grad.segments[i]
             
             left = int(seg.left * wwidth)
@@ -369,15 +369,15 @@ class SettingsDialog(dialog.T):
                 if current != f.period_tolerance:
                     #print "update entry to %.17f" % f.period_tolerance
                     entry.set_text("%.17f" % f.period_tolerance)
-            except ValueError, err:
+            except ValueError as err:
                 # current was set to something that isn't a float
                 entry.set_text("%.17f" % f.period_tolerance)
 
         def set_fractal(*args):
             try:
                 self.f.set_period_tolerance(float(entry.get_text()))
-            except Exception, exn:
-                print exn
+            except Exception as exn:
+                print(exn)
             return False
         
         set_entry(self.f)
@@ -528,7 +528,7 @@ class SettingsDialog(dialog.T):
     def update_formula_text(self, f, textview,formindex):
         text = f.forms[formindex].text()
 
-        latin_text = unicode(text,'latin-1')
+        latin_text = str(text,'latin-1')
         utf8_text = latin_text.encode('utf-8')
 
         textview.get_buffer().set_text(utf8_text,-1)
@@ -551,7 +551,7 @@ class SettingsDialog(dialog.T):
         #print "%s#%s" % (fileName, formName)
         try:
             self.f.set_formula(fileName, formName,formindex)
-        except Exception, exn:
+        except Exception as exn:
             self.show_error_message(
                 _("Errors in formula"),
                 exn)
@@ -728,15 +728,15 @@ class SettingsDialog(dialog.T):
                 current = float(entry.get_text())
                 if current != f.get_param(param):
                     entry.set_text("%.17f" % f.get_param(param))
-            except ValueError, err:
+            except ValueError as err:
                 # current was set to something that isn't a float
                 entry.set_text("%.17f" % f.get_param(param))
 
         def set_fractal(*args):
             try:
                 self.f.set_param(param,entry.get_text())
-            except Exception, exn:
-                print exn
+            except Exception as exn:
+                print(exn)
             return False
         
         set_entry(self.f)

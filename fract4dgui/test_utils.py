@@ -1,19 +1,19 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # unit tests for utils module
 
 import unittest
 import sys
 import os
-import commands
+import subprocess
 import warnings
 
 import gtk
 
 sys.path.insert(1, "..")
 
-import utils
-import gtkfractal
+from . import utils
+from . import gtkfractal
 
 from fract4d import fc
 
@@ -61,7 +61,7 @@ class Test(unittest.TestCase):
             preview.loadFctFile(open(filename))
             preview.draw_image(False, False)
             active=True
-        except Exception,err:
+        except Exception as err:
             active=False
         chooser.set_preview_widget_active(active)
         

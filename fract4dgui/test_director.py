@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # unit tests for renderqueue module
 
 import unittest
 import sys
 import os
-import commands
+import subprocess
 
 import gtk
 import gettext
@@ -13,7 +13,7 @@ os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
 
 sys.path.insert(1, "..")
-import director, PNGGen, hig
+from . import director, PNGGen, hig
 
 from fract4d import fractal, image, fc, animation
 
@@ -71,12 +71,12 @@ class Test(unittest.TestCase):
     def assertRaisesMessage(self, excClass, msg, callable, *args, **kwargs):
         try:
             callable(*args,**kwargs)
-        except excClass, exn:
+        except excClass as exn:
             self.assertEqual(msg,str(exn))
         else:
             if hasattr(excClass,'__name__'): excName = excClass.__name__
             else: excName = str(excClass)
-            raise self.failureException, "%s not raised" % excName
+            raise self.failureException("%s not raised" % excName)
 
     def testOwnSanity(self):
         # exercise each of the checks in the check_sanity function

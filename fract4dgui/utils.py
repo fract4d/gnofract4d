@@ -16,7 +16,7 @@ import gobject
 
 try:
 	from fract4d import fract4dcgmp as fract4dc
-except ImportError, err:
+except ImportError as err:
     from fract4d import fract4dc
 
 threads_enabled = False
@@ -69,7 +69,7 @@ if 'win' != sys.platform[:3]:
         try:
             _throwback()
             return gobject.io_add_watch(fd, gobject.IO_IN | gobject.IO_HUP, cb)
-        except AttributeError, err:
+        except AttributeError as err:
             return gtk.input_add(fd, gtk.gdk.INPUT_READ, cb)
 else:
     def input_add(fd, cb):
@@ -144,7 +144,7 @@ def create_option_menu(items):
         for item in items:
             widget.append_text(item)
         
-    except Exception, exn:
+    except Exception as exn:
         widget = gtk.OptionMenu()
         widget.item_list = items # for get_selected_value
         menu = gtk.Menu()
@@ -227,7 +227,7 @@ def create_color(r,g,b):
     try:
         _throwback()
         return gtk.gdk.Color(int(r*65535),int(g*65535),int(b*65535))
-    except Exception, exn:
+    except Exception as exn:
         # old gtk doesn't have direct color constructor
         return gtk.gdk.color_parse(
             "#%04X%04X%04X" % (int(r*65535),int(g*65535),int(b*65535)))
@@ -243,7 +243,7 @@ def launch_browser(prefs, url, window):
     cmd = browser % ('"' + url + '" &')
     try:
         os.system(cmd)
-    except Exception, err:
+    except Exception as err:
         d = hig.ErrorAlert(
             primary=_("Error launching browser"),
             secondary=_("Try modifying your preferences or copy the URL manually to a browser window.\n") + \

@@ -1,25 +1,25 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # unit tests for model
 
 import unittest
 import copy
 import sys
-import StringIO
+import io
 
 import gtk
 
 sys.path.insert(1, "..")
 
-import model
+from . import model
 
 from fract4d import fractal,fc,fract4dc
 
-import gtkfractal
-import settings
-import preferences
-import autozoom
-import undo
+from . import gtkfractal
+from . import settings
+from . import preferences
+from . import autozoom
+from . import undo
 
 # do compiler setup once
 g_comp = fc.Compiler()
@@ -52,8 +52,8 @@ class Test(unittest.TestCase):
             gtk.main_quit()
 
     def testCreate(self):
-        self.failUnless(self.f)
-        self.failUnless(self.m)
+        self.assertTrue(self.f)
+        self.assertTrue(self.m)
         self.assertEqual(self.m.f, self.f)
 
     def testPreserveYFlip(self):
@@ -80,7 +80,7 @@ class Test(unittest.TestCase):
 
         f.connect('parameters-changed',counter.onCallback)
         
-        f.save(StringIO.StringIO(""))
+        f.save(io.StringIO(""))
         self.assertEqual(f.saved,True)
         
         mag = f.get_param(f.MAGNITUDE)

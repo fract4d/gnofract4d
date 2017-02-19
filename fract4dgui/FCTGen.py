@@ -20,7 +20,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from __future__ import generators
+
 
 import gtk
 import gobject
@@ -372,7 +372,7 @@ class FCTGeneration:
         self.running=True
         self.error=False
         task=self.generate_fct()
-        gobject.idle_add(task.next)
+        gobject.idle_add(task.__next__)
         response = self.dialog.run()
         if response != gtk.RESPONSE_CANCEL:
             if self.running==True: #destroy by user

@@ -1,7 +1,7 @@
 # The top-level data structure behind the UI. Corresponds to the MainWindow
 
-import gtkfractal
-import undo
+from . import gtkfractal
+from . import undo
 import re
 
 # We eavesdrop on parameter-changed notifications from the gtkfractal
@@ -61,15 +61,15 @@ class Model:
     
     def dump_history(self):
         i=0
-        print "(redo,undo)"
+        print("(redo,undo)")
         for he in self.seq.history:
             if i == self.seq.pos:
-                print "-->",
+                print("-->", end=' ')
             else:
-                print "   ",
-            print "(%s,%s)" % \
+                print("   ", end=' ')
+            print("(%s,%s)" % \
                   (self.extract_x_from_dump(he.redo_data),
-                   self.extract_x_from_dump(he.undo_data))
+                   self.extract_x_from_dump(he.undo_data)))
             i += 1
         
     def undo(self):

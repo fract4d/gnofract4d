@@ -2,7 +2,7 @@ import sys, os
 
 try:
 	from fract4d import fract4dcgmp as fract4dc
-except ImportError, err:
+except ImportError as err:
     from fract4d import fract4dc
 
 # stub class for selecting a suitable readwrite method depending on platform, 

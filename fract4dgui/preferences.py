@@ -6,8 +6,8 @@ import sys
 import gtk
 import gobject
 
-import dialog
-import utils
+from . import dialog
+from . import utils
 
 from fract4d import fractconfig
 
@@ -135,8 +135,8 @@ class PrefsDialog(dialog.T):
                     height = int(width * float(height)/self.f.width)
 
                 utils.idle_add(self.prefs.set_size,width, height)
-            except Exception, exn:
-                print exn
+            except Exception as exn:
+                print(exn)
             return False
     
         set_entry()
@@ -167,8 +167,8 @@ class PrefsDialog(dialog.T):
                 if self.fix_ratio.get_active():
                     width = int(height * float(self.f.width)/self.f.height)
                 self.prefs.set_size(width, height)
-            except Exception, exn:
-                print exn
+            except Exception as exn:
+                print(exn)
             return False
         
         set_entry()
@@ -189,8 +189,8 @@ class PrefsDialog(dialog.T):
         def set_prefs(*args):
             try:
                 self.prefs.set(section,propname,entry.get_text())
-            except Exception, err:
-                print err
+            except Exception as err:
+                print(err)
             return False
         
         set_entry()

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # high-level unit tests for main window
 
@@ -17,7 +17,7 @@ sys.path.insert(1, "..")
 
 from fract4d import fractal
 
-import main_window
+from . import main_window
 
 class WrapMainWindow(main_window.MainWindow):
     def __init__(self):
@@ -50,7 +50,7 @@ class Test(unittest.TestCase):
         # load good file
         fn_good = "../testdata/test.fct"
         result = self.mw.load(fn_good)
-        self.failUnless(result, "load failed")
+        self.assertTrue(result, "load failed")
         self.assertEqual(self.mw.filename, fn_good)
 
         # load bad file
@@ -75,7 +75,7 @@ class Test(unittest.TestCase):
         # load good file
         fn_good = "../testdata/test.fct"
         result = self.mw.load(fn_good)
-        self.failUnless(result, "load failed")
+        self.assertTrue(result, "load failed")
 
         # save again
         result = self.mw.save_file("mytest.fct")
@@ -94,7 +94,7 @@ class Test(unittest.TestCase):
         # load good file
         fn_good = "../testdata/test.fct"
         result = self.mw.load(fn_good)
-        self.failUnless(result, "load failed")
+        self.assertTrue(result, "load failed")
 
         # save to a bad place
         result = self.mw.save_image_file("/no_such_dir/mybad.jpg")
@@ -131,7 +131,7 @@ class Test(unittest.TestCase):
     def testPreview(self):
         'Check for problem where preview differs from main image'
         result = self.mw.load("../testdata/collapsar.fct")
-        self.failUnless(result, "load failed")
+        self.assertTrue(result, "load failed")
 
         self.mw.update_preview(self.mw.f, False)
         fct1 = self.mw.f.serialize()        

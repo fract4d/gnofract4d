@@ -65,7 +65,7 @@ class T(gtk.Dialog):
                id == gtk.RESPONSE_DELETE_EVENT:
             self.hide()
         else:
-            print "unexpected response %d" % id
+            print("unexpected response %d" % id)
 
 def get(type):
     global _dialogs

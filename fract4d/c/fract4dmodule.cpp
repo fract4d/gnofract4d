@@ -125,13 +125,26 @@ ensure_cmap_loaded(PyObject *pymod)
 	return 1; // already loaded
     }
 
-    const char *filename = NULL; // doesn't work! PyModule_GetFilename(pymod);
-    const char *path_end = NULL;
-    //fprintf(stderr,"base name: %s\n",filename);
-    if (filename != NULL)
+    // get location of current .so, fract4d_stdlib is in same dir
+    const char *filename = NULL; 
+    Dl_info dl_info;
+    int result = dladdr((void *)ensure_cmap_loaded, &dl_info);
+    if(!result)
     {
-	path_end = strrchr(filename,'/');
+	fprintf(stderr, "Cannot determine filename of current library\n");
+	return 0;
     }
+    filename = dl_info.dli_fname;
+
+    if(NULL == filename)
+    {
+	fprintf(stderr, "NULL filename of current library\n");
+	return 0;
+    }
+
+    //fprintf(stderr,"base name: %s\n",filename);
+    
+    const char *path_end = strrchr(filename,'/');
 
     if (path_end == NULL)
     {
@@ -2866,7 +2879,10 @@ PyInit_fract4dc(void)
     PyModule_AddIntConstant(pymod, "MESSAGE_TYPE_TOLERANCE", TOLERANCE);
     PyModule_AddIntConstant(pymod, "MESSAGE_TYPE_STATS", STATS);
 
-    ensure_cmap_loaded(pymod);
+    if(!ensure_cmap_loaded(pymod))
+    {
+	return NULL;
+    }
     
     return pymod;
 }

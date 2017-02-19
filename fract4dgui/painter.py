@@ -2,9 +2,9 @@
 
 import gtk
 
-import dialog
-import browser
-import utils
+from . import dialog
+from . import browser
+from . import utils
 
 def show(parent,f):
     PainterDialog.show(parent,f)

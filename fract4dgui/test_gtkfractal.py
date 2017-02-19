@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import copy
@@ -8,6 +8,8 @@ import gettext
 import sys
 
 sys.path.insert(1, "..")
+sys.path.insert(1, "../fract4d")
+import fract4d
 from fract4d import fc, fractal
 
 import gtkfractal
@@ -358,13 +360,13 @@ class Test(unittest.TestCase):
         Disabled because if we don\'t crash wait() hangs'''
         self.f.loadFctFile(open("../testdata/tumor.fct"))
         self.f.compile()
-        print "d1"
+        print("d1")
         self.f.draw_image(0,1)
-        print "d1 done"
+        print("d1 done")
         self.f.set_formula("gf4d.frm", "Buffalo")
-        print "d2"
+        print("d2")
         self.f.draw_image(0,1)
-        print "d2 done"
+        print("d2 done")
         self.wait()
 
     def assertNearlyEqual(self,a,b):
@@ -372,7 +374,7 @@ class Test(unittest.TestCase):
         epsilon = 1.0e-12
         for (ra,rb) in zip(a,b):
             d = abs(ra-rb)
-            self.failUnless(d < epsilon,"%f != %f (by %f)" % (ra,rb,d))
+            self.assertTrue(d < epsilon,"%f != %f (by %f)" % (ra,rb,d))
 
             
 def suite():

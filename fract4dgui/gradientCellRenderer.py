@@ -55,7 +55,7 @@ class GradientCellRenderer(gtk.GenericCellRenderer):
 
         try:
             grad = self.compiler.get_gradient(filename, formname)
-        except Exception, ex:
+        except Exception as ex:
             # can't preview, but never mind
             return
 
@@ -65,7 +65,7 @@ class GradientCellRenderer(gtk.GenericCellRenderer):
         colormap = widget.get_colormap()
         gradgc = widget.window.new_gc(fill=gtk.gdk.SOLID)
 
-        for i in xrange(cell_area.x, cell_area.x + cell_area.width):
+        for i in range(cell_area.x, cell_area.x + cell_area.width):
             pos_in_gradient = float(i-cell_area.x)/wwidth
             col = grad.get_color_at(pos_in_gradient)
             gtkcol = colormap.alloc_color(
@@ -80,9 +80,9 @@ class GradientCellRenderer(gtk.GenericCellRenderer):
 
 
     def on_activate(self, event, widget, path, background_area, cell_area, flags):
-        print "on_activate, ", locals()
+        print("on_activate, ", locals())
         pass
 
     def on_start_editing(self, event, widget, path, background_area, cell_area, flags):
-        print "on_activate, ", locals()
+        print("on_activate, ", locals())
         pass

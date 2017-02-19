@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Subclass of fract4d.fractal.T which works with a GUI
 
@@ -14,8 +14,8 @@ import gobject
 
 from fract4d import fractal,fract4dc,fracttypes, image, messages
 
-import utils, fourway
-from gtkio import gtkio
+from . import utils, fourway
+from .gtkio import gtkio
 
 class Hidden(gobject.GObject):
     """This class implements a fractal which calculates asynchronously
@@ -124,10 +124,10 @@ class Hidden(gobject.GObject):
         utils.input_add(fd,cb)
 
     def error(self,msg,err):
-        print "Error: %s %s" % (msg,err)
+        print("Error: %s %s" % (msg,err))
         
     def warn(self,msg):
-        print "Warning: ", msg
+        print("Warning: ", msg)
 
     def update_formula(self):
         if self.f != None:
@@ -179,7 +179,7 @@ class Hidden(gobject.GObject):
         self.msgbuf = ""
         bytes = self.io_subsys.read(fd,size)
         if len(bytes) < size:
-            print "not enough bytes, got %d instead of %d" % (len(bytes),size)
+            print("not enough bytes, got %d instead of %d" % (len(bytes),size))
             return True
 
         m = messages.parse(t,bytes)
@@ -212,7 +212,7 @@ class Hidden(gobject.GObject):
         elif t == fract4dc.MESSAGE_TYPE_STATS:
             if not self.skip_updates: self.stats_changed(m)
         else:
-            print "Unknown message from fractal thread; %s" % list(bytes)
+            print("Unknown message from fractal thread; %s" % list(bytes))
 
         if utils.threads_enabled:
             gtk.gdk.threads_leave()
@@ -345,8 +345,8 @@ class Hidden(gobject.GObject):
         (xstart,ystart,xend,yend) = rect
         buf = self.image.image_buffer(0,0)
         colors = {}
-        for y in xrange(ystart,yend):
-            for x in xrange(xstart,xend):
+        for y in range(ystart,yend):
+            for x in range(xstart,xend):
                 offset = (y*self.width+x)*3
                 col = buf[offset:offset+3]
                 colors[col] = 1 + colors.get(col,0)
@@ -506,11 +506,11 @@ class T(Hidden):
             try:
                 utils.idle_add(
                     form.set_param,order,entry.get_text())
-            except Exception, err:
+            except Exception as err:
                 # FIXME: produces too many errors
                 msg = "Invalid value '%s': must be a number" % \
                       entry.get_text()
-                print msg
+                print(msg)
                 #utils.idle_add(f.warn,msg)
             return False
 
@@ -577,9 +577,9 @@ class T(Hidden):
         def set_fractal(entry,form,order):
             try:
                 utils.idle_add(form.set_param,order,entry.get_active())
-            except Exception, err:
+            except Exception as err:
                 msg = "error setting bool param: %s" % str(err)
-                print msg
+                print(msg)
                 utils.idle_add(f.warn,msg)
 
             return False
@@ -608,7 +608,7 @@ class T(Hidden):
                 
 
         rgba = []
-        for j in xrange(4):
+        for j in range(4):
             rgba.append(form.params[order+j])
 
         # do we need to keep this ref?
@@ -616,7 +616,7 @@ class T(Hidden):
 
         def set_selected_value(*args):
             rgba = []
-            for j in xrange(4):
+            for j in range(4):
                 rgba.append(form.params[order+j])
             color_button.set_color(rgba)
             
@@ -638,8 +638,8 @@ class T(Hidden):
         def set_selected_value(*args):
             try:
                 index = form.params[order]
-            except ValueError, err:
-                print err
+            except ValueError as err:
+                print(err)
                 return
 
             utils.set_selected(widget, index)
@@ -733,17 +733,17 @@ class T(Hidden):
             self.changed()
     
     def error(self,msg,err):
-        print self, self.parent
+        print(self, self.parent)
         if self.parent:
             self.parent.show_error_message(msg, err)
         else:
-            print "Error: %s : %s" % (msg,err)
+            print("Error: %s : %s" % (msg,err))
         
     def warn(self,msg):
         if self.parent:
             self.parent.show_warning(msg)
         else:
-            print "Warning: ", msg
+            print("Warning: ", msg)
 
     def add_formula_function(self,table,i,name,param,form):
         label = gtk.Label(self.param_display_name(name,param))
@@ -758,7 +758,7 @@ class T(Hidden):
             try:
                 selected_func_name = form.get_func_value(name)
                 index = funclist.index(selected_func_name)
-            except ValueError, err:
+            except ValueError as err:
                 # func.cname not in list
                 #print "bad cname"
                 return
@@ -802,12 +802,12 @@ class T(Hidden):
                 try:
                     i = int(widget.get_text())
                     self.set_maxiter(i)
-                except ValueError, err:
+                except ValueError as err:
                     msg = "Invalid value '%s': must be a number" % \
                           widget.get_text()
                     utils.idle_add(self.warn, msg)
-            except Exception, exn:
-                print exn
+            except Exception as exn:
+                print(exn)
             return False
 
         set_entry(self)
@@ -831,7 +831,7 @@ class T(Hidden):
         params = formula.symbols.parameters()
         op = formula.symbols.order_of_params()
 
-        keys = params.keys()
+        keys = list(params.keys())
         keys.sort()
         for name in keys:
             param = params[name]
@@ -846,7 +846,7 @@ class T(Hidden):
                     row+= 1
                 elif param.type == fracttypes.Hyper:
                     suffixes = [" (re)", " (i)", " (j)", " (k)"]
-                    for j in xrange(4):
+                    for j in range(4):
                         self.add_formula_setting(
                             table,row+j,form,name,suffixes[j],
                             param,op[name]+j)
@@ -869,13 +869,13 @@ class T(Hidden):
         try:
             Hidden.set_size(self,new_width, new_height)
             self.widget.set_size_request(new_width,new_height)
-        except MemoryError, err:
+        except MemoryError as err:
             utils.idle_add(self.warn,str(err))
                     
     def draw_image(self,aa=None,auto_deepen=None):
         try:
             Hidden.draw_image(self,aa,auto_deepen)
-        except fracttypes.TranslationError, err:
+        except fracttypes.TranslationError as err:
             advice = _("\nCheck that your compiler settings and formula file are correct.")
             utils.idle_add(self.error,
                            _("Error compiling fractal:"),
@@ -1025,7 +1025,7 @@ class T(Hidden):
 
         try:
             buf = self.image.image_buffer(x,y)
-        except MemoryError, err:
+        except MemoryError as err:
             # suppress these errors
             return
         

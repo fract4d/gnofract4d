@@ -11,10 +11,7 @@ import copy
 import random
 from time import time as now
 
-try:
-    import fract4dcgmp as fract4dc
-except ImportError as err:
-    import fract4dc
+import fract4dc
 
 import fracttypes
 import gradient

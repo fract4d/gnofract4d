@@ -1,7 +1,7 @@
 # code to maintain a list of dialogs which user has chosen not to display again
 
-import preferences
-import ConfigParser
+from . import preferences
+import configparser
 
 class T:
     def __init__(self, name, suggest_ignore, response):
@@ -14,7 +14,7 @@ class T:
         try:
             x = self.prefs.get("ignored",self.name)
             return x == "yes"
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             return False
 
     def ignore(self):

@@ -2,7 +2,7 @@
 
 import gobject
 import gtk
-import utils
+from . import utils
 
 from fract4d import fractconfig
 

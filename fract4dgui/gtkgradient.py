@@ -1,6 +1,6 @@
 import gtk
-import dialog
-import utils
+from . import dialog
+from . import utils
 import random
 
 from fract4d import gradient
@@ -400,7 +400,7 @@ class GradientDialog(dialog.T):
     
     def printstuff(self, action, widget):
         for seg in self.grad.segments:
-            print [seg.left.pos, seg.left.col], [seg.right.pos, seg.right.col]
+            print([seg.left.pos, seg.left.col], [seg.right.pos, seg.right.col])
             
     def randomize(self, widget):
         oldcol = [random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)]

@@ -6,13 +6,13 @@ import re
 
 import gtk, pango
 
-import dialog
-import browser
-import utils
-import preferences
-import hig
+from . import dialog
+from . import browser
+from . import utils
+from . import preferences
+from . import hig
 import random
-import ignore_info
+from . import ignore_info
 
 from fractutils import flickr, slave
 
@@ -215,7 +215,7 @@ class FlickrUploadDialog(dialog.T):
     def onUploaded(self, slave,title,description):
         try:
             id = flickr.parseUpload(slave.response())
-        except Exception,err:
+        except Exception as err:
             display_flickr_error(err)
             self.onUploadComplete()
             return
@@ -226,7 +226,7 @@ class FlickrUploadDialog(dialog.T):
     def onPoolAdded(self, slave,title,description,id):
         try:
             dummy = slave.response() # just to detect errors
-        except Exception,err:
+        except Exception as err:
             if err.code == 2:
                 # user isn't a member of this group
                 d = hig.InformationAlert(
@@ -254,7 +254,7 @@ class FlickrUploadDialog(dialog.T):
     def onBlogPostComplete(self,slave):
         try:
             resp = slave.response()
-        except Exception, err:
+        except Exception as err:
             display_flickr_error(err)
         self.onUploadComplete()
         
@@ -329,7 +329,7 @@ Click Finish to save your credentials and proceed.""")
         try:
             self.frob = flickr.parseFrob(self.slave.response())
             self.frob = self.frob.encode("ascii")
-        except Exception,err:
+        except Exception as err:
             display_flickr_error(err)
             return
 
@@ -383,7 +383,7 @@ Click Finish to save your credentials and proceed.""")
     def onTokenReceived(self,slave):
         try:
             self.token = flickr.parseToken(slave.response())
-        except flickr.FlickrError, err:
+        except flickr.FlickrError as err:
             msg = _("Make sure you followed the link and authorized access.\n") + str(err) 
             d = hig.ErrorAlert(
                 primary=_("Flickr returned an error."),
@@ -393,7 +393,7 @@ Click Finish to save your credentials and proceed.""")
             d.run()
             d.destroy()
             return
-        except Exception,err:
+        except Exception as err:
             display_flickr_error(err)
             return
 

@@ -4,7 +4,7 @@
 import gtk
 import xml.sax.saxutils
 
-import utils
+from . import utils
 
 class Alert(gtk.Dialog):
     def __init__(self, **kwds):

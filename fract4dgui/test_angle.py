@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # unit tests for model
 
@@ -8,7 +8,7 @@ import math
 import gtk
 import gobject
 
-import angle
+from . import angle
 
 class EmitCounter:
     def __init__(self):
@@ -36,7 +36,7 @@ class Test(unittest.TestCase):
 
     def testCreate(self):
         a = angle.T("hello")
-        self.failUnless(a)
+        self.assertTrue(a)
         self.assertEqual(a.adjustment.lower,-math.pi)
         self.assertEqual(a.adjustment.upper,math.pi)
         self.assertEqual(a.adjustment.value,0.0)
@@ -88,7 +88,7 @@ class Test(unittest.TestCase):
         epsilon = 1.0e-12
         for (ra,rb) in zip(a,b):
             d = abs(ra-rb)
-            self.failUnless(d < epsilon,"%f != %f (by %f)" % (ra,rb,d))
+            self.assertTrue(d < epsilon,"%f != %f (by %f)" % (ra,rb,d))
 
 def suite():
     return unittest.makeSuite(Test,'test')

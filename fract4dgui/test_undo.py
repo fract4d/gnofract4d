@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #unit tests for undo code
 
@@ -8,7 +8,7 @@ import math
 
 import gtk
 
-import undo
+from . import undo
 
 class Status:
     def __init__(self):

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # a browser to examine fractal functions
 import string
@@ -9,7 +9,7 @@ import gtk
 
 from fract4d import fc, gradient, browser_model
 
-import preferences, dialog, utils, gtkfractal, gradientCellRenderer
+from . import preferences, dialog, utils, gtkfractal, gradientCellRenderer
 
 def stricmp(a,b):
     return cmp(a.lower(),b.lower())
@@ -89,7 +89,7 @@ class BrowserDialog(dialog.T):
         elif id == BrowserDialog.RESPONSE_REFRESH:
             self.onRefresh()
         else:
-            print "unexpected response %d" % id
+            print("unexpected response %d" % id)
 
     def onRefresh(self):
         self.f.refresh()
@@ -372,7 +372,7 @@ class BrowserDialog(dialog.T):
     def display_text(self,text):
         # convert from latin-1 (encoding is undefined, but that seems closish)
         # to utf-8 to keep pango happy
-        latin_text = unicode(text,'latin-1')
+        latin_text = str(text,'latin-1')
         utf8_text = latin_text.encode('utf-8')
         self.sourcetext.get_buffer().set_text(utf8_text,-1)
         
