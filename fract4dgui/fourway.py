@@ -4,7 +4,7 @@
 # pygtk crashes. Hence I delegate to a member which actually is a widget
 # with some stuff drawn on it - basically an ungodly hack.
 
-from gi.repository import Gtk, GObject, Pango
+from gi.repository import Gtk, Gdk, GObject, Pango
 
 class T(GObject.GObject):
     __gsignals__ = {
@@ -41,7 +41,7 @@ class T(GObject.GObject):
         self.widget.connect('motion_notify_event', self.onMotionNotify)
         self.widget.connect('button_release_event', self.onButtonRelease)
         self.widget.connect('button_press_event', self.onButtonPress)
-        self.widget.connect('expose_event',self.onExpose)
+        self.widget.connect('draw',self.onDraw)
         
     def update_from_mouse(self,x,y):
         dx = self.last_x - x
@@ -79,8 +79,8 @@ class T(GObject.GObject):
         # *even though it doesn't do anything*. Disturbing.
         pass
         
-    def onExpose(self,widget,exposeEvent):
-        r = exposeEvent.area
+    def onDraw(self,widget,drawEvent):
+        r = drawEvent.area
         self.redraw_rect(widget, r)
 
     def redraw_rect(self,widget,r):

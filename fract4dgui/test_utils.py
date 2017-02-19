@@ -8,6 +8,8 @@ import os
 import subprocess
 import warnings
 
+import gi
+gi.require_version('Gtk','3.0')
 from gi.repository import Gtk
 
 sys.path.insert(1, "..")
