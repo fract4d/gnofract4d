@@ -11,9 +11,10 @@ import warnings
 from gi.repository import Gtk
 
 sys.path.insert(1, "..")
+sys.path.insert(1, "../fract4d")
 
-from . import utils
-from . import gtkfractal
+import utils
+import gtkfractal
 
 from fract4d import fc
 
@@ -83,26 +84,9 @@ class Test(unittest.TestCase):
         r = d.run()
         d.destroy()
 
-class ThrowbackTest(Test):
-    """Test all the 'old' versions of the utilities."""
-    def setUp(self):
-        utils.force_throwback()
 
-        # don't clutter output with known deprecation warnings
-        warnings.filterwarnings(
-            "ignore",
-            ".*",
-            DeprecationWarning,
-            ".*",
-            0)
-
-    def tearDown(self):
-        utils.unforce_throwback()
-
-    
 def suite():
     s = unittest.makeSuite(Test,'test')
-    s.addTest(unittest.makeSuite(ThrowbackTest, 'test'))
     return s
 
 if __name__ == '__main__':

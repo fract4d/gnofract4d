@@ -11,8 +11,7 @@ import os
 import sys
 import inspect
 
-from gi.repository import Gtk
-from gi.repository import GObject
+from gi.repository import Gtk, Gdk, GObject, GLib
 
 try:
 	from fract4d import fract4dcgmp as fract4dc
@@ -22,19 +21,6 @@ except ImportError as err:
 threads_enabled = False
 break_new_things = False
 
-def force_throwback():
-    """Used for unit testing the 'old style' code - make the new stuff break
-    even if it would normally work. Call this to revert to pygtk 2.0 style"""
-    global break_new_things
-    break_new_things = True
-
-def unforce_throwback():
-    global break_new_things
-    break_new_things = False
-    
-def _throwback():
-    if break_new_things: raise AttributeError("Forcing use of old code")
-    
 def threads_enter():
     if threads_enabled:
         Gdk.threads_enter()
@@ -51,30 +37,13 @@ def idle_wrapper(callable, *args):
 def idle_add(callable, *args):
     """A wrapper around Gtk.idle_add which wraps the callback in
     threads_enter/threads_leave if required"""
-    try:
-        _throwback()
-        GObject.idle_add(idle_wrapper, callable, *args)
-    except AttributeError:
-        Gtk.idle_add(idle_wrapper, callable, *args)
+    GObject.idle_add(idle_wrapper, callable, *args)
 
 def timeout_add(time,callable):
-    try:
-        _throwback()
-        GObject.timeout_add(time,callable)
-    except AttributeError:
-        Gtk.timeout_add(time,callable)
+    GObject.timeout_add(time,callable)
 
-if 'win' != sys.platform[:3]:
-    def input_add(fd,cb):
-        try:
-            _throwback()
-            return GObject.io_add_watch(fd, GObject.IO_IN | GObject.IO_HUP, cb)
-        except AttributeError as err:
-            return Gtk.input_add(fd, Gdk.INPUT_READ, cb)
-else:
-    def input_add(fd, cb):
-        # fd = %i; cb = %o
-        return fract4dc.io_add_watch(fd, GObject.IO_IN | GObject.IO_HUP, cb)
+def input_add(fd,cb):
+    return GLib.io_add_watch(fd, GLib.IO_IN | GLib.IO_HUP, cb)
 
 def find_in_path(exe):
     # find an executable along PATH env var
@@ -111,126 +80,64 @@ def get_rgb_colormap():
     return c
 
 def get_directory_chooser(title,parent):
-    try:
-        _throwback()
-        chooser = Gtk.FileChooserDialog(
-            title, parent, Gtk.FileChooserAction.SELECT_FOLDER,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+    chooser = Gtk.FileChooserDialog(
+        title, parent, Gtk.FileChooserAction.SELECT_FOLDER,
+        (Gtk.STOCK_OK, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
-        return chooser
-    except:
-        return Gtk.FileSelection(title)
+    return chooser
     
 def get_file_chooser_extra_widget(chooser):
-    try:
-        _throwback()
-        return chooser.get_extra_widget()
-    except:
-        return chooser.action_area.get_children()[0]
+    return chooser.get_extra_widget()
 
 def set_file_chooser_filename(chooser,name):
-    try:
-        _throwback()
-        if name:
-            chooser.set_current_folder(os.path.abspath(os.path.dirname(name)))
-            chooser.set_current_name(os.path.basename(name))
-    except:
-        pass
+    if name:
+        chooser.set_current_folder(os.path.abspath(os.path.dirname(name)))
+        chooser.set_current_name(os.path.basename(name))
     
 def create_option_menu(items):
-    try:
-        _throwback()
-        widget = Gtk.ComboBoxText()
-        for item in items:
-            widget.append_text(item)
-        
-    except Exception as exn:
-        widget = Gtk.OptionMenu()
-        widget.item_list = items # for get_selected_value
-        menu = Gtk.Menu()
-        for item in items:
-            mi = Gtk.MenuItem(item)
-            menu.append(mi)
-        widget.set_menu(menu)
+    widget = Gtk.ComboBoxText()
+    for item in items:
+        widget.append_text(item)
         
     return widget
 
 def set_menu_from_list(menu, items):
-    try:
-        _throwback()
-        model = Gtk.ListStore(GObject.TYPE_STRING)
-        for item in items:
-            model.append((item,))
-        menu.set_model(model)
-    except:
-        menu.item_list = items
-        submenu = menu.get_menu()
-        for child in submenu.get_children():
-            submenu.remove(child)
-
-        for item in items:
-            mi = Gtk.MenuItem(item)
-            submenu.append(mi)
+    model = Gtk.ListStore(GObject.TYPE_STRING)
+    for item in items:
+        model.append((item,))
+    menu.set_model(model)
         
 def add_menu_item(menu, item):
-    try:
-        _throwback()
-        menu.append_text(item)
-    except:
-        menu.get_menu().append(Gtk.MenuItem(item))
+    menu.append_text(item)
 
 def set_selected(menu, i):
-    try:
-        _throwback()
-        menu.set_active(int(i))
-    except:
-        menu.set_history(int(i))
+    menu.set_active(int(i))
         
 def get_selected(menu):
-    try:
-        _throwback()
-        return menu.get_active()
-    except:
-        return menu.get_history()
+    return menu.get_active()
 
 def get_selected_value(menu):
-    try:
-        _throwback()
-        iter = menu.get_active_iter()
-        if not iter:
-            return None
-        val = menu.get_model().get_value(iter,0)
-        return val
-    except:
-        return menu.item_list[menu.get_history()]
+    iter = menu.get_active_iter()
+    if not iter:
+        return None
+    val = menu.get_model().get_value(iter,0)
+    return val
 
 def set_selected_value(menu,val):
-    try:
-        _throwback()
-        model = menu.get_model()
-        i = 0
-        iter = model.get_iter_first()
-        while iter != None:
-            item = model.get_value(iter,0)
-            if item == val:
-                menu.set_active(i)
-                return
-            iter = model.iter_next(iter)
-            i += 1
-        
-    except:
-        i = menu.item_list.index(val)
-        menu.set_history(i)
+    model = menu.get_model()
+    i = 0
+    iter = model.get_iter_first()
+    while iter != None:
+        item = model.get_value(iter,0)
+        if item == val:
+            menu.set_active(i)
+            return
+        iter = model.iter_next(iter)
+        i += 1
+
 
 def create_color(r,g,b):
-    # multiply up to match range expected by gtk
-    try:
-        _throwback()
-        return Gdk.Color(int(r*65535),int(g*65535),int(b*65535))
-    except Exception as exn:
-        # old gtk doesn't have direct color constructor
-        return Gdk.color_parse(
-            "#%04X%04X%04X" % (int(r*65535),int(g*65535),int(b*65535)))
+    return Gdk.Color(int(r*65535),int(g*65535),int(b*65535))
 
 def floatColorFrom256(rgba):
     return [ rgba[0]/255.0, rgba[1]/255.0, rgba[2]/255.0, rgba[3]/255.0]
@@ -258,25 +165,14 @@ class ColorButton:
         self.set_color(rgb)
         self.changed_cb = changed_cb
         self.is_left = is_left
-        try:
-            _throwback()
-            self.widget = Gtk.ColorButton(self.color)
 
-            def color_set(widget):
-                color = widget.get_color()
-                self.color_changed(color)
+        self.widget = Gtk.ColorButton(self.color)
 
-            self.widget.connect('color-set', self.on_color_set)
-        except:
-            # This GTK is too old to support ColorButton directly, fake one
-            self.widget = Gtk.Button()
-            self.area = Gtk.DrawingArea()
-            self.area.set_size_request(16,10)
-            self.widget.add(self.area)
-            self.area.connect('expose_event', self.on_expose_event)
-            self.csel_dialog = Gtk.ColorSelectionDialog(_("Select a Color"))
+        def color_set(widget):
+            color = widget.get_color()
+            self.color_changed(color)
 
-            self.widget.connect('clicked', self.run_colorsel)
+        self.widget.connect('color-set', self.on_color_set)
 
     def on_color_set(self, widget):
         self.color_changed(widget.get_color())
@@ -284,16 +180,7 @@ class ColorButton:
     def set_color(self, rgb):
         self.color = create_color(rgb[0], rgb[1], rgb[2])
     
-        try:
-            _throwback()
-            self.widget.set_color(self.color)
-        except:
-            #print "sc", self.area, rgb
-            if self.area:
-                self.area_expose(
-                    self.area,
-                    0,0,
-                    self.area.allocation.width,self.area.allocation.height)
+        self.widget.set_color(self.color)
 
     def on_expose_event(self, widget, event):
         r = event.area
