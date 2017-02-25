@@ -1,7 +1,6 @@
 # superclass for dialogs
 
 from gi.repository import Gtk
-import new
 
 _dialogs = {}
 

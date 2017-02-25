@@ -6,8 +6,8 @@ import sys
 from gi.repository import Gtk
 from gi.repository import GObject
 
-from . import dialog
-from . import utils
+import dialog
+import utils
 
 from fract4d import fractconfig
 

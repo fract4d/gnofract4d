@@ -5,7 +5,7 @@ import operator
 
 from gi.repository import Gtk
 
-from . import dialog
+import dialog
 
 def show_autozoom(parent,f):
     AutozoomDialog.show(parent,f)

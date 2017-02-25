@@ -9,7 +9,7 @@ from gi.repository import Gtk
 
 from fract4d import fc, gradient, browser_model
 
-from . import preferences, dialog, utils, gtkfractal, gradientCellRenderer
+import preferences, dialog, utils, gtkfractal, gradientCellRenderer
 
 def stricmp(a,b):
     return cmp(a.lower(),b.lower())

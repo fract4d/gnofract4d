@@ -1,9 +1,11 @@
 
 from fract4d import gradient
 
-import gtk, gobject
+import gi
+gi.require_version('Gtk', '3.0') 
+from gi.repository import Gtk, GObject
 
-class GradientCellRenderer(Gtk.GenericCellRenderer):
+class GradientCellRenderer(Gtk.CellRenderer):
     __gproperties__ = {
         'filename': (GObject.TYPE_STRING,
                  'Text to be displayed',

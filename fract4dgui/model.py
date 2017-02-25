@@ -1,7 +1,7 @@
 # The top-level data structure behind the UI. Corresponds to the MainWindow
 
-from . import gtkfractal
-from . import undo
+import gtkfractal
+import undo
 import re
 
 # We eavesdrop on parameter-changed notifications from the gtkfractal

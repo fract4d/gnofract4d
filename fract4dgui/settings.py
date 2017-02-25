@@ -2,12 +2,13 @@
 
 import gtk, gobject
 
-from . import hig
-from . import dialog
-from . import browser
-from . import utils
+import hig
+import dialog
+import browser
+import utils
 import copy
-from .table import Table
+
+from table import Table
 
 from fract4d import browser_model
 from fract4d.fc import FormulaTypes

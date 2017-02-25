@@ -9,7 +9,9 @@ import math
 import copy
 import random
 
-from gi.repository import Gtk, GObject
+import gi
+gi.require_version('Gtk', '3.0') 
+from gi.repository import Gtk, Gdk, GObject
 
 from fract4d import fractal,fract4dc,fracttypes, image, messages
 
@@ -51,11 +53,7 @@ class Hidden(GObject.GObject):
     def __init__(self,comp,width,height,total_width=-1,total_height=-1):
         GObject.GObject.__init__(self)
 
-        if 'win' == sys.platform[:3]:
-            (self.readfd, self.writefd) = fract4dc.pipe()
-        else:
-            # This is the line that was screwing Windows up.. changed to be run only on Linux, for Windows, we want to do this in fract4dc..
-            (self.readfd, self.writefd) = os.pipe()
+        (self.readfd, self.writefd) = os.pipe()
         self.nthreads = 1
 
         self.compiler = comp
@@ -464,26 +462,18 @@ class T(Hidden):
         drawing_area.connect('motion_notify_event', self.onMotionNotify)
         drawing_area.connect('button_release_event', self.onButtonRelease)
         drawing_area.connect('button_press_event', self.onButtonPress)
-        drawing_area.connect('expose_event',self.onExpose)
+        drawing_area.connect('draw',self.onDraw)
 
-        c = utils.get_rgb_colormap()
+        # maybe set visual here? not sure if needed
+        #visual = Gdk.utils.get_rgb_colormap()
         
-        drawing_area.set_colormap(c)        
+        #drawing_area.set_colormap(c)        
         drawing_area.set_size_request(self.width,self.height)
 
         self.widget = drawing_area
 
     def image_changed(self,x1,y1,x2,y2):
         self.redraw_rect(x1,y1,x2-x1,y2-y1)
-
-#    def changed(self):
-#        Hidden.changed(self)
-#        try:
-#            widget = self.widget
-#        except Exception, e:
-#            return
-#        self.widget.queue_draw_area(0, 0, self.width, self.height)
-#        #self.expose()
 
     def make_numeric_entry(self, form, param, order):
         param_type = form.paramtypes[order]
@@ -881,8 +871,8 @@ class T(Hidden):
                            err.msg + advice)
             return
 
-    def onExpose(self,widget,exposeEvent):
-        r = exposeEvent.area
+    def onDraw(self,widget,drawEvent):
+        r = drawEvent.area
         self.redraw_rect(r.x,r.y,r.width,r.height)
 
     def onMotionNotify(self,widget,event):

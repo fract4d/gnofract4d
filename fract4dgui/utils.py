@@ -11,12 +11,11 @@ import os
 import sys
 import inspect
 
+import gi
+gi.require_version('Gtk', '3.0') 
 from gi.repository import Gtk, Gdk, GObject, GLib
 
-try:
-	from fract4d import fract4dcgmp as fract4dc
-except ImportError as err:
-    from fract4d import fract4dc
+from fract4d import fract4dc
 
 threads_enabled = False
 break_new_things = False
@@ -43,7 +42,7 @@ def timeout_add(time,callable):
     GObject.timeout_add(time,callable)
 
 def input_add(fd,cb):
-    return GLib.io_add_watch(fd, GLib.IO_IN | GLib.IO_HUP, cb)
+    return GLib.io_add_watch(fd, GLib.PRIORITY_DEFAULT, GLib.IO_IN | GLib.IO_HUP | GLib.IO_PRI, cb)
 
 def find_in_path(exe):
     # find an executable along PATH env var
@@ -71,13 +70,6 @@ def stack_trace():
         str += frame_desc
     return str
     
-def get_rgb_colormap():
-    # work around a difference between pygtk versions
-    if hasattr(Gtk.gdk,'rgb_get_colormap'):
-        c = Gdk.rgb_get_colormap()
-    else:
-        c = Gdk.rgb_get_cmap()
-    return c
 
 def get_directory_chooser(title,parent):
     chooser = Gtk.FileChooserDialog(
