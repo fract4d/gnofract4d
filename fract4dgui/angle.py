@@ -4,9 +4,9 @@
 # pygtk crashes. Hence I delegate to a member which actually is a widget
 # with some stuff drawn on it - basically an ungodly hack.
 
-from gi.repository import Gtk
-from gi.repository import GObject
-from gi.repository import Pango
+import gi
+gi.require_version('Gtk', '3.0') 
+from gi.repository import Gtk, Gdk, GObject, Pango
 import math
 
 class T(GObject.GObject):
@@ -25,7 +25,7 @@ class T(GObject.GObject):
         self.radius = 0
         self.text=text
         
-        self.adjustment = Gtk.Adjustment(0, -math.pi, math.pi, 0.01, 0.01, 0)
+        self.adjustment = Gtk.Adjustment(value=0, lower=-math.pi, upper=math.pi, step_increment=0.01, page_increment=0.01, page_size=0)
 
         self.old_value = self.adjustment.get_value()
         
@@ -50,7 +50,7 @@ class T(GObject.GObject):
         self.widget.connect('motion_notify_event', self.onMotionNotify)
         self.widget.connect('button_release_event', self.onButtonRelease)
         self.widget.connect('button_press_event', self.onButtonPress)
-        self.widget.connect('expose_event',self.onExpose)
+        self.widget.connect('draw',self.onDraw)
 
     def set_value(self,val):
         val = math.fmod(val + math.pi, 2.0 * math.pi) - math.pi
@@ -120,8 +120,8 @@ class T(GObject.GObject):
         ptr_yc = s * (radius - T.ptr_radius)
         return (ptr_xc, ptr_yc)
         
-    def onExpose(self,widget,exposeEvent):
-        r = exposeEvent.area
+    def onDraw(self,widget,drawEvent):
+        r = drawEvent.area
         self.redraw_rect(widget,r)
         
     def redraw_rect(self,widget,r):

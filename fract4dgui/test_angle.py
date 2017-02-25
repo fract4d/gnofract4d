@@ -5,10 +5,11 @@
 import unittest
 import math
 
-from gi.repository import Gtk
-from gi.repository import GObject
+import gi
+gi.require_version('Gtk', '3.0') 
+from gi.repository import Gtk, GObject
 
-from . import angle
+import angle
 
 class EmitCounter:
     def __init__(self):
@@ -37,19 +38,19 @@ class Test(unittest.TestCase):
     def testCreate(self):
         a = angle.T("hello")
         self.assertTrue(a)
-        self.assertEqual(a.adjustment.lower,-math.pi)
-        self.assertEqual(a.adjustment.upper,math.pi)
-        self.assertEqual(a.adjustment.value,0.0)
+        self.assertEqual(a.adjustment.get_lower(),-math.pi)
+        self.assertEqual(a.adjustment.get_upper(),math.pi)
+        self.assertEqual(a.adjustment.get_value(),0.0)
         
     def testAngles(self):
         a = angle.T('foo')
         
         self.assertEqual(a.get_current_angle(),0.0)
 
-        a.adjustment.value = a.adjustment.lower
+        a.adjustment.set_value(a.adjustment.get_lower())
         self.assertEqual(a.get_current_angle(),-math.pi)
 
-        a.adjustment.value = a.adjustment.upper
+        a.adjustment.set_value(a.adjustment.get_upper())
         self.assertEqual(a.get_current_angle(), math.pi)
 
     def testPointerCoords(self):
