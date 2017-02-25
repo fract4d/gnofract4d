@@ -6,9 +6,11 @@ import unittest
 import copy
 import math
 
+import gi
+gi.require_version('Gtk', '3.0') 
 from gi.repository import Gtk
 
-from . import undo
+import undo
 
 class Status:
     def __init__(self):
