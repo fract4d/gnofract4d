@@ -15,6 +15,8 @@ import hig
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
 
+toplevel = Gtk.Window()
+
 class MockIgnoreInfo:
     def __init__(self,ignored, suggest_ignore):
         self.ignored = ignored
@@ -29,10 +31,12 @@ class MockIgnoreInfo:
     def is_ignore_suggested(self):
         return self.suggest_ignore
 
-class MockDialog(Gtk.Dialog,hig.MessagePopper):
+class MockDialog(Gtk.MessageDialog,hig.MessagePopper):
     def __init__(self):
-        GObject.GObject.__init__(
-            self,"Title",None, 0, ())
+        Gtk.MessageDialog.__init__(
+            self,
+            text="Title",
+            transient_for=toplevel)
         hig.MessagePopper.__init__(self)
         
 class Test(unittest.TestCase):
@@ -50,13 +54,14 @@ class Test(unittest.TestCase):
             Gtk.main_quit()
 
     def testCreate(self):
-        d = hig.Alert(image=Gtk.STOCK_DIALOG_INFO,primary="Hello!")
+        d = hig.Alert(parent=toplevel,image=Gtk.STOCK_DIALOG_INFO,primary="Hello!")
         self.assertNotEqual(d,None)
 
         self.runAndDismiss(d)
 
         d = hig.Alert(
-            image=Gtk.Image.new_from_stock(Gtk.STOCK_DIALOG_ERROR, Gtk.IconSize.DIALOG),
+            parent=toplevel,
+            image=Gtk.Image.new_from_icon_name(Gtk.STOCK_DIALOG_ERROR, Gtk.IconSize.DIALOG),
             primary="Oh no!",
             secondary="A terrible thing has happened")
 
@@ -64,6 +69,7 @@ class Test(unittest.TestCase):
         
     def testInformation(self):
         d = hig.InformationAlert(
+            parent=toplevel,
             primary="Your zipper is undone",
             secondary="This might be considered unsightly.")
 
@@ -71,12 +77,14 @@ class Test(unittest.TestCase):
         
     def testError(self):
         d = hig.ErrorAlert(
+            parent=toplevel,
             primary="You don't want to do it like that",
             secondary="Chaos will ensue.")
 
         self.runAndDismiss(d)
         
         d = hig.ErrorAlert(
+            parent=toplevel,
             primary="Could not destroy universe",
             secondary="Destructor ray malfunctioned.",
             fix_button="Try again")
@@ -85,12 +93,14 @@ class Test(unittest.TestCase):
         
     def testConfirm(self):
         d = hig.ConfirmationAlert(
+            parent=toplevel,
             primary="Do you really want to hurt me?",
             secondary="Do you really want to make me cry?")
 
         self.runAndDismiss(d)
 
         d = hig.ConfirmationAlert(
+            parent=toplevel,
             primary="Convert sub-meson structure?",
             secondary="The process is agonizingly painful and could result in permanent damage to the space-time continuum",
             proceed_button="Convert",
@@ -117,11 +127,13 @@ class Test(unittest.TestCase):
         
     def testSaveConfirm(self):
         d = hig.SaveConfirmationAlert(
+            parent=toplevel,
             document_name="Wombat.doc")
 
         self.runAndDismiss(d)
 
         d = hig.SaveConfirmationAlert(
+            parent=toplevel,
             document_name="Wombat.doc",
             period=791)
 
@@ -130,7 +142,8 @@ class Test(unittest.TestCase):
     def testIgnore(self):
         ii = MockIgnoreInfo(False,True)
         
-        d = hig.Alert(            
+        d = hig.Alert(
+            parent=toplevel,
             image=Gtk.STOCK_DIALOG_INFO,
             primary="Foo",
             secondary="Bar",

@@ -1,7 +1,7 @@
 # utilities to comply with Gnome Human Interface Guidelines.
 # these are defined at http://developer.gnome.org/projects/gup/hig/2.0/
 
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk, GObject, GLib
 import xml.sax.saxutils
 
 class Alert(Gtk.MessageDialog):
@@ -64,7 +64,7 @@ class Alert(Gtk.MessageDialog):
         self.vbox.pack_start(upper_hbox, True, True, 0)
         
         if self.ignore_info:
-            self.dont_show_again = Gtk.CheckButton(_("Don't show this message again"))
+            self.dont_show_again = Gtk.CheckButton(label=_("Don't show this message again"))
             self.vbox.pack_end(self.dont_show_again, True, True, 0)
             self.dont_show_again.set_active(self.ignore_info.is_ignore_suggested())
 
@@ -183,6 +183,7 @@ class MessagePopper:
         
     def ask_question(self, msg, secondary):
         d = ConfirmationAlert(
+            parent=self,
             primary=msg,
             secondary=secondary,
             image = Gtk.STOCK_DIALOG_QUESTION,
@@ -197,7 +198,7 @@ class MessagePopper:
                 d.response(Gtk.ResponseType.ACCEPT)
                 return False
 
-            GObject.timeout_add(time,callable)
+            GLib.timeout_add(timeout,dismiss)
 
         response = d.run()
         d.destroy()
