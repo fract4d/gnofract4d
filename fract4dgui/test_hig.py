@@ -6,9 +6,11 @@ import math
 import gettext
 import os
 
-from gi.repository import Gtk
-from gi.repository import GObject
-from . import hig
+import gi
+gi.require_version('Gtk', '3.0') 
+from gi.repository import Gtk, GObject, GLib
+
+import hig
 
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
@@ -102,10 +104,8 @@ class Test(unittest.TestCase):
             return False
 
         # increase timeout to see what dialogs look like
-        try:
-            GObject.timeout_add(10,dismiss)
-        except AttributeError:
-            Gtk.timeout_add(10,dismiss)
+        GLib.timeout_add(10,dismiss)
+
         r = d.run()
         d.destroy()
         

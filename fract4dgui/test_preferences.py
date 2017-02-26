@@ -7,7 +7,7 @@ import sys
 import os
 
 sys.path.insert(1, "..")
-from . import preferences
+import preferences
 from fract4d import fractconfig
 
 class CallCounter:

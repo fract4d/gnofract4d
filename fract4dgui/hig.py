@@ -1,17 +1,16 @@
 # utilities to comply with Gnome Human Interface Guidelines.
 # these are defined at http://developer.gnome.org/projects/gup/hig/2.0/
 
-from gi.repository import Gtk
+from gi.repository import Gtk, GObject
 import xml.sax.saxutils
 
-import utils
-
-class Alert(Gtk.Dialog):
+class Alert(Gtk.MessageDialog):
     def __init__(self, **kwds):
 
         image = kwds.get("image")
         primary_text = kwds.get("primary")
         secondary_text= kwds.get("secondary","")
+        buttontype = kwds.get("buttontype",Gtk.ButtonsType.NONE)
         buttons = kwds.get("buttons",())
         parent = kwds.get("parent")
         flags = kwds.get("flags",0)
@@ -20,13 +19,23 @@ class Alert(Gtk.Dialog):
         self.ignore_info = kwds.get("ignore")
 
         if not isinstance(image,Gtk.Image):
-            image = Gtk.Image.new_from_stock(image, Gtk.IconSize.DIALOG)
+            image = Gtk.Image.new_from_icon_name(image, Gtk.IconSize.DIALOG)
             
-        flags = flags | (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
-        GObject.GObject.__init__(self,title,parent,flags,buttons)
+
+        Gtk.MessageDialog.__init__(
+            self,
+            transient_for=parent,
+            modal=True,
+            destroy_with_parent=True,
+            text=title,
+            buttons=buttontype)
+        
         self.set_resizable(False)
         self.set_border_width(6)
-        self.set_has_separator(False)
+
+        self.add_buttons(*buttons)
+            
+        #self.set_has_separator(False)
 
         self.vbox.set_spacing(12)
         
@@ -34,7 +43,6 @@ class Alert(Gtk.Dialog):
         upper_hbox.set_spacing(12)
         upper_hbox.set_border_width(6)
 
-        image.set_alignment(0.5,0.5)
         image.icon_size = Gtk.IconSize.DIALOG
         
         upper_hbox.pack_start(image, True, True, 0)
@@ -189,7 +197,8 @@ class MessagePopper:
                 d.response(Gtk.ResponseType.ACCEPT)
                 return False
 
-            utils.timeout_add(timeout,dismiss)
+            GObject.timeout_add(time,callable)
+
         response = d.run()
         d.destroy()
         return response
