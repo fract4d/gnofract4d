@@ -55,9 +55,11 @@ else:
 png_libs = call_package_config("libpng", "--libs", True)
 
 jpg_lib = "jpeg"
-if os.path.isfile("/usr/include/jpeglib.h"):
-    extra_macros.append(('JPG_ENABLED', 1))
-    jpg_libs = [ jpg_lib ]
+for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
+    if os.path.isfile(path):
+        extra_macros.append(('JPG_ENABLED', 1))
+        jpg_libs = [ jpg_lib ]
+        break
 else:
     raise Exception("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
 
