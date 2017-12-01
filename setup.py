@@ -51,18 +51,19 @@ if png_flags != []:
     extra_macros.append(('PNG_ENABLED', 1))
 else:
     raise Exception("NO PNG HEADERS FOUND, you need to install libpng-dev")
-    
+
 png_libs = call_package_config("libpng", "--libs", True)
 
 jpg_lib = "jpeg"
-if os.path.isfile("/usr/include/jpeglib.h"):
-    extra_macros.append(('JPG_ENABLED', 1))
-    jpg_libs = [ jpg_lib ]
+for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
+    if os.path.isfile(path):
+        extra_macros.append(('JPG_ENABLED', 1))
+        jpg_libs = [ jpg_lib ]
+        break
 else:
     raise Exception("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
-    jpg_libs = []
 
-#not ready yet. 
+#not ready yet.
 have_gmp = False # os.path.isfile("/usr/include/gmp.h")
 
 # use currently specified compilers, not ones from when Python was compiled
@@ -124,11 +125,11 @@ module_fract4dgmp = Extension(
     'stdc++', 'gmp'
     ] + jpg_libs,
     extra_compile_args = [
-    '-Wall', 
+    '-Wall',
     ] + png_flags,
-    extra_link_args = png_libs, 
+    extra_link_args = png_libs,
     define_macros = defines + [('USE_GMP',1)] + extra_macros,
-    undef_macros = [ 'NDEBUG']    
+    undef_macros = [ 'NDEBUG']
     )
 
 if 'win' == sys.platform[:3]:
@@ -181,9 +182,9 @@ modules = [module_fract4dc, module_cmap]
 if have_gmp:
     modules.append(module_fract4dgmp)
     modules.append(module_gmp)
-    
+
 def get_files(dir,ext):
-    return [ os.path.join(dir,x) for x in os.listdir(dir) if x.endswith(ext)] 
+    return [ os.path.join(dir,x) for x in os.listdir(dir) if x.endswith(ext)]
 
 setup (name = 'gnofract4d',
        version = gnofract4d_version,
@@ -198,7 +199,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
        maintainer_email = 'catenary@users.sourceforge.net',
        keywords = "edwin@bathysphere.org",
        url = 'http://github.com/edyoung/gnofract4d/',
-       packages = ['fract4d', 'fract4dgui', 'fractutils'], 
+       packages = ['fract4d', 'fract4dgui', 'fractutils'],
        package_data = { 'fract4dgui' : [ 'ui.xml'] },
        ext_modules = modules,
        scripts = ['gnofract4d'],
@@ -224,7 +225,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
             get_files("doc/gnofract4d-manual/C", "html")),
            ('share/gnome/help/gnofract4d/C',
             get_files("doc/gnofract4d-manual/C",".css")),
-           
+
            #internal pixmaps
            ('share/pixmaps/gnofract4d',
             ['pixmaps/improve_now.png',
@@ -233,19 +234,19 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
            # icon
            ('share/pixmaps',
             ['pixmaps/gnofract4d-logo.png']),
-           
+
            # .desktop file
            ('share/applications', ['gnofract4d.desktop']),
 
            # MIME type registration
            ('share/mime/packages', ['gnofract4d-mime.xml']),
-           
+
            # doc files
            ('share/doc/gnofract4d/',
             ['COPYING', 'README']),
            ],
        cmdclass={
-           "install_lib" : my_install_lib.my_install_lib           
+           "install_lib" : my_install_lib.my_install_lib
            }
        )
 
@@ -271,7 +272,7 @@ def copy_libs(dummy,dirpath,namelist):
          if target != None:
              name = os.path.join(dirpath, name)
              shutil.copy(name, target)
-            
+
 os.path.walk("build",copy_libs,None)
 if 'win' == sys.platform[:3]:
     shutil.copy("fract4d/fract4d_stdlib.pyd", "fract4d_stdlib.pyd")
