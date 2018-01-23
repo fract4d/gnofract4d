@@ -57,7 +57,6 @@ defaults:
 <ul>
 <li>python-devel</li>
 <li>gtk2-devel</li>
-<li>gconf2-devel</li>
 <li>libpng-devel</li>
 <li>libjpeg-devel</li>
 <li>gcc</li>
@@ -65,27 +64,6 @@ defaults:
 </ul>
 
 Install those using YaST then try compiling again.
-</p>
-
-<p class="q">
-Q: When I try to compile older versions of Gnofract 4D on Ubuntu, why do I get this error?<br/>
-
-<pre class="q">
-Can't set up. Error running 'pkg-config gconf-2.0 --cflags'.
-Package gconf-2.0 was not found in the pkg-config search path.
-Perhaps you should add the directory containing `gconf-2.0.pc'
-to the PKG_CONFIG_PATH environment variable
-No package 'gconf-2.0' found
-Possibly you don't have one of these installed: 'gconf-2.0'.
-</pre>
-</p>
-
-<p>
-
-<b>A:</b>You need to install the libgconf2-dev package, which is
-required to build programs which use gconf. Newer versions will still
-compile if you don't have gconf2-devel, but they will be unable to 
-pick up your browser settings from gconf.
 </p>
 
 <p class="q">

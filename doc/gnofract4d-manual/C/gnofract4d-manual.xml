@@ -579,10 +579,8 @@ greater than the number of CPUs you have.
 <title>Helpers</title>
 <para>
 
-&gf4d; sometimes need to invoke a helper program. It'll try to use
-your preferences from GConf if possible, and these fields are set to
-be those defaults. However if that default is wrong somehow, you can
-explicitly set it here.
+&gf4d; sometimes need to invoke a helper program. If the default is
+wrong you can designate a different program here.
 </para> 
 </sect4>
 
@@ -1066,13 +1064,6 @@ and a few other for utility purposes. The central class is
 calculation in a window. </para> </entry>
 
 </row>
-
-<row>
-<entry><para><filename>fract4dgui/c</filename></para></entry>
-
-<entry> <para>This contains the C code which implements the
-fract4dguic.so extension. This only has one minimal function, to
-obtain gconf settings. </para> </entry> </row>
 
 </tbody>
 </tgroup>
