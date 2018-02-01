@@ -1403,7 +1403,7 @@ class MainWindow:
             response = d.run()                
             d.destroy()
             if response == Gtk.ResponseType.ACCEPT:
-                self.save(None,None)
+                self.save(None)
             elif response == Gtk.ResponseType.CANCEL:
                 return False
             elif response == hig.SaveConfirmationAlert.NOSAVE:
