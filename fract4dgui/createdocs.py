@@ -42,10 +42,6 @@ def key_fix(k):
         return fixed
     return k
 
-def key_cmp(a,b):    
-    a,b = key_fix(a),key_fix(b)
-    return cmp(a,b)
-
 class CommandPrinter:
     def __init__(self,f):
         self.f = f
@@ -68,8 +64,7 @@ class CommandPrinter:
 
     def output_all(self):
         self.output_table(self.mouse_commands, "Mouse Commands", "Button")
-        keys = list(self.commands.keys())
-        keys.sort(key_cmp)
+        keys = sorted(self.commands.keys(), key=key_fix)
         self.output_table([self.commands[k] for k in keys],"Keyboard Shortcuts","Key") 
         
     def output_table(self,commands,name,type):
