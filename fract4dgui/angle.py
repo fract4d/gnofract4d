@@ -4,10 +4,9 @@
 # pygtk crashes. Hence I delegate to a member which actually is a widget
 # with some stuff drawn on it - basically an ungodly hack.
 
-import gi
-gi.require_version('Gtk', '3.0') 
-from gi.repository import Gtk, Gdk, GObject, Pango
 import math
+
+from gi.repository import Gtk, Gdk, GObject, Pango
 
 class T(GObject.GObject):
     __gsignals__ = {

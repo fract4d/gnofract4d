@@ -11,6 +11,10 @@ import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
 
+import gi
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
+
 from . import main_window
 
 sort_re = re.compile(r'(?P<mod1><.*?>)?(?P<mod2><.*?>)?(?P<key>[^<>]*)')

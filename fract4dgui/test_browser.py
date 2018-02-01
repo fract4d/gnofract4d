@@ -8,7 +8,10 @@ import math
 import os
 import sys
 
+import gi
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')

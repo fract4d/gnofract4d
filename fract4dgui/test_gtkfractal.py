@@ -4,19 +4,20 @@ import unittest
 import copy
 import math
 import os
-import gettext
 import sys
 
-if sys.path[1] != "..": sys.path.insert(1, "..")
-
-from fract4d import fc, fractal
-
-from fract4dgui import gtkfractal
-
-from gi.repository import Gtk
-
+import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
+
+import gi
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gdk, Gtk
+
+if sys.path[1] != "..": sys.path.insert(1, "..")
+from fract4d import fc, fractal
+from fract4dgui import gtkfractal
 
 # centralized to speed up tests
 g_comp = fc.Compiler()

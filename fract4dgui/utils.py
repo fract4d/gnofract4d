@@ -11,8 +11,6 @@ import os
 import sys
 import inspect
 
-import gi
-gi.require_version('Gtk', '3.0') 
 from gi.repository import Gtk, Gdk, GObject, GLib
 
 from fract4d import fract4dc
