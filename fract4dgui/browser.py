@@ -350,9 +350,9 @@ class BrowserDialog(dialog.T):
         buffer = self.msgtext.get_buffer()
         msg = ""
         if self.ir.errors != []:
-            msg += _("Errors:\n") + string.join(self.ir.errors,"\n") + "\n"
+            msg += _("Errors:\n") + "\n".join(self.ir.errors) + "\n"
         if self.ir.warnings != []:
-            msg += _("Warnings:\n") + string.join(self.ir.warnings,"\n")
+            msg += _("Warnings:\n") + "\n".join(self.ir.warnings)
         if msg == "":
             msg = _("No messages")
             
