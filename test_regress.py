@@ -8,6 +8,7 @@
 import os
 import operator
 from PIL import Image, ImageChops, ImageFilter, ImageStat
+from functools import reduce
 
 good_files = [
     # look ok
@@ -55,22 +56,22 @@ def compare(fctfile):
     diff.save(diff_file)
     
     stats = ImageStat.Stat(diff)
-    print "%f\t%d\t%f" % \
-          (total(stats.mean), total(stats.median), total(stats.rms))
+    print("%f\t%d\t%f" % \
+          (total(stats.mean), total(stats.median), total(stats.rms)))
 
 def total(l):
     return reduce(operator.__add__,l)
 
 def check_file(f):
     try:
-        print "%s\t" % f,
+        print("%s\t" % f, end=' ')
         compare(f)
-    except Exception, err:
-        print "Error %s" % err
+    except Exception as err:
+        print("Error %s" % err)
 
 if __name__ == '__main__':
     import sys
-    print "file\tmean\tmedian\trms"
+    print("file\tmean\tmedian\trms")
     if len(sys.argv) > 1:
         for f in sys.argv[1:]:        
             check_file(f)

@@ -33,13 +33,13 @@ def call_package_config(package,option,optional=False):
     (status,output) = subprocess.getstatusoutput(cmd)
     if status != 0:
         if optional:
-            print >>sys.stderr, "Can't find '%s'" % package
-            print >>sys.stderr, "Some functionality will be disabled"
+            print("Can't find '%s'" % package, file=sys.stderr)
+            print("Some functionality will be disabled", file=sys.stderr)
             return []
         else:
-            print >>sys.stderr, "Can't set up. Error running '%s'." % cmd
-            print >>sys.stderr, output
-            print >>sys.stderr, "Possibly you don't have one of these installed: '%s'." % package
+            print("Can't set up. Error running '%s'." % cmd, file=sys.stderr)
+            print(output, file=sys.stderr)
+            print("Possibly you don't have one of these installed: '%s'." % package, file=sys.stderr)
             sys.exit(1)
 
     return output.split()
