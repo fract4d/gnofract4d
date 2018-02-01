@@ -35,8 +35,8 @@ class SettingsDialog(dialog.T):
         self.f = f
         self.notebook = Gtk.Notebook()
         self.controls = Gtk.VBox()
-        self.controls.pack_start(self.notebook,True,True)
-        self.vbox.pack_start(self.controls, True, True)
+        self.controls.pack_start(self.notebook, True, True, 0)
+        self.vbox.pack_start(self.controls, True, True, 0)
         self.tables = [None,None,None,None]
         self.selected_transform = None
         
@@ -468,14 +468,14 @@ class SettingsDialog(dialog.T):
             sw, 0, 1, 0, 4,
             0, 0, 2, 2)
 
-        add_button = Gtk.Button(None,Gtk.STOCK_ADD)
+        add_button = Gtk.Button.new_from_stock(Gtk.STOCK_ADD)
         add_button.connect(
             'clicked', self.show_browser, browser_model.TRANSFORM)
 
         table.attach(
             add_button, 1,2,0,1, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
 
-        remove_button = Gtk.Button(None,Gtk.STOCK_REMOVE)
+        remove_button = Gtk.Button.new_from_stock(Gtk.STOCK_REMOVE)
         remove_button.connect(
             'clicked', self.remove_transform)
 

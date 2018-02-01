@@ -242,14 +242,14 @@ class BrowserDialog(dialog.T):
         label.set_use_underline(True)
         label.set_mnemonic_widget(self.funcTypeMenu)
         
-        hbox.pack_start(label, False, False)
+        hbox.pack_start(label, False, False, 0)
                 
-        hbox.pack_start(self.funcTypeMenu,True, True)
-        self.vbox.pack_start(hbox,False, False)
+        hbox.pack_start(self.funcTypeMenu, True, True, 0)
+        self.vbox.pack_start(hbox, False, False, 0)
         
         # 3 panes: files, formulas, formula contents
         panes1 = Gtk.HPaned()
-        self.vbox.pack_start(panes1, True, True)
+        self.vbox.pack_start(panes1, True, True, 0)
         panes1.set_border_width(5)
 
         file_list = self.create_file_list()
