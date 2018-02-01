@@ -2,12 +2,10 @@
 
 # Subclass of fract4d.fractal.T which works with a GUI
 
-import sys
 import os
 import struct
 import math
 import copy
-import random
 
 import gi
 gi.require_version('Gtk', '3.0') 
