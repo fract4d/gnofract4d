@@ -460,9 +460,12 @@ class Compiler:
     def get_gradient(self, filename, formname):
         g = gradient.Gradient()
         if formname == None:
-            file = open(self.find_file(filename, 3))
-            g.load(file)
-            file.close()
+            if FormulaTypes.is_binary_filetype(filename):
+                mode = "rb"
+            else:
+                mode = "r"
+            with open(self.find_file(filename, 3), mode) as fh:
+                g.load(fh)
         else:
             compiled_gradient = self.get_formula(filename,formname)
             g.load_ugr(compiled_gradient)
