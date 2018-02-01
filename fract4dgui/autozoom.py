@@ -20,13 +20,12 @@ class AutozoomDialog(dialog.T):
             (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
 
         self.f = f
-        self.tips = Gtk.Tooltips()
         
         self.table = Gtk.Table(2,2)
         self.vbox.add(self.table)
         
         self.zoombutton = Gtk.ToggleButton(_("Start _Zooming"))
-        self.tips.set_tip(self.zoombutton,_("Zoom into interesting areas automatically"))
+        self.zoombutton.set_tooltip_text(_("Zoom into interesting areas automatically"))
         self.zoombutton.set_use_underline(True)
         self.zoombutton.connect('toggled',self.onZoomToggle)
         f.connect('status-changed',self.onStatusChanged)
@@ -36,7 +35,7 @@ class AutozoomDialog(dialog.T):
         self.minsize = 1.0E-13 # FIXME, should calculate this better
 
         self.minsize_entry = Gtk.Entry()
-        self.tips.set_tip(self.minsize_entry,_("Stop zooming when size of fractal is this small"))
+        self.minsize_entry.set_tooltip_text(_("Stop zooming when size of fractal is this small"))
         minlabel = Gtk.Label(label=_("_Min Size"))
         self.table.attach(minlabel,0,1,1,2,0,0,2,2)
         minlabel.set_use_underline(True)
