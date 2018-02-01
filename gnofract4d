@@ -27,19 +27,13 @@ Error was: '%s' ''') % err))
 
 def get_version_info():
     try:
-        import gtk
-        gtk_version = "%d.%d.%d" % gtk.gtk_version
+        from gi.repository import Gtk
+        gtk_version = "%d.%d.%d" % (Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version())
     except:
         gtk_version = "unknown"
 
-    try:
-        pygtk_version = "%d.%d.%d" % gtk.pygtk_version
-    except:
-        pygtk_version = "unknown"
-
     return """Gnofract 4D %s
-GTK %s
-PyGTK %s""" % (options.version, gtk_version, pygtk_version)
+GTK %s""" % (options.version, gtk_version)
                
 def main(args):    
     opts = options.T()
@@ -74,35 +68,14 @@ def main(args):
         print("A fatal error occurred:\n\t%s\n\n" % str(err))
         raise
 
-def test_version(major,minor,patch):
-    # check for pygtk >= 2.12
-    if major < 2:
-        return False
-    elif major == 2:
-        if minor < 12:
-            return False
-    return True
-
 def gtkmain(options):
     # gtk
+    import gi
+    gi.require_version('Gtk', '3.0')
     try:
-        import gtk
+        from gi.repository import Gtk
     except ImportError as err:
-        print(_("Can't find PyGTK. You need to install it before you can run Gnofract 4D."))
-        sys.exit(1)
-
-    pygtk_ok = True
-    try:
-        (major,minor,patch) = gtk.pygtk_version
-        pygtk_ok = test_version(major,minor,patch)
-        import gobject
-
-    except Exception:
-        pygtk_ok = False
-
-    if not pygtk_ok:
-        print(_("Sorry, your PyGTK version (%d.%d.%d) is too old. You need at least 2.6" % \
-                gtk.pygtk_version))
+        print(_("Can't find Gtk. You need to install it before you can run Gnofract 4D."))
         sys.exit(1)
 
     try:
@@ -121,9 +94,11 @@ def gtkmain(options):
     mainWindow.apply_options(options)
     
     if mainWindow.f.thaw():
-        gobject.idle_add(mainWindow.on_fractal_change)
+        gi.require_version('GLib', '2.0')
+        from gi.repository import GLib
+        GLib.idle_add(mainWindow.on_fractal_change)
 
-    gtk.main()
+    Gtk.main()
 
 def plainmain(options):
     t = fractmain.T()
