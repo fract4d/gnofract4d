@@ -8,8 +8,8 @@ import math
 import copy
 
 import gi
-gi.require_version('Gtk', '3.0') 
-from gi.repository import Gtk, Gdk, GObject
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk, GObject, GdkPixbuf, GLib
 
 from fract4d import fractal,fract4dc,fracttypes, image, messages
 
@@ -465,13 +465,15 @@ class T(Hidden):
         # maybe set visual here? not sure if needed
         #visual = Gdk.utils.get_rgb_colormap()
         
+        self.selection_rect = []
+
         #drawing_area.set_colormap(c)        
         drawing_area.set_size_request(self.width,self.height)
 
         self.widget = drawing_area
 
     def image_changed(self,x1,y1,x2,y2):
-        self.redraw_rect(x1,y1,x2-x1,y2-y1)
+        self.widget.queue_draw_area(x1, y1, x2-x1, y2-y1)
 
     def make_numeric_entry(self, form, param, order):
         param_type = form.paramtypes[order]
@@ -868,9 +870,10 @@ class T(Hidden):
                            err.msg + advice)
             return
 
-    def onDraw(self,widget,drawEvent):
-        r = drawEvent.area
-        self.redraw_rect(r.x,r.y,r.width,r.height)
+    def onDraw(self, widget, cairo_ctx):
+        result, r = Gdk.cairo_get_clip_rectangle(cairo_ctx)
+        if result:
+            self.redraw_rect(r.x, r.y, r.width, r.height, cairo_ctx)
 
     def onMotionNotify(self,widget,event):
         (x,y) = self.float_coords(event.x, event.y)
@@ -879,23 +882,21 @@ class T(Hidden):
         if not self.notice_mouse:
             return
 
-        self.redraw_rect(0,0,self.width,self.height)
+        self.widget.queue_draw_area(0, 0, self.width, self.height)
         (self.newx,self.newy) = (event.x, event.y)
 
-        dummy = widget.window.get_pointer()
+        dummy = widget.get_pointer()
 
         dy = int(abs(self.newx - self.x) * float(self.height)/self.width)
         if(self.newy < self.y or (self.newy == self.y and self.newx < self.x)):
             dy = -dy
         self.newy = self.y + dy;
 
-        widget.window.draw_rectangle(
-            self.widget.get_style().white_gc,
-            False,
+        self.selection_rect = [
             int(min(self.x,self.newx)),
             int(min(self.y,self.newy)),
             int(abs(self.newx-self.x)),
-            int(abs(self.newy-self.y)));
+            int(abs(self.newy-self.y))]
 
     def onButtonPress(self,widget,event):
         self.x = event.x
@@ -952,9 +953,10 @@ class T(Hidden):
         return False
     
     def onButtonRelease(self,widget,event):
-        self.redraw_rect(0,0,self.width,self.height)
+        self.widget.queue_draw_area(0, 0, self.width,self.height)
         self.button = 0
         self.notice_mouse = False
+        self.selection_rect.clear()
         if self.filterPaintModeRelease(event):
             return
         
@@ -992,7 +994,7 @@ class T(Hidden):
         if self.thaw():
             self.changed()
 
-    def redraw_rect(self,x,y,w,h):
+    def redraw_rect(self, x, y, w, h, cairo_ctx):
         # check to see if part of the rect is out-of-bounds, and clip if so
         if x < 0:
             x = 0
@@ -1007,23 +1009,28 @@ class T(Hidden):
             # nothing to do
             return
         
-        gc = self.widget.get_style().white_gc
-
         try:
             buf = self.image.image_buffer(x,y)
         except MemoryError as err:
             # suppress these errors
             return
         
-        if self.widget.window:
-            self.widget.window.draw_rgb_image(
-                gc,
-                x, y,
-                min(self.width-x,w),
-                min(self.height-y,h),
-                Gdk.RGB_DITHER_NONE,
-                buf,
-                self.width*3)
+        pixbuf = GdkPixbuf.Pixbuf.new_from_bytes(
+            GLib.Bytes(buf),
+            GdkPixbuf.Colorspace.RGB,
+            False,
+            8,
+            min(self.width-x,w),
+            min(self.height-y,h),
+            self.width*3)
+        Gdk.cairo_set_source_pixbuf(cairo_ctx, pixbuf.copy(), x, y)
+        cairo_ctx.paint()
+        
+        if self.selection_rect:
+            cairo_ctx.set_source_rgb(1.0, 1.0, 1.0)
+            cairo_ctx.set_line_width(2.0)
+            cairo_ctx.rectangle(*self.selection_rect)
+            cairo_ctx.stroke()
 
 class Preview(T):
     def __init__(self,comp,width=120,height=90):
