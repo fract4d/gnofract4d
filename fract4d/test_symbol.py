@@ -5,9 +5,12 @@
 import collections
 import unittest
 import copy
+import sys
 
-from . import fsymbol
-from .fracttypes import *
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import fsymbol
+from fract4d.fracttypes import *
 
 class SymbolTest(unittest.TestCase):
     def setUp(self):

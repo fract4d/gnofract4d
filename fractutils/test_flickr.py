@@ -8,10 +8,10 @@ import sys
 
 import gtk
 
-from . import flickr
-from . import slave
+if sys.path[1] != "..": sys.path.insert(1, "..")
 
-sys.path.append("..")
+from fractutils import flickr
+from fractutils import slave
 
 class GTKTestSlave(object):
     def __init__(self, request):

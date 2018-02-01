@@ -4,7 +4,7 @@ import unittest
 
 import testbase
 
-import event
+from fract4d import event
 
 
 class Foo:

@@ -12,8 +12,8 @@ import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
 
-sys.path.insert(1, "..")
-from . import director, PNGGen, hig
+if sys.path[1] != "..": sys.path.insert(1, "..")
+from fract4dgui import director, PNGGen, hig
 
 from fract4d import fractal, image, fc, animation
 

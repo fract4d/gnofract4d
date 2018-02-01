@@ -6,16 +6,17 @@ import string
 import unittest
 import types
 import pickle
+import sys
 
 import testbase
 
-import absyn
-import translate
-import fractparser
-import fractlexer
-import fracttypes
-import ir
-import stdlib
+from fract4d import absyn
+from fract4d import translate
+from fract4d import fractparser
+from fract4d import fractlexer
+from fract4d import fracttypes
+from fract4d import ir
+from fract4d import stdlib
 
 class Test(testbase.TestBase):
     def setUp(self):

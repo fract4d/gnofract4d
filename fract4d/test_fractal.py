@@ -11,11 +11,13 @@ import time
 import types
 import filecmp
 
-import fc
-import fractal
-import fracttypes
-import image
-import formsettings
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import fc
+from fract4d import fractal
+from fract4d import fracttypes
+from fract4d import image
+from fract4d import formsettings
 
 # centralized to speed up tests
 g_comp = fc.Compiler()

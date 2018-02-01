@@ -10,12 +10,12 @@ import types
 
 import testbase
 
-import absyn
-import codegen
-import fractparser
-import fractlexer
-import fsymbol
-import translate
+from fract4d import absyn
+from fract4d import codegen
+from fract4d import fractparser
+from fract4d import fractlexer
+from fract4d import fsymbol
+from fract4d import translate
 
 
 class Test(testbase.TestBase):

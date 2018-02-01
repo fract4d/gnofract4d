@@ -11,17 +11,17 @@ import re
 
 import testbase
 
-import absyn
-import ir
-import fsymbol
-from fracttypes import *
-import codegen
-import translate
-import fractparser
-import fractlexer
-import stdlib
-import optimize
-import instructions
+from fract4d import absyn
+from fract4d import ir
+from fract4d import fsymbol
+from fract4d.fracttypes import *
+from fract4d import codegen
+from fract4d import translate
+from fract4d import fractparser
+from fract4d import fractlexer
+from fract4d import stdlib
+from fract4d import optimize
+from fract4d import instructions
 
 g_exp = None
 g_x = None

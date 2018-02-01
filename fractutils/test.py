@@ -4,7 +4,7 @@ import unittest
 
 #import test_makemap
 #import test_flickr
-from . import test_slave
+import test_slave
 
 def suite():
     tests = (

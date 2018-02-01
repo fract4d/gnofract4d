@@ -5,9 +5,9 @@ import types
 
 import testbase
 
-import ffloat
+from fract4d import ffloat
 
-from ffloat import Float, PrecisionError
+from fract4d.ffloat import Float, PrecisionError
 
 if ffloat.has_bigmath:
     import gmpy2

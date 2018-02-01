@@ -10,7 +10,7 @@ import pickle
 
 import testbase
 
-import browser_model, fc
+from fract4d import browser_model, fc
 
 g_comp = fc.Compiler()
 g_comp.add_func_path("../formulas")

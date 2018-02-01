@@ -3,7 +3,6 @@
 import unittest
 import string
 import sys
-import fc
 import os.path
 import struct
 import math
@@ -13,7 +12,8 @@ import subprocess
 
 import testbase
 
-import image
+from fract4d import fc
+from fract4d import image
 
 class Test(testbase.TestBase):
     def testColossalImage(self):

@@ -6,7 +6,9 @@ import unittest
 import sys
 import os
 
-import fractconfig, fc
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import fractconfig, fc
 
 class Test(unittest.TestCase):
     def testCreate(self):

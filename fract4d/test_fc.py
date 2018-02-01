@@ -9,8 +9,8 @@ import time
 
 import testbase
 
-import fc, fractconfig
-import translate
+from fract4d import fc, fractconfig
+from fract4d import translate
 
 # centralized to speed up tests
 g_comp = fc.Compiler()

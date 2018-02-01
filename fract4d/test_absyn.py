@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
+import sys
 import unittest
 
-import fracttypes
-import absyn
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import fracttypes
+from fract4d import absyn
 
 class Test(unittest.TestCase):
     def testNumber(self):

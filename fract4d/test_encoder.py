@@ -5,8 +5,10 @@
 import unittest
 import sys
 
-import encoder
-import animation, fractal, fc
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import encoder
+from fract4d import animation, fractal, fc
 
 # centralized to speed up tests
 g_comp = fc.Compiler()

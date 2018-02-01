@@ -3,9 +3,6 @@
 # this is deliberately not included in test.py since it hits a live website
 # and I don't want to screw up their bandwidth allocation
 
-import sys
-sys.path.insert(1,"..")
-
 import unittest
 import io
 import socketserver
@@ -16,10 +13,13 @@ import http.client
 import os
 import threading, time
 import zipfile
-import fractutils.slave
+import sys
 
-import formdb
+if sys.path[1] != "..": sys.path.insert(1, "..")
 
+from fractutils import slave
+
+from fract4d import formdb
 
 # Rather than hassle the real UF formula DB when running unit tests,
 # we run a temporary fake web server

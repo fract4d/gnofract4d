@@ -3,14 +3,14 @@
 import unittest
 import math
 
-from . import testbase
+import testbase
 
-from . import fc
-from . import fractal
-from . import fract4dc
-from . import image
+from fract4d import fc
+from fract4d import fractal
+from fract4d import fract4dc
+from fract4d import image
 
-from .test_fractalsite import FractalSite
+from fract4d.test_fractalsite import FractalSite
 
 # centralized to speed up tests
 g_comp = fc.Compiler()

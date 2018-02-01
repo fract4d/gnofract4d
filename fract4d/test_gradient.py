@@ -7,15 +7,15 @@ import io
 import copy
 import re
 
-from . import testbase
+import testbase
 
-from . import gradient
-from . import fract4dc
-from . import fractal
-from . import translate
-from . import fractparser
+from fract4d import gradient
+from fract4d import fract4dc
+from fract4d import fractal
+from fract4d import translate
+from fract4d import fractparser
 
-from .gradient import Blend, ColorMode
+from fract4d.gradient import Blend, ColorMode
 
 wood='''GIMP Gradient
 Name: Wood 2

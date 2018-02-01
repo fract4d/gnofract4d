@@ -2,7 +2,6 @@
 
 # test cases for parfile.py
 
-
 import string
 import unittest
 import io
@@ -10,11 +9,11 @@ import math
 
 import testbase
 
-import parfile
-import fractal
-import fc
-import preprocessor
-import gradient
+from fract4d import parfile
+from fract4d import fractal
+from fract4d import fc
+from fract4d import preprocessor
+from fract4d import gradient
 
 g_comp = fc.Compiler()
 g_comp.add_func_path("../formulas")

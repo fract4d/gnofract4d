@@ -8,15 +8,15 @@ import struct
 import math
 import types
 
-from . import testbase
+import testbase
 
-from . import fc
-from . import fract4dc
-from . import gradient
-from . import image
-from . import messages
+from fract4d import fc
+from fract4d import fract4dc
+from fract4d import gradient
+from fract4d import image
+from fract4d import messages
 
-from .test_fractalsite import FractalSite
+from test_fractalsite import FractalSite
 
 pos_params = [
     0.0, 0.0, 0.0, 0.0,

@@ -13,11 +13,11 @@ from gi.repository import Gtk
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
-sys.path.insert(1, "..")
+if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import fractal
 
-from . import main_window
+from fract4dgui import main_window
 
 class WrapMainWindow(main_window.MainWindow):
     def __init__(self):

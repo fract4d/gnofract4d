@@ -2,17 +2,17 @@
 
 # unit tests for canon module
 
+import copy
 import unittest
 import pickle
 
 import testbase
 
-import canon
-import absyn
-import ir
-import fsymbol
-import copy
-from fracttypes import *
+from fract4d import canon
+from fract4d import absyn
+from fract4d import ir
+from fract4d import fsymbol
+from fract4d.fracttypes import *
 
 class CanonTest(testbase.TestBase):
     def setUp(self):

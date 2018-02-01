@@ -7,12 +7,11 @@ import os
 import gettext
 import sys
 
-sys.path.insert(1, "..")
-sys.path.insert(1, "../fract4d")
-import fract4d
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
 from fract4d import fc, fractal
 
-import gtkfractal
+from fract4dgui import gtkfractal
 
 from gi.repository import Gtk
 

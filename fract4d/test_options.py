@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 import unittest
+import sys
 
-import options
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import options
 
 class Test(unittest.TestCase):
     def testDefaults(self):

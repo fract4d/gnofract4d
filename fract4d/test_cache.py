@@ -10,7 +10,7 @@ import pickle
 
 import testbase
 
-import cache
+from fract4d import cache
 
 
 class Test(testbase.TestBase):

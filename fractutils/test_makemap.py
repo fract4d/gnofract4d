@@ -3,9 +3,10 @@
 import unittest
 import sys
 
-from . import makemap
+if sys.path[1] != "..": sys.path.insert(1, "..")
 
-sys.path.append("..")
+from fractutils import makemap
+
 from fract4d import gradient
 
 class Test(unittest.TestCase):

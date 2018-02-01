@@ -8,7 +8,9 @@ import sys
 
 import gtk
 
-from . import slave
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fractutils import slave
 
 class GTKTestSlave(object):
     def __init__(self, cmd, *args):
