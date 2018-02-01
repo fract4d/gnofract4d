@@ -2,7 +2,7 @@
 
 import copy
 
-from gi.repository import GObject, Gtk
+from gi.repository import GObject, Gdk, Gtk
 
 from . import hig
 from . import dialog
@@ -537,7 +537,8 @@ class SettingsDialog(dialog.T):
 
     def change_formula(self,button,buffer,formindex,formtype):
         buftext = buffer.get_text(
-            buffer.get_start_iter(), buffer.get_end_iter())
+            buffer.get_start_iter(), buffer.get_end_iter(),
+            include_hidden_chars=False)
 
         if buftext == '':
             #print "no text"

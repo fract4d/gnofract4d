@@ -6,7 +6,6 @@ class T(Gtk.Toolbar):
     def __init__(self):
         Gtk.Toolbar.__init__(self)
 
-        self.set_tooltips(True)
         self.set_border_width(1)
 
     def add_space(self):

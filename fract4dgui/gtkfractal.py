@@ -517,7 +517,7 @@ class T(Hidden):
                 0.01)
 
             def set_adj():
-                if adj.value != form.params[order]:
+                if adj.get_value() != form.params[order]:
                     adj.set_value(form.params[order])
 
             set_adj()
@@ -527,7 +527,7 @@ class T(Hidden):
 
             adj.connect('value-changed', adj_changed, form, order)
 
-            hscale = Gtk.HScale(adj)
+            hscale = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, adj)
             hscale.set_draw_value(False)
             hscale.set_data("update_function",set_adj)
             vbox = Gtk.VBox()

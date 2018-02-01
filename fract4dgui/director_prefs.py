@@ -50,7 +50,7 @@ class DirectorPrefs:
 		self.lbl_temp_fct=Gtk.Label(label="Temporary directory for .fct files:")
 		self.tbl_dirs.attach(self.lbl_temp_fct,0,1,1,2)
 
-		self.txt_temp_fct=Gtk.Entry(0)
+		self.txt_temp_fct = Gtk.Entry()
 		self.txt_temp_fct.set_text(self.animation.get_fct_dir())
 		self.txt_temp_fct.set_sensitive(False)
 		self.tbl_dirs.attach(self.txt_temp_fct,1,2,1,2)
@@ -70,7 +70,7 @@ class DirectorPrefs:
 		self.lbl_temp_png=Gtk.Label(label="Temporary directory for .png files:")
 		self.tbl_dirs.attach(self.lbl_temp_png,0,1,2,3)
 
-		self.txt_temp_png=Gtk.Entry(0)
+		self.txt_temp_png = Gtk.Entry()
 		self.txt_temp_png.set_text(self.animation.get_png_dir())
 		self.tbl_dirs.attach(self.txt_temp_png,1,2,2,3)
 

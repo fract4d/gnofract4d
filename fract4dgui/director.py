@@ -4,6 +4,7 @@
 #TODO: change default directory when selecting new according to already set item
 #(for temp dirs, avi and fct files selections)
 
+from gi.repository import Gdk
 from gi.repository import Gtk
 from gi.repository import GObject
 import os
@@ -268,7 +269,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         res=dlg.show()
 
     #before selecting keyframes in list box we must update values of spin boxes in case user typed something in there
-    def before_selection(self,selection, data=None):
+    def before_selection(self, selection, data=None, *kwargs):
         self.spin_duration.update()
         self.spin_kf_stop.update()
         return True
@@ -360,7 +361,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 
     def add_keyframe_clicked(self,widget, event):
         if event.type == Gdk.EventType.BUTTON_PRESS:
-            widget.popup(None, None, None, event.button, event.time)
+            widget.popup(None, None, None, None, event.get_button()[1], event.time)
             # Tell calling code that we have handled this event the buck
             # stops here.
             return True
@@ -516,7 +517,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.mnu_pop_add_current.show()
 
         #--------------Keyframes box-----------------------------------
-        self.frm_kf=Gtk.Frame("Keyframes")
+        self.frm_kf = Gtk.Frame.new("Keyframes")
         self.frm_kf.set_border_width(10)
         self.hbox_kfs=Gtk.HBox(False,0)
         self.tbl_keyframes_left=Gtk.Table(2,2,False)
@@ -574,7 +575,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.box_main.pack_start(self.frm_kf,True,True,0)
 
         # current keyframe box
-        self.current_kf=Gtk.Frame("Current Keyframe")
+        self.current_kf = Gtk.Frame.new("Current Keyframe")
         self.current_kf.set_border_width(10)
 
         self.box_main.pack_start(self.current_kf,True,True,0)
@@ -587,16 +588,18 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.lbl_duration=Gtk.Label(label="Duration")
         self.tbl_keyframes_right.attach(self.lbl_duration,0,1,0,1)
 
-        adj_duration=Gtk.Adjustment(25,1,10000,1,10)
-        self.spin_duration=Gtk.SpinButton(adj_duration)
+        adj_duration = Gtk.Adjustment(25,1,10000,1,10)
+        self.spin_duration = Gtk.SpinButton()
+        self.spin_duration.set_adjustment(adj_duration)
         self.spin_duration.connect("output",self.duration_changed,None)
         self.tbl_keyframes_right.attach(self.spin_duration,1,2,0,1)
 
         self.lbl_kf_stop=Gtk.Label(label="Keyframe stopped for:")
         self.tbl_keyframes_right.attach(self.lbl_kf_stop,0,1,1,2)
 
-        adj_kf_stop=Gtk.Adjustment(1,1,10000,1,10)
-        self.spin_kf_stop=Gtk.SpinButton(adj_kf_stop)
+        adj_kf_stop = Gtk.Adjustment(1,1,10000,1,10)
+        self.spin_kf_stop = Gtk.SpinButton()
+        self.spin_duration.set_adjustment(adj_kf_stop)
         self.spin_kf_stop.connect("output",self.stop_changed,None)
         self.tbl_keyframes_right.attach(self.spin_kf_stop,1,2,1,2)
 
@@ -619,7 +622,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.current_kf.add(self.tbl_keyframes_right) #,False,False,10)
         #-------------------------------------------------------------------
         #----------------------output box-----------------------------------
-        self.frm_output=Gtk.Frame("Output options")
+        self.frm_output = Gtk.Frame.new("Output options")
         self.frm_output.set_border_width(10)
 
         self.box_output_main=Gtk.VBox(True,10)
@@ -628,7 +631,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.lbl_temp_avi=Gtk.Label(label="Resulting video file:")
         self.box_output_file.pack_start(self.lbl_temp_avi,False,False,10)
 
-        self.txt_temp_avi=Gtk.Entry(0)
+        self.txt_temp_avi = Gtk.Entry()
         self.txt_temp_avi.set_editable(False)
         self.box_output_file.pack_start(self.txt_temp_avi,True,True,10)
 
@@ -643,8 +646,9 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.lbl_res=Gtk.Label(label="Resolution:")
         self.box_output_res.pack_start(self.lbl_res,False,False,10)
 
-        adj_width=Gtk.Adjustment(640,320,2048,10,100,0)
-        self.spin_width=Gtk.SpinButton(adj_width)
+        adj_width = Gtk.Adjustment(640,320,2048,10,100,0)
+        self.spin_width = Gtk.SpinButton()
+        self.spin_width.set_adjustment(adj_width)
         self.spin_width.connect("output",self.output_width_changed,None)
         self.box_output_res.pack_start(self.spin_width,False,False,10)
 
@@ -652,7 +656,8 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.box_output_res.pack_start(self.lbl_x,False,False,10)
 
         adj_height=Gtk.Adjustment(480,240,1536,10,100,0)
-        self.spin_height=Gtk.SpinButton(adj_height)
+        self.spin_height = Gtk.SpinButton()
+        self.spin_height.set_adjustment(adj_height)
         self.spin_height.connect("output",self.output_height_changed,None)
         self.box_output_res.pack_start(self.spin_height,False,False,10)
 
@@ -663,8 +668,9 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.lbl_framerate=Gtk.Label(label="Frame rate:")
         self.box_output_framerate.pack_start(self.lbl_framerate,False,False,10)
 
-        adj_framerate=Gtk.Adjustment(25,5,100,1,5,0)
-        self.spin_framerate=Gtk.SpinButton(adj_framerate)
+        adj_framerate = Gtk.Adjustment(25,5,100,1,5,0)
+        self.spin_framerate = Gtk.SpinButton()
+        self.spin_framerate.set_adjustment(adj_framerate)
         self.spin_framerate.connect("output",self.output_framerate_changed,None)
         self.box_output_framerate.pack_start(self.spin_framerate,False,False,10)
 
