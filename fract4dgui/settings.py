@@ -46,7 +46,8 @@ class SettingsDialog(dialog.T):
         self.create_transforms_page()
         self.create_general_page()
         self.create_location_page()
-        self.create_colors_page()
+        # colormap-handling functions of GtkWidget have been removed
+        #self.create_colors_page()
 
     def gradarea_mousedown(self, widget, event):
         pass
