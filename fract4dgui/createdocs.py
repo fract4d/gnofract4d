@@ -3,16 +3,13 @@
 # create a DocBook XML document documenting the keyboard shortcuts & mouse clicks
 # by interrogating the code
 
-from xml.sax.saxutils import escape, quoteattr
+from xml.sax.saxutils import escape
 import os
-import sys
-import io
 import re
 
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
-sys.path.insert(1, "..")
 
 from . import main_window
 
@@ -20,9 +17,6 @@ sort_re = re.compile(r'(?P<mod1><.*?>)?(?P<mod2><.*?>)?(?P<key>[^<>]*)')
 
 ctrl_re = re.compile(r'<control>')
 shift_re = re.compile(r'<shift>')
-
-def strOfType(t):
-    return fracttypes.strOfType(t).capitalize()
 
 class Command:
     def __init__(self,key,val):
@@ -65,7 +59,7 @@ class CommandPrinter:
     def output_all(self):
         self.output_table(self.mouse_commands, "Mouse Commands", "Button")
         keys = sorted(self.commands.keys(), key=key_fix)
-        self.output_table([self.commands[k] for k in keys],"Keyboard Shortcuts","Key") 
+        self.output_table([self.commands[k] for k in keys],"Keyboard Shortcuts","Key")
         
     def output_table(self,commands,name,type):
         nospacename = name.replace(' ', '')
@@ -123,4 +117,3 @@ def main(outfile):
     
 if __name__ == '__main__':
     main('../doc/gnofract4d-manual/C/commands.xml')
-    
