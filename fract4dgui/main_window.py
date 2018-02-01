@@ -886,9 +886,6 @@ class MainWindow:
         self.weirdness = Gtk.HScale(self.weirdness_adjustment)
         self.weirdness.set_size_request(100, 20)
         self.weirdness.set_property("value-pos",Gtk.PositionType.RIGHT)
-        
-        self.weirdness.set_update_policy(
-            Gtk.UPDATE_DISCONTINUOUS)
 
         self.weirdbox = Gtk.VBox()
         shapebox = Gtk.HBox(False,2)
@@ -915,9 +912,6 @@ class MainWindow:
         colorbox.pack_start(color_label, True, True, 0)
         colorbox.pack_start(self.color_weirdness, True, True, 0)
         self.weirdbox.pack_start(colorbox, True, True, 0)
-        
-        self.color_weirdness.set_update_policy(
-            Gtk.UPDATE_DISCONTINUOUS)
 
         def on_weirdness_changed(adjustment):
             self.update_subfracts()

@@ -531,7 +531,6 @@ class T(Hidden):
 
             hscale = Gtk.HScale(adj)
             hscale.set_draw_value(False)
-            hscale.set_update_policy(Gtk.UPDATE_DELAYED)
             hscale.set_data("update_function",set_adj)
             vbox = Gtk.VBox()
             vbox.pack_start(widget, True, True, 0)
