@@ -832,7 +832,7 @@ class MainWindow:
         
         self.add_fourway(
             _("pan"),
-            _("Pan around the image"), 0, False)
+            _("Pan around the image"), 0, True)
         self.add_fourway(
             _("warp"),
             _("Mutate the image by moving along the other 2 axes"), 2, True)
