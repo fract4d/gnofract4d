@@ -1,8 +1,9 @@
 # The top-level data structure behind the UI. Corresponds to the MainWindow
 
-import gtkfractal
-import undo
 import re
+
+from . import gtkfractal
+from . import undo
 
 # We eavesdrop on parameter-changed notifications from the gtkfractal
 # and use those to compile the history

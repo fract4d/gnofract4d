@@ -15,8 +15,8 @@ from gi.repository import Gtk, Gdk, GObject
 
 from fract4d import fractal,fract4dc,fracttypes, image, messages
 
-import utils, fourway
-from gtkio import gtkio
+from . import utils, fourway
+from .gtkio import gtkio
 
 class Hidden(GObject.GObject):
     """This class implements a fractal which calculates asynchronously

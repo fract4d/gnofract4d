@@ -1,14 +1,15 @@
 # GUI for modifying the fractal's settings
 
-import gtk, gobject
-
-import hig
-import dialog
-import browser
-import utils
 import copy
 
-from table import Table
+import gtk, gobject
+
+from . import hig
+from . import dialog
+from . import browser
+from . import utils
+
+from .table import Table
 
 from fract4d import browser_model
 from fract4d.fc import FormulaTypes

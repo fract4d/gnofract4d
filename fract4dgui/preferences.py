@@ -8,8 +8,8 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository import GObject
 
-import dialog
-import utils
+from . import dialog
+from . import utils
 
 from fract4d import fractconfig
 
