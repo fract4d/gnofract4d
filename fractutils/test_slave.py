@@ -8,7 +8,7 @@ import sys
 
 import gtk
 
-import slave
+from . import slave
 
 class GTKTestSlave(object):
     def __init__(self, cmd, *args):

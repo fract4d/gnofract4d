@@ -3,7 +3,7 @@
 import unittest
 import sys
 
-import makemap
+from . import makemap
 
 sys.path.append("..")
 from fract4d import gradient

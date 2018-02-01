@@ -8,8 +8,8 @@ import sys
 
 import gtk
 
-import flickr
-import slave
+from . import flickr
+from . import slave
 
 sys.path.append("..")
 
