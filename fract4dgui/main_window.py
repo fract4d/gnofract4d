@@ -13,7 +13,6 @@ from gi.repository import Gdk, Gtk
 # If we haven't been installed (we're running from the dir we 
 # were unpacked in) this is where fract4d is.
 
-sys.path.insert(1, "..")
 from fract4d import fractal,fc,fract4dc,image, fracttypes, fractconfig
 #from fractutils import flickr
 
