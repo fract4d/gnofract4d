@@ -15,11 +15,12 @@ import gtk, gobject
 
 sys.path.insert(1, "..")
 from fract4d import fractal,fc,fract4dc,image, fracttypes, fractconfig
-from fractutils import flickr
+#from fractutils import flickr
 
 from . import gtkfractal, model, preferences, autozoom, settings, toolbar
 from . import undo, browser, fourway, angle, utils, hig, ignore_info, painter
-from . import icons, flickr_assistant, renderqueue, director
+from . import icons, renderqueue, director
+#from . import flickr_assistant
 
 re_ends_with_num = re.compile(r'\d+\Z')
 re_cleanup = re.compile(r'[\s\(\)]+')
@@ -1192,10 +1193,12 @@ class MainWindow:
         os.system("%s &" % (mailer % url))
 
     def upload(self,*args):
+        return
         """Upload the current image to Flickr.com."""
         flickr_assistant.show_flickr_assistant(self.window,self.control_box, self.f, True)
 
     def view_my_fractals(self, *args):
+        return
         nsid = flickr_assistant.get_user(self.window, self.f)
         if nsid != "":
             url = "http://flickr.com/photos/%s/" % nsid
