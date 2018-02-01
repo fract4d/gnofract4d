@@ -767,7 +767,8 @@ class MainWindow:
             self.window.unfullscreen()
             
     def create_status_bar(self):
-        self.bar = Gtk.ProgressBar()        
+        self.bar = Gtk.ProgressBar()
+        self.bar.set_show_text(True)
         self.vbox.pack_end(self.bar, False, True, 0)
 
     def update_preview(self,f,flip2julia=False):
