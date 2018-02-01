@@ -283,7 +283,7 @@ class MainWindow:
         else:
             for f in self.subfracts:
                 f.widget.hide()
-            self.weirdbox.hide_all()
+            self.weirdbox.hide()
 
         self.show_subfracts = visible
         self.update_image_prefs(preferences.userPrefs)
@@ -370,7 +370,7 @@ class MainWindow:
         hbox = Gtk.HBox()
         hbox.pack_start(self.swindow, True, True, 0)
         self.control_box = Gtk.VBox()
-        hbox.pack_start(self.control_box,False,False)
+        hbox.pack_start(self.control_box, False, False, 0)
         self.vbox.pack_start(hbox, True, True, 0)
 
     def draw(self):        
@@ -791,7 +791,7 @@ class MainWindow:
 
     def create_toolbar(self):
         self.toolbar = toolbar.T()
-        self.vbox.pack_start(self.toolbar,expand=False)
+        self.vbox.pack_start(self.toolbar, expand=False, fill=False, padding=0)
         
         # preview
         self.toolbar.add_space()
@@ -883,7 +883,7 @@ class MainWindow:
         self.weirdness_adjustment = Gtk.Adjustment(
             20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
 
-        self.weirdness = Gtk.HScale(self.weirdness_adjustment)
+        self.weirdness = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.weirdness_adjustment)
         self.weirdness.set_size_request(100, 20)
         self.weirdness.set_property("value-pos",Gtk.PositionType.RIGHT)
 
@@ -903,7 +903,7 @@ class MainWindow:
         self.color_weirdness_adjustment = Gtk.Adjustment(
             20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
 
-        self.color_weirdness = Gtk.HScale(self.color_weirdness_adjustment)
+        self.color_weirdness = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.color_weirdness_adjustment)
         self.color_weirdness.set_size_request(100, 20)
         self.color_weirdness.set_property("value-pos",Gtk.PositionType.RIGHT)
 
