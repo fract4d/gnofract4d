@@ -257,9 +257,9 @@ class BrowserDialog(dialog.T):
         
         panes2 = Gtk.HPaned()
         # left-hand pane displays file list
-        panes2.add1(file_list)
+        panes2.pack1(file_list, True, False)
         # middle is formula list for that file
-        panes2.add2(formula_list)        
+        panes2.pack2(formula_list, True, False)
         panes1.add1(panes2)
 
         # right-hand pane is details of current formula
