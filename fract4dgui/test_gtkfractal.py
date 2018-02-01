@@ -27,6 +27,8 @@ g_comp.add_func_path("../formulas")
 class FakeEvent:
     def __init__(self,**kwds):
         self.__dict__.update(kwds)
+    def get_state(self):
+        return 0
 
 class CallCounter:
     def __init__(self):
