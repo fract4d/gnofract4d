@@ -2,7 +2,7 @@
 
 import copy
 
-import gtk, gobject
+from gi.repository import GObject, Gtk
 
 from . import hig
 from . import dialog

@@ -1,7 +1,9 @@
 # our 'quasi-stock' icons
 
 from gi.repository import GObject
+from gi.repository import Gdk
 from gi.repository import Gtk
+from gi.repository import GdkPixbuf
 from . import utils
 
 from fract4d import fractconfig

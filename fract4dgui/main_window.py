@@ -8,7 +8,7 @@ import math
 import re
 import urllib.request, urllib.parse, urllib.error
 
-import gtk, gobject
+from gi.repository import Gdk, Gtk
 
 # If we haven't been installed (we're running from the dir we 
 # were unpacked in) this is where fract4d is.
