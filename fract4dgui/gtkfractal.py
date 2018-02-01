@@ -155,7 +155,7 @@ class Hidden(GObject.GObject):
         # wait for stream from worker to flush
         while self.running:
             n += 1
-            Gtk.main_iteration(True)
+            Gtk.main_iteration()
 
         self.skip_updates = False
 
