@@ -529,11 +529,7 @@ class SettingsDialog(dialog.T):
 
     def update_formula_text(self, f, textview,formindex):
         text = f.forms[formindex].text()
-
-        latin_text = str(text,'latin-1')
-        utf8_text = latin_text.encode('utf-8')
-
-        textview.get_buffer().set_text(utf8_text,-1)
+        textview.get_buffer().set_text(text, -1)
 
     def change_formula(self,button,buffer,formindex,formtype):
         buftext = buffer.get_text(
