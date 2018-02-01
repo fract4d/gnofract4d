@@ -76,7 +76,7 @@ class Hidden(GObject.GObject):
         self.image = image.T(
             self.width,self.height,total_width,total_height)
 
-        self.msgbuf = ""
+        self.msgbuf = b""
         self.io_subsys = gtkio();
 
     def try_init_fractal(self):
@@ -173,7 +173,7 @@ class Hidden(GObject.GObject):
             return True
 
         (t,size) = struct.unpack("2i",self.msgbuf)
-        self.msgbuf = ""
+        self.msgbuf = b""
         bytes = self.io_subsys.read(fd,size)
         if len(bytes) < size:
             print("not enough bytes, got %d instead of %d" % (len(bytes),size))
