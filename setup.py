@@ -177,6 +177,15 @@ if have_gmp:
 def get_files(dir,ext):
     return [ os.path.join(dir,x) for x in os.listdir(dir) if x.endswith(ext)] 
 
+so_extension = distutils.sysconfig.get_config_var("SO")
+
+with open("fract4d/c/cmap_name.h", "w") as fh:
+	fh.write("""
+#ifndef CMAP_NAME
+#define CMAP_NAME "/fract4d_stdlib%s"
+#endif
+""" % so_extension)
+
 setup (name = 'gnofract4d',
        version = gnofract4d_version,
        description = 'A program to draw fractals',
@@ -245,8 +254,6 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
 # location so it's possible to run without installing. Can't find a good
 # way to extract the actual target directory out of distutils, hence
 # this egregious hack
-
-so_extension = distutils.sysconfig.get_config_var("SO")
 
 lib_targets = {
     "fract4dc" + so_extension : "fract4d",
