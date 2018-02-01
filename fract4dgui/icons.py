@@ -4,7 +4,6 @@ from gi.repository import GObject
 from gi.repository import Gdk
 from gi.repository import Gtk
 from gi.repository import GdkPixbuf
-from . import utils
 
 from fract4d import fractconfig
 
@@ -26,8 +25,13 @@ class StockThing:
             self.iconset = Gtk.IconSet(self.pixbuf)
             _iconfactory.add(stock_name, self.iconset)
 
-            Gtk.stock_add(
-                [(stock_name, title, Gdk.ModifierType.CONTROL_MASK, key, "c")])
+            stockitem = Gtk.StockItem()
+            stockitem.stock_id = stock_name
+            stockitem.label = title
+            stockitem.modifier = Gdk.ModifierType.CONTROL_MASK
+            stockitem.keyval = key
+            stockitem.translation_domain = "C"
+            Gtk.stock_add([stockitem])
 
         except ValueError:
             # can't find it
