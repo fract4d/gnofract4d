@@ -503,7 +503,7 @@ class T(Hidden):
 
         set_entry()
 
-        widget.set_data("update_function", set_entry)
+        widget.update_function = set_entry
 
         widget.f = self
         widget.connect('focus-out-event',
@@ -529,7 +529,7 @@ class T(Hidden):
 
             hscale = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, adj)
             hscale.set_draw_value(False)
-            hscale.set_data("update_function",set_adj)
+            hscale.update_function = set_adj
             vbox = Gtk.VBox()
             vbox.pack_start(widget, True, True, 0)
             vbox.pack_start(hscale, True, True, 0)
@@ -572,7 +572,7 @@ class T(Hidden):
 
         set_toggle(self)
 
-        widget.set_data("update_function", set_toggle)
+        widget.update_function = set_toggle
         widget.f = self
         widget.connect('toggled', set_fractal, form, order)
         return widget
@@ -608,7 +608,7 @@ class T(Hidden):
             
         set_selected_value()
         
-        color_button.widget.set_data("update_function", set_selected_value)
+        color_button.widget.update_function = set_selected_value
 
         return color_button.widget
 
@@ -636,7 +636,7 @@ class T(Hidden):
             
         set_selected_value(self)
 
-        widget.set_data("update_function", set_selected_value)
+        widget.update_function = set_selected_value
 
         widget.f = self
         widget.connect('changed',
@@ -765,7 +765,7 @@ class T(Hidden):
                 
         set_selected_function()
 
-        widget.set_data("update_function", set_selected_function)
+        widget.update_function = set_selected_function
 
         widget.connect('changed',set_fractal_function,self,param,formula)
         

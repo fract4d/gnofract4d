@@ -637,8 +637,11 @@ class SettingsDialog(dialog.T):
 
     def update_transform_parameters(self, parent, *args):
         widget = self.tables[3] 
-        if widget != None and widget.parent != None:
-            parent.remove(self.tables[3])
+        if widget is not None:
+            try:
+                parent.remove(self.tables[3])
+            except AttributeError:
+                pass
 
         if self.selected_transform != None:
             self.tables[3] = Table(5,2,False)
@@ -663,9 +666,12 @@ class SettingsDialog(dialog.T):
         self.tables[param_type] = None
         
         def update_formula_parameters(*args):
-            widget = self.tables[param_type] 
-            if widget != None and widget.parent != None:
-                parent.remove(self.tables[param_type])
+            widget = self.tables[param_type]
+            if widget is not None:
+                try:
+                    parent.remove(self.tables[param_type])
+                except AttributeError:
+                    pass
 
             table = Table(5,2,False)
             self.create_browsable_name(table, param_type, typename, tip)
@@ -701,9 +707,10 @@ class SettingsDialog(dialog.T):
             return
 
         for widget in container.get_children():
-            update_function = widget.get_data("update_function")
-            if update_function != None:
-                update_function()
+            try:
+                widget.update_function()
+            except AttributeError:
+                pass
             if isinstance(widget, Gtk.Container):
                 self.update_all_widgets(fractal,widget) # recurse
 
