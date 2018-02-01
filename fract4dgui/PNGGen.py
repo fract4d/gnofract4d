@@ -3,15 +3,13 @@
 #in special thread, while it finds in-between values it call gtkfractal.HighResolution
 #to create images
 
-
-
-from gi.repository import Gtk
-from gi.repository import GObject
 import re
 import math
 import sys
 import os
 from threading import *
+
+from gi.repository import Gdk, Gtk, GObject
 
 from . import gtkfractal, hig
 from fract4d import fractal,fracttypes, animation
@@ -35,7 +33,10 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
         self.vbox.pack_start(self.lbl_overall,True,True,0)
         self.pbar_overall = Gtk.ProgressBar()
         self.vbox.pack_start(self.pbar_overall,True,True,0)
-        self.set_geometry_hints(None,min_aspect=3.5,max_aspect=3.5)
+        geometry = Gdk.Geometry()
+        geometry.min_aspect = 3.5
+        geometry.max_aspect = 3.5
+        self.set_geometry_hints(None, geometry, Gdk.WindowHints.ASPECT)
         self.anim=animation
 
         #-------------loads compiler----------------------------
