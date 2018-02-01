@@ -4,10 +4,10 @@
 import re
 import types
 
-import yacc
+from . import yacc
 
-import fractlexer
-import absyn
+from . import fractlexer
+from . import absyn
 
 
 tokens = fractlexer.tokens

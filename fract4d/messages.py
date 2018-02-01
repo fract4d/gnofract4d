@@ -1,5 +1,6 @@
-import fract4dc
 import struct
+
+from . import fract4dc
 
 def parse(type,buffer):
     if type == fract4dc.MESSAGE_TYPE_ITERS:

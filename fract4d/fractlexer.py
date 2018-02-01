@@ -4,10 +4,11 @@
 #
 # tokenizer for UltraFractal formula files
 # ------------------------------------------------------------
-import lex
 import sys
 import re
 import string
+
+from . import lex
 
 # set to True to pass through all tokens. This breaks the parser but
 # is useful for pretty-printing

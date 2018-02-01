@@ -3,20 +3,20 @@
 import unittest
 import string
 import sys
-import fc
 import os.path
 import struct
 import math
 import types
 
-import testbase
+from . import testbase
 
-import fract4dc
-import gradient
-import image
-import messages
+from . import fc
+from . import fract4dc
+from . import gradient
+from . import image
+from . import messages
 
-from test_fractalsite import FractalSite
+from .test_fractalsite import FractalSite
 
 pos_params = [
     0.0, 0.0, 0.0, 0.0,

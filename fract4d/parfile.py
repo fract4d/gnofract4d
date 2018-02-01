@@ -8,8 +8,9 @@
 # rotation == -xyangle in degrees, needs convert to radians
 
 import string
-import preprocessor
 import math
+
+from . import preprocessor
 
 def parse(file,f):
     # reset the fractal to have defaults closer to Fractint

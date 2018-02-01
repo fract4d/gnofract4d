@@ -5,7 +5,9 @@ import os, sys, copy, math
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
 
-import fracttypes, fractal, fractconfig
+from . import fracttypes
+from . import fractal
+from . import fractconfig
 
 #interpolation type constants
 INT_LINEAR=    0

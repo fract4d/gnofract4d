@@ -3,10 +3,11 @@
 # A utility program used to create a standalone single-threaded
 # statically-linked C program for profiling purposes
 
-import fc
-import fractal
 import sys
 import subprocess
+
+from . import fc
+from . import fractal
 
 class PC(fc.Compiler):
     def __init__(self):

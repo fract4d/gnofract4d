@@ -4,9 +4,9 @@
 
 import copy
 
-import ir
-#import fsymbol
-import fracttypes
+from . import ir
+#from . import fsymbol
+from . import fracttypes
 
 class T:
     def __init__(self,symbols,dump=None):

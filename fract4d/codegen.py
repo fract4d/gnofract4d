@@ -6,17 +6,16 @@ import string
 import tempfile
 import copy
 import os
-
-import absyn
-import ir
 import re
 import types
 
-import optimize
-import fracttypes
+from . import absyn
+from . import fracttypes
+from . import ir
+from . import optimize
 
-from fracttypes import Bool, Int, Float, Complex, Hyper, Color, IntArray, FloatArray, ComplexArray, VoidArray
-from instructions import *
+from .fracttypes import Bool, Int, Float, Complex, Hyper, Color, IntArray, FloatArray, ComplexArray, VoidArray
+from .instructions import *
     
 class Formatter:
     ' fed to print to fill the output template'

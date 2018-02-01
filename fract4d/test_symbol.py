@@ -2,12 +2,12 @@
 
 # test symbol table implementation
 
-import fsymbol
+import collections
 import unittest
 import copy
 
-from fracttypes import *
-import collections
+from . import fsymbol
+from .fracttypes import *
 
 class SymbolTest(unittest.TestCase):
     def setUp(self):

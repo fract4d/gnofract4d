@@ -321,7 +321,7 @@ class InternalCompilerError(TranslationError):
     def __init__(self,msg):
         TranslationError.__init__("Internal Compiler Error:" + msg)
     
-import stdlib
+from . import stdlib
 
 class Func:
     def __init__(self,args,ret,fname,pos=-1):

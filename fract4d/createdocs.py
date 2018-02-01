@@ -2,11 +2,11 @@
 
 # create a DocBook XML document documenting the standard library
 
+import sys
 from xml.sax.saxutils import escape, quoteattr
 
-import fsymbol
-import fracttypes
-import sys
+from . import fracttypes
+from . import fsymbol
 
 def strOfType(t):
     return fracttypes.strOfType(t).capitalize()

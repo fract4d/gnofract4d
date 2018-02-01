@@ -1,8 +1,8 @@
 import re
 
-import fctutils 
-import gradient
-import fc
+from . import fctutils 
+from . import gradient
+from . import fc
 
 class T(fctutils.T):
     '''Parses the various different kinds of color data we have'''

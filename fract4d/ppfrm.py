@@ -20,7 +20,7 @@ import frm_docbook
 import lex
 
 # my code
-import fractlexer
+from . import fractlexer
 
 def output_frm(toks,outbase, nfrms):
     if toks != []:

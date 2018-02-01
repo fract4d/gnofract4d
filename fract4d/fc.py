@@ -32,16 +32,16 @@ import hashlib
 import re
 import copy
 
-import fractconfig
-import fractparser
-import fractlexer
-import translate
-import codegen
-import fracttypes
-import absyn
-import preprocessor
-import cache
-import gradient
+from . import fractconfig
+from . import fractparser
+from . import fractlexer
+from . import translate
+from . import codegen
+from . import fracttypes
+from . import absyn
+from . import preprocessor
+from . import cache
+from . import gradient
 
 class FormulaTypes:
     FRACTAL = 0

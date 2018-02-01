@@ -1,7 +1,7 @@
 # This is called by the main gnofract4d script
 
 import shutil, os
-import fractal,fc,fract4dc,image, fracttypes, fractconfig
+from . import fractal, fc, fract4dc, image, fracttypes, fractconfig
 
 class T:
     def __init__(self):
