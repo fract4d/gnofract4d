@@ -95,7 +95,8 @@ class TestHidden(unittest.TestCase):
 
     def testLoad(self):
         f = gtkfractal.Hidden(self.compiler,64,40)
-        f.loadFctFile(file("../testdata/test_bail.fct"))
+        with open("../testdata/test_bail.fct") as fh:
+            f.loadFctFile(fh)
         self.assertEqual(f.saved, True)        
         f.connect('status-changed', self.quitloop)
         f.draw_image(0,1)
