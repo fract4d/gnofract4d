@@ -1,7 +1,7 @@
 # a module for handling interaction with the Flickr photo-sharing service
 
 import os
-import urllib, urllib2, urlparse, mimetools, mimetypes
+import urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, urllib.parse, mimetools, mimetypes
 import xml.dom.minidom
 import hashlib
 import random
@@ -28,7 +28,7 @@ def makeRequest(base_url,is_post,
                 **kwds):
     if is_signed:
         kwds["api_sig"]=createSig(**kwds)
-    query = urllib.urlencode(kwds)
+    query = urllib.parse.urlencode(kwds)
     url = "%s?%s" % (base_url,query)
     cmd = GET_CMD
     method = is_post and "POST" or "GET"
@@ -56,7 +56,7 @@ def parseResponse(resp):
     return dom
 
 def createSig(**kwds):
-    keys = kwds.keys()
+    keys = list(kwds.keys())
     keys.sort()
     siglist = [ SECRET ]
     for k in keys:
@@ -71,7 +71,7 @@ def createSig(**kwds):
 def getSignedUrl(url,**kwds):
     sig = createSig(**kwds)
     kwds["api_sig"] = sig
-    query = urllib.urlencode(kwds)
+    query = urllib.parse.urlencode(kwds)
     url = "%s?%s" % (url, query)
     return url
 
@@ -253,7 +253,7 @@ def encode_multipart_formdata(fields, files):
     CRLF = '\r\n'
     L = []
     if isinstance(fields, dict):
-        fields = fields.items()
+        fields = list(fields.items())
     for (key, value) in fields:
         L.append('--' + BOUNDARY)
         L.append('Content-Disposition: form-data; name="%s"' % key)
@@ -271,13 +271,13 @@ def encode_multipart_formdata(fields, files):
     L.append('')
     try:
         body = CRLF.join(L)
-    except UnicodeDecodeError, err:
-        print "unicode error", str(err)
+    except UnicodeDecodeError as err:
+        print("unicode error", str(err))
         for x in L:
-            print x.__class__
+            print(x.__class__)
             if len(x) > 0:
-                print "%x" % ord(x[0])
-            print x[:100]
+                print("%x" % ord(x[0]))
+            print(x[:100])
         raise 
     content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
     return content_type, body
@@ -293,4 +293,4 @@ def build_request(theurl, fields, files, txheaders=None):
     if not txheaders: txheaders = {}
     txheaders['Content-type'] = content_type
     txheaders['Content-length'] = str(len(body))
-    return urllib2.Request(theurl, body, txheaders)
+    return urllib.request.Request(theurl, body, txheaders)
