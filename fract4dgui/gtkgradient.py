@@ -243,8 +243,8 @@ class GradientDialog(dialog.T):
         widget.window.draw_rectangle(widget.style.white_gc,
                                 True,
                                 0, 0,
-                                widget.allocation.width,
-                                widget.allocation.height)
+                                widget.get_allocated_width(),
+                                widget.get_allocated_height())
         return True
         
     def gradarea_expose(self, widget, event):

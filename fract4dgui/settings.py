@@ -52,7 +52,7 @@ class SettingsDialog(dialog.T):
         pass
 
     def gradarea_clicked(self, widget, event):
-        pos = float(event.x) / widget.allocation.width
+        pos = float(event.x) / widget.get_allocated_width()
         i = self.f.get_gradient().get_index_at(pos)
         self.select_segment(i)
         self.redraw()
@@ -71,7 +71,7 @@ class SettingsDialog(dialog.T):
 
     def draw_handle(self, widget, midpoint, fill):
         # draw a triangle pointing up, centered on midpoint
-        total_height = widget.allocation.height
+        total_height = widget.get_allocated_height()
         colorband_height = total_height - self.grad_handle_height
         points = [
             (midpoint, colorband_height),
@@ -83,8 +83,8 @@ class SettingsDialog(dialog.T):
 
     def redraw_rect(self, widget, x, y, w, h):
         # draw the color preview bar
-        wwidth = float(widget.allocation.width)
-        colorband_height = widget.allocation.height - self.grad_handle_height
+        wwidth = float(widget.get_allocated_width())
+        colorband_height = widget.get_allocated_height() - self.grad_handle_height
         
         colormap = widget.get_colormap()
         grad = self.f.get_gradient()
@@ -134,8 +134,8 @@ class SettingsDialog(dialog.T):
         if self.gradarea.window:
             self.gradarea.window.invalidate_rect(
                 (0, 0,
-                                  self.gradarea.allocation.width,
-                                  self.gradarea.allocation.height), True)
+                                  self.gradarea.get_allocated_width(),
+                                  self.gradarea.get_allocated_height()), True)
 
         self.inner_solid_button.set_color(
             utils.floatColorFrom256(self.f.solids[1]))
