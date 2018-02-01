@@ -264,14 +264,15 @@ lib_targets = {
 if 'win' == sys.platform[:3]:
     lib_targets["fract4d_stdlib.lib"] = "fract4d"
 
-def copy_libs(dummy,dirpath,namelist):
-     for name in namelist:
-         target = lib_targets.get(name)
-         if target != None:
-             name = os.path.join(dirpath, name)
-             shutil.copy(name, target)
-            
-os.walk("build",copy_libs,None)
+def copy_libs(root, dirlist, namelist):
+    for name in namelist:
+        target = lib_targets.get(name)
+        if target is not None:
+            shutil.copy(os.path.join(root, name), target)
+
+for root, dirs, files in os.walk("build"):
+    copy_libs(root, dirs, files)
+
 if 'win' == sys.platform[:3]:
     shutil.copy("fract4d/fract4d_stdlib.pyd", "fract4d_stdlib.pyd")
 
