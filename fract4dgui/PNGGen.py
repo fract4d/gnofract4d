@@ -21,7 +21,7 @@ thread_error=False
 
 class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
     def __init__(self,animation,compiler):
-        GObject.GObject.__init__(self,
+        Gtk.Dialog.__init__(self,
             "Generating images...",None,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             (Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL))

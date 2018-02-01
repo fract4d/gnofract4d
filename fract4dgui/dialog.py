@@ -19,7 +19,7 @@ def make_container(title):
 
 class T(Gtk.Dialog):
     def __init__(self,title=None,parent=None,flags=0,buttons=None):
-        GObject.GObject.__init__(self,title,parent,flags,buttons)
+        Gtk.Dialog.__init__(self, title, parent, flags, buttons)
 
         self.set_default_response(Gtk.ResponseType.CLOSE)
         self.connect('response',self.onResponse)
