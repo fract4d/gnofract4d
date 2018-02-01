@@ -121,7 +121,7 @@ class BrowserDialog(dialog.T):
         sw.set_policy (Gtk.PolicyType.NEVER,
                        Gtk.PolicyType.AUTOMATIC)
 
-        self.filetreeview = Gtk.TreeView (self.file_list)
+        self.filetreeview = Gtk.TreeView.new_with_model(self.file_list)
         self.filetreeview.set_tooltip_text(
             _("A list of files containing fractal formulas"))
         
@@ -189,7 +189,7 @@ class BrowserDialog(dialog.T):
         sw.set_policy (Gtk.PolicyType.NEVER,
                        Gtk.PolicyType.AUTOMATIC)
 
-        self.treeview = Gtk.TreeView (self.formula_list)
+        self.treeview = Gtk.TreeView.new_with_model(self.formula_list)
 
         self.treeview.set_tooltip_text(
             _("A list of formulas in the selected file"))

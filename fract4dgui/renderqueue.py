@@ -116,7 +116,7 @@ class QueueDialog(dialog.T):
             GObject.TYPE_FLOAT, # % complete
             )
 
-        self.view = Gtk.TreeView(self.store)
+        self.view = Gtk.TreeView.new_with_model(self.store)
         column = Gtk.TreeViewColumn(
             _('_Name'),Gtk.CellRendererText(),text=0)
         self.view.append_column(column)
