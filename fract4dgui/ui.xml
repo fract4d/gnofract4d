@@ -35,12 +35,6 @@
 	<menuitem name="PlanesWY" action="PlanesWYAction"/>
       </menu>
     </menu>
-    <menu name="ShareMenu" action="ShareMenuAction">
-      <menuitem name="ShareMail" action="ShareMailToAction"/>
-      <menuitem name="ShareUpload" action="ShareUploadAction"/>
-      <menuitem name="ShareViewMy" action="ShareViewMyFractalsAction"/>
-      <menuitem name="ShareViewGroup" action="ShareViewGroupFractalsAction"/>
-    </menu>
     <menu name="ToolsMenu" action="ToolsMenuAction">
       <menuitem name="ToolsAutozoom" action="ToolsAutozoomAction"/>
       <menuitem name="ToolsExplorer" action="ToolsExplorerAction"/>

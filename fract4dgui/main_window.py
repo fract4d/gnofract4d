@@ -14,12 +14,11 @@ from gi.repository import Gdk, Gtk
 # were unpacked in) this is where fract4d is.
 
 from fract4d import fractal,fc,fract4dc,image, fracttypes, fractconfig
-#from fractutils import flickr
+
 
 from . import gtkfractal, model, preferences, autozoom, settings, toolbar
 from . import undo, browser, fourway, angle, utils, hig, ignore_info, painter
 from . import icons, renderqueue, director
-#from . import flickr_assistant
 
 re_ends_with_num = re.compile(r'\d+\Z')
 re_cleanup = re.compile(r'[\s\(\)]+')
@@ -608,16 +607,6 @@ class MainWindow:
             ('ViewFullScreenAction', Gtk.STOCK_FULLSCREEN, _('_Full Screen'),
              'F11', _('Full Screen (press Esc to finish)'), self.full_screen),
 
-            ('ShareMenuAction', None, _('_Share')),
-            ('ShareMailToAction', icons.mail_to.stock_name, _('_Mail To...'),
-             '<control>M', _('Send parameters by mail'), self.send_to),
-            ('ShareUploadAction', None, _('_Upload to Flickr...'),
-             '<control>U', _('Upload current image to Flickr'), self.upload),
-            ('ShareViewMyFractalsAction', None, _('_View My Online Fractals'),
-             None, _('View fractals I\'ve uploaded (if any'), self.view_my_fractals),
-            ('ShareViewGroupFractalsAction', None, _('View _Group Fractals'),
-             None, _('View fractals uploaded by everyone'), self.view_group_fractals),
-
             ('ToolsMenuAction', None, _('_Tools')),
             ('ToolsAutozoomAction', icons.autozoom.stock_name, _('_Autozoom'),
              '<control>A', _('Automatically zoom in to interesting regions'), self.autozoom),
@@ -1166,42 +1155,6 @@ class MainWindow:
             parent=self.window)
         d.run()
         d.destroy()
-
-    def send_to(self,*args):
-        """Launch an email editor with current image attached."""
-        mailer = preferences.userPrefs.get("helpers","mailer")
-
-        if False:
-            # to save an image and attach it
-            # add &attach=%s to url
-            image_name = os.path.join(
-                "/tmp",
-                os.path.basename(self.default_save_filename(".png")))
-            self.save_image_file(image_name)
-            
-        subject = os.path.basename(self.display_filename())
-        url= '"mailto:gnofract4d-users@lists.sourceforge.net?subject=%s&body=%s"' % \
-             (urllib.parse.quote(subject),
-              urllib.parse.quote(self.f.serialize()))
-
-        os.system("%s &" % (mailer % url))
-
-    def upload(self,*args):
-        return
-        """Upload the current image to Flickr.com."""
-        flickr_assistant.show_flickr_assistant(self.window,self.control_box, self.f, True)
-
-    def view_my_fractals(self, *args):
-        return
-        nsid = flickr_assistant.get_user(self.window, self.f)
-        if nsid != "":
-            url = "http://flickr.com/photos/%s/" % nsid
-            utils.launch_browser(preferences.userPrefs, url, self.window)
-
-    def view_group_fractals(self, *args):
-        utils.launch_browser(preferences.userPrefs,
-                       "http://flickr.com/groups/gnofract4d/pool/",
-                       self.window)
 
     def save_image(self,*args):
         """Save the current image to a file."""
