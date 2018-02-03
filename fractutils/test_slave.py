@@ -8,7 +8,9 @@ import sys
 
 import gtk
 
-import slave
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fractutils import slave
 
 class GTKTestSlave(object):
     def __init__(self, cmd, *args):
@@ -54,7 +56,7 @@ class Test(unittest.TestCase):
         s.run(input)
         return s
     
-    def sendInput(self,s,n=sys.maxint):
+    def sendInput(self,s,n=sys.maxsize):
         while n > 0:
             (r,w,e) = select.select([],[s.stdin],[],0.01)
             if len(w) == 0:
@@ -101,7 +103,7 @@ class Test(unittest.TestCase):
         input = "x" * (100 * 1000)
         s.run(input)
         self.assertEqual(input, s.s.output)
-        self.failUnless(s.complete, "operation didn't complete")
+        self.assertTrue(s.complete, "operation didn't complete")
         
     def testGet(self):
         s = GTKTestSlave("./get.py", "GET", "http://www.google.com/index.html" )
@@ -109,14 +111,14 @@ class Test(unittest.TestCase):
         if "Name or service not known" in s.s.err_output:
             # we don't have a network connection so can't try this
             return
-        self.failUnless(s.s.output.count("oogle") > 0)
+        self.assertTrue(s.s.output.count("oogle") > 0)
 
     def testGetBadSite(self):
         s = GTKTestSlave(
             "./get.py", "GET", "http://www.sdgsdvsdvsdvsdbbbs.com/index.html" )
         s.run("")
         self.assertNotEqual(s.s.process.returncode,0)
-        self.failUnless(s.s.err_output.count('Name or service not known') > 0)
+        self.assertTrue(s.s.err_output.count('Name or service not known') > 0)
 
     def testGetBadPage(self):
         s = GTKTestSlave(
@@ -127,7 +129,7 @@ class Test(unittest.TestCase):
             # we don't have a network connection so can't try this
             return
 
-        self.failUnless(s.s.err_output.count('404: Not Found') > 0)
+        self.assertTrue(s.s.err_output.count('404: Not Found') > 0)
 
         
 def suite():

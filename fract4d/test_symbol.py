@@ -2,12 +2,15 @@
 
 # test symbol table implementation
 
-import fsymbol
+import collections
 import unittest
 import copy
+import sys
 
-from fracttypes import *
-import collections
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import fsymbol
+from fract4d.fracttypes import *
 
 class SymbolTest(unittest.TestCase):
     def setUp(self):

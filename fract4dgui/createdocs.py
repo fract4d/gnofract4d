@@ -3,16 +3,17 @@
 # create a DocBook XML document documenting the keyboard shortcuts & mouse clicks
 # by interrogating the code
 
-from xml.sax.saxutils import escape, quoteattr
+from xml.sax.saxutils import escape
 import os
-import sys
-import io
 import re
 
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
-sys.path.insert(1, "..")
+
+import gi
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
 
 from . import main_window
 
@@ -20,9 +21,6 @@ sort_re = re.compile(r'(?P<mod1><.*?>)?(?P<mod2><.*?>)?(?P<key>[^<>]*)')
 
 ctrl_re = re.compile(r'<control>')
 shift_re = re.compile(r'<shift>')
-
-def strOfType(t):
-    return fracttypes.strOfType(t).capitalize()
 
 class Command:
     def __init__(self,key,val):
@@ -41,10 +39,6 @@ def key_fix(k):
         #print k,"=>",fixed
         return fixed
     return k
-
-def key_cmp(a,b):    
-    a,b = key_fix(a),key_fix(b)
-    return cmp(a,b)
 
 class CommandPrinter:
     def __init__(self,f):
@@ -68,9 +62,8 @@ class CommandPrinter:
 
     def output_all(self):
         self.output_table(self.mouse_commands, "Mouse Commands", "Button")
-        keys = list(self.commands.keys())
-        keys.sort(key_cmp)
-        self.output_table([self.commands[k] for k in keys],"Keyboard Shortcuts","Key") 
+        keys = sorted(self.commands.keys(), key=key_fix)
+        self.output_table([self.commands[k] for k in keys],"Keyboard Shortcuts","Key")
         
     def output_table(self,commands,name,type):
         nospacename = name.replace(' ', '')
@@ -128,4 +121,3 @@ def main(outfile):
     
 if __name__ == '__main__':
     main('../doc/gnofract4d-manual/C/commands.xml')
-    

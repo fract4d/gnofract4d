@@ -11,8 +11,6 @@ import os
 import sys
 import inspect
 
-import gi
-gi.require_version('Gtk', '3.0') 
 from gi.repository import Gtk, Gdk, GObject, GLib
 
 from fract4d import fract4dc
@@ -152,18 +150,14 @@ def launch_browser(prefs, url, window):
         d.destroy()
 
 class ColorButton:
-    def __init__(self,rgb, changed_cb, is_left):
-        self.area = None
-        self.set_color(rgb)
+    def __init__(self, rgb, changed_cb, is_left):
+        self.color = create_color(rgb[0], rgb[1], rgb[2])
         self.changed_cb = changed_cb
         self.is_left = is_left
-
-        self.widget = Gtk.ColorButton(self.color)
-
-        def color_set(widget):
-            color = widget.get_color()
-            self.color_changed(color)
-
+        
+        self.area = None
+        
+        self.widget = Gtk.ColorButton.new_with_color(self.color)
         self.widget.connect('color-set', self.on_color_set)
 
     def on_color_set(self, widget):
@@ -206,5 +200,3 @@ class ColorButton:
             color.green/65535.0,
             color.blue/65535.0,
             self.is_left)
-
-        

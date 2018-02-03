@@ -8,14 +8,17 @@ import math
 import os
 import sys
 
+import gi
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
-sys.path.insert(1, "..")
+if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import fc, fractal, browser_model
-from . import browser
+from fract4dgui import browser
 
 
 class Test(unittest.TestCase):

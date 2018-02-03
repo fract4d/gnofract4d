@@ -2,7 +2,7 @@
 
 # a utility class used by several test scripts
 
-import messages
+from fract4d import messages
 
 class FractalSite:
     def __init__(self):

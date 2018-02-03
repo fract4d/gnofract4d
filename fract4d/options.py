@@ -2,7 +2,7 @@ import getopt # FIXME now we've dropped 2.2 we can use optparse
 import os
 import string
 
-import fractal
+from . import fractal
 
 # version of Gnofract 4D
 version = '3.14.1'

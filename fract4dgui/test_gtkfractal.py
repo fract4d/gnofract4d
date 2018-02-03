@@ -4,20 +4,20 @@ import unittest
 import copy
 import math
 import os
-import gettext
 import sys
 
-sys.path.insert(1, "..")
-sys.path.insert(1, "../fract4d")
-import fract4d
-from fract4d import fc, fractal
-
-import gtkfractal
-
-from gi.repository import Gtk
-
+import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
+
+import gi
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gdk, Gtk
+
+if sys.path[1] != "..": sys.path.insert(1, "..")
+from fract4d import fc, fractal
+from fract4dgui import gtkfractal
 
 # centralized to speed up tests
 g_comp = fc.Compiler()
@@ -27,6 +27,8 @@ g_comp.add_func_path("../formulas")
 class FakeEvent:
     def __init__(self,**kwds):
         self.__dict__.update(kwds)
+    def get_state(self):
+        return 0
 
 class CallCounter:
     def __init__(self):
@@ -95,7 +97,8 @@ class TestHidden(unittest.TestCase):
 
     def testLoad(self):
         f = gtkfractal.Hidden(self.compiler,64,40)
-        f.loadFctFile(file("../testdata/test_bail.fct"))
+        with open("../testdata/test_bail.fct") as fh:
+            f.loadFctFile(fh)
         self.assertEqual(f.saved, True)        
         f.connect('status-changed', self.quitloop)
         f.draw_image(0,1)

@@ -8,10 +8,10 @@ import sys
 
 import gtk
 
-import flickr
-import slave
+if sys.path[1] != "..": sys.path.insert(1, "..")
 
-sys.path.append("..")
+from fractutils import flickr
+from fractutils import slave
 
 class GTKTestSlave(object):
     def __init__(self, request):
@@ -52,25 +52,25 @@ def get_resp(request):
 # non-checked-in file. User needs to create it initially
 try:
     TOKEN = open("token.txt").read().strip()
-except IOError, err:
+except IOError as err:
     frob_req = flickr.requestFrob()
     resp = get_resp(frob_req)
     frob = flickr.parseFrob(resp)
     
     url = flickr.getAuthUrl(frob)
-    print """
+    print("""
 You need to get an authorization token to allow this test program
 to access your Flickr account. Click on the URL below and follow
 the instructions, then close the browser window and press ENTER.
 
-"""
-    print url
+""")
+    print(url)
     sys.stdin.readline()
     token_req = flickr.requestToken(frob)
     resp = get_resp(token_req)
     token = flickr.parseToken(resp)
 
-    print "token",token
+    print("token",token)
     TOKEN=token.token
     open("token.txt","w").write(token.token)    
 
@@ -125,7 +125,7 @@ class Test(unittest.TestCase):
             if g.name == "Gnofract 4D":
                 self.assertEqual(g.nsid,flickr.GF4D_GROUP)
                 found = True
-        self.failUnless(found)
+        self.assertTrue(found)
 
     def testAddPhotoToGroup(self):
         photo = '48623980'
@@ -134,7 +134,7 @@ class Test(unittest.TestCase):
             resp = get_resp(req)
 
             self.fail("Should have thrown an exception")
-        except flickr.FlickrError, err:
+        except flickr.FlickrError as err:
             self.assertEqual(err.code,3)
         
     def testGroupMembership(self):
@@ -151,7 +151,7 @@ class Test(unittest.TestCase):
         gf4d = [g for g in groups if g.nsid == flickr.GF4D_GROUP]
         if len(gf4d) == 0:
             # current user is not a member of gf4d group
-            print "\nYou're not a member of the Gnofract 4D group. You should join!"
+            print("\nYou're not a member of the Gnofract 4D group. You should join!")
 
     def assertWellFormedRest(self, resp):        
         docNode = resp.documentElement

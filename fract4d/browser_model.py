@@ -1,6 +1,6 @@
 import os
 
-import fc, event, gradient
+from . import fc, event, gradient
 
 FRACTAL = 0
 OUTER = 1

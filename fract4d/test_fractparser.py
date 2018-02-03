@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
-
-import unittest
-import fractparser
-import absyn
 import re
-import fractlexer
-import preprocessor
+import sys
+import unittest
+
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import absyn
+from fract4d import fractlexer
+from fract4d import fractparser
+from fract4d import preprocessor
 
 class ParserTest(unittest.TestCase):
     def setUp(self):

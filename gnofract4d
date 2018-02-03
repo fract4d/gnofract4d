@@ -18,38 +18,32 @@ try:
     # nogui modules
     from fract4d import fractal, fractmain, options
 
-except ImportError, err:
-    print (_('''
+except ImportError as err:
+    print((_('''
 Can't import a required module.
 If you haven't set up Gnofract 4D yet, run './setup.py build'
-Error was: '%s' ''') % err)
+Error was: '%s' ''') % err))
     sys.exit(1)
 
 def get_version_info():
     try:
-        import gtk
-        gtk_version = "%d.%d.%d" % gtk.gtk_version
+        from gi.repository import Gtk
+        gtk_version = "%d.%d.%d" % (Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version())
     except:
         gtk_version = "unknown"
 
-    try:
-        pygtk_version = "%d.%d.%d" % gtk.pygtk_version
-    except:
-        pygtk_version = "unknown"
-
     return """Gnofract 4D %s
-GTK %s
-PyGTK %s""" % (options.version, gtk_version, pygtk_version)
+GTK %s""" % (options.version, gtk_version)
                
 def main(args):    
     opts = options.T()
     try:
         opts.parse(args)
-    except options.OptionError, err:
-        print get_version_info()
-        print opts.help()
+    except options.OptionError as err:
+        print(get_version_info())
+        print(opts.help())
 
-        print "Error parsing arguments: %s" % err
+        print("Error parsing arguments: %s" % err)
         return 1
 
     # having parsed them, apply them. The reason for this 2-pass
@@ -57,10 +51,10 @@ def main(args):
     # done in, but it shouldn't matter what order params are
     # presented on the command-line
     if len(opts.output) > 0:
-        print opts.output
+        print(opts.output)
 
     if opts.print_version:
-        print get_version_info()
+        print(get_version_info())
         
     if opts.quit_now:
         sys.exit(0)
@@ -70,50 +64,29 @@ def main(args):
             plainmain(opts)
         else:
             gtkmain(opts)
-    except Exception, err:
-        print "A fatal error occurred:\n\t%s\n\n" % str(err)
+    except Exception as err:
+        print("A fatal error occurred:\n\t%s\n\n" % str(err))
         raise
-
-def test_version(major,minor,patch):
-    # check for pygtk >= 2.12
-    if major < 2:
-        return False
-    elif major == 2:
-        if minor < 12:
-            return False
-    return True
 
 def gtkmain(options):
     # gtk
+    import gi
+    gi.require_version('Gtk', '3.0')
     try:
-        import gtk
-    except ImportError, err:
-        print _("Can't find PyGTK. You need to install it before you can run Gnofract 4D.")
-        sys.exit(1)
-
-    pygtk_ok = True
-    try:
-        (major,minor,patch) = gtk.pygtk_version
-        pygtk_ok = test_version(major,minor,patch)
-        import gobject
-
-    except Exception:
-        pygtk_ok = False
-
-    if not pygtk_ok:
-        print _("Sorry, your PyGTK version (%d.%d.%d) is too old. You need at least 2.6" % \
-                gtk.pygtk_version)
+        from gi.repository import Gtk
+    except ImportError as err:
+        print(_("Can't find Gtk. You need to install it before you can run Gnofract 4D."))
         sys.exit(1)
 
     try:
         # gui modules
         from fract4dgui import main_window, preferences, utils
 
-    except ImportError, err:
-        print _('''
+    except ImportError as err:
+        print(_('''
     Can't import a required module.
     If you haven't set up Gnofract 4D yet, run './setup.py build'
-    Error was: '%s' ''') % err
+    Error was: '%s' ''') % err)
         sys.exit(1)
     
     mainWindow = main_window.MainWindow()
@@ -121,16 +94,18 @@ def gtkmain(options):
     mainWindow.apply_options(options)
     
     if mainWindow.f.thaw():
-        gobject.idle_add(mainWindow.on_fractal_change)
+        gi.require_version('GLib', '2.0')
+        from gi.repository import GLib
+        GLib.idle_add(mainWindow.on_fractal_change)
 
-    gtk.main()
+    Gtk.main()
 
 def plainmain(options):
     t = fractmain.T()
     t.run(options)
 
 def main_n(n):
-    for i in xrange(n):
+    for i in range(n):
         main(sys.argv[1:])
 
 if __name__ == '__main__':

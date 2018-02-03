@@ -6,8 +6,11 @@ import io
 import unittest
 import gzip
 import base64
+import sys
 
-import fctutils
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import fctutils
 
 class Test(unittest.TestCase):
     def setUp(self):

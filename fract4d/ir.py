@@ -1,11 +1,12 @@
 # Intermediate representation. The Translate module converts an Absyn tree
 # into an IR tree.
 
-import types
-import string
-import fracttypes
 import re
-import absyn
+import string
+import types
+
+from . import absyn
+from . import fracttypes
 
 def d(depth,s=""):
     return " " * depth + s

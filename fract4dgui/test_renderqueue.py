@@ -7,14 +7,17 @@ import sys
 import os
 import subprocess
 
+import gi
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
 
-sys.path.insert(1, "..")
+if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from . import renderqueue
+from fract4dgui import renderqueue
 
 from fract4d import fractal, image, fc
 

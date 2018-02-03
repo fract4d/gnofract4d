@@ -4,11 +4,14 @@
 
 import unittest
 import copy
-import stdlib
 import types
+import sys
 
-from instructions import *
-import optimize
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d.instructions import *
+from fract4d import optimize
+from fract4d import stdlib
 
 class Test(unittest.TestCase):
     def setUp(self):

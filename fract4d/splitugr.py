@@ -2,10 +2,10 @@
 
 import sys
 
-import translate
-import fractparser
-import fractlexer
-import gradient
+from . import translate
+from . import fractparser
+from . import fractlexer
+from . import gradient
 
 class T:
     def __init__(self):        

@@ -7,8 +7,7 @@
 
 
 
-from gi.repository import Gtk
-from gi.repository import GObject
+from gi.repository import Gdk, Gtk, GObject
 import os
 import re
 from threading import *
@@ -25,7 +24,10 @@ class AVIGeneration:
         self.pbar = Gtk.ProgressBar()
         self.pbar.set_text("Please wait...")
         self.dialog.vbox.pack_start(self.pbar,True,True,0)
-        self.dialog.set_geometry_hints(None,min_aspect=3.5,max_aspect=3.5)
+        geometry = Gdk.Geometry()
+        geometry.min_aspect = 3.5
+        geometry.max_aspect = 3.5
+        self.dialog.set_geometry_hints(None, geometry, Gdk.WindowHints.ASPECT)
         self.animation=animation
         self.delete_them=-1
 

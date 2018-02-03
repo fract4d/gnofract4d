@@ -12,9 +12,9 @@ import math
 import copy
 import inspect
 
-from fracttypes import *
-import ir
-import stdlib
+from .fracttypes import *
+from . import ir
+from . import stdlib
 
 class OverloadList(UserList):
     def __init__(self,list,**kwds):

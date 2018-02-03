@@ -7,9 +7,9 @@ import re
 import io
 import weakref
 
-import fracttypes
-import gradient
-import image
+from . import fracttypes
+from . import gradient
+from . import image
 
 # matches a complex number
 cmplx_re = re.compile(r'\((.*?),(.*?)\)')

@@ -3,10 +3,10 @@
 #from __future__ import generators
 import types
 import string
-import fracttypes
 import re
 
-from ffloat import Float
+from . import fracttypes
+from .ffloat import Float
 
 class Node:
     def __init__(self,type,pos,children=None,leaf=None,datatype=None):

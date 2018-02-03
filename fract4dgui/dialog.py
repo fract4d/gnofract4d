@@ -8,9 +8,9 @@ def make_container(title):
     label_box = Gtk.HBox()
     label = Gtk.Label(label='<span weight="bold">%s</span>' % title)
     label.set_use_markup(True)
-    label_box.pack_start(label, False, False)
-    close = Gtk.Button(None, Gtk.STOCK_CLOSE)
-    label_box.pack_end(close, False, False)
+    label_box.pack_start(label, False, False, 0)
+    close = Gtk.Button.new_from_stock(Gtk.STOCK_CLOSE)
+    label_box.pack_end(close, False, False, 0)
     frame = Gtk.VBox()
     frame.pack_start(label_box, False, False, 1)
 
@@ -18,8 +18,11 @@ def make_container(title):
     return frame
 
 class T(Gtk.Dialog):
-    def __init__(self,title=None,parent=None,flags=0,buttons=None):
-        GObject.GObject.__init__(self,title,parent,flags,buttons)
+    def __init__(self, title=None, parent=None, flags=0, buttons=None):
+        Gtk.Dialog.__init__(self, title=title, transient_for=parent, flags=flags)
+
+        if buttons:
+                self.add_buttons(*buttons)
 
         self.set_default_response(Gtk.ResponseType.CLOSE)
         self.connect('response',self.onResponse)

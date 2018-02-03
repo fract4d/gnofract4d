@@ -4,14 +4,14 @@
 # code, performing type checking as a side effect
 import sys
     
-from absyn import *
-import fsymbol
-import fractparser
-import fractlexer
-import ir
-import canon
+from fract4d.absyn import *
+from . import fsymbol
+from . import fractparser
+from . import fractlexer
+from . import ir
+from . import canon
 
-from fracttypes import *
+from .fracttypes import *
     
 allowed_param_names = [
     "default",

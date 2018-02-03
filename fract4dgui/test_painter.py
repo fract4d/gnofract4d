@@ -12,11 +12,11 @@ from gi.repository import Gtk
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
-sys.path.insert(1, "..")
+if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import fc, fractal
-from . import painter
-from . import gtkfractal
+from fract4dgui import painter
+from fract4dgui import gtkfractal
 
 class FakeEvent:
     def __init__(self,**kwds):

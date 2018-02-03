@@ -4,10 +4,9 @@
 # pygtk crashes. Hence I delegate to a member which actually is a widget
 # with some stuff drawn on it - basically an ungodly hack.
 
-import gi
-gi.require_version('Gtk', '3.0') 
-from gi.repository import Gtk, Gdk, GObject, Pango
 import math
+
+from gi.repository import Gtk, Gdk, GObject, Pango
 
 class T(GObject.GObject):
     __gsignals__ = {
@@ -58,7 +57,7 @@ class T(GObject.GObject):
         self.widget.queue_draw()
         
     def update_from_mouse(self,x,y):        
-        (w,h) = (self.widget.allocation.width, self.widget.allocation.height)
+        (w,h) = (self.widget.get_allocated_width(), self.widget.get_allocated_height())
         
         xc = w//2
         yc = h//2
@@ -80,13 +79,13 @@ class T(GObject.GObject):
     def onMotionNotify(self,widget,event):
         if not self.notice_mouse:
             return
-        dummy = widget.window.get_pointer()
+        dummy = widget.get_pointer()
         self.update_from_mouse(event.x, event.y)
 
     def onButtonRelease(self,widget,event):
         if event.button==1:
             self.notice_mouse = False
-            (xc,yc) = (widget.allocation.width//2, widget.allocation.height//2)
+            (xc,yc) = (widget.get_allocated_width()//2, widget.get_allocated_height()//2)
             current_value = self.adjustment.get_value()
             if self.old_value != current_value:
                 self.old_value = current_value
@@ -120,65 +119,51 @@ class T(GObject.GObject):
         ptr_yc = s * (radius - T.ptr_radius)
         return (ptr_xc, ptr_yc)
         
-    def onDraw(self,widget,drawEvent):
-        r = drawEvent.area
-        self.redraw_rect(widget,r)
+    def onDraw(self, widget, cairo_ctx):
+        self.redraw_rect(widget, cairo_ctx)
         
-    def redraw_rect(self,widget,r):
-        style = widget.get_style()
-        (w,h) = (widget.allocation.width, widget.allocation.height)
+    def redraw_rect(self, widget, cairo_ctx):
+        style_ctx = widget.get_style_context()
+        (w,h) = (widget.get_allocated_width(), widget.get_allocated_height())
         
         xc = w//2
         yc = h//2
         radius = min(w,h)//2 - 1
 
         # text
-        context = widget.get_pango_context()
-        layout = Pango.Layout(context)
-
-        # some pygtk versions want 2 args, some want 1. sigh
-        try:
-            layout.set_text(self.text)
-        except TypeError:
-            layout.set_text(self.text,len(self.text))
-
+        pango_ctx = widget.get_pango_context()
+        layout = Pango.Layout(pango_ctx)
+        layout.set_text(self.text,len(self.text))
         (text_width, text_height) = layout.get_pixel_size()
-        style.paint_layout(
-            widget.window,
-            widget.state,
-            True,
-            r,
-            widget,
-            "",
+        Gtk.render_layout(style_ctx,
+            cairo_ctx,
             xc - text_width//2,
             yc - text_height//2,
             layout)
+        cairo_ctx.new_path()
 
         # outer circle
-        gc = style.fg_gc[widget.state]
-        widget.window.draw_arc(
-            gc,
-            False,
-            xc - radius,
-            yc - radius,
-            radius*2 - 1,
-            radius*2 - 1,
+        cairo_ctx.arc(
+            xc,
+            yc,
+            radius - 1,
             0,
-            360 * 64)
+            self.two_pi)
+        cairo_ctx.set_line_width(1)
+        cairo_ctx.stroke()
 
         # inner circle indicating current angle
         angle = self.get_current_angle()
-        (ptr_xc, ptr_yc) = self.pointer_coords(radius, angle)
+        (ptr_xc, ptr_yc) = self.pointer_coords(radius - 2, angle)
         
-        widget.window.draw_arc(
-            gc,
-            True,
-            int(xc + ptr_xc - T.ptr_radius),
-            int(yc + ptr_yc - T.ptr_radius),
-            T.ptr_radius*2 - 1,
-            T.ptr_radius*2 - 1,
+        cairo_ctx.arc(
+            int(xc + ptr_xc),
+            int(yc + ptr_yc),
+            T.ptr_radius,
             0,
-            360 * 64)
+            self.two_pi)
+        cairo_ctx.fill()
+        cairo_ctx.stroke()
         
 # explain our existence to GTK's object system
 GObject.type_register(T)

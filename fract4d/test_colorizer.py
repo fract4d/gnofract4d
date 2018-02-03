@@ -3,8 +3,11 @@
 import string
 import io
 import unittest
+import sys
 
-import colorizer
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import colorizer
 
 class WarningCatcher:
     def __init__(self):

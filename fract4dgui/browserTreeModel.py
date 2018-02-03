@@ -3,7 +3,6 @@
 import string
 import os
 
-from gi.repository import GObject
 from gi.repository import Gtk
 
 from fract4d import fc, gradient, browser_model
@@ -13,9 +12,9 @@ class T(Gtk.GenericTreeModel):
     column_names = ['Name']
 
     def __init__(self, m):
+        Gtk.GenericTreeModel.__init__(self)
         # m is an instance of browser_model
         self.m = m
-        GObject.GObject.__init__(self)
 
     # treeModel interface
 

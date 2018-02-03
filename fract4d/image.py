@@ -4,9 +4,9 @@
 import os
 
 try:
-    import fract4dcgmp as fract4dc
+    from . import fract4dcgmp as fract4dc
 except ImportError as err:
-    import fract4dc
+    from . import fract4dc
 
 file_types = {
     ".jpg" : fract4dc.FILE_TYPE_JPG,

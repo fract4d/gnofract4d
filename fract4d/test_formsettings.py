@@ -4,12 +4,15 @@ import string
 import io
 import unittest
 import copy
+import sys
 
-import formsettings
-import fc
-import gradient
-import fracttypes
-import fctutils
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import formsettings
+from fract4d import fc
+from fract4d import gradient
+from fract4d import fracttypes
+from fract4d import fctutils
 
 # centralized to speed up tests
 g_comp = fc.Compiler()

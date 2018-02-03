@@ -9,7 +9,7 @@
 
 # try to keep the import set minimal so it starts quickly
 import sys
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 dummy = sys.argv[1]
 is_post = sys.argv[2] == "POST"
@@ -26,12 +26,12 @@ if is_post:
     txheaders['Content-length'] = str(len(data))
 
 try:
-    req = urllib2.Request(url,data,txheaders)
-    resp = urllib2.urlopen(req).read()
-    print resp
-except urllib2.HTTPError, err:
-    print >>sys.stderr, str(err)
+    req = urllib.request.Request(url,data,txheaders)
+    resp = urllib.request.urlopen(req).read()
+    print(resp)
+except urllib.error.HTTPError as err:
+    print(str(err), file=sys.stderr)
     sys.exit(1)
-except urllib2.URLError, err:
-    print >>sys.stderr, str(err)
+except urllib.error.URLError as err:
+    print(str(err), file=sys.stderr)
     sys.exit(1)

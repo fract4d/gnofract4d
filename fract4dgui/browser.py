@@ -9,7 +9,7 @@ from gi.repository import Gtk
 
 from fract4d import fc, gradient, browser_model
 
-import preferences, dialog, utils, gtkfractal, gradientCellRenderer
+from . import preferences, dialog, utils, gtkfractal, gradientCellRenderer
 
 def stricmp(a,b):
     return cmp(a.lower(),b.lower())
@@ -121,7 +121,7 @@ class BrowserDialog(dialog.T):
         sw.set_policy (Gtk.PolicyType.NEVER,
                        Gtk.PolicyType.AUTOMATIC)
 
-        self.filetreeview = Gtk.TreeView (self.file_list)
+        self.filetreeview = Gtk.TreeView.new_with_model(self.file_list)
         self.filetreeview.set_tooltip_text(
             _("A list of files containing fractal formulas"))
         
@@ -189,7 +189,7 @@ class BrowserDialog(dialog.T):
         sw.set_policy (Gtk.PolicyType.NEVER,
                        Gtk.PolicyType.AUTOMATIC)
 
-        self.treeview = Gtk.TreeView (self.formula_list)
+        self.treeview = Gtk.TreeView.new_with_model(self.formula_list)
 
         self.treeview.set_tooltip_text(
             _("A list of formulas in the selected file"))
@@ -242,14 +242,14 @@ class BrowserDialog(dialog.T):
         label.set_use_underline(True)
         label.set_mnemonic_widget(self.funcTypeMenu)
         
-        hbox.pack_start(label, False, False)
+        hbox.pack_start(label, False, False, 0)
                 
-        hbox.pack_start(self.funcTypeMenu,True, True)
-        self.vbox.pack_start(hbox,False, False)
+        hbox.pack_start(self.funcTypeMenu, True, True, 0)
+        self.vbox.pack_start(hbox, False, False, 0)
         
         # 3 panes: files, formulas, formula contents
         panes1 = Gtk.HPaned()
-        self.vbox.pack_start(panes1, True, True)
+        self.vbox.pack_start(panes1, True, True, 0)
         panes1.set_border_width(5)
 
         file_list = self.create_file_list()
@@ -257,9 +257,9 @@ class BrowserDialog(dialog.T):
         
         panes2 = Gtk.HPaned()
         # left-hand pane displays file list
-        panes2.add1(file_list)
+        panes2.pack1(file_list, True, False)
         # middle is formula list for that file
-        panes2.add2(formula_list)        
+        panes2.pack2(formula_list, True, False)
         panes1.add1(panes2)
 
         # right-hand pane is details of current formula
@@ -350,9 +350,9 @@ class BrowserDialog(dialog.T):
         buffer = self.msgtext.get_buffer()
         msg = ""
         if self.ir.errors != []:
-            msg += _("Errors:\n") + string.join(self.ir.errors,"\n") + "\n"
+            msg += _("Errors:\n") + "\n".join(self.ir.errors) + "\n"
         if self.ir.warnings != []:
-            msg += _("Warnings:\n") + string.join(self.ir.warnings,"\n")
+            msg += _("Warnings:\n") + "\n".join(self.ir.warnings)
         if msg == "":
             msg = _("No messages")
             
@@ -370,9 +370,4 @@ class BrowserDialog(dialog.T):
             self.preview.draw_image(False, False)
         
     def display_text(self,text):
-        # convert from latin-1 (encoding is undefined, but that seems closish)
-        # to utf-8 to keep pango happy
-        latin_text = str(text,'latin-1')
-        utf8_text = latin_text.encode('utf-8')
-        self.sourcetext.get_buffer().set_text(utf8_text,-1)
-        
+        self.sourcetext.get_buffer().set_text(text, -1)

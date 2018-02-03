@@ -1,14 +1,15 @@
 # GUI for modifying the fractal's settings
 
-import gtk, gobject
-
-import hig
-import dialog
-import browser
-import utils
 import copy
 
-from table import Table
+from gi.repository import GObject, Gdk, Gtk
+
+from . import hig
+from . import dialog
+from . import browser
+from . import utils
+
+from .table import Table
 
 from fract4d import browser_model
 from fract4d.fc import FormulaTypes
@@ -34,8 +35,8 @@ class SettingsDialog(dialog.T):
         self.f = f
         self.notebook = Gtk.Notebook()
         self.controls = Gtk.VBox()
-        self.controls.pack_start(self.notebook,True,True)
-        self.vbox.pack_start(self.controls, True, True)
+        self.controls.pack_start(self.notebook, True, True, 0)
+        self.vbox.pack_start(self.controls, True, True, 0)
         self.tables = [None,None,None,None]
         self.selected_transform = None
         
@@ -45,13 +46,14 @@ class SettingsDialog(dialog.T):
         self.create_transforms_page()
         self.create_general_page()
         self.create_location_page()
-        self.create_colors_page()
+        # colormap-handling functions of GtkWidget have been removed
+        #self.create_colors_page()
 
     def gradarea_mousedown(self, widget, event):
         pass
 
     def gradarea_clicked(self, widget, event):
-        pos = float(event.x) / widget.allocation.width
+        pos = float(event.x) / widget.get_allocated_width()
         i = self.f.get_gradient().get_index_at(pos)
         self.select_segment(i)
         self.redraw()
@@ -70,7 +72,7 @@ class SettingsDialog(dialog.T):
 
     def draw_handle(self, widget, midpoint, fill):
         # draw a triangle pointing up, centered on midpoint
-        total_height = widget.allocation.height
+        total_height = widget.get_allocated_height()
         colorband_height = total_height - self.grad_handle_height
         points = [
             (midpoint, colorband_height),
@@ -82,8 +84,8 @@ class SettingsDialog(dialog.T):
 
     def redraw_rect(self, widget, x, y, w, h):
         # draw the color preview bar
-        wwidth = float(widget.allocation.width)
-        colorband_height = widget.allocation.height - self.grad_handle_height
+        wwidth = float(widget.get_allocated_width())
+        colorband_height = widget.get_allocated_height() - self.grad_handle_height
         
         colormap = widget.get_colormap()
         grad = self.f.get_gradient()
@@ -133,8 +135,8 @@ class SettingsDialog(dialog.T):
         if self.gradarea.window:
             self.gradarea.window.invalidate_rect(
                 (0, 0,
-                                  self.gradarea.allocation.width,
-                                  self.gradarea.allocation.height), True)
+                                  self.gradarea.get_allocated_width(),
+                                  self.gradarea.get_allocated_height()), True)
 
         self.inner_solid_button.set_color(
             utils.floatColorFrom256(self.f.solids[1]))
@@ -467,14 +469,14 @@ class SettingsDialog(dialog.T):
             sw, 0, 1, 0, 4,
             0, 0, 2, 2)
 
-        add_button = Gtk.Button(None,Gtk.STOCK_ADD)
+        add_button = Gtk.Button.new_from_stock(Gtk.STOCK_ADD)
         add_button.connect(
             'clicked', self.show_browser, browser_model.TRANSFORM)
 
         table.attach(
             add_button, 1,2,0,1, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
 
-        remove_button = Gtk.Button(None,Gtk.STOCK_REMOVE)
+        remove_button = Gtk.Button.new_from_stock(Gtk.STOCK_REMOVE)
         remove_button.connect(
             'clicked', self.remove_transform)
 
@@ -528,15 +530,12 @@ class SettingsDialog(dialog.T):
 
     def update_formula_text(self, f, textview,formindex):
         text = f.forms[formindex].text()
-
-        latin_text = str(text,'latin-1')
-        utf8_text = latin_text.encode('utf-8')
-
-        textview.get_buffer().set_text(utf8_text,-1)
+        textview.get_buffer().set_text(text, -1)
 
     def change_formula(self,button,buffer,formindex,formtype):
         buftext = buffer.get_text(
-            buffer.get_start_iter(), buffer.get_end_iter())
+            buffer.get_start_iter(), buffer.get_end_iter(),
+            include_hidden_chars=False)
 
         if buftext == '':
             #print "no text"
@@ -639,8 +638,11 @@ class SettingsDialog(dialog.T):
 
     def update_transform_parameters(self, parent, *args):
         widget = self.tables[3] 
-        if widget != None and widget.parent != None:
-            parent.remove(self.tables[3])
+        if widget is not None:
+            try:
+                parent.remove(self.tables[3])
+            except AttributeError:
+                pass
 
         if self.selected_transform != None:
             self.tables[3] = Table(5,2,False)
@@ -665,9 +667,12 @@ class SettingsDialog(dialog.T):
         self.tables[param_type] = None
         
         def update_formula_parameters(*args):
-            widget = self.tables[param_type] 
-            if widget != None and widget.parent != None:
-                parent.remove(self.tables[param_type])
+            widget = self.tables[param_type]
+            if widget is not None:
+                try:
+                    parent.remove(self.tables[param_type])
+                except AttributeError:
+                    pass
 
             table = Table(5,2,False)
             self.create_browsable_name(table, param_type, typename, tip)
@@ -703,9 +708,10 @@ class SettingsDialog(dialog.T):
             return
 
         for widget in container.get_children():
-            update_function = widget.get_data("update_function")
-            if update_function != None:
-                update_function()
+            try:
+                widget.update_function()
+            except AttributeError:
+                pass
             if isinstance(widget, Gtk.Container):
                 self.update_all_widgets(fractal,widget) # recurse
 

@@ -8,6 +8,7 @@ from time import time as now
 
 # gettext
 import gettext
+from functools import reduce
 os.environ.setdefault('LANG', 'en')
 if os.path.isdir('po'):
     gettext.install('gnofract4d','po')
@@ -64,7 +65,7 @@ class Benchmark:
 
     def run_nogui(self):
         main = fractmain.T()
-        print main.compiler.path_lists
+        print(main.compiler.path_lists)
         times = []
         last_time = now()
         for file in files:
@@ -84,9 +85,9 @@ class Benchmark:
             times = self.run_nogui()
 
         for (file,time) in zip(files,times):
-            print "%.4f %s" % (time,file)
+            print("%.4f %s" % (time,file))
 
-        print reduce(operator.__add__,times,0)
+        print(reduce(operator.__add__,times,0))
 
 useGui = True
 repeats = 1
@@ -96,7 +97,7 @@ for arg in sys.argv[1:]:
     if arg == "--repeat":
         repeats = 3
 
-for i in xrange(repeats):
+for i in range(repeats):
     bench = Benchmark(useGui)
     bench.run()
 

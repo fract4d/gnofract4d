@@ -11,15 +11,15 @@ import copy
 import random
 from time import time as now
 
-import fract4dc
+from . import fract4dc
 
-import fracttypes
-import gradient
-import image
-import fctutils
-import colorizer
-import formsettings
-import fc
+from . import fracttypes
+from . import gradient
+from . import image
+from . import fctutils
+from . import colorizer
+from . import formsettings
+from . import fc
 
 # the version of the earliest gf4d release which can parse all the files
 # this version can output

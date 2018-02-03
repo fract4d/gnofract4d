@@ -8,18 +8,18 @@ import math
 import re
 import urllib.request, urllib.parse, urllib.error
 
-import gtk, gobject
+from gi.repository import Gdk, Gtk
 
 # If we haven't been installed (we're running from the dir we 
 # were unpacked in) this is where fract4d is.
 
-sys.path.insert(1, "..")
 from fract4d import fractal,fc,fract4dc,image, fracttypes, fractconfig
-from fractutils import flickr
+#from fractutils import flickr
 
 from . import gtkfractal, model, preferences, autozoom, settings, toolbar
 from . import undo, browser, fourway, angle, utils, hig, ignore_info, painter
-from . import icons, flickr_assistant, renderqueue, director
+from . import icons, renderqueue, director
+#from . import flickr_assistant
 
 re_ends_with_num = re.compile(r'\d+\Z')
 re_cleanup = re.compile(r'[\s\(\)]+')
@@ -282,7 +282,7 @@ class MainWindow:
         else:
             for f in self.subfracts:
                 f.widget.hide()
-            self.weirdbox.hide_all()
+            self.weirdbox.hide()
 
         self.show_subfracts = visible
         self.update_image_prefs(preferences.userPrefs)
@@ -369,7 +369,7 @@ class MainWindow:
         hbox = Gtk.HBox()
         hbox.pack_start(self.swindow, True, True, 0)
         self.control_box = Gtk.VBox()
-        hbox.pack_start(self.control_box,False,False)
+        hbox.pack_start(self.control_box, False, False, 0)
         self.vbox.pack_start(hbox, True, True, 0)
 
     def draw(self):        
@@ -766,7 +766,8 @@ class MainWindow:
             self.window.unfullscreen()
             
     def create_status_bar(self):
-        self.bar = Gtk.ProgressBar()        
+        self.bar = Gtk.ProgressBar()
+        self.bar.set_show_text(True)
         self.vbox.pack_end(self.bar, False, True, 0)
 
     def update_preview(self,f,flip2julia=False):
@@ -790,7 +791,7 @@ class MainWindow:
 
     def create_toolbar(self):
         self.toolbar = toolbar.T()
-        self.vbox.pack_start(self.toolbar,expand=False)
+        self.vbox.pack_start(self.toolbar, expand=False, fill=False, padding=0)
         
         # preview
         self.toolbar.add_space()
@@ -831,7 +832,7 @@ class MainWindow:
         
         self.add_fourway(
             _("pan"),
-            _("Pan around the image"), 0, False)
+            _("Pan around the image"), 0, True)
         self.add_fourway(
             _("warp"),
             _("Mutate the image by moving along the other 2 axes"), 2, True)
@@ -882,12 +883,9 @@ class MainWindow:
         self.weirdness_adjustment = Gtk.Adjustment(
             20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
 
-        self.weirdness = Gtk.HScale(self.weirdness_adjustment)
+        self.weirdness = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.weirdness_adjustment)
         self.weirdness.set_size_request(100, 20)
         self.weirdness.set_property("value-pos",Gtk.PositionType.RIGHT)
-        
-        self.weirdness.set_update_policy(
-            Gtk.UPDATE_DISCONTINUOUS)
 
         self.weirdbox = Gtk.VBox()
         shapebox = Gtk.HBox(False,2)
@@ -905,7 +903,7 @@ class MainWindow:
         self.color_weirdness_adjustment = Gtk.Adjustment(
             20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
 
-        self.color_weirdness = Gtk.HScale(self.color_weirdness_adjustment)
+        self.color_weirdness = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.color_weirdness_adjustment)
         self.color_weirdness.set_size_request(100, 20)
         self.color_weirdness.set_property("value-pos",Gtk.PositionType.RIGHT)
 
@@ -914,9 +912,6 @@ class MainWindow:
         colorbox.pack_start(color_label, True, True, 0)
         colorbox.pack_start(self.color_weirdness, True, True, 0)
         self.weirdbox.pack_start(colorbox, True, True, 0)
-        
-        self.color_weirdness.set_update_policy(
-            Gtk.UPDATE_DISCONTINUOUS)
 
         def on_weirdness_changed(adjustment):
             self.update_subfracts()
@@ -1192,10 +1187,12 @@ class MainWindow:
         os.system("%s &" % (mailer % url))
 
     def upload(self,*args):
+        return
         """Upload the current image to Flickr.com."""
         flickr_assistant.show_flickr_assistant(self.window,self.control_box, self.f, True)
 
     def view_my_fractals(self, *args):
+        return
         nsid = flickr_assistant.get_user(self.window, self.f)
         if nsid != "":
             url = "http://flickr.com/photos/%s/" % nsid
@@ -1406,7 +1403,7 @@ class MainWindow:
             response = d.run()                
             d.destroy()
             if response == Gtk.ResponseType.ACCEPT:
-                self.save(None,None)
+                self.save(None)
             elif response == Gtk.ResponseType.CANCEL:
                 return False
             elif response == hig.SaveConfirmationAlert.NOSAVE:

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
+import sys
 import unittest
 
-import fractsettings
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import fractsettings
 
 class ProduceAnything:
     def __getattr__(self,name):

@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
+import sys
 import unittest
-import fractlexer
-import preprocessor
+
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import fractlexer
+from fract4d import preprocessor
 
 class Test(unittest.TestCase):
     def setUp(self):

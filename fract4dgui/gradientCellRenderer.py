@@ -1,8 +1,6 @@
 
 from fract4d import gradient
 
-import gi
-gi.require_version('Gtk', '3.0') 
 from gi.repository import Gtk, GObject
 
 class GradientCellRenderer(Gtk.CellRenderer):
@@ -22,7 +20,7 @@ class GradientCellRenderer(Gtk.CellRenderer):
         }
 
     def __init__(self,model,compiler):
-        GObject.GObject.__init__(self)
+        Gtk.CellRenderer.__init__(self)
         self.model = model
         self.compiler = compiler
         self.__properties = {}

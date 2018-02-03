@@ -2,8 +2,12 @@
 
 # test types which are used by formula authors
 
-import fracttypes
+import sys
 import unittest
+
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import fracttypes
 
 class Test(unittest.TestCase):
     def testTypeCtor(self):

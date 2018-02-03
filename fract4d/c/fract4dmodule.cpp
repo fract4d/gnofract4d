@@ -26,13 +26,12 @@
 #include "fractFunc.h"
 #include "image.h"
 
+#include "cmap_name.h"
 
 /* not sure why this isn't defined already */
 #ifndef PyMODINIT_FUNC 
 #define PyMODINIT_FUNC void
 #endif
-
-#define CMAP_NAME "/fract4d_stdlib.cpython-35m-x86_64-linux-gnu.so"
 
 #ifdef USE_GMP
 #define MODULE_NAME "fract4dcgmp"

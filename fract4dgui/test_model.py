@@ -11,18 +11,17 @@ import gi
 gi.require_version('Gtk', '3.0') 
 from gi.repository import Gtk
 
-sys.path.insert(1, "..")
-sys.path.insert(1, "../fract4d")
+if sys.path[1] != "..": sys.path.insert(1, "..")
 
-import model
+from fract4dgui import model
 
 from fract4d import fractal,fc,fract4dc
 
-import gtkfractal
-import settings
-import preferences
-import autozoom
-import undo
+from fract4dgui import gtkfractal
+from fract4dgui import settings
+from fract4dgui import preferences
+from fract4dgui import autozoom
+from fract4dgui import undo
 
 # do compiler setup once
 g_comp = fc.Compiler()

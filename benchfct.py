@@ -13,7 +13,7 @@ class Benchmark:
 
     def build(self):
         cmd = self.command + " --buildonly foo.so " + self.args
-        print cmd
+        print(cmd)
         result = os.system(cmd)
         assert result == 0
 
@@ -36,13 +36,13 @@ for arg in sys.argv[1:]:
 bench = Benchmark(command, args)
 bench.build()
 times = []
-for i in xrange(repeats):
+for i in range(repeats):
     t = bench.run()
-    print t
+    print(t)
     times.append(t)
 
-print "stats"
-print "min:(%.4f), max(%.4f), average(%.4f)" % (min(times), max(times), sum(times)/len(times))
+print("stats")
+print("min:(%.4f), max(%.4f), average(%.4f)" % (min(times), max(times), sum(times)/len(times)))
     
 
 

@@ -3,9 +3,10 @@
 import unittest
 import sys
 
-import makemap
+if sys.path[1] != "..": sys.path.insert(1, "..")
 
-sys.path.append("..")
+from fractutils import makemap
+
 from fract4d import gradient
 
 class Test(unittest.TestCase):
@@ -168,7 +169,7 @@ class Test(unittest.TestCase):
             if c == mm.root:
                 break
             
-            self.failUnless(err <= 1*3, err)
+            self.assertTrue(err <= 1*3, err)
             mm.collapse(c)
 
         self.assertEqual(0xFF**2 * 3, err)
@@ -205,9 +206,9 @@ class Test(unittest.TestCase):
     def testReduceColors2(self):
         mm = makemap.T()
         in_colors = []
-        for i in xrange(256):
+        for i in range(256):
             in_colors.append((i,0,0))
-            for j in xrange(i+1):
+            for j in range(i+1):
                 mm.insertPixel(i,0,0)
         self.assertEqual(256,mm.numColors())
 

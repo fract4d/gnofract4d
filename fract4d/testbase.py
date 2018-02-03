@@ -5,9 +5,12 @@
 import unittest
 import string
 import types
+import sys
 
-import ir
-import fracttypes
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import ir
+from fract4d import fracttypes
 
 class TestBase(unittest.TestCase):
     def assertNearlyEqual(self,a,b,epsilon=1.0e-12):

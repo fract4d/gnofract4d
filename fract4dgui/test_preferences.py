@@ -6,8 +6,8 @@ import unittest
 import sys
 import os
 
-sys.path.insert(1, "..")
-import preferences
+if sys.path[1] != "..": sys.path.insert(1, "..")
+from fract4dgui import preferences
 from fract4d import fractconfig
 
 class CallCounter:

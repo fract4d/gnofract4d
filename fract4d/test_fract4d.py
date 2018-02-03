@@ -3,7 +3,6 @@
 import unittest
 import string
 import sys
-import fc
 import os.path
 import struct
 import math
@@ -11,10 +10,11 @@ import types
 
 import testbase
 
-import fract4dc
-import gradient
-import image
-import messages
+from fract4d import fc
+from fract4d import fract4dc
+from fract4d import gradient
+from fract4d import image
+from fract4d import messages
 
 from test_fractalsite import FractalSite
 

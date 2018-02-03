@@ -2,8 +2,8 @@
 
 import string
 
-from fracttypes import Bool, Int, Float, Complex, Hyper, Color, Gradient, Image
-from fracttypes import TranslationError, typeObjectList
+from .fracttypes import Bool, Int, Float, Complex, Hyper, Color, Gradient, Image
+from .fracttypes import TranslationError, typeObjectList
 
 class ComplexArg:
     ' a pair of args'

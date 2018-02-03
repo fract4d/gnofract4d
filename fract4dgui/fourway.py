@@ -54,13 +54,13 @@ class T(GObject.GObject):
     def onMotionNotify(self,widget,event):
         if not self.notice_mouse:
             return
-        dummy = widget.window.get_pointer()
+        dummy = widget.get_pointer()
         self.update_from_mouse(event.x, event.y)
 
     def onButtonRelease(self,widget,event):
         if event.button==1:
             self.notice_mouse = False
-            (xc,yc) = (widget.allocation.width//2, widget.allocation.height//2)
+            (xc,yc) = (widget.get_allocated_width()//2, widget.get_allocated_height()//2)
             dx = xc - self.last_x
             dy = yc - self.last_y
             if dx or dy:
@@ -69,8 +69,8 @@ class T(GObject.GObject):
     def onButtonPress(self,widget,event):
         if event.button == 1:
             self.notice_mouse = True
-            self.last_x = widget.allocation.width/2
-            self.last_y = widget.allocation.height/2
+            self.last_x = widget.get_allocated_width()/2
+            self.last_y = widget.get_allocated_height()/2
             self.update_from_mouse(event.x, event.y)
 
     def __del__(self):
@@ -79,61 +79,70 @@ class T(GObject.GObject):
         # *even though it doesn't do anything*. Disturbing.
         pass
         
-    def onDraw(self,widget,drawEvent):
-        r = drawEvent.area
-        self.redraw_rect(widget, r)
+    def onDraw(self, widget, cairo_ctx):
+        self.redraw_rect(widget, cairo_ctx)
 
-    def redraw_rect(self,widget,r):
-        style = widget.get_style()
-        (w,h) = (widget.allocation.width, widget.allocation.height)
-        style.paint_box(widget.window, widget.state,
-                        Gtk.ShadowType.IN, r, widget, "",
-                        0, 0, w-1, h-1)
+    def redraw_rect(self, widget, cairo_ctx):
+        style_ctx = widget.get_style_context()
+        (w,h) = (widget.get_allocated_width(), widget.get_allocated_height())
+        Gtk.render_background(style_ctx,
+            cairo_ctx, 0, 0, w-1, h-1)
 
         xc = w//2
         yc = h//2
         radius = min(w,h)//2 -1
 
+        # Consider using gtk_render_arrow
+        def triangle(points):
+            cairo_ctx.move_to(*points[0])
+            cairo_ctx.line_to(*points[1])
+            cairo_ctx.line_to(*points[2])
+            cairo_ctx.line_to(*points[0])
+            cairo_ctx.fill()
+            cairo_ctx.stroke()
 
         th = 8
         tw = 6
-        gc = style.fg_gc[widget.state]
+
         # Triangle pointing left        
         points = [
             (1, yc),
             (1+th, yc-tw),
             (1+th, yc+tw)]
-        
-        
-        widget.window.draw_polygon(gc, True, points)
+        triangle(points)
 
         # pointing right
         points = [
             (w -2, yc),
             (w -2 -th, yc-tw),
             (w -2 -th, yc+tw)]
-        widget.window.draw_polygon(gc, True, points)
+        triangle(points)
 
         # pointing up
         points = [
             (xc, 1),
             (xc - tw, th),
             (xc + tw, th)]
-        widget.window.draw_polygon(gc, True, points)
+        triangle(points)
         
         # pointing down
         points = [
             (xc, h - 2),
             (xc - tw, h - 2 - th),
             (xc + tw, h - 2 - th)]
-        widget.window.draw_polygon(gc, True, points)
+        triangle(points)
 
-        context = widget.get_pango_context()
-        layout = Pango.Layout(context)
+        pango_ctx = widget.get_pango_context()
+        layout = Pango.Layout(pango_ctx)
 
-        drawtext = self.text
+        try:
+            drawtext = self.text
+        except AttributeError:
+            print("fourway has no text")
+            return
+
         while True:
-            layout.set_text(drawtext)
+            layout.set_text(drawtext, len(drawtext))
             
             (text_width, text_height) = layout.get_pixel_size()
             # truncate text if it's too long
@@ -141,13 +150,9 @@ class T(GObject.GObject):
                 break
             drawtext = drawtext[:-1]
 
-        style.paint_layout(
-            widget.window,
-            widget.state,
-            True,
-            r,
-            widget,
-            "",
+        Gtk.render_layout(
+            style_ctx,
+            cairo_ctx,
             xc - text_width//2,
             yc - text_height//2,
             layout)

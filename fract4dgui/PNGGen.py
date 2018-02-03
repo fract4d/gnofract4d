@@ -3,15 +3,13 @@
 #in special thread, while it finds in-between values it call gtkfractal.HighResolution
 #to create images
 
-
-
-from gi.repository import Gtk
-from gi.repository import GObject
 import re
 import math
 import sys
 import os
 from threading import *
+
+from gi.repository import Gdk, Gtk, GObject
 
 from . import gtkfractal, hig
 from fract4d import fractal,fracttypes, animation
@@ -21,7 +19,7 @@ thread_error=False
 
 class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
     def __init__(self,animation,compiler):
-        GObject.GObject.__init__(self,
+        Gtk.Dialog.__init__(self,
             "Generating images...",None,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             (Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL))
@@ -35,7 +33,10 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
         self.vbox.pack_start(self.lbl_overall,True,True,0)
         self.pbar_overall = Gtk.ProgressBar()
         self.vbox.pack_start(self.pbar_overall,True,True,0)
-        self.set_geometry_hints(None,min_aspect=3.5,max_aspect=3.5)
+        geometry = Gdk.Geometry()
+        geometry.min_aspect = 3.5
+        geometry.max_aspect = 3.5
+        self.set_geometry_hints(None, geometry, Gdk.WindowHints.ASPECT)
         self.anim=animation
 
         #-------------loads compiler----------------------------
@@ -47,7 +48,7 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
 
         #--------find values and duration from all keyframes------------
         try:
-	   durations = self.anim.get_keyframe_durations()
+            durations = self.anim.get_keyframe_durations()
         except Exception as err:
             self.show_error(_("Error processing keyframes"), str(err))
             yield False
@@ -82,22 +83,22 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
     def to_create_images_again(self):
         create = True
         filelist = self.anim.create_list()
-	for f in filelist:		
+        for f in filelist:
             if os.path.exists(f):
                 Gtk.threads_enter()
                 try:
-		    folder_png = self.anim.get_png_dir()
+                    folder_png = self.anim.get_png_dir()
                     response = self.ask_question(
                         _("The temporary directory: %s already contains at least one image" % folder_png),
                         _("Use them to speed up generation?"))
 
                 except Exception as err:
                     print(err)
-		    Gtk.threads_leave()
+                    Gtk.threads_leave()
                     raise
 
-		Gtk.threads_leave()
-		    
+                Gtk.threads_leave()
+            
                 if response==Gtk.ResponseType.ACCEPT:
                     create=False
                 else:
@@ -162,12 +163,12 @@ class GenerationThread(Thread):
         self.pbar_overall.set_text("0/"+str(sum(self.durations)+1))
         self.compiler=compiler
 
-	self.current = gtkfractal.HighResolution(
-		compiler,
-		int(self.anim.get_width()),int(self.anim.get_height()))
+        self.current = gtkfractal.HighResolution(
+            compiler,
+            int(self.anim.get_width()),int(self.anim.get_height()))
 
-	self.current.connect('status-changed', self.onStatusChanged)
-	self.current.connect('progress-changed', self.onProgressChanged)
+        self.current.connect('status-changed', self.onStatusChanged)
+        self.current.connect('progress-changed', self.onProgressChanged)
 
         #semaphore to signalize that image generation is finished
         self.next_image=Semaphore(1)
@@ -198,11 +199,11 @@ class GenerationThread(Thread):
             self.next_image.acquire()
             #generate list file
             list = self.anim.create_list()
-	    lfilename = os.path.join(self.anim.get_png_dir(), "list")
-	    lfile = open(lfilename,"w")
-	    print("\n".join(list), file=lfile)
-	    lfile.close()
-	    
+            lfilename = os.path.join(self.anim.get_png_dir(), "list")
+            lfile = open(lfilename,"w")
+            print("\n".join(list), file=lfile)
+            lfile.close()
+            
         except:
             traceback.print_exc()
             thread_error=True
@@ -221,7 +222,7 @@ class GenerationThread(Thread):
         #check if image already exist and user wants to leave it or not
         if not(os.path.exists(self.anim.get_image_filename(0)) and self.create_all_images==False): #check if image already exist
             self.current.set_fractal(f)
-	    self.current.reset_render()
+            self.current.reset_render()
             self.current.draw_image(self.anim.get_image_filename(0))
         else:
             #just release semaphore
@@ -247,9 +248,9 @@ class GenerationThread(Thread):
         f_prev=fractal.T(self.compiler)
         f_prev.loadFctFile(open(self.anim.get_keyframe_filename(iteration)))
 
-	f_next=fractal.T(self.compiler)
-	f_next.loadFctFile(open(self.anim.get_keyframe_filename(iteration+1)))
-	
+        f_next=fractal.T(self.compiler)
+        f_next.loadFctFile(open(self.anim.get_keyframe_filename(iteration+1)))
+        
         #------------------------------------------------------------
         #loop to generate images between current (iteration-th) and previous keyframe
         for i in range(1,N+1):
@@ -264,7 +265,7 @@ class GenerationThread(Thread):
             self.pbar_overall.set_text(str(sumBefore+i)+"/"+str(sumN+1))
 
             # create a blended fractal partway between prev and next keyframe
-	    int_type=self.anim.get_keyframe_int(iteration)
+            int_type=self.anim.get_keyframe_int(iteration)
             mu=self.anim.get_mu(int_type, float(i)/float(N))
             f_frame = f_prev.blend(f_next,mu)
 
@@ -275,7 +276,7 @@ class GenerationThread(Thread):
             #check if image already exist and user wants to leave it or not
             if not(os.path.exists(self.anim.get_image_filename(sumBefore+i)) and self.create_all_images==False): #check if image already exist
                 self.current.set_fractal(f_frame)
-		self.current.reset_render()
+                self.current.reset_render()
                 self.current.draw_image(self.anim.get_image_filename(sumBefore+i))
             else:
                 #just release semaphore

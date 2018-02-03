@@ -33,13 +33,13 @@ def call_package_config(package,option,optional=False):
     (status,output) = subprocess.getstatusoutput(cmd)
     if status != 0:
         if optional:
-            print >>sys.stderr, "Can't find '%s'" % package
-            print >>sys.stderr, "Some functionality will be disabled"
+            print("Can't find '%s'" % package, file=sys.stderr)
+            print("Some functionality will be disabled", file=sys.stderr)
             return []
         else:
-            print >>sys.stderr, "Can't set up. Error running '%s'." % cmd
-            print >>sys.stderr, output
-            print >>sys.stderr, "Possibly you don't have one of these installed: '%s'." % package
+            print("Can't set up. Error running '%s'." % cmd, file=sys.stderr)
+            print(output, file=sys.stderr)
+            print("Possibly you don't have one of these installed: '%s'." % package, file=sys.stderr)
             sys.exit(1)
 
     return output.split()
@@ -177,6 +177,15 @@ if have_gmp:
 def get_files(dir,ext):
     return [ os.path.join(dir,x) for x in os.listdir(dir) if x.endswith(ext)] 
 
+so_extension = distutils.sysconfig.get_config_var("SO")
+
+with open("fract4d/c/cmap_name.h", "w") as fh:
+	fh.write("""
+#ifndef CMAP_NAME
+#define CMAP_NAME "/fract4d_stdlib%s"
+#endif
+""" % so_extension)
+
 setup (name = 'gnofract4d',
        version = gnofract4d_version,
        description = 'A program to draw fractals',
@@ -246,8 +255,6 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
 # way to extract the actual target directory out of distutils, hence
 # this egregious hack
 
-so_extension = distutils.sysconfig.get_config_var("SO")
-
 lib_targets = {
     "fract4dc" + so_extension : "fract4d",
     "fract4d_stdlib" + so_extension : "fract4d",
@@ -257,14 +264,15 @@ lib_targets = {
 if 'win' == sys.platform[:3]:
     lib_targets["fract4d_stdlib.lib"] = "fract4d"
 
-def copy_libs(dummy,dirpath,namelist):
-     for name in namelist:
-         target = lib_targets.get(name)
-         if target != None:
-             name = os.path.join(dirpath, name)
-             shutil.copy(name, target)
-            
-os.walk("build",copy_libs,None)
+def copy_libs(root, dirlist, namelist):
+    for name in namelist:
+        target = lib_targets.get(name)
+        if target is not None:
+            shutil.copy(os.path.join(root, name), target)
+
+for root, dirs, files in os.walk("build"):
+    copy_libs(root, dirs, files)
+
 if 'win' == sys.platform[:3]:
     shutil.copy("fract4d/fract4d_stdlib.pyd", "fract4d_stdlib.pyd")
 

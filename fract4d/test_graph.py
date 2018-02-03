@@ -4,9 +4,12 @@
 
 import unittest
 import copy
-import stdlib
+import sys
 
-import graph
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import graph
+from fract4d import stdlib
 
 class Test(unittest.TestCase):
     def setUp(self):
