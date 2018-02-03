@@ -523,7 +523,7 @@ class T(Hidden):
             set_adj()
             def adj_changed(adjustment,form,order):
                 utils.idle_add(
-                    form.set_param, order, adjustment.value)
+                    form.set_param, order, adjustment.get_value())
 
             adj.connect('value-changed', adj_changed, form, order)
 
