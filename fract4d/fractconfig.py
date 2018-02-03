@@ -37,7 +37,6 @@ class T(configparser.ConfigParser):
             },
             "user_info" : {
               "name" : "",
-              "flickr_token" : "",
               "nsid" : ""
             },
             "blogs" : {

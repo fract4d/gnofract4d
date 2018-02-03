@@ -94,7 +94,6 @@ class PrefsDialog(dialog.T):
         self.create_compiler_options_page()
         self.create_general_page()
         self.create_helper_options_page()
-        self.create_flickr_page()
         
         self.set_size_request(500,-1)
 
@@ -367,37 +366,6 @@ class PrefsDialog(dialog.T):
         name_label.set_mnemonic_widget(entry)
         table.attach(name_label,0,1,2,3,0,0,2,2)
 
-    def update_id(self,*args):
-        token = self.prefs.get("user_info","flickr_token")
-        if token=="":
-            # not signed in
-            self.token_label.set_text(_("Not signed in"))
-        else:
-            self.token_label.set_text(_("Signed in"))
-
-        self.signoff.set_sensitive(token != "")
-
-    def do_signoff(self,widget):
-        self.prefs.set("user_info","flickr_token","")
-        self.prefs.set("user_info","nsid","")
-        
-    def create_flickr_page(self):
-        table = Gtk.Table(5,2,False)
-        label = Gtk.Label(label=_("_Flickr"))
-        label.set_use_underline(True)
-        self.notebook.append_page(table,label)
-
-        self.signoff = Gtk.Button(_("_Sign out from Flickr"))
-        self.signoff.connect("clicked",self.do_signoff)
-
-        self.token_label = Gtk.Label(label="")
-        table.attach(self.token_label,0,2,0,1,0,0,2,2)
-
-        table.attach(self.signoff,0,1,1,2,0,0,2,2)
-
-        self.prefs.connect('preferences-changed',self.update_id)
-        self.update_id()
-        
     def create_auto_deepen_widget(self):
         widget = Gtk.CheckButton("Auto _Deepen")
         widget.set_tooltip_text("Adjust number of iterations automatically")

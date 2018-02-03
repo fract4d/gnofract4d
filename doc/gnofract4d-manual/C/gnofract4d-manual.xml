@@ -586,16 +586,6 @@ explicitly set it here.
 </para> 
 </sect4>
 
-<sect4 id="prefs_flickr">
-<title>Flickr</title>
-<para>
-
-&gf4d; can upload your images to the online image-sharing service
-Flickr. This page handles your online identity.
-
-</para> 
-</sect4>
-
 </sect3>
 
 </sect2>
