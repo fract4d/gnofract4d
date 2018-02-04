@@ -17,10 +17,11 @@ from fract4d import animation, fractconfig
 class AVIGeneration:
     def __init__(self,animation):
         self.dialog=Gtk.Dialog(
-            "Generating AVI file...",None,
-            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL))
+            title="Generating AVI file...",
+            modal=True,
+            destroy_with_parent=True)
 
+        self.dialog.add_buttons(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL)
         self.pbar = Gtk.ProgressBar()
         self.pbar.set_text("Please wait...")
         self.dialog.vbox.pack_start(self.pbar,True,True,0)
@@ -114,7 +115,7 @@ class AVIGeneration:
         self.running=True
         self.error=False
         task=self.generate_avi()
-        GObject.idle_add(task.__next__)
+        GLib.idle_add(task.__next__)
         response = self.dialog.run()
         if response != Gtk.ResponseType.CANCEL:
             if self.running==True: #destroy by user

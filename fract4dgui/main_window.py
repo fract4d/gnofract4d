@@ -1329,7 +1329,11 @@ class MainWindow:
             if fc.FormulaTypes.isFormula(file):
                 self.load_formula(file)
                 return True
-            self.f.loadFctFile(open(file))
+            fh = open(file)
+            try:
+                self.f.loadFctFile(fh)
+            finally:
+                fh.close()
             self.update_recent_files(file)
             self.set_filename(file)
             browser.update(self.f.forms[0].funcFile, self.f.forms[0].funcName)

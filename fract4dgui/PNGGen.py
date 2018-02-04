@@ -128,7 +128,7 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
         running=True
         self.error=False
         task=self.generate_png()
-        GObject.idle_add(task.__next__)
+        GLib.idle_add(task.__next__)
         response = self.run()
         if response != Gtk.ResponseType.CANCEL:
             if running==True: #destroy by user
@@ -214,8 +214,12 @@ class GenerationThread(Thread):
 
     def generate_base_keyframe(self):
         f=fractal.T(self.compiler)
-        f.loadFctFile(open(self.anim.get_keyframe_filename(0)))
-
+        fh = open(self.anim.get_keyframe_filename(0))
+        try:
+            f.loadFctFile(fh)
+        finally:
+            fh.close()
+        
         self.next_image.acquire()
         #writes .fct file if user wanted that
         if self.anim.get_fct_enabled():
@@ -247,11 +251,19 @@ class GenerationThread(Thread):
         N=self.durations[iteration]
 
         f_prev=fractal.T(self.compiler)
-        f_prev.loadFctFile(open(self.anim.get_keyframe_filename(iteration)))
-
+        fh = open(self.anim.get_keyframe_filename(iteration))
+        try:
+            f_prev.loadFctFile(fh)
+        finally:
+            fh.close()
+            
         f_next=fractal.T(self.compiler)
-        f_next.loadFctFile(open(self.anim.get_keyframe_filename(iteration+1)))
-        
+        fh = open(self.anim.get_keyframe_filename(iteration+1))
+        try:
+            f_next.loadFctFile(fh)
+        finally:
+            fh.close()
+            
         #------------------------------------------------------------
         #loop to generate images between current (iteration-th) and previous keyframe
         for i in range(1,N+1):
