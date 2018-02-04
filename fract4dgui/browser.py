@@ -46,6 +46,8 @@ class BrowserDialog(dialog.T):
         self.file_list = Gtk.ListStore(str)
         self.formula_list = Gtk.ListStore(str)
         
+        self.file_selection_changed_spec = None
+
         self.f = f
         self.compiler = f.compiler
 
@@ -125,12 +127,16 @@ class BrowserDialog(dialog.T):
         #column = Gtk.TreeViewColumn (_('_Preview'), renderer)
         #self.filetreeview.append_column (column)
 
-        selection = self.filetreeview.get_selection()
-        selection.connect('changed',self.file_selection_changed)
         return sw
 
     def populate_file_list(self):
         # find all appropriate files and add to file list
+        # first clear files of the current type
+        # preventing on_file_changed being called for each deletion
+        sel = self.filetreeview.get_selection()
+        if self.file_selection_changed_spec:
+            sel.disconnect(self.file_selection_changed_spec)
+            self.file_selection_changed_spec = None
         self.file_list.clear()
 
         files = self.model.current.files
@@ -148,7 +154,6 @@ class BrowserDialog(dialog.T):
         # re-select current file, if any
         if current_iter:
             self.filetreeview.scroll_to_cell(index)
-            sel = self.filetreeview.get_selection()
             if sel:
                 sel.unselect_all()
                 sel.select_iter(current_iter)
@@ -157,6 +162,8 @@ class BrowserDialog(dialog.T):
             self.formula_list.clear()
             self.formula_selection_changed(None)
         
+        self.file_selection_changed_spec = sel.connect('changed', self.file_selection_changed)
+
     def populate_formula_list(self,fname):
         self.formula_list.clear()
 
