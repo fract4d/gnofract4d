@@ -3,6 +3,7 @@
 *~
 #*
 MANIFEST
+token
 
 build/*
 dist/*

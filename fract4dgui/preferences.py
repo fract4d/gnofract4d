@@ -78,8 +78,8 @@ class PrefsDialog(dialog.T):
             self,
             _("Gnofract 4D Preferences"),
             main_window,
-            Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
+            destroy_with_parent=True)
 
         self.dirchooser = utils.get_directory_chooser(
             _("Select a Formula Directory"),

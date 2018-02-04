@@ -16,8 +16,9 @@ class AutozoomDialog(dialog.T):
             self,
             _("Autozoom"),
             main_window,
-            Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
+            destroy_with_parent=True
+        )
 
         self.f = f
         

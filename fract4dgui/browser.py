@@ -35,12 +35,12 @@ class BrowserDialog(dialog.T):
             self,
             _("Formula Browser"),
             main_window,
-            Gtk.DialogFlags.DESTROY_WITH_PARENT,
             (#_("Co_mpile"), BrowserDialog.RESPONSE_COMPILE,
              Gtk.STOCK_REFRESH, BrowserDialog.RESPONSE_REFRESH,
              Gtk.STOCK_APPLY, Gtk.ResponseType.APPLY,
              Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
+             destroy_with_parent=True)
 
         self.set_default_response(Gtk.ResponseType.OK)
 

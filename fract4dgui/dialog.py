@@ -18,8 +18,8 @@ def make_container(title):
     return frame
 
 class T(Gtk.Dialog):
-    def __init__(self, title=None, parent=None, flags=0, buttons=None):
-        Gtk.Dialog.__init__(self, title=title, transient_for=parent, flags=flags)
+    def __init__(self, title=None, parent=None, buttons=None,**kwds):
+        Gtk.Dialog.__init__(self, title=title, transient_for=parent, **kwds)
 
         if buttons:
                 self.add_buttons(*buttons)

@@ -448,9 +448,9 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
             self,
             _("Director"),
             main_window,
-            Gtk.DialogFlags.DESTROY_WITH_PARENT,
             (_("_Render"), DirectorDialog.RESPONSE_RENDER,
-             Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+             Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
+            destroy_with_parent=True)
 
         hig.MessagePopper.__init__(self)
         self.animation=animation.T(f.compiler)
