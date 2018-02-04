@@ -7,7 +7,7 @@
 
 
 
-from gi.repository import Gdk, Gtk, GObject
+from gi.repository import Gdk, Gtk, GObject, GLib
 import os
 import re
 from threading import *
@@ -151,4 +151,5 @@ class DummyThread(Thread):
             if m!=None:
                 cur=re.split("-",m.group())[1][0:-1]
                 self.pbar.set_fraction(float(cur)/self.count)
+        pipe.close()
         return

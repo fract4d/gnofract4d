@@ -55,14 +55,14 @@ class DirectorPrefs:
 		self.txt_temp_fct.set_sensitive(False)
 		self.tbl_dirs.attach(self.txt_temp_fct,1,2,1,2)
 
-		self.btn_temp_fct=Gtk.Button("Browse")
+		self.btn_temp_fct=Gtk.Button(label="Browse")
 		self.btn_temp_fct.connect("clicked",self.temp_fct_clicked,None)
 		self.btn_temp_fct.set_sensitive(False)
 		self.tbl_dirs.attach(self.btn_temp_fct,2,3,1,2)
 
 		#this check box goes after (even if it's above above widgets because
 		#we connect and change its state here and it change those buttons, so they wouldn't exist
-		self.chk_create_fct=Gtk.CheckButton("Create temporary .fct files")
+		self.chk_create_fct=Gtk.CheckButton(label="Create temporary .fct files")
 		self.chk_create_fct.connect("toggled",self.create_fct_toggled,None)
 		self.chk_create_fct.set_active(self.animation.get_fct_enabled())
 		self.tbl_dirs.attach(self.chk_create_fct,0,1,0,1)
@@ -74,7 +74,7 @@ class DirectorPrefs:
 		self.txt_temp_png.set_text(self.animation.get_png_dir())
 		self.tbl_dirs.attach(self.txt_temp_png,1,2,2,3)
 
-		self.btn_temp_png=Gtk.Button("Browse")
+		self.btn_temp_png=Gtk.Button(label="Browse")
 		self.btn_temp_png.connect("clicked",self.temp_png_clicked,None)
 		self.tbl_dirs.attach(self.btn_temp_png,2,3,2,3)
 

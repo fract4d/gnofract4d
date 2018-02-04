@@ -235,7 +235,7 @@ class PrefsDialog(dialog.T):
         self.path_list = Gtk.ListStore(
             GObject.TYPE_STRING)
         
-        path_treeview = Gtk.TreeView (self.path_list)
+        path_treeview = Gtk.TreeView (model=self.path_list)
 
         renderer = Gtk.CellRendererText ()
         column = Gtk.TreeViewColumn (_('_Directory'), renderer, text=0)
@@ -367,7 +367,7 @@ class PrefsDialog(dialog.T):
         table.attach(name_label,0,1,2,3,0,0,2,2)
 
     def create_auto_deepen_widget(self):
-        widget = Gtk.CheckButton("Auto _Deepen")
+        widget = Gtk.CheckButton(label="Auto _Deepen")
         widget.set_tooltip_text("Adjust number of iterations automatically")
         widget.set_use_underline(True)
         
@@ -384,7 +384,7 @@ class PrefsDialog(dialog.T):
         return widget
 
     def create_auto_tolerance_widget(self):
-        widget = Gtk.CheckButton("Auto _Tolerance")
+        widget = Gtk.CheckButton(label="Auto _Tolerance")
         widget.set_tooltip_text("Adjust periodicity tolerance automatically")
         widget.set_use_underline(True)
         
@@ -438,7 +438,7 @@ class PrefsDialog(dialog.T):
         hlabel.set_use_underline(True)
         table.attach(hlabel,0,1,1,2,0,0,2,2)
 
-        self.fix_ratio = Gtk.CheckButton("Maintain Aspect _Ratio")
+        self.fix_ratio = Gtk.CheckButton(label="Maintain Aspect _Ratio")
         self.fix_ratio.set_tooltip_text("Keep the image rectangle the same shape when changing its size")
         self.fix_ratio.set_use_underline(True)
         table.attach(self.fix_ratio,0,2,2,3,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)

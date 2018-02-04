@@ -52,7 +52,7 @@ class GradientDialog(dialog.T):
         self.gradarea.connect('button-press-event', self.gradarea_mousedown)
         self.gradarea.connect('button-release-event', self.gradarea_clicked)
         self.gradarea.connect('motion-notify-event', self.gradarea_mousemoved)
-        gradareaBox = Gtk.HBox(False, 0)
+        gradareaBox = Gtk.HBox(homogeneous=False, spacing=0)
         
         ###CONTEXT MENU###
         menu_items = ( 
@@ -83,7 +83,7 @@ class GradientDialog(dialog.T):
             self.csel.connect('color-set', self.colorchanged)
             self.colorbutton = True
         else:
-            self.csel = Gtk.Button("Color...")
+            self.csel = Gtk.Button(label="Color...")
             self.csel.connect('clicked', self.cbutton_clicked)
             self.csel_dialog = Gtk.ColorSelectionDialog("Select a Color")
             self.csel_dialog.colorsel.set_current_color(
@@ -91,10 +91,10 @@ class GradientDialog(dialog.T):
 
             self.csel_dialog.ok_button.connect('clicked', self.cdialog_response)
             self.colorbutton = False
-        synccolsB = Gtk.Button("Sync Colors")
+        synccolsB = Gtk.Button(label="Sync Colors")
         synccolsB.connect('clicked', self.sync_colors)
             
-        CSelBox = Gtk.HBox(False, 0)
+        CSelBox = Gtk.HBox(homogeneous=False, spacing=0)
         
         ###ALTERNATION CONTROL###
         lblAlternate = Gtk.Label(label=_("Alternation:"))
@@ -102,7 +102,7 @@ class GradientDialog(dialog.T):
         alternate.set_digits(3)
         alternate.connect('value-changed', self.alternate_changed)
         
-        AlternateBox = Gtk.HBox(False, 0)
+        AlternateBox = Gtk.HBox(homogeneous=False, spacing=0)
         
         ###POSITION CONTROL###
         lblPos    = Gtk.Label(label=_("Position:"))
@@ -110,16 +110,16 @@ class GradientDialog(dialog.T):
         self.pos.set_digits(2)
         self.pos.connect('value-changed', self.pos_changed)
         
-        PosBox = Gtk.HBox(False, 0)
+        PosBox = Gtk.HBox(homogeneous=False, spacing=0)
         
         ###RANDOMIZE BUTTON###
-        randomize = Gtk.Button(_("Randomize"))
+        randomize = Gtk.Button(label=_("Randomize"))
         randomize.connect('clicked', self.randomize)
-        randBox = Gtk.HBox(False, 0)
+        randBox = Gtk.HBox(homogeneous=False, spacing=0)
         
         ###OFFSET CONTROL###
         lblOffset = Gtk.Label(label=_("Offset:"))
-        lblOffsetBox = Gtk.HBox(False, 0)
+        lblOffsetBox = Gtk.HBox(homogeneous=False, spacing=0)
         
         offset=Gtk.HScale(Gtk.Adjustment(self.grad.getOffset(), 0, 1, 0.001, 0.01, 0.0))
         offset.set_digits(3)

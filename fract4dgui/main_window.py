@@ -884,7 +884,7 @@ class MainWindow:
         self.weirdness.set_property("value-pos",Gtk.PositionType.RIGHT)
 
         self.weirdbox = Gtk.VBox()
-        shapebox = Gtk.HBox(False,2)
+        shapebox = Gtk.HBox(homogeneous=False, spacing=2)
         shape_label = Gtk.Label(label=_("Shape:"))
         shapebox.pack_start(shape_label, True, True, 0)
         shapebox.pack_start(self.weirdness, True, True, 0)
@@ -903,7 +903,7 @@ class MainWindow:
         self.color_weirdness.set_size_request(100, 20)
         self.color_weirdness.set_property("value-pos",Gtk.PositionType.RIGHT)
 
-        colorbox = Gtk.HBox(False,2)
+        colorbox = Gtk.HBox(homogeneous=False, spacing=2)
         color_label = Gtk.Label(label=_("Color:"))
         colorbox.pack_start(color_label, True, True, 0)
         colorbox.pack_start(self.color_weirdness, True, True, 0)

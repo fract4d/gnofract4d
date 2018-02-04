@@ -71,8 +71,13 @@ def stack_trace():
 
 def get_directory_chooser(title,parent):
     chooser = Gtk.FileChooserDialog(
-        title, parent, Gtk.FileChooserAction.SELECT_FOLDER,
-        (Gtk.STOCK_OK, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+        title=title,
+        transient_for=parent,
+        action=Gtk.FileChooserAction.SELECT_FOLDER)
+
+    chooser.add_buttons(
+        Gtk.STOCK_OK, Gtk.ResponseType.OK,
+        Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
 
     return chooser
     

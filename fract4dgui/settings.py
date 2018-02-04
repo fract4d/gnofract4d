@@ -146,7 +146,7 @@ class SettingsDialog(dialog.T):
     def create_colors_table(self):
         gradbox = Gtk.VBox()
 
-        browse_button = Gtk.Button(_("_Browse..."))
+        browse_button = Gtk.Button(label=_("_Browse..."))
 
         browse_button.connect(
             "clicked", self.show_browser, browser_model.GRADIENT)
@@ -202,22 +202,22 @@ class SettingsDialog(dialog.T):
         table.attach(self.right_color_button.widget,
                      3,4,0,1, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
 
-        self.split_button = Gtk.Button(_("Split"))
+        self.split_button = Gtk.Button(label=_("Split"))
         self.split_button.connect('clicked', self.split)
         table.attach(self.split_button,
                      0,1,1,2, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
 
-        self.remove_button = Gtk.Button(_("Remove"))
+        self.remove_button = Gtk.Button(label=_("Remove"))
         self.remove_button.connect('clicked', self.remove)
         table.attach(self.remove_button,
                      1,2,1,2, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
 
-        self.copy_left_button = Gtk.Button(_("<Copy"))
+        self.copy_left_button = Gtk.Button(label=_("<Copy"))
         self.copy_left_button.connect('clicked', self.copy_left)
         table.attach(self.copy_left_button,
                      2,3,1,2, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
         
-        self.copy_right_button = Gtk.Button(_("Copy>"))
+        self.copy_right_button = Gtk.Button(label=_("Copy>"))
         self.copy_right_button.connect('clicked', self.copy_right)
         table.attach(self.copy_right_button,
                      3,4,1,2, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)        
@@ -389,7 +389,7 @@ class SettingsDialog(dialog.T):
         entry.connect('focus-out-event', set_fractal)
 
     def create_yflip_widget(self):
-        widget = Gtk.CheckButton(_("Flip Y Axis"))
+        widget = Gtk.CheckButton(label=_("Flip Y Axis"))
         widget.set_use_underline(True)
         widget.set_tooltip_text(
             _("If set, Y axis increases down the screen, otherwise up the screen"))
@@ -407,7 +407,7 @@ class SettingsDialog(dialog.T):
         return widget
 
     def create_periodicity_widget(self):
-        widget = Gtk.CheckButton(_("Periodicity Checking"))
+        widget = Gtk.CheckButton(label=_("Periodicity Checking"))
         widget.set_use_underline(True)
         widget.set_tooltip_text(
             _("Try to speed up calculations by looking for loops. Can cause incorrect images with some functions, though."))
@@ -453,7 +453,7 @@ class SettingsDialog(dialog.T):
 
         self.f.connect('formula-changed', set_store)
 
-        self.transform_view = Gtk.TreeView(self.transform_store)
+        self.transform_view = Gtk.TreeView(model=self.transform_store)
         self.transform_view.set_headers_visible(False)
         self.transform_view.set_size_request(150,250)
         renderer = Gtk.CellRendererText ()
@@ -514,10 +514,10 @@ class SettingsDialog(dialog.T):
             
         self.f.connect('parameters-changed',set_label)
 
-        hbox = Gtk.HBox(False,1)
+        hbox = Gtk.HBox(homogeneous=False, spacing=1)
         hbox.pack_start(label, True, True, 0)
 
-        button = Gtk.Button(_("_Browse..."))
+        button = Gtk.Button(label=_("_Browse..."))
         button.set_use_underline(True)
         button.set_tooltip_text(tip)
         button.connect('clicked', self.show_browser, param_type)
@@ -585,7 +585,7 @@ class SettingsDialog(dialog.T):
         self.f.connect(
             'formula-changed', self.update_formula_text, textview, formindex)
 
-        apply = Gtk.Button(_("Apply Formula Changes"))
+        apply = Gtk.Button(label=_("Apply Formula Changes"))
         apply.connect(
             'clicked', 
             self.change_formula, 

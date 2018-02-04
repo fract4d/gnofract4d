@@ -7,6 +7,8 @@
 from gi.repository import Gdk
 from gi.repository import Gtk
 from gi.repository import GObject
+from gi.repository import GLib
+
 import os
 import fnmatch
 import pickle
@@ -519,7 +521,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         #--------------Keyframes box-----------------------------------
         self.frm_kf = Gtk.Frame.new("Keyframes")
         self.frm_kf.set_border_width(10)
-        self.hbox_kfs=Gtk.HBox(False,0)
+        self.hbox_kfs=Gtk.HBox(homogeneous=False,spacing=0)
         self.tbl_keyframes_left=Gtk.Table(n_rows=2,n_columns=2,homogeneous=False)
         self.tbl_keyframes_left.set_row_spacings(10)
         self.tbl_keyframes_left.set_col_spacings(10)
@@ -561,12 +563,12 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.current_select=-1
         self.tbl_keyframes_left.attach(self.sw,0,2,0,1)
 
-        self.btn_add_keyframe=Gtk.Button("Add",Gtk.STOCK_ADD)
+        self.btn_add_keyframe=Gtk.Button.new_from_stock(Gtk.STOCK_ADD)
         #self.btn_add_keyframe.connect("clicked",self.add_keyframe_clicked,None)
         self.btn_add_keyframe.connect_object("event",self.add_keyframe_clicked,self.popup_menu)
         self.tbl_keyframes_left.attach(self.btn_add_keyframe,0,1,1,2,0,0)
 
-        self.btn_remove_keyframe=Gtk.Button("Remove",Gtk.STOCK_REMOVE)
+        self.btn_remove_keyframe=Gtk.Button.new_from_stock(Gtk.STOCK_REMOVE)
         self.btn_remove_keyframe.connect("clicked",self.remove_keyframe_clicked,None)
         self.tbl_keyframes_left.attach(self.btn_remove_keyframe,1,2,1,2,0,0)
         self.hbox_kfs.pack_start(self.tbl_keyframes_left,True,True,10)
@@ -615,7 +617,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.cmb_interpolation_type.connect("changed",self.interpolation_type_changed,None)
         self.tbl_keyframes_right.attach(self.cmb_interpolation_type,1,2,2,3)
 
-        self.btn_adv_opt=Gtk.Button("Advanced options")
+        self.btn_adv_opt=Gtk.Button(label="Advanced options")
         self.btn_adv_opt.connect("clicked",self.adv_opt_clicked,None)
         self.tbl_keyframes_right.attach(self.btn_adv_opt,0,2,3,4)
 
@@ -625,8 +627,8 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.frm_output = Gtk.Frame.new("Output options")
         self.frm_output.set_border_width(10)
 
-        self.box_output_main=Gtk.VBox(True,10)
-        self.box_output_file=Gtk.HBox(False,10)
+        self.box_output_main=Gtk.VBox(homogeneous=True,spacing=10)
+        self.box_output_file=Gtk.HBox(homogeneous=False,spacing=10)
 
         self.lbl_temp_avi=Gtk.Label(label="Resulting video file:")
         self.box_output_file.pack_start(self.lbl_temp_avi,False,False,10)
@@ -635,13 +637,13 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.txt_temp_avi.set_editable(False)
         self.box_output_file.pack_start(self.txt_temp_avi,True,True,10)
 
-        self.btn_temp_avi=Gtk.Button("Browse")
+        self.btn_temp_avi=Gtk.Button(label="Browse")
         self.btn_temp_avi.connect("clicked",self.temp_avi_clicked,None)
         self.box_output_file.pack_start(self.btn_temp_avi,True,True,10)
 
         self.box_output_main.pack_start(self.box_output_file,True,True,0)
 
-        self.box_output_res=Gtk.HBox(False,10)
+        self.box_output_res=Gtk.HBox(homogeneous=False,spacing=10)
 
         self.lbl_res=Gtk.Label(label="Resolution:")
         self.box_output_res.pack_start(self.lbl_res,False,False,10)
@@ -663,7 +665,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 
         self.box_output_main.pack_start(self.box_output_res,True,True,0)
 
-        self.box_output_framerate=Gtk.HBox(False,10)
+        self.box_output_framerate=Gtk.HBox(homogeneous=False,spacing=10)
 
         self.lbl_framerate=Gtk.Label(label="Frame rate:")
         self.box_output_framerate.pack_start(self.lbl_framerate,False,False,10)
@@ -674,7 +676,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.spin_framerate.connect("output",self.output_framerate_changed,None)
         self.box_output_framerate.pack_start(self.spin_framerate,False,False,10)
 
-        self.chk_swapRB=Gtk.CheckButton("Swap red and blue component")
+        self.chk_swapRB=Gtk.CheckButton(label="Swap red and blue component")
         self.chk_swapRB.set_active(True)
         self.chk_swapRB.connect("toggled",self.swap_redblue_clicked,None)
         self.box_output_framerate.pack_start(self.chk_swapRB,False,False,50)

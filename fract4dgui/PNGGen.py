@@ -9,7 +9,7 @@ import sys
 import os
 from threading import *
 
-from gi.repository import Gdk, Gtk, GObject
+from gi.repository import Gdk, Gtk, GObject, GLib
 
 from . import gtkfractal, hig
 from fract4d import fractal,fracttypes, animation

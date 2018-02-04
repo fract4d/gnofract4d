@@ -552,7 +552,7 @@ class T(Hidden):
     
     def make_bool_widget(self, form, name, param, order):
 
-        widget = Gtk.CheckButton(self.param_display_name(name,param))
+        widget = Gtk.CheckButton(label=self.param_display_name(name,param))
 
         def set_toggle(*args):
             is_set = form.params[order]
