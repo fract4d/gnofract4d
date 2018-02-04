@@ -3,7 +3,7 @@ from gi.repository import Gtk
 
 class Table(Gtk.Table):
     def __init__(self,rows=1,cols=1,homogeneous=False):
-        Gtk.Table.__init__(self, rows, cols, homogeneous)
+        Gtk.Table.__init__(self, n_rows=rows, n_columns=cols, homogeneous=homogeneous)
         self.nextrow=0
         self.set_col_spacing(0,10)
 

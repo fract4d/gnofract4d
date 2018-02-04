@@ -42,7 +42,7 @@ class DirectorPrefs:
 		#-----------Temporary directories---------------------
 		#self.frm_dirs=Gtk.Frame("Temporary directories selection")
 		#self.frm_dirs.set_border_width(10)
-		self.tbl_dirs=Gtk.Table(3,3,False)
+		self.tbl_dirs=Gtk.Table(n_rows=3,n_columns=3,homogeneous=False)
 		self.tbl_dirs.set_row_spacings(10)
 		self.tbl_dirs.set_col_spacings(10)
 		self.tbl_dirs.set_border_width(10)

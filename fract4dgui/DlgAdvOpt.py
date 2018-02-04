@@ -22,7 +22,7 @@ class DlgAdvOptions:
         self.current_kf=current_kf
         self.animation=animation
 
-        self.tbl_main=Gtk.Table(6,2,False)
+        self.tbl_main=Gtk.Table(n_rows=6,n_columns=2,homogeneous=False)
         self.tbl_main.set_row_spacings(10)
         self.tbl_main.set_col_spacings(10)
         self.tbl_main.set_border_width(10)

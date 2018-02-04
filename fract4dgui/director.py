@@ -520,7 +520,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.frm_kf = Gtk.Frame.new("Keyframes")
         self.frm_kf.set_border_width(10)
         self.hbox_kfs=Gtk.HBox(False,0)
-        self.tbl_keyframes_left=Gtk.Table(2,2,False)
+        self.tbl_keyframes_left=Gtk.Table(n_rows=2,n_columns=2,homogeneous=False)
         self.tbl_keyframes_left.set_row_spacings(10)
         self.tbl_keyframes_left.set_col_spacings(10)
         self.tbl_keyframes_left.set_border_width(10)
@@ -580,7 +580,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 
         self.box_main.pack_start(self.current_kf,True,True,0)
 
-        self.tbl_keyframes_right=Gtk.Table(4,2,True)
+        self.tbl_keyframes_right=Gtk.Table(n_rows=4,n_columns=2,homogeneous=True)
         self.tbl_keyframes_right.set_row_spacings(10)
         self.tbl_keyframes_right.set_col_spacings(10)
         self.tbl_keyframes_right.set_border_width(10)

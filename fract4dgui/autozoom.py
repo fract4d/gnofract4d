@@ -22,7 +22,7 @@ class AutozoomDialog(dialog.T):
 
         self.f = f
         
-        self.table = Gtk.Table(2,2)
+        self.table = Gtk.Table(n_rows=2,n_columns=2)
         self.vbox.add(self.table)
         
         self.zoombutton = Gtk.ToggleButton(label=_("Start _Zooming"))

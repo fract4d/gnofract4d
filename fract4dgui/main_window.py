@@ -118,7 +118,7 @@ class MainWindow:
         self.f.set_saved(True)
 
     def create_rtd_widgets(self):
-        table = Gtk.Table(2,3,False)
+        table = Gtk.Table(n_rows=2,n_columns=3,homogeneous=False)
         table.width = width = Gtk.Entry()
         table.height = height = Gtk.Entry()
         width.set_text("2048")
@@ -153,9 +153,14 @@ class MainWindow:
     
     def get_file_save_chooser(self, title, parent, patterns=[]):
         chooser = Gtk.FileChooserDialog(
-            title, parent, Gtk.FileChooserAction.SAVE,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            title=title,
+            parent=parent,
+            action=Gtk.FileChooserAction.SAVE)
 
+        chooser.add_buttons(
+            Gtk.STOCK_OK, Gtk.ResponseType.OK,
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+            
         filter = Gtk.FileFilter()
         for pattern in patterns:
             filter.add_pattern(pattern)
@@ -239,10 +244,12 @@ class MainWindow:
             return self.open_fs
 
         self.open_fs = Gtk.FileChooserDialog(
-            _("Open File"), self.window, 
-            Gtk.FileChooserAction.OPEN,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK, 
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+            title=_("Open File"), parent=self.window, 
+            action=Gtk.FileChooserAction.OPEN)
+
+        self.open_fs.add_buttons(
+            Gtk.STOCK_OK, Gtk.ResponseType.OK, 
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
 
         self.add_filters(self.open_fs)
 
@@ -334,7 +341,7 @@ class MainWindow:
         #self.swindow.set_size_request(640+8,400+8)
 
         self.fixed = Gtk.Fixed()
-        self.ftable = Gtk.Table(4,4,False)
+        self.ftable = Gtk.Table(n_rows=4,n_columns=4,homogeneous=False)
         self.fixed.put(self.ftable,0,0)
         self.ftable.attach(
             f.widget,

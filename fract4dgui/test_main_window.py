@@ -158,11 +158,15 @@ class Test(unittest.TestCase):
         result = self.mw.load("../testdata/nexus.fct")
         self.mw.set_explorer_state(True)
         self.mw.update_subfracts()
-        self.mw.subfracts[3].save(open("sub3.fct","w"),False)
+        fh = open("sub3.fct","w")
+        self.mw.subfracts[3].save(fh,False)
+        fh.close()
         
         self.mw.subfracts[3].onButtonRelease(None,None)
-        self.mw.f.save(open("main.fct","w"), False)
-
+        fh= open("main.fct","w")
+        self.mw.f.save(fh,False)
+        fh.close()
+        
         self.assertEqual(self.mw.subfracts[3].serialize(),
                          self.mw.f.serialize())
             

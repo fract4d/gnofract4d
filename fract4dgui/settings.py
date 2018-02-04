@@ -179,7 +179,7 @@ class SettingsDialog(dialog.T):
         self.f.connect('parameters-changed', self.redraw)
         gradbox.pack_start(self.gradarea, False, False, 1)
 
-        table = Gtk.Table(4,4, True)
+        table = Gtk.Table(n_rows=4,n_columns=4, homogeneous=True)
         table.set_property("column-spacing",2)
 
         grad = self.f.get_gradient()
@@ -324,7 +324,7 @@ class SettingsDialog(dialog.T):
         self.notebook.append_page(table,label)
         
     def create_location_table(self):
-        table = Gtk.Table(5,2,False)
+        table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
         self.create_param_entry(table,0,_("_X :"), self.f.XCENTER)
         self.create_param_entry(table,1,_("_Y :"), self.f.YCENTER)
         self.create_param_entry(table,2,_("_Z :"), self.f.ZCENTER)
@@ -340,7 +340,7 @@ class SettingsDialog(dialog.T):
         return table
     
     def create_general_page(self):
-        table = Gtk.Table(5,2,False)
+        table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
         label = Gtk.Label(label=_("_General"))
         label.set_use_underline(True)
         self.notebook.append_page(table,label)
