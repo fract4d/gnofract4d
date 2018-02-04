@@ -1,18 +1,12 @@
 #!/usr/bin/env python3
 
 # a browser to examine fractal functions
-import string
-import os
 
-from gi.repository import GObject
 from gi.repository import Gtk
 
-from fract4d import fc, gradient, browser_model
+from fract4d import browser_model
 
-from . import preferences, dialog, utils, gtkfractal, gradientCellRenderer
-
-def stricmp(a,b):
-    return cmp(a.lower(),b.lower())
+from . import dialog, utils, gtkfractal
 
 def show(parent, f, type=browser_model.FRACTAL):
     BrowserDialog.show(parent,f,type)
@@ -49,14 +43,9 @@ class BrowserDialog(dialog.T):
         self.model.file_changed += self.on_file_changed
         self.model.formula_changed += self.on_formula_changed
         
-        self.formula_list = Gtk.ListStore(
-            GObject.TYPE_STRING)
-
-        self.file_list = Gtk.ListStore(
-            GObject.TYPE_STRING, #formname
-            GObject.TYPE_STRING,
-            GObject.TYPE_INT)
-
+        self.file_list = Gtk.ListStore(str)
+        self.formula_list = Gtk.ListStore(str)
+        
         self.f = f
         self.compiler = f.compiler
 
@@ -291,7 +280,7 @@ class BrowserDialog(dialog.T):
     def file_selection_changed(self,selection):
         self.model.current.formula = None
         (model,iter) = selection.get_selected()
-        if iter == None:
+        if iter is None:
             return
         
         fname = model.get_value(iter,0)
@@ -316,7 +305,7 @@ class BrowserDialog(dialog.T):
             return
         
         (model,iter) = selection.get_selected()
-        if iter == None:
+        if iter is None:
             self.clear_selection()
             return
         
@@ -338,7 +327,7 @@ class BrowserDialog(dialog.T):
         if not formula:
             return
         
-        #update location of source buffer        
+        # update location of source buffer
         sourcebuffer = self.sourcetext.get_buffer()
         iter = sourcebuffer.get_iter_at_line(formula.pos-1)
         self.sourcetext.scroll_to_iter(iter,0.0,True,0.0,0.0)
@@ -349,9 +338,9 @@ class BrowserDialog(dialog.T):
         # update messages
         buffer = self.msgtext.get_buffer()
         msg = ""
-        if self.ir.errors != []:
+        if self.ir.errors:
             msg += _("Errors:\n") + "\n".join(self.ir.errors) + "\n"
-        if self.ir.warnings != []:
+        if self.ir.warnings:
             msg += _("Warnings:\n") + "\n".join(self.ir.warnings)
         if msg == "":
             msg = _("No messages")
