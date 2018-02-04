@@ -25,7 +25,7 @@ class AutozoomDialog(dialog.T):
         self.table = Gtk.Table(2,2)
         self.vbox.add(self.table)
         
-        self.zoombutton = Gtk.ToggleButton(_("Start _Zooming"))
+        self.zoombutton = Gtk.ToggleButton(label=_("Start _Zooming"))
         self.zoombutton.set_tooltip_text(_("Zoom into interesting areas automatically"))
         self.zoombutton.set_use_underline(True)
         self.zoombutton.connect('toggled',self.onZoomToggle)

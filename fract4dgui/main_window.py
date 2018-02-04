@@ -1078,9 +1078,11 @@ class MainWindow:
         self.load(self.recent_files[file_num-1])
         
     def save_file(self,file):
+        fileHandle=None
         try:
             comp = preferences.userPrefs.getboolean("general","compress_fct")
-            self.f.save(open(file,'w'),compress=comp)
+            fileHandle = open(file,'w') 
+            self.f.save(fileHandle,compress=comp)
             self.set_filename(file)
             self.update_recent_files(file)
             return True
@@ -1088,7 +1090,10 @@ class MainWindow:
             self.show_error_message(
                 _("Error saving to file %s") % file, err)
             return False
-
+        finally:
+            if fileHandle != None:
+                fileHandle.close()
+                
     def save(self,action):
         """Save the current parameters."""
         if self.filename == None:

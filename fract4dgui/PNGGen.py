@@ -21,10 +21,10 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
     def __init__(self,animation,compiler):
         Gtk.Dialog.__init__(
             self,
-            "Generating images...",None,
-            (Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL),
+            title="Generating images...",
             modal=True, destroy_with_parent=True)
 
+        self.add_buttons(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL)
         hig.MessagePopper.__init__(self)
         self.lbl_image=Gtk.Label(label="Current image progress")
         self.vbox.pack_start(self.lbl_image,True,True,0)

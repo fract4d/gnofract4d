@@ -197,7 +197,7 @@ class PrefsDialog(dialog.T):
         return entry
 
     def create_save_compress_widget(self):
-        widget = Gtk.CheckButton(_("Compress _Parameter Files"))
+        widget = Gtk.CheckButton(label=_("Compress _Parameter Files"))
         widget.set_tooltip_text(_("Write .fct files in a shorter but unreadable format"))
         widget.set_use_underline(True)
         
@@ -214,7 +214,7 @@ class PrefsDialog(dialog.T):
         return widget
 
     def create_general_page(self):
-        table = Gtk.Table(5,2,False)
+        table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
         label = Gtk.Label(label=_("_General"))
         label.set_use_underline(True)
         self.notebook.append_page(table,label)
@@ -282,7 +282,7 @@ class PrefsDialog(dialog.T):
             self.update_prefs(name, model)
             
     def create_compiler_options_page(self):
-        table = Gtk.Table(5,2,False)
+        table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
         label = Gtk.Label(label=_("_Compiler"))
         label.set_use_underline(True)
         self.notebook.append_page(table,label)
@@ -334,7 +334,7 @@ class PrefsDialog(dialog.T):
         
         
     def create_helper_options_page(self):
-        table = Gtk.Table(5,2,False)
+        table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
         label = Gtk.Label(label=_("_Helpers"))
         label.set_use_underline(True)
         self.notebook.append_page(table,label)
@@ -417,7 +417,7 @@ class PrefsDialog(dialog.T):
         return optMenu
     
     def create_image_options_page(self):
-        table = Gtk.Table(5,2,False)
+        table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
         label = Gtk.Label(label="_Image")
         label.set_use_underline(True)
         self.notebook.append_page(table,label)
