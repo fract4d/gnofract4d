@@ -19,10 +19,11 @@ thread_error=False
 
 class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
     def __init__(self,animation,compiler):
-        Gtk.Dialog.__init__(self,
+        Gtk.Dialog.__init__(
+            self,
             "Generating images...",None,
-            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-            (Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL))
+            (Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL),
+            modal=True, destroy_with_parent=True)
 
         hig.MessagePopper.__init__(self)
         self.lbl_image=Gtk.Label(label="Current image progress")
