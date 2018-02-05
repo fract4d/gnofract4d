@@ -8,9 +8,6 @@ INNER = 2
 TRANSFORM = 3
 GRADIENT = 4
 
-def stricmp(a,b):
-    return cmp(a.lower(),b.lower())
-
 class TypeInfo:
     def __init__(self, parent, compiler, t, exclude=None):
         self.parent = parent
@@ -29,8 +26,8 @@ class TypeInfo:
     def set_file(self,fname):
         if self.fname == fname:
             return
-        if None == fname:
-            self.formulas = []
+        if fname is None:
+            self.formulas.clear()
         else:
             ff = self.compiler.get_file(fname)
             self.formulas = ff.get_formula_names(self.exclude)
@@ -53,9 +50,9 @@ class TypeInfo:
 
     def _get_apply_status(self):
         "Indicate whether current settings can be applied"
-        if None == self.fname:
+        if self.fname is None:
             return False
-        if None == self.formula:
+        if self.formula is None:
             if self.formula_type == fc.FormulaTypes.GRADIENT:
                 if gradient.FileType.guess(self.fname) != gradient.FileType.UGR:
                     # no formula is only acceptable if this is a map, cs or GGR file
@@ -64,7 +61,7 @@ class TypeInfo:
         
         # some other type of file
         ir = self.compiler.get_formula(self.fname, self.formula)
-        if ir.errors != []:
+        if ir.errors:
             # errors compiling
             return False
 

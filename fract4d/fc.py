@@ -22,7 +22,6 @@
 
 # Finally we invoke the C compiler to convert to a native code shared library
 
-import getopt
 import sys
 import subprocess
 import os.path
@@ -135,7 +134,7 @@ class FormulaFile:
         names = []
         for name in list(self.formulas.keys()):
             sym = self.formulas[name].symmetry
-            if sym == None  or sym == "BOTH" or sym != skip_type:
+            if sym is None or sym == "BOTH" or sym != skip_type:
                 names.append(name)
 
         return names
@@ -147,7 +146,6 @@ class Compiler:
         self.c_code = ""
         self.path_lists = [ [], [], [], [] ]
         self.cache = cache.T()
-        self.cache_dir = os.path.expanduser("~/.gnofract4d-cache/")
         self.init_cache()
         if 'win' != sys.platform[:3]:
             self.compiler_name = "gcc"
@@ -248,7 +246,7 @@ class Compiler:
 
     def last_chance(self,filename):
         '''does nothing here, but can be overridden by GUI to prompt user.'''
-        raise IOError("Can't find formula file %s in formula search path" % \
+        raise IOError("Can't find formula file %s in formula search path" %
                       filename)
 
     def compile_one(self,formula):
@@ -300,7 +298,7 @@ class Compiler:
 
     def add_endlines(self,result,final_line):
         "Add info on which is the final source line of each formula"
-        if None == result:
+        if result is None:
             return
 
         l = len(result.children)
@@ -410,13 +408,13 @@ class Compiler:
 
         hash = self.hashcode(self.c_code)
         
-        if outputfile == None:
+        if outputfile is None:
             outputfile = self.cache.makefilename(hash,".so")
             if os.path.exists(outputfile):
                 # skip compilation - we already have this code
                 return outputfile
         
-        if cfile == None:
+        if cfile is None:
             cfile = self.cache.makefilename(hash,".c")
             if 'win' in sys.platform:
                 objfile = self.cache.makefilename(hash, ".obj")
@@ -442,7 +440,7 @@ class Compiler:
 
     def get_parsetree(self,filename,formname):
         ff = self.get_file(filename)
-        if ff == None : return None
+        if ff is None: return None
         return ff.get_formula(formname)
 
     def guess_type_from_filename(self,filename):
@@ -453,18 +451,18 @@ class Compiler:
 
         f = self.get_parsetree(filename,formname)
 
-        if f != None:
+        if f is not None:
             f = type(f,prefix)
         return f
 
     def get_gradient(self, filename, formname):
         g = gradient.Gradient()
-        if formname == None:
+        if formname is None:
             if FormulaTypes.is_binary_filetype(filename):
                 mode = "rb"
             else:
                 mode = "r"
-            with open(self.find_file(filename, 3), mode) as fh:
+            with open(self.find_file(filename, FormulaTypes.GRADIENT), mode) as fh:
                 g.load(fh)
         else:
             compiled_gradient = self.get_formula(filename,formname)
@@ -473,7 +471,7 @@ class Compiler:
         return g
 
     def get_random_gradient(self):
-        return self.get_random_formula(3) # FIXME
+        return self.get_random_formula(FormulaTypes.GRADIENT) # FIXME
 
     def get_random_formula(self,type):
         files = self.find_files_of_type(type)
@@ -506,11 +504,11 @@ def usage():
 def generate(fc,formulafile, formula, outputfile, cfile):
     # find the function we want
     ir = fc.get_formula(formulafile,formula)
-    if ir == None:
-        raise Exception("Can't find formula %s in %s" % \
+    if ir is None:
+        raise Exception("Can't find formula %s in %s" %
               (formula, formulafile))
 
-    if ir.errors != []:
+    if ir.errors:
         print("Errors during translation")
         for e in ir.errors:
             print(e)
@@ -527,8 +525,8 @@ def main(args):
         for name in ff.get_formula_names():
             print(name)
             form = fc.get_formula(arg,name)
-            cg = fc.compile(form)
-            
+            fc.compile(form)
+
+
 if __name__ == '__main__':
     main(sys.argv[1:])
-
