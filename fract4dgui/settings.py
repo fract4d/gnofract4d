@@ -46,8 +46,7 @@ class SettingsDialog(dialog.T):
         self.create_transforms_page()
         self.create_general_page()
         self.create_location_page()
-        # colormap-handling functions of GtkWidget have been removed
-        #self.create_colors_page()
+        self.create_colors_page()
 
     def gradarea_mousedown(self, widget, event):
         pass
@@ -61,79 +60,67 @@ class SettingsDialog(dialog.T):
     def gradarea_mousemoved(self, widget, event):
         pass
     
-    def gradarea_realized(self, widget):
-        self.gradgc = widget.window.new_gc(fill=Gdk.SOLID)
-        return True
-        
-    def gradarea_expose(self, widget, event):
-        # draw the gradient itself
-        r = event.area
-        self.redraw_rect(widget, r.x, r.y, r.width, r.height)
-
-    def draw_handle(self, widget, midpoint, fill):
+    def draw_handle(self, widget, cairo_ctx, midpoint, fill):
         # draw a triangle pointing up, centered on midpoint
         total_height = widget.get_allocated_height()
         colorband_height = total_height - self.grad_handle_height
-        points = [
-            (midpoint, colorband_height),
-            (midpoint - 5, total_height),
-            (midpoint + 5, total_height)]
+        cairo_ctx.set_line_width(1.0)
+        cairo_ctx.set_source_rgb(0, 0, 0)
+        cairo_ctx.move_to(midpoint - 5, total_height)
+        cairo_ctx.line_to(midpoint, colorband_height)
+        cairo_ctx.line_to(midpoint + 5, total_height)
+        cairo_ctx.line_to(midpoint - 5, total_height)
+        if fill:
+            cairo_ctx.fill()
+        else:
+            cairo_ctx.stroke()
 
-        widget.window.draw_polygon(
-            widget.style.black_gc, fill, points)
-
-    def redraw_rect(self, widget, x, y, w, h):
+    def redraw_rect(self, widget, cairo_ctx):
         # draw the color preview bar
+        result, r = Gdk.cairo_get_clip_rectangle(cairo_ctx)
         wwidth = widget.get_allocated_width()
         colorband_height = widget.get_allocated_height() - self.grad_handle_height
         
-        colormap = widget.get_colormap()
+        style_ctx = widget.get_style_context()
+        normal_background_color = style_ctx.get_property("background-color", Gtk.StateFlags.NORMAL)
         grad = self.f.get_gradient()
-        for i in range(x, x+w):
+
+        cairo_ctx.set_line_width(2.0)
+        for i in range(r.x, r.x + r.width):
             pos_in_gradient = i / wwidth
             col = grad.get_color_at(pos_in_gradient)
-            gtkcol = colormap.alloc_color(
-                int(col[0]*65535),
-                int(col[1]*65535),
-                int(col[2]*65535),
-                True, True)
-            
-            self.gradgc.set_foreground(gtkcol)
-            widget.window.draw_line(
-                self.gradgc, i, y, i, min(y+h, colorband_height))
+            cairo_ctx.set_source_rgba(col[0], col[1], col[2])
+            cairo_ctx.move_to(i, r.y)
+            cairo_ctx.line_to(i, min(r.y + r.height, colorband_height))
+            cairo_ctx.stroke()
 
         # draw the handles
-        style = widget.get_style()
-        widget.window.draw_rectangle(
-            style.bg_gc[Gtk.StateType.NORMAL], True,
-            x, colorband_height, w, self.grad_handle_height)
+        cairo_ctx.set_source_rgba(*normal_background_color)
+        cairo_ctx.rectangle(r.x, colorband_height, r.width, self.grad_handle_height)
+        cairo_ctx.fill()
 
         for i in range(len(grad.segments)):
             seg = grad.segments[i]
             
-            left = int(seg.left * wwidth)
-            mid = int(seg.mid * wwidth)
-            right = int(seg.right * wwidth)
+            left = seg.left * wwidth
+            mid = seg.mid * wwidth
+            right = seg.right * wwidth
 
             if i == self.selected_segment:
                 # draw this chunk selected
-                widget.window.draw_rectangle(
-                    style.bg_gc[Gtk.StateType.SELECTED], True,
-                    left, colorband_height,
-                    right-left, self.grad_handle_height)
+                cairo_ctx.set_line_width(2.0)
+                cairo_ctx.set_source_rgb(0, 1.0, 1.0)
+                cairo_ctx.rectangle(left, colorband_height, right - left, self.grad_handle_height)
+                cairo_ctx.fill()
 
-            self.draw_handle(widget, left, True)
-            self.draw_handle(widget, mid, False)
+            self.draw_handle(widget, cairo_ctx, left, True)
+            self.draw_handle(widget, cairo_ctx, mid, False)
 
         # draw last handle on the right
-        self.draw_handle(widget, int(wwidth), True)
+        self.draw_handle(widget, cairo_ctx, wwidth, True)
 
     def redraw(self,*args):
-        if self.gradarea.window:
-            self.gradarea.window.invalidate_rect(
-                (0, 0,
-                                  self.gradarea.get_allocated_width(),
-                                  self.gradarea.get_allocated_height()), True)
+        self.gradarea.queue_draw()
 
         self.inner_solid_button.set_color(
             utils.floatColorFrom256(self.f.solids[1]))
@@ -143,7 +130,7 @@ class SettingsDialog(dialog.T):
     def create_colors_table(self):
         gradbox = Gtk.VBox()
 
-        browse_button = Gtk.Button(label=_("_Browse..."))
+        browse_button = Gtk.Button(label=_("Browse..."))
 
         browse_button.connect(
             "clicked", self.show_browser, browser_model.GRADIENT)
@@ -153,9 +140,7 @@ class SettingsDialog(dialog.T):
         # gradient viewer
         self.grad_handle_height = 8
         
-        self.gradarea=Gtk.DrawingArea()
-        c = utils.get_rgb_colormap()
-        self.gradarea.set_colormap(c)
+        self.gradarea = Gtk.DrawingArea()
 
         self.gradarea.add_events(
             Gdk.EventMask.BUTTON_RELEASE_MASK |
@@ -167,8 +152,7 @@ class SettingsDialog(dialog.T):
             )
 
         self.gradarea.set_size_request(256, 96)
-        self.gradarea.connect('realize', self.gradarea_realized)
-        self.gradarea.connect('expose_event', self.gradarea_expose)
+        self.gradarea.connect('draw', self.redraw_rect)
         self.gradarea.connect('button-press-event', self.gradarea_mousedown)
         self.gradarea.connect('button-release-event', self.gradarea_clicked)
         self.gradarea.connect('motion-notify-event', self.gradarea_mousemoved)
