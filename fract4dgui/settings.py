@@ -66,7 +66,7 @@ class SettingsDialog(dialog.T):
         return True
         
     def gradarea_expose(self, widget, event):
-        #Draw the gradient itself
+        # draw the gradient itself
         r = event.area
         self.redraw_rect(widget, r.x, r.y, r.width, r.height)
 
@@ -84,13 +84,13 @@ class SettingsDialog(dialog.T):
 
     def redraw_rect(self, widget, x, y, w, h):
         # draw the color preview bar
-        wwidth = float(widget.get_allocated_width())
+        wwidth = widget.get_allocated_width()
         colorband_height = widget.get_allocated_height() - self.grad_handle_height
         
         colormap = widget.get_colormap()
         grad = self.f.get_gradient()
         for i in range(x, x+w):
-            pos_in_gradient = float(i)/wwidth
+            pos_in_gradient = i / wwidth
             col = grad.get_color_at(pos_in_gradient)
             gtkcol = colormap.alloc_color(
                 int(col[0]*65535),
@@ -102,10 +102,7 @@ class SettingsDialog(dialog.T):
             widget.window.draw_line(
                 self.gradgc, i, y, i, min(y+h, colorband_height))
 
-        #Draw the handles
-        wgc=widget.style.white_gc
-        bgc=widget.style.black_gc
-
+        # draw the handles
         style = widget.get_style()
         widget.window.draw_rectangle(
             style.bg_gc[Gtk.StateType.NORMAL], True,
@@ -158,7 +155,7 @@ class SettingsDialog(dialog.T):
         
         self.gradarea=Gtk.DrawingArea()
         c = utils.get_rgb_colormap()
-        self.gradarea.set_colormap(c)        
+        self.gradarea.set_colormap(c)
 
         self.gradarea.add_events(
             Gdk.EventMask.BUTTON_RELEASE_MASK |
@@ -220,7 +217,7 @@ class SettingsDialog(dialog.T):
         self.copy_right_button = Gtk.Button(label=_("Copy>"))
         self.copy_right_button.connect('clicked', self.copy_right)
         table.attach(self.copy_right_button,
-                     3,4,1,2, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)        
+                     3,4,1,2, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
 
         self.inner_solid_button = utils.ColorButton(
             utils.floatColorFrom256(self.f.solids[1]),
@@ -351,8 +348,7 @@ class SettingsDialog(dialog.T):
         table.attach(periodicity_widget,0,2,1,2,
                      Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
 
-        period_tolerance_widget = self.create_tolerance_entry(
-            table, 2, _("_Tolerance"))
+        self.create_tolerance_entry(table, 2, _("_Tolerance"))
 
     def create_tolerance_entry(self, table, row, text):
         label = Gtk.Label(label=text)
@@ -428,12 +424,12 @@ class SettingsDialog(dialog.T):
         label = Gtk.Label(label=text)
         label.set_use_underline(True)
         frame = Gtk.Frame()
-        frame.set_shadow_type(Gtk.ShadowType.ETCHED_IN)        
+        frame.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
         frame.add(page)
         self.notebook.append_page(frame,label)
         
     def remove_transform(self,*args):
-        if self.selected_transform == None:
+        if self.selected_transform is None:
             return
 
         self.f.remove_transform(self.selected_transform)
@@ -492,9 +488,9 @@ class SettingsDialog(dialog.T):
 
     def transform_selection_changed(self,selection, parent):
         (model,iter) = selection.get_selected()
-        if iter == None:
+        if iter is None:
             self.selected_transform = None
-        else:        
+        else:
             transform = model.get_value(iter,1)
             # this is bogus. How do I get the index into the list in a less
             # stupid way?
@@ -523,7 +519,7 @@ class SettingsDialog(dialog.T):
         button.connect('clicked', self.show_browser, param_type)
         hbox.pack_start(button, True, True, 0)
 
-        typelabel = Gtk.Label(label=typename) 
+        typelabel = Gtk.Label(label=typename)
         typelabel.set_alignment(1.0,0.0)
         table.add(typelabel,0, Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL,0,2,2)
         table.add(hbox, 1, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL ,0,2,2)
@@ -557,7 +553,7 @@ class SettingsDialog(dialog.T):
                 exn)
 
     def show_error_message(self,message,exception=None):
-        if exception == None:
+        if exception is None:
             secondary_message = ""
         else:
             if isinstance(exception,EnvironmentError):
@@ -587,10 +583,10 @@ class SettingsDialog(dialog.T):
 
         apply = Gtk.Button(label=_("Apply Formula Changes"))
         apply.connect(
-            'clicked', 
-            self.change_formula, 
+            'clicked',
+            self.change_formula,
             textview.get_buffer(),
-            formindex, 
+            formindex,
             formtype)
 
         parent.pack_end(apply, False, False, 1)
@@ -602,7 +598,7 @@ class SettingsDialog(dialog.T):
         self.create_formula_widget_table(
             formbox,
             0,
-            _("Formula"), 
+            _("Formula"),
             _("Browse available fractal functions"))
         
         vbox.pack_start(formbox, False, False, 0)
@@ -635,16 +631,15 @@ class SettingsDialog(dialog.T):
         self.create_formula_text_area(vbox,2,FormulaTypes.COLORFUNC)
         self.add_notebook_page(vbox, _("Inner"))
 
-
     def update_transform_parameters(self, parent, *args):
-        widget = self.tables[3] 
+        widget = self.tables[3]
         if widget is not None:
             try:
                 parent.remove(self.tables[3])
             except AttributeError:
                 pass
 
-        if self.selected_transform != None:
+        if self.selected_transform is not None:
             self.tables[3] = Table(5,2,False)
             self.f.populate_formula_settings(
                 self.tables[3],
@@ -663,7 +658,7 @@ class SettingsDialog(dialog.T):
         self.f.connect(
             'parameters-changed', self.update_all_widgets, lambda: self.tables[3])
         
-    def create_formula_widget_table(self,parent,param_type,typename,tip): 
+    def create_formula_widget_table(self,parent,param_type,typename,tip):
         self.tables[param_type] = None
         
         def update_formula_parameters(*args):
@@ -688,7 +683,7 @@ class SettingsDialog(dialog.T):
 
         self.f.connect('formula-changed', update_formula_parameters)
         self.f.connect(
-            'parameters-changed', 
+            'parameters-changed',
             self.update_all_widgets, lambda: self.tables[param_type])
 
     def update_all_widgets(self, fractal, container):
@@ -704,7 +699,7 @@ class SettingsDialog(dialog.T):
         else:
             container = container
 
-        if None == container:
+        if container is None:
             return
 
         for widget in container.get_children():
@@ -749,4 +744,3 @@ class SettingsDialog(dialog.T):
         set_entry(self.f)
         self.f.connect('parameters-changed', set_entry)
         entry.connect('focus-out-event', set_fractal)
-        
