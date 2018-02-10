@@ -7,6 +7,7 @@ import struct
 import math
 import copy
 
+import cairo
 from gi.repository import Gtk, Gdk, GObject, GdkPixbuf, GLib
 
 from fract4d import fractal,fract4dc,fracttypes, image, messages
@@ -435,6 +436,7 @@ class HighResolution(Hidden):
 
 class T(Hidden):
     "A visible GtkFractal which responds to user input"
+    SELECTION_LINE_WIDTH = 2.0
     def __init__(self,comp,parent=None,width=640,height=480):
         self.parent = parent
         Hidden.__init__(self,comp,width,height)
@@ -876,19 +878,30 @@ class T(Hidden):
         if not self.notice_mouse:
             return
 
-        self.widget.queue_draw()
         self.newx, self.newy = event.x, event.y
 
         dy = int(abs(self.newx - self.x) * float(self.height)/self.width)
         if(self.newy < self.y or (self.newy == self.y and self.newx < self.x)):
             dy = -dy
         self.newy = self.y + dy
+        
+        # create a dummy Cairo context to calculate the affected bounding box
+        surface = cairo.ImageSurface(cairo.FORMAT_A1, self.width, self.height)
+        cairo_ctx = cairo.Context(surface)
+        cairo_ctx.set_line_width(T.SELECTION_LINE_WIDTH)
+        if self.selection_rect:
+            cairo_ctx.rectangle(*self.selection_rect)
 
         self.selection_rect = [
             int(min(self.x,self.newx)),
             int(min(self.y,self.newy)),
             int(abs(self.newx-self.x)),
             int(abs(self.newy-self.y))]
+        
+        cairo_ctx.rectangle(*self.selection_rect)
+        x1, y1, x2, y2 = cairo_ctx.stroke_extents()
+        
+        self.widget.queue_draw_area(x1, y1, x2 - x1, y2 - y1)
 
     def onButtonPress(self,widget,event):
         self.x = event.x
@@ -1020,7 +1033,7 @@ class T(Hidden):
         
         if self.selection_rect:
             cairo_ctx.set_source_rgb(1.0, 1.0, 1.0)
-            cairo_ctx.set_line_width(2.0)
+            cairo_ctx.set_line_width(T.SELECTION_LINE_WIDTH)
             cairo_ctx.rectangle(*self.selection_rect)
             cairo_ctx.stroke()
 
