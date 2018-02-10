@@ -506,9 +506,9 @@ class T(Hidden):
         if hasattr(param, "min") and hasattr(param, "max"):
             # add a slider
             adj = Gtk.Adjustment(
-                0.0,param.min.value, param.max.value,
-                0.001,
-                0.01)
+                value=0.0,
+                lower=param.min.value, upper=param.max.value,
+                step_increment=0.001, page_increment=0.01)
 
             def set_adj():
                 if adj.get_value() != form.params[order]:
@@ -534,8 +534,9 @@ class T(Hidden):
     def make_numeric_widget(
         self, table, i, form, name, part, param, order):
     
-        label = Gtk.Label(self.param_display_name(name,param)+part)
-        label.set_alignment(1.0, 0.0)
+        label = Gtk.Label.new(self.param_display_name(name,param)+part)
+        label.set_xalign(1.0)
+        label.set_yalign(0.0)
         table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
         widget = self.make_numeric_entry(
@@ -574,8 +575,9 @@ class T(Hidden):
     def make_color_widget(
         self, table, i, form, name, param, order):
 
-        label = Gtk.Label(self.param_display_name(name,param))
-        label.set_alignment(1.0, 0.0)
+        label = Gtk.Label.new(self.param_display_name(name,param))
+        label.set_xalign(1.0)
+        label.set_yalign(0.0)
         table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
         def set_fractal(r, g, b, is_left):
@@ -608,8 +610,9 @@ class T(Hidden):
     def make_enumerated_widget(
         self, table, i, form, name, part, param, order):
 
-        label = Gtk.Label(self.param_display_name(name,param))
-        label.set_alignment(1.0, 0.0)
+        label = Gtk.Label.new(self.param_display_name(name,param))
+        label.set_xalign(1.0)
+        label.set_yalign(0.0)
         table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
         widget = utils.create_option_menu(param.enum.value)
@@ -724,8 +727,9 @@ class T(Hidden):
             print("Warning: ", msg)
 
     def add_formula_function(self,table,i,name,param,form):
-        label = Gtk.Label(self.param_display_name(name,param))
-        label.set_alignment(1.0, 0.0)
+        label = Gtk.Label.new(self.param_display_name(name,param))
+        label.set_xalign(1.0)
+        label.set_yalign(0.0)
         table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
         funclist = self.construct_function_menu(param,form)
@@ -765,7 +769,8 @@ class T(Hidden):
 
     def create_maxiter_widget(self,table,i):
         label = Gtk.Label(label="_Max Iterations")
-        label.set_alignment(1.0, 0.0)
+        label.set_xalign(1.0)
+        label.set_yalign(0.0)
         label.set_use_underline(True)
         table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
