@@ -460,7 +460,7 @@ class T(Hidden):
         drawing_area.connect('motion_notify_event', self.onMotionNotify)
         drawing_area.connect('button_release_event', self.onButtonRelease)
         drawing_area.connect('button_press_event', self.onButtonPress)
-        drawing_area.connect('draw',self.onDraw)
+        drawing_area.connect('draw', self.redraw_rect)
 
         self.selection_rect = []
 
@@ -866,11 +866,6 @@ class T(Hidden):
                            err.msg + advice)
             return
 
-    def onDraw(self, widget, cairo_ctx):
-        result, r = Gdk.cairo_get_clip_rectangle(cairo_ctx)
-        if result:
-            self.redraw_rect(r.x, r.y, r.width, r.height, cairo_ctx)
-
     def onMotionNotify(self,widget,event):
         x, y = self.float_coords(event.x, event.y)
         self.emit('pointer-moved', self.button, x, y)
@@ -999,19 +994,12 @@ class T(Hidden):
         if self.thaw():
             self.changed()
 
-    def redraw_rect(self, x, y, w, h, cairo_ctx):
-        # check to see if part of the rect is out-of-bounds, and clip if so
-        if x < 0:
-            x = 0
-        if y < 0:
-            y = 0
-        if x+w > self.width:
-            w = self.width-x
-        if y+h > self.height:
-            h = self.height-y
-
-        if x >= self.width or y >= self.height or w < 1 or h < 1:
-            # nothing to do
+    def redraw_rect(self, widget, cairo_ctx):
+        result, r = Gdk.cairo_get_clip_rectangle(cairo_ctx)
+        if result:
+            x, y, w, h = r.x, r.y, r.width, r.height
+        else:
+            print("Skipping drawing because entire context clipped")
             return
         
         try:
