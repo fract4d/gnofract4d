@@ -2,7 +2,6 @@
 # these are defined at http://developer.gnome.org/projects/gup/hig/2.0/
 
 from gi.repository import Gtk, GObject, GLib
-import xml.sax.saxutils
 
 class Alert(Gtk.MessageDialog):
     def __init__(self, **kwds):
@@ -20,48 +19,19 @@ class Alert(Gtk.MessageDialog):
 
         if not isinstance(image,Gtk.Image):
             image = Gtk.Image.new_from_icon_name(image, Gtk.IconSize.DIALOG)
-            
 
         Gtk.MessageDialog.__init__(
             self,
             transient_for=parent,
             modal=True,
             destroy_with_parent=True,
-            text=title,
+            title=title,
+            text=primary_text,
             buttons=buttontype)
         
-        self.set_resizable(False)
-        self.set_border_width(6)
-
         self.add_buttons(*buttons)
-            
-        #self.set_has_separator(False)
-
-        self.vbox.set_spacing(12)
-        
-        upper_hbox = Gtk.HBox()
-        upper_hbox.set_spacing(12)
-        upper_hbox.set_border_width(6)
-
-        image.icon_size = Gtk.IconSize.DIALOG
-        
-        upper_hbox.pack_start(image, True, True, 0)
-        
-        if secondary_text and len(secondary_text) > 0:
-            secondary_text = "\n\n" + secondary_text
-            secondary_text = xml.sax.saxutils.escape(secondary_text)
-        else:
-            secondary_text = ""
-        label_text = '<span weight="bold" size="larger">%s</span>%s' % \
-                     (primary_text, secondary_text)
-
-        label = Gtk.Label(label=label_text)
-        label.set_use_markup(True)
-        label.set_line_wrap(True)
-        
-        upper_hbox.pack_start(label, True, True, 0)
-        
-        self.vbox.pack_start(upper_hbox, True, True, 0)
+        self.set_image(image)
+        self.format_secondary_text(secondary_text)
         
         if self.ignore_info:
             self.dont_show_again = Gtk.CheckButton(label=_("Don't show this message again"))
