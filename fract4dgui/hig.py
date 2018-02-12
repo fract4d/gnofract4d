@@ -15,8 +15,6 @@ class Alert(Gtk.MessageDialog):
         flags = kwds.get("flags",0)
         title = kwds.get("title","")
 
-        self.ignore_info = kwds.get("ignore")
-
         if not isinstance(image,Gtk.Image):
             image = Gtk.Image.new_from_icon_name(image, Gtk.IconSize.DIALOG)
 
@@ -33,24 +31,7 @@ class Alert(Gtk.MessageDialog):
         self.set_image(image)
         self.format_secondary_text(secondary_text)
         
-        if self.ignore_info:
-            self.dont_show_again = Gtk.CheckButton(label=_("Don't show this message again"))
-            self.vbox.pack_end(self.dont_show_again, True, True, 0)
-            self.dont_show_again.set_active(self.ignore_info.is_ignore_suggested())
-
-            def on_response(self,*args):
-                if self.ignore_info and self.dont_show_again.get_active():
-                    self.ignore_info.ignore()
-                return False
-            
-            self.connect("response",on_response)
-            
         self.show_all()
-
-    def run(self):
-        if self.ignore_info and self.ignore_info.is_ignored():
-            return self.ignore_info.response
-        return Gtk.Dialog.run(self)
         
 class InformationAlert(Alert):
     def __init__(self,**kwds):
