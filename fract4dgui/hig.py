@@ -1,18 +1,16 @@
 # utilities to comply with Gnome Human Interface Guidelines.
 # these are defined at http://developer.gnome.org/projects/gup/hig/2.0/
 
-from gi.repository import Gtk, GObject, GLib
+from gi.repository import Gtk, GLib
 
 class Alert(Gtk.MessageDialog):
     def __init__(self, **kwds):
-
         image = kwds.get("image")
         primary_text = kwds.get("primary")
-        secondary_text= kwds.get("secondary","")
-        buttontype = kwds.get("buttontype",Gtk.ButtonsType.NONE)
-        buttons = kwds.get("buttons",())
+        secondary_text = kwds.get("secondary", "")
+        buttontype = kwds.get("buttontype", Gtk.ButtonsType.NONE)
+        buttons = kwds.get("buttons", ())
         parent = kwds.get("parent")
-        flags = kwds.get("flags",0)
         title = kwds.get("title","")
 
         if not isinstance(image,Gtk.Image):
@@ -41,32 +39,32 @@ class InformationAlert(Alert):
 
 class ErrorAlert(Alert):
     FIX = 1
+
     def __init__(self, **kwds):
-        
         fix_button = kwds.get("fix_button")
 
         # if optional fix button supplied, add to list of buttons
         buttons = list(kwds.get("buttons",()))
         if fix_button:
-            buttons = [ fix_button, ErrorAlert.FIX]
+            buttons = [fix_button, ErrorAlert.FIX]
         buttons += [Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT]
 
         kwds["buttons"] = tuple(buttons)
-        kwds.setdefault("image", Gtk.STOCK_DIALOG_ERROR) 
+        kwds.setdefault("image", Gtk.STOCK_DIALOG_ERROR)
         Alert.__init__(self, **kwds)
         self.set_default_response(Gtk.ResponseType.ACCEPT)
 
 class ConfirmationAlert(Alert):
-    ALTERNATE=1
-    def __init__(self, **kwds):
+    ALTERNATE = 1
 
+    def __init__(self, **kwds):
         proceed_button = kwds.get("proceed_button", Gtk.STOCK_OK)
         alternate_button = kwds.get("alternate_button")
         cancel_button = kwds.get("cancel_button", Gtk.STOCK_CANCEL)
         # if optional fix button supplied, add to list of buttons
         buttons = list(kwds.get("buttons", ()))
         if alternate_button:
-            buttons = [ alternate_button, ConfirmationAlert.ALTERNATE]
+            buttons = [alternate_button, ConfirmationAlert.ALTERNATE]
 
         buttons += [cancel_button, Gtk.ResponseType.CANCEL,
                     proceed_button, Gtk.ResponseType.ACCEPT]
@@ -90,14 +88,15 @@ def _periodText(seconds):
     
 class SaveConfirmationAlert(ConfirmationAlert):
     NOSAVE = ConfirmationAlert.ALTERNATE
+
     def __init__(self, **kwds):
         document_name = kwds["document_name"]
         time_period = kwds.get("period",-1)
-        if time_period==-1:
+        if time_period == -1:
             text = "If you don't save, changes will be discarded."
         else:
-            text = ("If you don't save, changes from the past %s " + \
-                   "will be discarded.") % _periodText(time_period)
+            text = ("If you don't save, changes from the past %s "
+                    "will be discarded.") % _periodText(time_period)
 
         kwds.setdefault("primary",_('Save changes to document "%s" before closing?') % document_name)
         kwds.setdefault("secondary", text)
@@ -116,7 +115,7 @@ class MessagePopper:
     def __init__(self):
         pass
 
-    def show_error(self,msg, extra_message=""):
+    def show_error(self, msg, extra_message=""):
         d = ErrorAlert(
             parent=self,
             primary=msg,
@@ -124,7 +123,7 @@ class MessagePopper:
 
         return self.do(d)
 
-    def show_info(self,msg,extra_message = ""):
+    def show_info(self, msg, extra_message=""):
         d = InformationAlert(
             parent=self,
             primary=msg,
@@ -137,9 +136,9 @@ class MessagePopper:
             parent=self,
             primary=msg,
             secondary=secondary,
-            image = Gtk.STOCK_DIALOG_QUESTION,
-            proceed_button = Gtk.STOCK_YES,
-            cancel_button = Gtk.STOCK_NO)
+            image=Gtk.STOCK_DIALOG_QUESTION,
+            proceed_button=Gtk.STOCK_YES,
+            cancel_button=Gtk.STOCK_NO)
         
         return self.do(d)
 

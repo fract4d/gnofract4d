@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
 import unittest
-import copy
-import math
 import gettext
 import os
 
 import gi
-gi.require_version('Gtk', '3.0') 
-from gi.repository import Gtk, GObject, GLib
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GLib
 
 import hig
 
@@ -102,7 +100,7 @@ class Test(unittest.TestCase):
         # increase timeout to see what dialogs look like
         GLib.timeout_add(10,dismiss)
 
-        r = d.run()
+        d.run()
         d.destroy()
         
     def testPeriodText(self):
@@ -136,6 +134,7 @@ class Test(unittest.TestCase):
         
 def suite():
     return unittest.makeSuite(Test,'test')
+
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')
