@@ -39,6 +39,17 @@ class MainWindow:
         self.window = Gtk.Window()
         self.window.set_default_size(900,700)
         self.window.connect('delete-event', self.quit)
+        self.window.set_name('main_window')
+
+        theme_provider = Gtk.CssProvider()
+        css_file = "gnofract4d.css"
+        this_path = os.path.dirname(sys.modules[__name__].__file__)
+        css_filepath = os.path.join(this_path, "..", css_file)
+        if not os.path.exists(css_filepath):
+            css_filepath = fractconfig.instance.get_data_path(css_file)
+        theme_provider.load_from_path(css_filepath)
+        Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),
+            theme_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # keyboard handling
         self.keymap = {

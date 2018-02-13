@@ -6,8 +6,8 @@ _dialogs = {}
 
 def make_container(title):
     label_box = Gtk.HBox()
-    label = Gtk.Label(label='<span weight="bold">%s</span>' % title)
-    label.set_use_markup(True)
+    label_box.set_name('dialog_label_box')
+    label = Gtk.Label(label=title)
     label_box.pack_start(label, False, False, 0)
     close = Gtk.Button.new_from_stock(Gtk.STOCK_CLOSE)
     label_box.pack_end(close, False, False, 0)

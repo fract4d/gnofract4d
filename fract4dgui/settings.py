@@ -34,6 +34,7 @@ class SettingsDialog(dialog.T):
         self.main_window = main_window
         self.f = f
         self.notebook = Gtk.Notebook()
+        self.notebook.set_name("settings_notebook")
         self.controls = Gtk.VBox()
         self.controls.pack_start(self.notebook, True, True, 0)
         self.vbox.pack_start(self.controls, True, True, 0)
