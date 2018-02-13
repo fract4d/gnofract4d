@@ -244,7 +244,7 @@ class MainWindow:
             return self.open_fs
 
         self.open_fs = Gtk.FileChooserDialog(
-            title=_("Open File"), parent=self.window, 
+            title=_("Open File"), transient_for=self.window, 
             action=Gtk.FileChooserAction.OPEN)
 
         self.open_fs.add_buttons(
@@ -1136,7 +1136,7 @@ class MainWindow:
             msg = _("File %s already exists. Overwrite?") % name
             d = hig.ConfirmationAlert(
                 primary=msg,
-                parent=self.window,
+                transient_for=self.window,
                 proceed_button=_("Overwrite"))
 
             response = d.run()                
