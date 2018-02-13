@@ -17,7 +17,7 @@ from fract4d import fractal,fc,fract4dc,image, fracttypes, fractconfig
 
 
 from . import gtkfractal, model, preferences, autozoom, settings, toolbar
-from . import undo, browser, fourway, angle, utils, hig, ignore_info, painter
+from . import undo, browser, fourway, angle, utils, hig, painter
 from . import icons, renderqueue, director
 
 re_ends_with_num = re.compile(r'\d+\Z')

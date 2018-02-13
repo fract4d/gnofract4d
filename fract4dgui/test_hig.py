@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
 import unittest
-import copy
-import math
 import gettext
 import os
 
 import gi
-gi.require_version('Gtk', '3.0') 
-from gi.repository import Gtk, GObject, GLib
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GLib
 
 import hig
 
@@ -16,20 +14,6 @@ os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
 
 toplevel = Gtk.Window()
-
-class MockIgnoreInfo:
-    def __init__(self,ignored, suggest_ignore):
-        self.ignored = ignored
-        self.suggest_ignore = suggest_ignore
-        
-    def is_ignored(self):
-        return self.ignored
-
-    def ignore(self):
-        self.ignored = True
-
-    def is_ignore_suggested(self):
-        return self.suggest_ignore
 
 class MockDialog(Gtk.MessageDialog,hig.MessagePopper):
     def __init__(self):
@@ -116,7 +100,7 @@ class Test(unittest.TestCase):
         # increase timeout to see what dialogs look like
         GLib.timeout_add(10,dismiss)
 
-        r = d.run()
+        d.run()
         d.destroy()
         
     def testPeriodText(self):
@@ -139,21 +123,6 @@ class Test(unittest.TestCase):
 
         self.runAndDismiss(d)
 
-    def testIgnore(self):
-        ii = MockIgnoreInfo(False,True)
-        
-        d = hig.Alert(
-            parent=toplevel,
-            image=Gtk.STOCK_DIALOG_INFO,
-            primary="Foo",
-            secondary="Bar",
-            buttons=(Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT),
-            ignore=ii)
-
-        self.assertEqual(ii.is_ignored(), False)
-        self.runAndDismiss(d)
-        self.assertEqual(ii.is_ignored(), True)
-
     def testMessagePopper(self):
         dd = MockDialog()
         self.assertEqual(0, hig.timeout)
@@ -165,6 +134,7 @@ class Test(unittest.TestCase):
         
 def suite():
     return unittest.makeSuite(Test,'test')
+
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')
