@@ -7,6 +7,7 @@ import struct
 import math
 import copy
 
+import cairo
 from gi.repository import Gtk, Gdk, GObject, GdkPixbuf, GLib
 
 from fract4d import fractal,fract4dc,fracttypes, image, messages
@@ -73,7 +74,7 @@ class Hidden(GObject.GObject):
             self.width,self.height,total_width,total_height)
 
         self.msgbuf = b""
-        self.io_subsys = gtkio();
+        self.io_subsys = gtkio()
 
     def try_init_fractal(self):
         f = fractal.T(self.compiler,self.site)
@@ -95,9 +96,9 @@ class Hidden(GObject.GObject):
             self.changed()
 
     def changed(self,clear_image=True):
-        if self.f == None:
+        if self.f is None:
             return
-        self.f.dirty=True
+        self.f.dirty = True
         self.f.clear_image = clear_image
         self.set_saved(False)
         if not self.frozen:
@@ -110,7 +111,7 @@ class Hidden(GObject.GObject):
         self.emit('formula-changed')
             
     def set_saved(self,val):
-        if self.f != None:
+        if self.f is not None:
             self.f.saved = val
         
     def input_add(self,fd,cb):
@@ -123,14 +124,14 @@ class Hidden(GObject.GObject):
         print("Warning: ", msg)
 
     def update_formula(self):
-        if self.f != None:
+        if self.f is not None:
             self.f.dirtyFormula = True
         
     def freeze(self):
         self.frozen = True
         
     def thaw(self):
-        if self.f == None:
+        if self.f is None:
             return False
         
         self.frozen = False
@@ -164,7 +165,7 @@ class Hidden(GObject.GObject):
     def onData(self,fd,condition):
         self.msgbuf = self.msgbuf + self.io_subsys.read(fd, 8 - len(self.msgbuf))
 
-        if len(self.msgbuf) < 8:            
+        if len(self.msgbuf) < 8:
             #print "incomplete message: %s" % list(self.msgbuf)
             return True
 
@@ -178,7 +179,7 @@ class Hidden(GObject.GObject):
         m = messages.parse(t,bytes)
 
         if utils.threads_enabled:
-            Gdk.threads_enter()    
+            Gdk.threads_enter()
 
         #print "msg: %s %d %d %d %d" % (m,p1,p2,p3,p4)
         if t == fract4dc.MESSAGE_TYPE_ITERS:
@@ -257,7 +258,7 @@ class Hidden(GObject.GObject):
         self.set_saved(True)
 
     def is_saved(self):
-        if self.f == None:
+        if self.f is None:
             return True
         return self.f.saved
     
@@ -280,7 +281,7 @@ class Hidden(GObject.GObject):
         self.emit('tolerance-changed', tolerance)
 
     def image_changed(self,x1,y1,x2,y2):
-        pass 
+        pass
 
     def stats_changed(self,stats):
         self.emit('stats-changed', stats)
@@ -295,18 +296,18 @@ class Hidden(GObject.GObject):
         cmap = self.f.get_colormap()
         self.running = True
         try:
-            self.f.calc(image,cmap, nthreads, self.site, True)            
+            self.f.calc(image,cmap, nthreads, self.site, True)
         except MemoryError:
             pass
         
     def draw_image(self,aa=None,auto_deepen=None):
-        if self.f == None:
+        if self.f is None:
             return
         self.interrupt()
 
         self.f.compile()
 
-        if aa != None and auto_deepen != None:
+        if aa is not None and auto_deepen is not None:
             self.f.antialias = aa
             self.f.auto_deepen = auto_deepen
 
@@ -315,9 +316,9 @@ class Hidden(GObject.GObject):
     def set_plane(self,angle1,angle2):
         self.freeze()
         self.reset_angles()
-        if angle1 != None:
+        if angle1 is not None:
             self.set_param(angle1,math.pi/2)
-        if angle2 != None:
+        if angle2 is not None:
             self.f.set_param(angle2,math.pi/2)
             
         if self.thaw():
@@ -329,7 +330,7 @@ class Hidden(GObject.GObject):
     
     def recenter(self,x,y,zoom):
         dx = (x - self.width/2.0)/self.width
-        dy = (y - self.height/2.0)/self.width                
+        dy = (y - self.height/2.0)/self.width
         self.relocate(dx,dy,zoom)
         
     def count_colors(self,rect):
@@ -346,17 +347,17 @@ class Hidden(GObject.GObject):
         return len(colors)
 
     def get_func_name(self):
-        if self.f == None:
+        if self.f is None:
             return _("No fractal loaded")
         return self.f.forms[0].funcName
 
     def get_saved(self):
-        if self.f == None:
+        if self.f is None:
             return True
         return self.f.get_saved()
 
     def serialize(self,compress=False):
-        if self.f == None:
+        if self.f is None:
             return None
         return self.f.serialize(compress)
 
@@ -394,7 +395,7 @@ class HighResolution(Hidden):
         return (tile_width, tile_height)
 
     def draw_image(self,name):
-        if self.f == None:
+        if self.f is None:
             return
         self.interrupt()
 
@@ -410,7 +411,7 @@ class HighResolution(Hidden):
         # work left to do
         (xoff,yoff,w,h) = self.tile_list.pop(0)
         self.image.resize_tile(w,h)
-        self.image.set_offset(xoff,yoff)        
+        self.image.set_offset(xoff,yoff)
         self.draw(self.image,w,h,self.nthreads)
         
     def status_changed(self,status):
@@ -435,12 +436,13 @@ class HighResolution(Hidden):
 
 class T(Hidden):
     "A visible GtkFractal which responds to user input"
+    SELECTION_LINE_WIDTH = 2.0
     def __init__(self,comp,parent=None,width=640,height=480):
         self.parent = parent
         Hidden.__init__(self,comp,width,height)
 
         self.paint_mode = False
-                
+
         drawing_area = Gtk.DrawingArea()
         drawing_area.set_events(
             Gdk.EventMask.BUTTON_RELEASE_MASK |
@@ -458,14 +460,10 @@ class T(Hidden):
         drawing_area.connect('motion_notify_event', self.onMotionNotify)
         drawing_area.connect('button_release_event', self.onButtonRelease)
         drawing_area.connect('button_press_event', self.onButtonPress)
-        drawing_area.connect('draw',self.onDraw)
+        drawing_area.connect('draw', self.redraw_rect)
 
-        # maybe set visual here? not sure if needed
-        #visual = Gdk.utils.get_rgb_colormap()
-        
         self.selection_rect = []
 
-        #drawing_area.set_colormap(c)        
         drawing_area.set_size_request(self.width,self.height)
 
         self.widget = drawing_area
@@ -474,8 +472,6 @@ class T(Hidden):
         self.widget.queue_draw_area(x1, y1, x2-x1, y2-y1)
 
     def make_numeric_entry(self, form, param, order):
-        param_type = form.paramtypes[order]
-
         if param.type == fracttypes.Int:
             fmt = "%d"
         else:
@@ -512,9 +508,9 @@ class T(Hidden):
         if hasattr(param, "min") and hasattr(param, "max"):
             # add a slider
             adj = Gtk.Adjustment(
-                0.0,param.min.value, param.max.value,
-                0.001, 
-                0.01)
+                value=0.0,
+                lower=param.min.value, upper=param.max.value,
+                step_increment=0.001, page_increment=0.01)
 
             def set_adj():
                 if adj.get_value() != form.params[order]:
@@ -540,8 +536,9 @@ class T(Hidden):
     def make_numeric_widget(
         self, table, i, form, name, part, param, order):
     
-        label = Gtk.Label(self.param_display_name(name,param)+part)
-        label.set_alignment(1.0, 0.0)
+        label = Gtk.Label.new(self.param_display_name(name,param)+part)
+        label.set_xalign(1.0)
+        label.set_yalign(0.0)
         table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
         widget = self.make_numeric_entry(
@@ -580,8 +577,9 @@ class T(Hidden):
     def make_color_widget(
         self, table, i, form, name, param, order):
 
-        label = Gtk.Label(self.param_display_name(name,param))
-        label.set_alignment(1.0, 0.0)
+        label = Gtk.Label.new(self.param_display_name(name,param))
+        label.set_xalign(1.0)
+        label.set_yalign(0.0)
         table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
         def set_fractal(r, g, b, is_left):
@@ -591,7 +589,6 @@ class T(Hidden):
             form.set_param(order+2, b)
             if self.thaw():
                 self.changed()
-                
 
         rgba = []
         for j in range(4):
@@ -615,8 +612,9 @@ class T(Hidden):
     def make_enumerated_widget(
         self, table, i, form, name, part, param, order):
 
-        label = Gtk.Label(self.param_display_name(name,param))
-        label.set_alignment(1.0, 0.0)
+        label = Gtk.Label.new(self.param_display_name(name,param))
+        label.set_xalign(1.0)
+        label.set_yalign(0.0)
         table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
         widget = utils.create_option_menu(param.enum.value)
@@ -676,7 +674,6 @@ class T(Hidden):
 
         table.attach(widget,1,2,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL ,0,0,0)
 
-
     def add_complex_formula_setting(
         self,table,i,form,name,param,order,param_type):
         
@@ -732,8 +729,9 @@ class T(Hidden):
             print("Warning: ", msg)
 
     def add_formula_function(self,table,i,name,param,form):
-        label = Gtk.Label(self.param_display_name(name,param))
-        label.set_alignment(1.0, 0.0)
+        label = Gtk.Label.new(self.param_display_name(name,param))
+        label.set_xalign(1.0)
+        label.set_yalign(0.0)
         table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
         funclist = self.construct_function_menu(param,form)
@@ -773,7 +771,8 @@ class T(Hidden):
 
     def create_maxiter_widget(self,table,i):
         label = Gtk.Label(label="_Max Iterations")
-        label.set_alignment(1.0, 0.0)
+        label.set_xalign(1.0)
+        label.set_yalign(0.0)
         label.set_use_underline(True)
         table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
 
@@ -817,8 +816,7 @@ class T(Hidden):
         params = formula.symbols.parameters()
         op = formula.symbols.order_of_params()
 
-        keys = list(params.keys())
-        keys.sort()
+        keys = sorted(params.keys())
         for name in keys:
             param = params[name]
             if isinstance(param,fracttypes.Func):
@@ -868,33 +866,37 @@ class T(Hidden):
                            err.msg + advice)
             return
 
-    def onDraw(self, widget, cairo_ctx):
-        result, r = Gdk.cairo_get_clip_rectangle(cairo_ctx)
-        if result:
-            self.redraw_rect(r.x, r.y, r.width, r.height, cairo_ctx)
-
     def onMotionNotify(self,widget,event):
-        (x,y) = self.float_coords(event.x, event.y)
+        x, y = self.float_coords(event.x, event.y)
         self.emit('pointer-moved', self.button, x, y)
 
         if not self.notice_mouse:
             return
 
-        self.widget.queue_draw_area(0, 0, self.width, self.height)
-        (self.newx,self.newy) = (event.x, event.y)
-
-        dummy = widget.get_pointer()
+        self.newx, self.newy = event.x, event.y
 
         dy = int(abs(self.newx - self.x) * float(self.height)/self.width)
         if(self.newy < self.y or (self.newy == self.y and self.newx < self.x)):
             dy = -dy
-        self.newy = self.y + dy;
+        self.newy = self.y + dy
+        
+        # create a dummy Cairo context to calculate the affected bounding box
+        surface = cairo.ImageSurface(cairo.FORMAT_A1, self.width, self.height)
+        cairo_ctx = cairo.Context(surface)
+        cairo_ctx.set_line_width(T.SELECTION_LINE_WIDTH)
+        if self.selection_rect:
+            cairo_ctx.rectangle(*self.selection_rect)
 
         self.selection_rect = [
             int(min(self.x,self.newx)),
             int(min(self.y,self.newy)),
             int(abs(self.newx-self.x)),
             int(abs(self.newy-self.y))]
+        
+        cairo_ctx.rectangle(*self.selection_rect)
+        x1, y1, x2, y2 = cairo_ctx.stroke_extents()
+        
+        self.widget.queue_draw_area(x1, y1, x2 - x1, y2 - y1)
 
     def onButtonPress(self,widget,event):
         self.x = event.x
@@ -910,7 +912,7 @@ class T(Hidden):
         self.paint_color_sel = colorsel
         
     def get_paint_color(self):
-        color = self.paint_color_sel.get_current_color() 
+        color = self.paint_color_sel.get_current_color()
         return (color.red/65535.0, color.green/65535.0, color.blue/65535.0)
     
     def onPaint(self,x,y):
@@ -966,8 +968,8 @@ class T(Hidden):
                 y = self.y
             else:
                 zoom= (1+abs(self.x - self.newx))/float(self.width)
-                x = 0.5 + (self.x + self.newx)/2.0;
-                y = 0.5 + (self.y + self.newy)/2.0;
+                x = 0.5 + (self.x + self.newx)/2.0
+                y = 0.5 + (self.y + self.newy)/2.0
 
             # with shift held, don't zoom
             if hasattr(event,"state") and event.get_state() & Gdk.ModifierType.SHIFT_MASK:
@@ -992,19 +994,12 @@ class T(Hidden):
         if self.thaw():
             self.changed()
 
-    def redraw_rect(self, x, y, w, h, cairo_ctx):
-        # check to see if part of the rect is out-of-bounds, and clip if so
-        if x < 0:
-            x = 0
-        if y < 0:
-            y = 0
-        if x+w > self.width:
-            w = self.width-x
-        if y+h > self.height:
-            h = self.height-y
-
-        if x >= self.width or y >= self.height or w < 1 or h < 1:
-            # nothing to do
+    def redraw_rect(self, widget, cairo_ctx):
+        result, r = Gdk.cairo_get_clip_rectangle(cairo_ctx)
+        if result:
+            x, y, w, h = r.x, r.y, r.width, r.height
+        else:
+            print("Skipping drawing because entire context clipped")
             return
         
         try:
@@ -1026,7 +1021,7 @@ class T(Hidden):
         
         if self.selection_rect:
             cairo_ctx.set_source_rgb(1.0, 1.0, 1.0)
-            cairo_ctx.set_line_width(2.0)
+            cairo_ctx.set_line_width(T.SELECTION_LINE_WIDTH)
             cairo_ctx.rectangle(*self.selection_rect)
             cairo_ctx.stroke()
 
