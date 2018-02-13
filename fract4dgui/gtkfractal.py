@@ -335,13 +335,13 @@ class Hidden(GObject.GObject):
     def count_colors(self,rect):
         # calculate the number of different colors which appear
         # in the subsection of the image bounded by the rectangle
-        (xstart,ystart,xend,yend) = rect
+        xstart, ystart, xend, yend = map(int, rect)
         buf = self.image.image_buffer(0,0)
         colors = {}
         for y in range(ystart,yend):
             for x in range(xstart,xend):
                 offset = (y*self.width+x)*3
-                col = buf[offset:offset+3]
+                col = buf[offset:offset+3].hex()
                 colors[col] = 1 + colors.get(col,0)
         return len(colors)
 
