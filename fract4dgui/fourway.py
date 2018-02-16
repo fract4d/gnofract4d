@@ -12,12 +12,12 @@ class T(Gtk.DrawingArea):
         None, (GObject.TYPE_INT, GObject.TYPE_INT))
         }
 
-    def __init__(self,text):        
+    def __init__(self,text):
         self.button = 0
         self.radius = 0
         self.last_x = 0
-        self.last_y = 0        
-        self.text=text
+        self.last_y = 0
+        self.text = text
         Gtk.DrawingArea.__init__(self)
 
         self.set_size_request(53,53)
@@ -49,11 +49,10 @@ class T(Gtk.DrawingArea):
     def onMotionNotify(self,widget,event):
         if not self.notice_mouse:
             return
-        dummy = widget.get_pointer()
         self.update_from_mouse(event.x, event.y)
 
     def onButtonRelease(self,widget,event):
-        if event.button==1:
+        if event.button == 1:
             self.notice_mouse = False
             (xc,yc) = (widget.get_allocated_width()//2, widget.get_allocated_height()//2)
             dx = xc - self.last_x
@@ -74,12 +73,10 @@ class T(Gtk.DrawingArea):
     def redraw_rect(self, widget, cairo_ctx):
         style_ctx = widget.get_style_context()
         (w,h) = (widget.get_allocated_width(), widget.get_allocated_height())
-        Gtk.render_background(style_ctx,
-            cairo_ctx, 0, 0, w-1, h-1)
+        Gtk.render_background(style_ctx, cairo_ctx, 0, 0, w-1, h-1)
 
         xc = w//2
         yc = h//2
-        radius = min(w,h)//2 -1
 
         # Consider using gtk_render_arrow
         def triangle(points):
@@ -93,7 +90,7 @@ class T(Gtk.DrawingArea):
         th = 8
         tw = 6
 
-        # Triangle pointing left        
+        # Triangle pointing left
         points = [
             (1, yc),
             (1+th, yc-tw),
@@ -102,23 +99,23 @@ class T(Gtk.DrawingArea):
 
         # pointing right
         points = [
-            (w -2, yc),
-            (w -2 -th, yc-tw),
-            (w -2 -th, yc+tw)]
+            (w-2, yc),
+            (w-2-th, yc-tw),
+            (w-2-th, yc+tw)]
         triangle(points)
 
         # pointing up
         points = [
             (xc, 1),
-            (xc - tw, th),
-            (xc + tw, th)]
+            (xc-tw, th),
+            (xc+tw, th)]
         triangle(points)
         
         # pointing down
         points = [
-            (xc, h - 2),
-            (xc - tw, h - 2 - th),
-            (xc + tw, h - 2 - th)]
+            (xc, h-2),
+            (xc-tw, h-2-th),
+            (xc+tw, h-2-th)]
         triangle(points)
 
         pango_ctx = widget.get_pango_context()
@@ -135,7 +132,7 @@ class T(Gtk.DrawingArea):
             
             (text_width, text_height) = layout.get_pixel_size()
             # truncate text if it's too long
-            if text_width < (w - th *2) or len(drawtext) < 3:
+            if text_width < (w-th*2) or len(drawtext) < 3:
                 break
             drawtext = drawtext[:-1]
 

@@ -35,7 +35,7 @@ class T(Gtk.DrawingArea):
             Gdk.EventMask.BUTTON1_MOTION_MASK |
             Gdk.EventMask.POINTER_MOTION_HINT_MASK |
             Gdk.EventMask.ENTER_NOTIFY_MASK |
-            Gdk.EventMask.LEAVE_NOTIFY_MASK |                               
+            Gdk.EventMask.LEAVE_NOTIFY_MASK |
             Gdk.EventMask.BUTTON_PRESS_MASK |
             Gdk.EventMask.EXPOSURE_MASK
             )
@@ -51,7 +51,7 @@ class T(Gtk.DrawingArea):
         self.adjustment.set_value(val)
         self.queue_draw()
         
-    def update_from_mouse(self,x,y):        
+    def update_from_mouse(self,x,y):
         (w,h) = (self.get_allocated_width(), self.get_allocated_height())
         
         xc = w//2
@@ -74,13 +74,11 @@ class T(Gtk.DrawingArea):
     def onMotionNotify(self,widget,event):
         if not self.notice_mouse:
             return
-        dummy = widget.get_pointer()
         self.update_from_mouse(event.x, event.y)
 
     def onButtonRelease(self,widget,event):
-        if event.button==1:
+        if event.button == 1:
             self.notice_mouse = False
-            (xc,yc) = (widget.get_allocated_width()//2, widget.get_allocated_height()//2)
             current_value = self.adjustment.get_value()
             if self.old_value != current_value:
                 self.old_value = current_value
@@ -88,7 +86,6 @@ class T(Gtk.DrawingArea):
 
         self.set_state(Gtk.StateType.NORMAL)
 
-        
     def onButtonPress(self,widget,event):
         if event.button == 1:
             self.notice_mouse = True
