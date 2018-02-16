@@ -718,7 +718,9 @@ class MainWindow:
 
     def director(self,*args):
         """Display the Director (animation) window."""
-        director.show(self.window,self.control_box, self.f, True)
+        dialog = director.DirectorDialog(self.window, self.f)
+        dialog.run()
+        dialog.destroy()
         
     def browser(self,*args):
         """Display formula browser."""

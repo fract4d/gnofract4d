@@ -47,7 +47,7 @@ class Test(unittest.TestCase):
 
         f = fractal.T(g_comp)
         dd=director.DirectorDialog(None,f,"")
-        dd.show(None,None,f,True,"")
+        dd.show()
         dd.animation.set_png_dir("./")
         dd.animation.set_fct_enabled(False)
         dd.animation.add_keyframe("../testdata/director1.fct",1,10,animation.INT_LOG)

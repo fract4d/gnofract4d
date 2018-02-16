@@ -129,7 +129,6 @@ class Test(unittest.TestCase):
         self.assertEqual(fct1, fct2)
         
     def testDialogs(self):
-        self.mw.director(None,None)
         self.mw.settings(None,None)
         self.mw.contents(None,None)
         self.mw.painter(None,None)

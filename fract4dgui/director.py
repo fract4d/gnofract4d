@@ -20,9 +20,6 @@ from fract4d import animation, fractconfig
 
 from . import PNGGen,AVIGen,DlgAdvOpt,director_prefs
 
-def show(parent,alt_parent, f,dialog_mode,conf_file=""):
-    DirectorDialog.show(parent,alt_parent, f,dialog_mode,conf_file)
-
 class UserCancelledError(Exception):
 	pass
 
@@ -33,11 +30,6 @@ class SanityCheckError(Exception):
 
 class DirectorDialog(dialog.T,hig.MessagePopper):
     RESPONSE_RENDER=1
-    def show(parent, alt_parent, f,dialog_mode,conf_file):
-        dialog.T.reveal(DirectorDialog, dialog_mode,
-                        parent, alt_parent, f,conf_file)
-
-    show = staticmethod(show)
 
     def check_for_keyframe_clash(self,keyframe,fct_dir):
         keydir=os.path.dirname(keyframe)
@@ -445,22 +437,19 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         res=dlg.show()
 
     #creating window...
-    def __init__(self, main_window, f,conf_file):
+    def __init__(self, main_window, f, conf_file=""):
         dialog.T.__init__(
             self,
             _("Director"),
             main_window,
             (_("_Render"), DirectorDialog.RESPONSE_RENDER,
-             Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
-            destroy_with_parent=True)
+             Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        )
 
         hig.MessagePopper.__init__(self)
         self.animation=animation.T(f.compiler)
         self.f=f
         self.compiler = f.compiler
-        self.realize()
-
-        self.main_window = main_window
 
         #main VBox
         self.box_main=Gtk.VBox(False,0)
@@ -706,6 +695,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 
         #--------------showing all-------------------------------
         self.vbox.add(self.box_main)
+        self.vbox.show_all()
         self.controls = self.vbox
         if conf_file!="":
             self.load_configuration(conf_file)
