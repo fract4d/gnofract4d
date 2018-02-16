@@ -4,12 +4,9 @@
 
 import copy
 
-from gi.repository import GObject
-from gi.repository import Gtk
+from gi.repository import Gtk, GObject
 
-from . import gtkfractal
-from . import dialog
-from . import preferences
+from . import dialog, gtkfractal, preferences
 
 class QueueEntry:
     def __init__(self, f, name, w, h):
@@ -43,7 +40,7 @@ class T(GObject.GObject):
         self.emit('changed')
         
     def start(self):
-        if self.current == None:
+        if self.current is None:
             next(self)
 
     def empty(self):
@@ -99,9 +96,9 @@ class QueueDialog(dialog.T):
         
         self.controls = Gtk.VBox()
         self.store = Gtk.ListStore(
-            GObject.TYPE_STRING, # name
-            GObject.TYPE_STRING, # size
-            GObject.TYPE_FLOAT, # % complete
+            str, # name
+            str, # size
+            float # % complete
             )
 
         self.view = Gtk.TreeView.new_with_model(self.store)
@@ -128,4 +125,3 @@ class QueueDialog(dialog.T):
         iter = self.store.get_iter_first()
         if iter:
             self.store.set_value(iter,2,progress)
-    

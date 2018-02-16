@@ -3,8 +3,6 @@
 from gi.repository import Gtk
 
 from . import dialog
-from . import browser
-from . import utils
 
 class PainterDialog(dialog.T):
     def __init__(self,main_window,f):
@@ -17,7 +15,7 @@ class PainterDialog(dialog.T):
         )
 
         self.f = f
-        self.paint_toggle = Gtk.ToggleButton(_("Painting"))
+        self.paint_toggle = Gtk.ToggleButton.new_with_label(_("Painting"))
         self.paint_toggle.set_active(True)
         self.paint_toggle.connect('toggled',self.onChangePaintMode)
         self.csel = Gtk.ColorSelection()
@@ -34,4 +32,4 @@ class PainterDialog(dialog.T):
                id == Gtk.ResponseType.NONE or \
                id == Gtk.ResponseType.DELETE_EVENT:
             self.hide()
-            self.f.set_paint_mode(False,None) 
+            self.f.set_paint_mode(False,None)
