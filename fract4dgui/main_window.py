@@ -1222,7 +1222,9 @@ class MainWindow:
         
     def preferences(self,*args):
         """Change current preferences."""
-        preferences.show_preferences(self.window, self.f)
+        dialog = preferences.PrefsDialog(self.window, self.f)
+        dialog.run()
+        dialog.destroy()
         
     def undo(self,*args):
         """Undo the last operation."""
@@ -1272,7 +1274,9 @@ class MainWindow:
 
     def autozoom(self,*args):
         """Display AutoZoom dialog."""
-        autozoom.show_autozoom(self.window, self.f)
+        dialog = autozoom.AutozoomDialog(self.window, self.f)
+        dialog.run()
+        dialog.destroy()
 
     def contents(self,*args):
         """Show help file contents page."""

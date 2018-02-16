@@ -67,10 +67,8 @@ class Preferences(GObject.GObject):
 GObject.type_register(Preferences)
 
 userPrefs = Preferences(fractconfig.instance)
-    
-def show_preferences(parent,f):
-    PrefsDialog.show(parent,f)
-    
+
+
 class PrefsDialog(dialog.T):
     def __init__(self,main_window,f):
         global userPrefs
@@ -78,8 +76,8 @@ class PrefsDialog(dialog.T):
             self,
             _("Gnofract 4D Preferences"),
             main_window,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
-            destroy_with_parent=True)
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        )
 
         self.dirchooser = utils.get_directory_chooser(
             _("Select a Formula Directory"),
@@ -94,13 +92,9 @@ class PrefsDialog(dialog.T):
         self.create_compiler_options_page()
         self.create_general_page()
         self.create_helper_options_page()
+        self.vbox.show_all()
         
         self.set_size_request(500,-1)
-
-    def show(parent, f):
-        dialog.T.reveal(PrefsDialog, True, parent, None, f)
-
-    show = staticmethod(show)
 
     def show_error(self,message):
         d = Gtk.MessageDialog(self, Gtk.DialogFlags.MODAL,

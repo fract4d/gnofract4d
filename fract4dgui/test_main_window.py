@@ -142,8 +142,6 @@ class Test(unittest.TestCase):
     def testDialogs(self):
         self.mw.director(None,None)
         self.mw.settings(None,None)
-        self.mw.preferences(None,None)
-        self.mw.autozoom(None,None)
         self.mw.contents(None,None)
         self.mw.browser(None,None)
         self.mw.painter(None,None)
