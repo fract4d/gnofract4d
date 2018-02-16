@@ -1002,12 +1002,12 @@ class MainWindow:
         my_angle.axis = axis
 
         self.toolbar.add_widget(
-            my_angle.widget,
+            my_angle,
             tip,
             tip)
 
         if is4dsensitive:
-            self.four_d_sensitives.append(my_angle.widget)
+            self.four_d_sensitives.append(my_angle)
         
     def update_angle_widget(self,f,widget):
         widget.set_value(f.get_param(widget.axis))
@@ -1074,7 +1074,7 @@ class MainWindow:
     def add_fourway(self, name, tip, axis, is4dsensitive):
         my_fourway = fourway.T(name)
         self.toolbar.add_widget(
-            my_fourway.widget,
+            my_fourway,
             tip,
             None)
 
@@ -1084,7 +1084,7 @@ class MainWindow:
         my_fourway.connect('value-changed', self.on_release_fourway)
 
         if is4dsensitive:
-            self.four_d_sensitives.append(my_fourway.widget)
+            self.four_d_sensitives.append(my_fourway)
 
     def update_recent_files(self, file):
         self.recent_files = preferences.userPrefs.update_list("recent_files",file,4)

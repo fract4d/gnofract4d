@@ -1,14 +1,10 @@
-# Sort of a widget which controls an angle of the fractal
-# I say sort of, because this doesn't actually inherit from Gtk.Widget,
-# so it's not really a widget. This is because if I attempt to do that
-# pygtk crashes. Hence I delegate to a member which actually is a widget
-# with some stuff drawn on it - basically an ungodly hack.
+# A widget which controls an angle of the fractal
 
 import math
 
 from gi.repository import Gtk, Gdk, GObject, Pango
 
-class T(GObject.GObject):
+class T(Gtk.DrawingArea):
     __gsignals__ = {
         'value-changed' : (
         (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
@@ -30,12 +26,11 @@ class T(GObject.GObject):
         
         self.adjustment.connect('value-changed', self.onAdjustmentValueChanged)
                 
-        GObject.GObject.__init__(self)
+        Gtk.DrawingArea.__init__(self)
         
-        self.widget = Gtk.DrawingArea()
-        self.widget.set_size_request(40,40)
+        self.set_size_request(40,40)
 
-        self.widget.set_events(
+        self.set_events(
             Gdk.EventMask.BUTTON_RELEASE_MASK |
             Gdk.EventMask.BUTTON1_MOTION_MASK |
             Gdk.EventMask.POINTER_MOTION_HINT_MASK |
@@ -46,18 +41,18 @@ class T(GObject.GObject):
             )
 
         self.notice_mouse = False
-        self.widget.connect('motion_notify_event', self.onMotionNotify)
-        self.widget.connect('button_release_event', self.onButtonRelease)
-        self.widget.connect('button_press_event', self.onButtonPress)
-        self.widget.connect('draw',self.onDraw)
+        self.connect('motion_notify_event', self.onMotionNotify)
+        self.connect('button_release_event', self.onButtonRelease)
+        self.connect('button_press_event', self.onButtonPress)
+        self.connect('draw',self.onDraw)
 
     def set_value(self,val):
         val = math.fmod(val + math.pi, 2.0 * math.pi) - math.pi
         self.adjustment.set_value(val)
-        self.widget.queue_draw()
+        self.queue_draw()
         
     def update_from_mouse(self,x,y):        
-        (w,h) = (self.widget.get_allocated_width(), self.widget.get_allocated_height())
+        (w,h) = (self.get_allocated_width(), self.get_allocated_height())
         
         xc = w//2
         yc = h//2
@@ -73,7 +68,7 @@ class T(GObject.GObject):
     def onAdjustmentValueChanged(self,adjustment):
         val = adjustment.get_value()
         if val != self.old_value:
-            self.widget.queue_draw()
+            self.queue_draw()
             self.emit('value-slightly-changed', val)
             
     def onMotionNotify(self,widget,event):
@@ -91,21 +86,14 @@ class T(GObject.GObject):
                 self.old_value = current_value
                 self.emit('value-changed',current_value)
 
-        self.widget.set_state(Gtk.StateType.NORMAL)
+        self.set_state(Gtk.StateType.NORMAL)
 
         
     def onButtonPress(self,widget,event):
         if event.button == 1:
             self.notice_mouse = True
             self.update_from_mouse(event.x, event.y)
-            self.widget.set_state(Gtk.StateType.ACTIVE)
-
-        
-    def __del__(self):
-        #This is truly weird. If I don't have this method, when you use
-        # one fourway widget, it fucks up the other. Having this fixes it.
-        # *even though it doesn't do anything*. Disturbing.
-        pass
+            self.set_state(Gtk.StateType.ACTIVE)
 
     def get_current_angle(self):
         value = self.adjustment.get_value()
@@ -164,6 +152,3 @@ class T(GObject.GObject):
             self.two_pi)
         cairo_ctx.fill()
         cairo_ctx.stroke()
-        
-# explain our existence to GTK's object system
-GObject.type_register(T)

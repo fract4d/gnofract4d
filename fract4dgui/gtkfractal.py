@@ -690,7 +690,7 @@ class T(Hidden):
         name = self.param_display_name(name,param)
         fway = fourway.T(name)
         tip = self.param_tip(name,param)
-        fway.widget.set_tooltip_text(tip)
+        fway.set_tooltip_text(tip)
         
         fway.connect('value-changed',self.fourway_released, order, form)
 
@@ -699,7 +699,7 @@ class T(Hidden):
                 'value-slightly-changed',
                 self.parent.on_drag_param_fourway, order, param_type)
         
-        table.attach(fway.widget,0,1,i,i+2, Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL,0, 0,0)
+        table.attach(fway,0,1,i,i+2, Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL,0, 0,0)
 
     def fourway_released(self,widget,x,y,order,form):
         form.nudge_param(order, x,y)
