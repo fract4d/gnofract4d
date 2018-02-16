@@ -6,6 +6,9 @@ import unittest
 import sys
 import os
 
+import gi
+gi.require_version('Gtk', '3.0')
+
 if sys.path[1] != "..": sys.path.insert(1, "..")
 from fract4dgui import preferences
 from fract4d import fractconfig
