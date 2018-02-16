@@ -78,34 +78,21 @@ class T(GObject.GObject):
 # explain our existence to GTK's object system
 GObject.type_register(T)
 
-def show(parent, alt_parent, f):
-    QueueDialog.show(parent, alt_parent, f)
-
-instance = T()
-
 class CellRendererProgress(Gtk.CellRendererProgress):
     def __init__(self):
         Gtk.CellRendererProgress.__init__(self)
         self.set_property("text", "Progress")
 
 class QueueDialog(dialog.T):
-    def show(parent, alt_parent, f):
-        dialog.T.reveal(QueueDialog,True, parent, alt_parent, f)
-            
-    show = staticmethod(show)
-
-    def __init__(self, main_window, f):
+    def __init__(self, main_window, f, renderQueue):
         dialog.T.__init__(
             self,
             _("Render Queue"),
             main_window,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
-            destroy_with_parent=True
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         )
 
-        self.main_window = main_window
-
-        self.q = instance
+        self.q = renderQueue
 
         self.q.connect('changed', self.onQueueChanged)
         self.q.connect('progress-changed', self.onProgressChanged)
@@ -130,6 +117,7 @@ class QueueDialog(dialog.T):
         
         self.controls.add(self.view)
         self.vbox.add(self.controls)
+        self.vbox.show_all()
 
     def onQueueChanged(self,q):
         self.store.clear()

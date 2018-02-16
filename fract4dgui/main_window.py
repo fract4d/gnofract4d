@@ -120,7 +120,9 @@ class MainWindow:
         self.saveas_fs = None
         self.saveimage_fs = None
         self.hires_image_fs = None
-        self.open_fs = None        
+        self.open_fs = None
+        
+        self.renderQueue = renderqueue.T()
 
         self.update_subfract_visibility(False)
         self.populate_warpmenu(self.f)
@@ -138,6 +140,7 @@ class MainWindow:
         self.f.set_saved(True)
 
         self.painterDialog = painter.PainterDialog(self.window, self.f)
+        self.renderqueueDialog = renderqueue.QueueDialog(self.window, self.f, self.renderQueue)
 
     def create_rtd_widgets(self):
         table = Gtk.Table(n_rows=2,n_columns=3,homogeneous=False)
@@ -731,9 +734,9 @@ class MainWindow:
         self.painterDialog.show()
 
     def add_to_queue(self,name,w,h):
-        renderqueue.show(self.window,None,self.f)
-        renderqueue.instance.add(self.f.f,name,w,h)
-        renderqueue.instance.start()
+        self.renderqueueDialog.show()
+        self.renderQueue.add(self.f.f,name,w,h)
+        self.renderQueue.start()
         
     def toggle_explorer(self, action):
         """Enter (or leave) Explorer mode."""
@@ -1398,7 +1401,7 @@ class MainWindow:
             elif response == hig.SaveConfirmationAlert.NOSAVE:
                 break
 
-        while not renderqueue.instance.empty():
+        while not self.renderQueue.empty():
             d = hig.ConfirmationAlert(
                 primary=_("Render queue still processing."),
                 secondary=_("If you proceed, queued images will not be saved"),
