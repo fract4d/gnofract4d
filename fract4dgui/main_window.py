@@ -99,8 +99,6 @@ class MainWindow:
             'image-preferences-changed',
             self.on_prefs_changed)
 
-        browser.update(self.f.forms[0].funcFile, self.f.forms[0].funcName)
-            
         self.create_ui()
         self.create_toolbar()
         self.panes = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
@@ -724,7 +722,9 @@ class MainWindow:
         
     def browser(self,*args):
         """Display formula browser."""
-        browser.show(self.window,self.f)
+        dialog = browser.BrowserDialog(self, self.f)
+        dialog.run()
+        dialog.destroy()
 
     def randomize_colors(self,*args):
         """Create a new random color scheme."""
@@ -1366,7 +1366,6 @@ class MainWindow:
                 fh.close()
             self.update_recent_files(file)
             self.set_filename(file)
-            browser.update(self.f.forms[0].funcFile, self.f.forms[0].funcName)
             return True
         except Exception as err:
             self.show_error_message(_("Error opening %s") % file,err)
@@ -1375,10 +1374,10 @@ class MainWindow:
     def load_formula(self,file):
         try:
             self.compiler.load_formula_file(file)
-            type = browser.guess_type(file)
-            browser.set_type(type)
-            browser.update(file)
-            browser.show(self.window, self.f, type)
+            dialog = browser.BrowserDialog(self, self.f)
+            dialog.load_file(file)
+            dialog.run()
+            dialog.destroy()
 
             return True
         except Exception as err:

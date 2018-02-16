@@ -2,39 +2,27 @@
 
 # a browser to examine fractal functions
 
-from gi.repository import Gtk
+from gi.repository import Gtk, GObject
 
 from fract4d import browser_model
 
 from . import dialog, utils, gtkfractal
 
-def show(parent, f, type=browser_model.FRACTAL):
-    BrowserDialog.show(parent,f,type)
-
-def update(file=None, formula=None):
-    browser_model.instance.update(file,formula)
-
-def set_type(type):
-    browser_model.instance.set_type(type)
-
-def guess_type(file):
-    return browser_model.instance.guess_type(file)
-
 class BrowserDialog(dialog.T):
     RESPONSE_EDIT = 1
     RESPONSE_REFRESH = 2
     RESPONSE_COMPILE = 3
-    def __init__(self,main_window,f):
+    def __init__(self,main_window,f,type=browser_model.FRACTAL):
         dialog.T.__init__(
             self,
             _("Formula Browser"),
-            main_window,
+            None,
             (#_("Co_mpile"), BrowserDialog.RESPONSE_COMPILE,
              Gtk.STOCK_REFRESH, BrowserDialog.RESPONSE_REFRESH,
              Gtk.STOCK_APPLY, Gtk.ResponseType.APPLY,
              Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
-             destroy_with_parent=True)
+                Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        )
 
         self.set_default_response(Gtk.ResponseType.OK)
 
@@ -52,20 +40,14 @@ class BrowserDialog(dialog.T):
         self.compiler = f.compiler
 
         self.ir = None
-        self.main_window = main_window
         self.set_size_request(600,500)
         self.preview = gtkfractal.Preview(self.compiler)
         self.preview.f.auto_tolerance = False
 
         self.create_panes()
-        self.on_file_changed()
+        self.vbox.show_all()
         
-    def show(parent, f, type):
-        _browser = dialog.T.reveal(BrowserDialog,True, parent, None, f)
-        _browser.set_type(type)
-        _browser.populate_file_list()
-
-    show = staticmethod(show)
+        self.set_type(type)
 
     def onResponse(self,widget,id):
         if id == Gtk.ResponseType.CLOSE or \
@@ -74,6 +56,8 @@ class BrowserDialog(dialog.T):
             self.hide()
         elif id == Gtk.ResponseType.APPLY:
             self.onApply()
+            # prevent dialog closing if being run
+            GObject.signal_stop_emission_by_name(self, "response")
         elif id == Gtk.ResponseType.OK:
             self.onApply()
             self.hide()
@@ -100,6 +84,14 @@ class BrowserDialog(dialog.T):
 
     def on_type_changed(self):
         utils.set_selected(self.funcTypeMenu, self.model.current_type)
+        try:
+            self.set_file(self.f.forms[self.model.current_type].funcFile)
+        except IndexError:
+            pass
+        try:
+            self.set_formula(self.f.forms[self.model.current_type].funcName)
+        except IndexError:
+            pass
         self.populate_file_list()
         
     def set_type(self,type):
@@ -154,10 +146,9 @@ class BrowserDialog(dialog.T):
         # re-select current file, if any
         if current_iter:
             self.filetreeview.scroll_to_cell(index)
-            if sel:
-                sel.unselect_all()
-                sel.select_iter(current_iter)
-                self.populate_formula_list(self.model.current.fname)
+            sel.unselect_all()
+            sel.select_iter(current_iter)
+            self.populate_formula_list(self.model.current.fname)
         else:
             self.formula_list.clear()
             self.formula_selection_changed(None)
@@ -283,6 +274,12 @@ class BrowserDialog(dialog.T):
         notebook.append_page(sw, label)
 
         panes1.add2(notebook)
+
+    def load_file(self, fname):
+        type = self.model.guess_type(fname)
+        self.set_type(type)
+        self.set_file(fname)
+        self.populate_file_list()
 
     def file_selection_changed(self,selection):
         self.model.current.formula = None

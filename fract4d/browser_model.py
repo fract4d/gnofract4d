@@ -99,12 +99,12 @@ class T:
             TypeInfo(self, compiler, fc.FormulaTypes.TRANSFORM),
             TypeInfo(self, compiler, fc.FormulaTypes.GRADIENT)
             ]
+        self.current = None
         self.current_type = -1
         self.type_changed = event.T()
         self.file_changed = event.T()
         self.formula_changed = event.T()
-        self.set_type(FRACTAL)
-        
+
     def formula_type_to_browser_type(self,t):
         if t == fc.FormulaTypes.FRACTAL:
             return FRACTAL

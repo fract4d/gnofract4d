@@ -688,7 +688,9 @@ class SettingsPane(Gtk.Box):
                 self.update_all_widgets(fractal,widget) # recurse
 
     def show_browser(self,button,type):
-        browser.show(self.main_window, self.f, type)
+        dialog = browser.BrowserDialog(self.main_window, self.f, type)
+        dialog.run()
+        dialog.destroy()
         
     def create_param_entry(self,table, row, text, param):
         label = Gtk.Label(label=text)

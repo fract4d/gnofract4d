@@ -20,14 +20,17 @@ if sys.path[1] != "..": sys.path.insert(1, "..")
 from fract4d import fc, fractal, browser_model
 from fract4dgui import browser
 
+class MockMainWindow:
+    def __init__(self):
+        self.window = None
+        self.compiler = fc.Compiler()
+        self.compiler.add_func_path("../formulas")
+        self.compiler.add_func_path("../fract4d")
 
 class Test(unittest.TestCase):
     def setUp(self):
-        self.compiler = fc.instance
-        self.compiler.add_func_path("../formulas")
-        self.compiler.add_func_path("../fract4d")
-        
-        self.f = fractal.T(self.compiler,self)
+        self.mainWindow = MockMainWindow()
+        self.f = fractal.T(self.mainWindow.compiler,self)
     
     def tearDown(self):
         browser._model = None
@@ -40,17 +43,17 @@ class Test(unittest.TestCase):
             Gtk.main_quit()
 
     def testCreate(self):        
-        b = browser.BrowserDialog(None,self.f)
+        b = browser.BrowserDialog(self.mainWindow, self.f)
         self.assertNotEqual(b,None)
 
-    def testLoadFormula(self):
-        b = browser.BrowserDialog(None,self.f)
+    def testSetFormula(self):
+        b = browser.BrowserDialog(self.mainWindow, self.f)
         b.set_file('gf4d.frm')
         b.set_formula('Newton')
         self.assertEqual(b.ir.errors,[])
 
     def testBadFormula(self):
-        b = browser.BrowserDialog(None,self.f)
+        b = browser.BrowserDialog(self.mainWindow, self.f)
         #print b.model.compiler.path_lists[0]
         b.set_file('test.frm')
         b.set_formula('parse_error')
@@ -63,13 +66,20 @@ class Test(unittest.TestCase):
         self.assertNotEqual(all_text,"")
         self.assertEqual(all_text[0:7],"Errors:")
 
-    def test_update(self):
-        b = browser.BrowserDialog(None,self.f)
-        b = browser.update(None)
-        m = browser_model.instance
-        self.assertEqual(None, m.current.fname)
-        self.assertEqual(None, m.current.formula)
+    def test_init(self):
+        b = browser.BrowserDialog(self.mainWindow, self.f)
+        m = b.model
+        self.assertEqual('gf4d.frm', m.current.fname)
+        self.assertEqual('Mandelbrot', m.current.formula)
 
+    def testLoadFormula(self):
+        b = browser.BrowserDialog(self.mainWindow, self.f)
+        m = b.model
+        # load good formula file
+        b.load_file("../formulas/fractint.cfrm")
+        self.assertEqual('fractint.cfrm', m.current.fname, "failed to load formula")
+        #load missing file
+        self.assertRaises(OSError, b.load_file, "/no_such_dir/wibble.frm")
 
 def suite():
     return unittest.makeSuite(Test,'test')
