@@ -4,18 +4,17 @@ from gi.repository import Gtk
 
 _dialogs = {}
 
-def make_container(title):
+def make_label_box(parent, title):
     label_box = Gtk.HBox()
     label_box.set_name('dialog_label_box')
     label = Gtk.Label(label=title)
     label_box.pack_start(label, False, False, 0)
     close = Gtk.Button.new_from_stock(Gtk.STOCK_CLOSE)
     label_box.pack_end(close, False, False, 0)
-    frame = Gtk.VBox()
-    frame.pack_start(label_box, False, False, 1)
+    label_box.show_all()
 
-    close.connect('clicked', lambda x : frame.hide())
-    return frame
+    close.connect('clicked', lambda x : parent.hide())
+    return label_box
 
 class T(Gtk.Dialog):
     def __init__(self, title=None, parent=None, buttons=None,**kwds):

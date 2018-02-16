@@ -14,30 +14,20 @@ from .table import Table
 from fract4d import browser_model
 from fract4d.fc import FormulaTypes
 
-def show_settings(parent,alt_parent, f,dialog_mode):
-    SettingsDialog.show(parent,alt_parent, f,dialog_mode)
-
-class SettingsDialog(dialog.T):
-    def show(parent, alt_parent, f,dialog_mode):
-        dialog.T.reveal(SettingsDialog,dialog_mode, parent, alt_parent, f)
-            
-    show = staticmethod(show)
-    
+class SettingsPane(Gtk.Box):
     def __init__(self, main_window, f):
-        dialog.T.__init__(
-            self,
-            _("Fractal Settings"),
-            main_window,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
-            destroy_with_parent=True)
+        Gtk.Box.__init__(self)
+        self.set_orientation(Gtk.Orientation.VERTICAL)
 
         self.main_window = main_window
         self.f = f
+        
+        label_box = dialog.make_label_box(self, _("Fractal Settings"))
         self.notebook = Gtk.Notebook()
         self.notebook.set_name("settings_notebook")
-        self.controls = Gtk.VBox()
-        self.controls.pack_start(self.notebook, True, True, 0)
-        self.vbox.pack_start(self.controls, True, True, 0)
+        self.pack_start(label_box, False, False, 0)
+        self.pack_start(self.notebook, True, True, 0)
+        
         self.tables = [None,None,None,None]
         self.selected_transform = None
         
@@ -48,6 +38,8 @@ class SettingsDialog(dialog.T):
         self.create_general_page()
         self.create_location_page()
         self.create_colors_page()
+
+        self.notebook.show_all()
 
     def gradarea_mousedown(self, widget, event):
         pass
@@ -549,7 +541,7 @@ class SettingsDialog(dialog.T):
         d = hig.ErrorAlert(
             primary=message,
             secondary=secondary_message,
-            parent=self.main_window)
+            parent=self.main_window.window)
         d.run()
         d.destroy()
 

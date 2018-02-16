@@ -103,16 +103,24 @@ class MainWindow:
             
         self.create_ui()
         self.create_toolbar()
-        self.create_fractal(self.f)
+        self.panes = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
+        self.vbox.add(self.panes)
         self.create_status_bar()
+
+        self.create_fractal(self.f)
+        self.panes.pack1(self.swindow, resize=True, shrink=True)
+
+        # show everything apart from the settings pane
+        self.window.show_all()
+
+        self.settingsPane = settings.SettingsPane(self, self.f)
+        self.panes.pack2(self.settingsPane, resize=False, shrink=False)
 
         # create these properly later to avoid 'end from FAM server connection' messages
         self.saveas_fs = None
         self.saveimage_fs = None
         self.hires_image_fs = None
         self.open_fs = None        
-        
-        self.window.show_all()
 
         self.update_subfract_visibility(False)
         self.populate_warpmenu(self.f)
@@ -383,12 +391,6 @@ class MainWindow:
         f.connect('progress_changed', self.progress_changed)
         f.connect('status_changed',self.status_changed)
         f.connect('stats-changed', self.stats_changed)
-
-        hbox = Gtk.HBox()
-        hbox.pack_start(self.swindow, True, True, 0)
-        self.control_box = Gtk.VBox()
-        hbox.pack_start(self.control_box, False, False, 0)
-        self.vbox.pack_start(hbox, True, True, 0)
 
     def draw(self):        
         nt = preferences.userPrefs.getint("general","threads") 
@@ -1216,7 +1218,7 @@ class MainWindow:
         
     def settings(self,*args):
         """Show fractal settings controls."""
-        settings.show_settings(self.window, self.control_box, self.f, False)
+        self.settingsPane.show()
         
     def preferences(self,*args):
         """Change current preferences."""
