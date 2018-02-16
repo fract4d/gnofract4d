@@ -137,6 +137,8 @@ class MainWindow:
 
         self.f.set_saved(True)
 
+        self.painterDialog = painter.PainterDialog(self.window, self.f)
+
     def create_rtd_widgets(self):
         table = Gtk.Table(n_rows=2,n_columns=3,homogeneous=False)
         table.width = width = Gtk.Entry()
@@ -726,7 +728,7 @@ class MainWindow:
         self.f.make_random_colors(8)
 
     def painter(self,*args):
-        painter.show(self.window,self.f)
+        self.painterDialog.show()
 
     def add_to_queue(self,name,w,h):
         renderqueue.show(self.window,None,self.f)
