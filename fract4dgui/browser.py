@@ -38,7 +38,7 @@ class BrowserDialog(dialog.T):
 
         self.set_default_response(Gtk.ResponseType.OK)
 
-        self.model = browser_model.instance
+        self.model = browser_model.T(main_window.compiler)
         self.model.type_changed += self.on_type_changed
         self.model.file_changed += self.on_file_changed
         self.model.formula_changed += self.on_formula_changed

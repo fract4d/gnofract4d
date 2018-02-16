@@ -493,9 +493,6 @@ class Compiler:
         if not self.leave_dirty:
             self.clear_cache()
 
-instance = Compiler()
-instance.update_from_prefs(fractconfig.instance)
-
 def usage():
     print("FC : a compiler from Fractint .frm files to C code")
     print("fc.py -o [outfile] -f [formula] infile")

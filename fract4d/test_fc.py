@@ -247,7 +247,8 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
         self.assertEqual(["wibble"], compiler.path_lists[3])
         
     def testInstance(self):
-        compiler = fc.instance
+        compiler = fc.Compiler()
+        compiler.update_from_prefs(fractconfig.instance)
         self.assertNotEqual(None, compiler)
         self.assertEqual(
             compiler.flags, fractconfig.instance.get("compiler", "options"))
