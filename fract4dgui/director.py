@@ -1,19 +1,14 @@
-#UI for gathering needed data and storing them in director bean class
-#then it calls PNGGeneration, and (if everything was OK) AVIGeneration
+# UI for gathering needed data and storing them in director bean class
+# then it calls PNGGeneration, and (if everything was OK) AVIGeneration
 
-#TODO: change default directory when selecting new according to already set item
-#(for temp dirs, avi and fct files selections)
-
-from gi.repository import Gdk
-from gi.repository import Gtk
-from gi.repository import GObject
-from gi.repository import GLib
+# TODO: change default directory when selecting new according to already set item
+# (for temp dirs, avi and fct files selections)
 
 import os
 import fnmatch
-import pickle
-import sys
 import tempfile
+
+from gi.repository import Gdk, Gtk, GObject
 
 from . import dialog, hig
 from fract4d import animation, fractconfig
@@ -21,7 +16,7 @@ from fract4d import animation, fractconfig
 from . import PNGGen,AVIGen,DlgAdvOpt,director_prefs
 
 class UserCancelledError(Exception):
-	pass
+    pass
 
 class SanityCheckError(Exception):
     "The type of exception which is thrown when animation sanity checks fail"
@@ -43,35 +38,35 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
                 _("Keyframe %s is in the temporary .fct directory and could be overwritten. Please change temp directory." % keyframe))
 
     def check_fct_file_sanity(self):
-        #things to check with fct temp dir
+        # things to check with fct temp dir
         if not self.animation.get_fct_enabled():
             # we're not generating .fct files, so this is superfluous
             return
 
-        #check fct temp dir is set
+        # check fct temp dir is set
         if self.animation.get_fct_dir()=="":
             raise SanityCheckError(
                 _("Directory for temporary .fct files not set"))
 
-        #check if it is directory
+        # check if it is directory
         if not os.path.isdir(self.animation.get_fct_dir()):
             raise SanityCheckError(
                 _("Path for temporary .fct files is not a directory"))
 
         fct_path=self.animation.get_fct_dir()
 
-        #check if any keyframe fct files are in temp fct dir
+        # heck if any keyframe fct files are in temp fct dir
         for i in range(self.animation.keyframes_count()):
             keyframe = self.animation.get_keyframe_filename(i)
             self.check_for_keyframe_clash(keyframe,fct_path)
 
-        #check if there are any .fct files in temp fct dir
+        # check if there are any .fct files in temp fct dir
         has_any=False
         for file in os.listdir(fct_path):
             if fnmatch.fnmatch(file,"*.fct"):
                 has_any=True
                 
-            if has_any==True:
+            if has_any is True:
                 response = self.ask_question(
                     _("Directory for temporary .fct files contains other .fct files"),
                     _("These may be overwritten. Proceed?"))
@@ -79,36 +74,36 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
                     raise UserCancelledError()
             return
 
-    #throws SanityCheckError if there was a problem
+    # throws SanityCheckError if there was a problem
     def check_sanity(self):
-        #check if at least two keyframes exist
+        # check if at least two keyframes exist
         if self.animation.keyframes_count()<2:
             raise SanityCheckError(_("There must be at least two keyframes"))
 
-        #check png temp dir is set
+        # check png temp dir is set
         if self.animation.get_png_dir()=="":
             raise SanityCheckError(
                 _("Directory for temporary .png files not set"))
 
-        #check if it is directory
+        # check if it is directory
         if not os.path.isdir(self.animation.get_png_dir()):
             raise SanityCheckError(
                 _("Path for temporary .png files is not a directory"))
 
-        #check avi file is set
+        # check avi file is set
         if self.animation.get_avi_file()=="":
             raise SanityCheckError(_("Output AVI file name not set"))
 
         self.check_fct_file_sanity()
 
-    #wrapper to show dialog for selecting .fct file
-    #returns selected file or empty string
+    # wrapper to show dialog for selecting .fct file
+    # returns selected file or empty string
     def get_fct_file(self):
         temp_file=""
         dialog = Gtk.FileChooserDialog("Choose keyframe...",self,Gtk.FileChooserAction.OPEN,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         dialog.set_default_response(Gtk.ResponseType.OK)
-        #----setting filters---------
+        # ----setting filters---------
         filter = Gtk.FileFilter()
         filter.set_name("gnofract4d files (*.fct)")
         filter.add_pattern("*.fct")
@@ -117,15 +112,15 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         filter.set_name("All files")
         filter.add_pattern("*")
         dialog.add_filter(filter)
-        #----------------------------
+        # ----------------------------
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             temp_file=dialog.get_filename()
         dialog.destroy()
         return temp_file
 
-    #wrapper to show dialog for selecting .avi file
-    #returns selected file or empty string
+    # wrapper to show dialog for selecting .avi file
+    # returns selected file or empty string
     def get_avi_file(self):
         temp_file=""
         dialog = Gtk.FileChooserDialog("Save AVI file...",self,Gtk.FileChooserAction.SAVE,
@@ -138,15 +133,15 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         dialog.destroy()
         return temp_file
 
-    #wrapper to show dialog for selecting .cfg file
-    #returns selected file or empty string
+    # wrapper to show dialog for selecting .cfg file
+    # returns selected file or empty string
     def get_cfg_file_save(self):
         temp_file=""
         dialog = Gtk.FileChooserDialog("Save animation...",self,Gtk.FileChooserAction.SAVE,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_current_name("animation.fcta")
-        #----setting filters---------
+        # ----setting filters---------
         filter = Gtk.FileFilter()
         filter.set_name("gnofract4d animation files (*.fcta)")
         filter.add_pattern("*.fcta")
@@ -155,21 +150,21 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         filter.set_name("All files")
         filter.add_pattern("*")
         dialog.add_filter(filter)
-        #----------------------------
+        # ----------------------------
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             temp_file=dialog.get_filename()
         dialog.destroy()
         return temp_file
 
-    #wrapper to show dialog for selecting .fct file
-    #returns selected file or empty string
+    # wrapper to show dialog for selecting .fct file
+    # returns selected file or empty string
     def get_cfg_file_open(self):
         temp_file=""
         dialog = Gtk.FileChooserDialog("Choose animation...",self,Gtk.FileChooserAction.OPEN,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         dialog.set_default_response(Gtk.ResponseType.OK)
-        #----setting filters---------
+        # ----setting filters---------
         filter = Gtk.FileFilter()
         filter.set_name("gnofract4d animation files (*.fcta)")
         filter.add_pattern("*.fcta")
@@ -178,7 +173,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         filter.set_name("All files")
         filter.add_pattern("*")
         dialog.add_filter(filter)
-        #----------------------------
+        # ----------------------------
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             temp_file=dialog.get_filename()
@@ -219,8 +214,8 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.animation.set_keyframe_int(self.current_select,int(self.cmb_interpolation_type.get_active()))
         self.update_model()
 
-    #point of whole program:)
-    #first we generate png files and list, then .avi
+    # point of whole program:)
+    # first we generate png files and list, then .avi
     def generate(self,create_avi=True):
         try:
             self.check_sanity()
@@ -228,7 +223,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
             self.show_error(_("Cannot Generate Animation"), str(exn))
             return
         except UserCancelledError:
-        	return
+            return
 
         png_gen=PNGGen.PNGGeneration(self.animation, self.compiler, self)
         res=png_gen.show()
@@ -260,22 +255,22 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         if self.current_select==-1:
             return
         dlg=DlgAdvOpt.DlgAdvOptions(self.current_select,self.animation,self)
-        res=dlg.show()
+        dlg.show()
 
-    #before selecting keyframes in list box we must update values of spin boxes in case user typed something in there
+    # before selecting keyframes in list box we must update values of spin boxes in case user typed something in there
     def before_selection(self, selection, data=None, *kwargs):
         self.spin_duration.update()
         self.spin_kf_stop.update()
         return True
 
-    #update right box (duration, stop, interpolation type) when keyframe is selected from list
+    # update right box (duration, stop, interpolation type) when keyframe is selected from list
     def selection_changed(self,widget, data=None):
         (model,it)=self.tv_keyframes.get_selection().get_selected()
-        if it!=None:
-            #------getting index of selected row-----------
+        if it is not None:
+            # ------getting index of selected row-----------
             index=0
             it=model.get_iter_first()
-            while it!=None:
+            while it is not None:
                 if self.tv_keyframes.get_selection().iter_is_selected(it):
                     break
                 it=model.iter_next(it)
@@ -293,11 +288,11 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 
     def update_model(self):
         (model,it)=self.tv_keyframes.get_selection().get_selected()
-        if it!=None:
-            #------getting index of selected row-----------
+        if it is not None:
+            # ------getting index of selected row-----------
             index=0
             it=model.get_iter_first()
-            while it!=None:
+            while it is not None:
                 if self.tv_keyframes.get_selection().iter_is_selected(it):
                     break
                 it=model.iter_next(it)
@@ -332,25 +327,25 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 
     def add_keyframe(self,file):
         if file!="":
-            #get current seletion
+            # get current seletion
             (model,it)=self.tv_keyframes.get_selection().get_selected()
-            if it==None: #if it's none, just append at the end of the list
+            if it is None:  # if it's none, just append at the end of the list
                 it=model.append([file,25,1,"Linear"])
-            else: #append after currently selected
+            else:  # append after currently selected
                 it=model.insert_after(it,[file,25,1,"Linear"])
 
-            #add to bean with default parameters
+            # add to bean with default parameters
             if self.current_select!=-1:
                 self.animation.add_keyframe(file,25,1,animation.INT_LINEAR,self.current_select+1)
             else:
                 self.animation.add_keyframe(file,25,1,animation.INT_LINEAR)
-            #and select newly item
+            # and select newly item
             self.tv_keyframes.get_selection().select_iter(it)
-            #set default duration
+            # set default duration
             self.spin_duration.set_value(25)
-            #set default stop
+            # set default stop
             self.spin_kf_stop.set_value(1)
-            #set default interpolation type
+            # set default interpolation type
             self.cmb_interpolation_type.set_active(animation.INT_LINEAR)
 
     def add_keyframe_clicked(self,widget, event):
@@ -363,15 +358,15 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         return False
 
     def remove_keyframe_clicked(self,widget,data=None):
-        #is anything selected
+        # is anything selected
         (model,it)=self.tv_keyframes.get_selection().get_selected()
-        if it!=None:
+        if it is not None:
             temp_curr=self.current_select
             model.remove(it)
             self.animation.remove_keyframe(temp_curr)
 
     def updateGUI(self):
-        #keyframes
+        # keyframes
         (model,it)=self.tv_keyframes.get_selection().get_selected()
         model.clear()
         for i in range(self.animation.keyframes_count()-1,-1,-1):
@@ -388,14 +383,14 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
                 model.set(it,3,"Inverse logarithmic")
             else:
                 model.set(it,3,"Cosine")
-        #output part
+        # output part
         self.txt_temp_avi.set_text(self.animation.get_avi_file())
         self.spin_width.set_value(self.animation.get_width())
         self.spin_height.set_value(self.animation.get_height())
         self.spin_framerate.set_value(self.animation.get_framerate())
         self.chk_swapRB.set_active(self.animation.get_redblue())
 
-    #loads configuration file, returns 0 on ok, -1 on error (and displays error message)
+    # loads configuration file, returns 0 on ok, -1 on error (and displays error message)
     def load_configuration(self,file):
         if file=="":
             return -1
@@ -406,27 +401,27 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
                 _("Cannot load animation"),
                 str(err))
             return -1
-        #set GUI to reflect changes
+        # set GUI to reflect changes
         self.updateGUI()
         return 0
 
-    #loads configuration from pickled file
+    # loads configuration from pickled file
     def load_configuration_clicked(self,widget,data=None):
         cfg=self.get_cfg_file_open()
         if cfg!="":
             self.load_configuration(cfg)
 
-    #reset all field to defaults
+    # reset all field to defaults
     def new_configuration_clicked(self,widget,data=None):
         self.animation.reset()
         self.updateGUI()
 
-    #save configuration in file
+    # save configuration in file
     def save_configuration_clicked(self,widget,data=None):
         cfg=self.get_cfg_file_save()
         if cfg!="":
             try:
-                result=self.animation.save_animation(cfg)
+                self.animation.save_animation(cfg)
             except Exception as err:
                 self.show_error(
                     _("Error saving animation"),
@@ -434,9 +429,9 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 
     def preferences_clicked(self,widget,data=None):
         dlg=director_prefs.DirectorPrefs(self.animation, self)
-        res=dlg.show()
+        dlg.show()
 
-    #creating window...
+    # creating window...
     def __init__(self, main_window, f, conf_file=""):
         dialog.T.__init__(
             self,
@@ -451,9 +446,9 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.f=f
         self.compiler = f.compiler
 
-        #main VBox
+        # main VBox
         self.box_main=Gtk.VBox(False,0)
-        #--------------------menu-------------------------------
+        # --------------------menu-------------------------------
         self.manager = Gtk.UIManager()
         accelgroup = self.manager.get_accel_group()
         self.add_accel_group(accelgroup)
@@ -494,9 +489,8 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.menubar = self.manager.get_widget('/menubar')
         self.box_main.pack_start(self.menubar, False, True, 0)
 
-
-        #-----------creating popup menu-------------------------------
-        #popup menu for keyframes
+        # -----------creating popup menu-------------------------------
+        # popup menu for keyframes
         self.popup_menu=Gtk.Menu()
         self.mnu_pop_add_file=Gtk.MenuItem("From file")
         self.popup_menu.append(self.mnu_pop_add_file)
@@ -507,7 +501,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.mnu_pop_add_current.connect("activate", self.add_from_current, None)
         self.mnu_pop_add_current.show()
 
-        #--------------Keyframes box-----------------------------------
+        # --------------Keyframes box-----------------------------------
         self.frm_kf = Gtk.Frame.new("Keyframes")
         self.frm_kf.set_border_width(10)
         vbox_kfs = Gtk.Box.new(Gtk.Orientation.VERTICAL, 8)
@@ -611,8 +605,8 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.tbl_keyframes_right.attach(self.btn_adv_opt,0,2,3,4)
 
         self.current_kf.add(self.tbl_keyframes_right) #,False,False,10)
-        #-------------------------------------------------------------------
-        #----------------------output box-----------------------------------
+        # -------------------------------------------------------------------
+        # ----------------------output box-----------------------------------
         self.frm_output = Gtk.Frame.new("Output options")
         self.frm_output.set_border_width(10)
 
@@ -674,7 +668,6 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.frm_output.add(self.box_output_main)
         self.box_main.pack_start(self.frm_output,False,False,0)
 
-
         # check if video converter can be found
         self.converterpath = fractconfig.instance.find_on_path("ffmpeg")
         if not self.converterpath:
@@ -692,7 +685,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
             warning_box.pack_start(message, True, True, 0)
             self.box_main.pack_end(warning_box, True, True, 0)
 
-        #--------------showing all-------------------------------
+        # --------------showing all-------------------------------
         self.vbox.add(self.box_main)
         self.vbox.show_all()
         self.controls = self.vbox

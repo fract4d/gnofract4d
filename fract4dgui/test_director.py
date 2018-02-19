@@ -2,10 +2,9 @@
 
 # unit tests for renderqueue module
 
-import unittest
-import sys
 import os
-import subprocess
+import sys
+import unittest
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -17,8 +16,7 @@ gettext.install('gnofract4d')
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 from fract4dgui import director, PNGGen, hig
-
-from fract4d import fractal, image, fc, animation
+from fract4d import fractal, fc, animation
 
 g_comp = fc.Compiler()
 g_comp.add_func_path("../fract4d")
@@ -141,7 +139,7 @@ class Test(unittest.TestCase):
         pg.generate_png()
         
         dd.destroy()
-        
+
 def suite():
     return unittest.makeSuite(Test,'test')
 
