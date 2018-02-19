@@ -1,18 +1,15 @@
-#UI and logic for generation PNG images
-#It gets all information from director bean class, gets all values, and,
-#in special thread, while it finds in-between values it call gtkfractal.HighResolution
-#to create images
+# UI and logic for generation PNG images
+# It gets all information from director bean class, gets all values, and,
+# in special thread, while it finds in-between values it call gtkfractal.HighResolution
+# to create images
 
-import re
-import math
-import sys
 import os
 from threading import *
 
-from gi.repository import Gdk, Gtk, GObject, GLib
+from gi.repository import Gdk, Gtk, GLib
 
 from . import gtkfractal, hig
-from fract4d import fractal,fracttypes, animation
+from fract4d import fractal
 
 running=False
 thread_error=False
@@ -41,14 +38,14 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
         self.set_geometry_hints(None, geometry, Gdk.WindowHints.ASPECT)
         self.anim=animation
 
-        #-------------loads compiler----------------------------
+        # -------------loads compiler----------------------------
         self.compiler=compiler
 
     def generate_png(self):
         global running
         durations=[]
 
-        #--------find values and duration from all keyframes------------
+        # --------find values and duration from all keyframes------------
         try:
             durations = self.anim.get_keyframe_durations()
         except Exception as err:
@@ -56,7 +53,7 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
             yield False
             return
 
-        #---------------------------------------------------------------
+        # ---------------------------------------------------------------
         create_all_images=self.to_create_images_again()
         gt=GenerationThread(
             durations,self.anim,
@@ -69,13 +66,12 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
             working=gt.isAlive()
             yield True
 
-        if thread_error==True:
+        if thread_error is True:
             self.show_error("Error during image generation", "Unknown")
             yield False
             return
 
-
-        if running==False:
+        if running is False:
             yield False
             return
         running=False
@@ -110,7 +106,6 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
         return create
 
     def show_error(self,message,secondary):
-        running=False
         self.error=True
         Gdk.threads_enter()
         error_dlg = hig.ErrorAlert(
@@ -120,7 +115,7 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
         error_dlg.run()
         error_dlg.destroy()
         Gdk.threads_leave()
-        event = Gdk.Event(Gdk.DELETE)
+        event = Gdk.Event(Gdk.EventType.DELETE)
         self.emit('delete_event', event)
 
     def show(self):
@@ -132,34 +127,34 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
         GLib.idle_add(task.__next__)
         response = self.run()
         if response != Gtk.ResponseType.CANCEL:
-            if running==True: #destroy by user
+            if running is True:  # destroy by user
                 running=False
                 self.destroy()
                 return 1
             else:
-                if self.error==True: #error
+                if self.error is True:  # error
                     self.destroy()
                     return -1
-                else: #everything ok
+                else:  # everything ok
                     self.destroy()
                     return 0
-        else: #cancel pressed
+        else:  # cancel pressed
             running=False
             self.destroy()
             return 1
 
-#thread to interpolate values and calls generation of .png files
+# thread to interpolate values and calls generation of .png files
 class GenerationThread(Thread):
     def __init__(
-        self,durations,animation,compiler,
-        create_all_images,pbar_image,pbar_overall):
+            self,durations,animation,compiler,
+            create_all_images,pbar_image,pbar_overall):
         Thread.__init__(self)
         self.durations=durations
         self.anim=animation
         self.create_all_images=create_all_images
         self.pbar_image=pbar_image
         self.pbar_overall=pbar_overall
-        #initializing progress bars
+        # initializing progress bars
         self.pbar_image.set_fraction(0)
         self.pbar_overall.set_fraction(0)
         self.pbar_overall.set_text("0/"+str(sum(self.durations)+1))
@@ -172,7 +167,7 @@ class GenerationThread(Thread):
         self.current.connect('status-changed', self.onStatusChanged)
         self.current.connect('progress-changed', self.onProgressChanged)
 
-        #semaphore to signalize that image generation is finished
+        # semaphore to signalize that image generation is finished
         self.next_image=Semaphore(1)
 
     def onProgressChanged(self,f,progress):
@@ -180,26 +175,26 @@ class GenerationThread(Thread):
         if running:
             self.pbar_image.set_fraction(progress/100.0)
 
-    #one image generation complete - tell (with "semaphore" self.next_image) we can continue
+    # one image generation complete - tell (with "semaphore" self.next_image) we can continue
     def onStatusChanged(self,f,status_val):
         if status_val == 0:
-            #release semaphore
+            # release semaphore
             self.next_image.release()
 
     def run(self):
         global thread_error,running
         import traceback
         try:
-            #first generates image from base keyframe
+            # first generates image from base keyframe
             self.generate_base_keyframe()
-            #pass through all keyframes and generates inter images
+            # pass through all keyframes and generates inter images
             for i in range(self.anim.keyframes_count()-1):
                 self.generate_images(i)
-                if running==False:
+                if running is False:
                     return
-            #wait for last image to finish rendering
+            # wait for last image to finish rendering
             self.next_image.acquire()
-            #generate list file
+            # generate list file
             lfilename = os.path.join(self.anim.get_png_dir(), "list")
             with open(lfilename, "w") as lfile:
                 for imagefile in self.anim.create_list():
@@ -211,7 +206,6 @@ class GenerationThread(Thread):
             running=False
             return
 
-
     def generate_base_keyframe(self):
         f=fractal.T(self.compiler)
         fh = open(self.anim.get_keyframe_filename(0))
@@ -221,33 +215,32 @@ class GenerationThread(Thread):
             fh.close()
         
         self.next_image.acquire()
-        #writes .fct file if user wanted that
+        # writes .fct file if user wanted that
         if self.anim.get_fct_enabled():
             f.save(open(self.anim.get_fractal_filename(0),"w"))
-        #check if image already exist and user wants to leave it or not
-        if not(os.path.exists(self.anim.get_image_filename(0)) and self.create_all_images==False): #check if image already exist
+        #  check if image already exist and user wants to leave it or not
+        if not(os.path.exists(self.anim.get_image_filename(0)) and self.create_all_images is False):  # check if image already exist
             self.current.set_fractal(f)
             self.current.reset_render()
             self.current.draw_image(self.anim.get_image_filename(0))
         else:
-            #just release semaphore
+            # just release semaphore
             self.next_image.release()
         return
 
-    #main method for generating images
-    #it generates images between iteration-th-1 and iteration-th keyframe
-    #first, it gets border values (keyframe values)
-    #(values - x,y,z,w,size,angles,formula parameters)
-    #then, in a loop, it generates inter values, fill fractal class with it and
-    #calls gtkfractal.HighResolution to generate images
+    # main method for generating images
+    # it generates images between iteration-th-1 and iteration-th keyframe
+    # first, it gets border values (keyframe values)
+    # (values - x,y,z,w,size,angles,formula parameters)
+    # then, in a loop, it generates inter values, fill fractal class with it and
+    # calls gtkfractal.HighResolution to generate images
     def generate_images(self,iteration):
         global running
-        #sum of all frames, needed for padding output files
+        # sum of all frames, needed for padding output files
         sumN=sum(self.durations)
-        lenN=len(str(sumN))
-        #number of images already generated
+        # number of images already generated
         sumBefore=sum(self.durations[0:iteration])
-        #current duration
+        # current duration
         N=self.durations[iteration]
 
         f_prev=fractal.T(self.compiler)
@@ -264,15 +257,15 @@ class GenerationThread(Thread):
         finally:
             fh.close()
             
-        #------------------------------------------------------------
-        #loop to generate images between current (iteration-th) and previous keyframe
+        # ------------------------------------------------------------
+        # loop to generate images between current (iteration-th) and previous keyframe
         for i in range(1,N+1):
-            #but, first, wait for previous image to finish rendering
+            # but, first, wait for previous image to finish rendering
             self.next_image.acquire()
-            #check if user canceled us
-            if running==False:
+            # check if user canceled us
+            if running is False:
                 return
-            #update progress bar
+            # update progress bar
             percent=float((sumBefore+i))/(sumN+1)
             self.pbar_overall.set_fraction(percent)
             self.pbar_overall.set_text(str(sumBefore+i)+"/"+str(sumN+1))
@@ -282,16 +275,16 @@ class GenerationThread(Thread):
             mu=self.anim.get_mu(int_type, float(i)/float(N))
             f_frame = f_prev.blend(f_next,mu)
 
-            #writes .fct file if user wanted that
+            # writes .fct file if user wanted that
             if self.anim.get_fct_enabled():
                 f_frame.save(open(self.anim.get_fractal_filename(sumBefore+i),"w"))
 
-            #check if image already exist and user wants to leave it or not
-            if not(os.path.exists(self.anim.get_image_filename(sumBefore+i)) and self.create_all_images==False): #check if image already exist
+            # check if image already exist and user wants to leave it or not
+            if not(os.path.exists(self.anim.get_image_filename(sumBefore+i)) and self.create_all_images is False):  # check if image already exist
                 self.current.set_fractal(f_frame)
                 self.current.reset_render()
                 self.current.draw_image(self.anim.get_image_filename(sumBefore+i))
             else:
-                #just release semaphore
+                # just release semaphore
                 self.next_image.release()
         return

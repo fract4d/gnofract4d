@@ -1,18 +1,15 @@
-#UI and logic for generation of AVI file from bunch of images
-#it knows from director bean class where images are stored (there is also a list file
-#containing list of images that will be frames - needed for transcode) and it create
-#thread to call transcode.
+# UI and logic for generation of AVI file from bunch of images
+# it knows from director bean class where images are stored (there is also a list file
+# containing list of images that will be frames - needed for transcode) and it create
+# thread to call transcode.
 
-#Limitations: user can destroy dialog, but it will not destroy transcode process!?
+# Limitations: user can destroy dialog, but it will not destroy transcode process!?
 
-
-
-from gi.repository import Gdk, Gtk, GObject, GLib
 import os
 import re
 from threading import *
 
-from fract4d import animation, fractconfig
+from gi.repository import Gdk, Gtk, GLib
 
 class AVIGeneration:
     def __init__(self, animation, parent):
@@ -34,17 +31,17 @@ class AVIGeneration:
         self.delete_them=-1
 
     def generate_avi(self):
-        #-------getting all needed information------------------------------
+        # -------getting all needed information------------------------------
         folder_png=self.animation.get_png_dir()
         list_file = os.path.join(folder_png, "list")
 
         avi_file=self.animation.get_avi_file()
         framerate=self.animation.get_framerate()
         yield True
-        #------------------------------------------------------------------
+        # ------------------------------------------------------------------
 
         try:
-            if self.running==False:
+            if self.running is False:
                 yield False
                 return
 
@@ -52,10 +49,10 @@ class AVIGeneration:
                 Gdk.threads_enter()
                 error_dlg = Gtk.MessageDialog(
                     self.dialog,
-                    Gtk.DialogFlags.MODAL  | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                    Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
                     Gtk.MessageType.ERROR, Gtk.ButtonsType.OK,
                     "In directory: %s there is no listing file. Cannot continue" %(folder_png))
-                response=error_dlg.run()
+                error_dlg.run()
                 error_dlg.destroy()
                 Gdk.threads_leave()
                 event = Gdk.Event(Gdk.EventType.DELETE)
@@ -63,9 +60,9 @@ class AVIGeneration:
                 yield False
                 return
             
-            #--------calculating total number of frames------------
+            # --------calculating total number of frames------------
             count=self.animation.get_total_frames()
-            #------------------------------------------------------
+            # ------------------------------------------------------
             # calling ffmpeg
             swap=""
             if self.animation.get_redblue():
@@ -78,11 +75,11 @@ class AVIGeneration:
 
             working=True
             while(working):
-                dt.join(0.5) #refresh gtk every 0.5 seconds
+                dt.join(0.5)  # refresh gtk every 0.5 seconds
                 working=dt.isAlive()
                 yield True
 
-            if self.running==False:
+            if self.running is False:
                 yield False
                 return
             yield True
@@ -96,20 +93,19 @@ class AVIGeneration:
             error_dlg.run()
             error_dlg.destroy()
             Gdk.threads_leave()
-            event = Gdk.Event(Gdk.DELETE)
+            event = Gdk.Event(Gdk.EventType.DELETE)
             self.dialog.emit('delete_event', event)
             yield False
             return
-        if self.running==False:
+        if self.running is False:
             yield False
             return
         self.running=False
         self.dialog.destroy()
         yield False
 
-
     def show(self):
-        #------------------------------------------------------------
+        # ------------------------------------------------------------
         self.dialog.show_all()
         self.running=True
         self.error=False
@@ -117,23 +113,23 @@ class AVIGeneration:
         GLib.idle_add(task.__next__)
         response = self.dialog.run()
         if response != Gtk.ResponseType.CANCEL:
-            if self.running==True: #destroy by user
+            if self.running is True:  # destroy by user
                 self.running=False
                 self.dialog.destroy()
                 return 1
             else:
-                if self.error==True: #error
+                if self.error is True:  # error
                     self.dialog.destroy()
                     return -1
-                else: #everything ok
+                else:  # everything ok
                     self.dialog.destroy()
                     return 0
-        else: #cancel pressed
+        else:  # cancel pressed
             self.running=False
             self.dialog.destroy()
             return 1
 
-#thread for calling transcode
+# thread for calling transcode
 class DummyThread(Thread):
     def __init__(self,s,pbar,count):
         Thread.__init__(self)
@@ -147,7 +143,7 @@ class DummyThread(Thread):
         pipe=os.popen(self.s)
         for line in pipe:
             m=reg.search(line)
-            if m!=None:
+            if m is not None:
                 cur=re.split("-",m.group())[1][0:-1]
                 self.pbar.set_fraction(float(cur)/self.count)
         pipe.close()
