@@ -137,7 +137,7 @@ class Test(unittest.TestCase):
     def testPNGGen(self):
         f = fractal.T(g_comp)
         dd= director.DirectorDialog(None,f,"")
-        pg = PNGGen.PNGGeneration(dd.animation,g_comp)
+        pg = PNGGen.PNGGeneration(dd.animation,g_comp,dd)
         pg.generate_png()
         
         dd.destroy()

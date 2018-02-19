@@ -105,7 +105,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     #returns selected file or empty string
     def get_fct_file(self):
         temp_file=""
-        dialog = Gtk.FileChooserDialog("Choose keyframe...",None,Gtk.FileChooserAction.OPEN,
+        dialog = Gtk.FileChooserDialog("Choose keyframe...",self,Gtk.FileChooserAction.OPEN,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         dialog.set_default_response(Gtk.ResponseType.OK)
         #----setting filters---------
@@ -128,7 +128,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     #returns selected file or empty string
     def get_avi_file(self):
         temp_file=""
-        dialog = Gtk.FileChooserDialog("Save AVI file...",None,Gtk.FileChooserAction.SAVE,
+        dialog = Gtk.FileChooserDialog("Save AVI file...",self,Gtk.FileChooserAction.SAVE,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         dialog.set_default_response(Gtk.ResponseType.OK)
         response = dialog.run()
@@ -141,7 +141,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     #returns selected file or empty string
     def get_cfg_file_save(self):
         temp_file=""
-        dialog = Gtk.FileChooserDialog("Save animation...",None,Gtk.FileChooserAction.SAVE,
+        dialog = Gtk.FileChooserDialog("Save animation...",self,Gtk.FileChooserAction.SAVE,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_current_name("animation.fcta")
@@ -165,7 +165,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     #returns selected file or empty string
     def get_cfg_file_open(self):
         temp_file=""
-        dialog = Gtk.FileChooserDialog("Choose animation...",None,Gtk.FileChooserAction.OPEN,
+        dialog = Gtk.FileChooserDialog("Choose animation...",self,Gtk.FileChooserAction.OPEN,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         dialog.set_default_response(Gtk.ResponseType.OK)
         #----setting filters---------
@@ -230,7 +230,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         except UserCancelledError:
         	return
 
-        png_gen=PNGGen.PNGGeneration(self.animation, self.compiler)
+        png_gen=PNGGen.PNGGeneration(self.animation, self.compiler, self)
         res=png_gen.show()
         if res==1:
             # user cancelled, but they know that. Stop silently
@@ -242,7 +242,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         if not create_avi:
             return
 
-        avi_gen=AVIGen.AVIGeneration(self.animation)
+        avi_gen=AVIGen.AVIGeneration(self.animation, self)
         res=avi_gen.show()
         if res==1:
             # user cancelled, but they know that. Stop silently
@@ -259,7 +259,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     def adv_opt_clicked(self,widget,data=None):
         if self.current_select==-1:
             return
-        dlg=DlgAdvOpt.DlgAdvOptions(self.current_select,self.animation)
+        dlg=DlgAdvOpt.DlgAdvOptions(self.current_select,self.animation,self)
         res=dlg.show()
 
     #before selecting keyframes in list box we must update values of spin boxes in case user typed something in there
@@ -433,7 +433,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
                     str(err))
 
     def preferences_clicked(self,widget,data=None):
-        dlg=director_prefs.DirectorPrefs(self.animation)
+        dlg=director_prefs.DirectorPrefs(self.animation, self)
         res=dlg.show()
 
     #creating window...

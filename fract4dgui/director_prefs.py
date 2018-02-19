@@ -33,8 +33,8 @@ class DirectorPrefs:
 		if fold!="":
 			self.txt_temp_png.set_text(fold)
 
-	def __init__(self,animation):
-		self.dialog=Gtk.Dialog("Director preferences...",None,
+	def __init__(self,animation,parent):
+		self.dialog=Gtk.Dialog("Director preferences...",parent,
 					Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
 					(Gtk.STOCK_OK,Gtk.ResponseType.OK,Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL))
 

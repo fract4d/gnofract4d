@@ -18,9 +18,10 @@ running=False
 thread_error=False
 
 class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
-    def __init__(self,animation,compiler):
+    def __init__(self, animation, compiler, parent):
         Gtk.Dialog.__init__(
             self,
+            transient_for=parent,
             title="Generating images...",
             modal=True, destroy_with_parent=True)
 

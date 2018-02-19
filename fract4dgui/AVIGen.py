@@ -15,8 +15,9 @@ from threading import *
 from fract4d import animation, fractconfig
 
 class AVIGeneration:
-    def __init__(self,animation):
+    def __init__(self, animation, parent):
         self.dialog=Gtk.Dialog(
+            transient_for=parent,
             title="Generating AVI file...",
             modal=True,
             destroy_with_parent=True)
