@@ -356,14 +356,14 @@ class FCTGeneration:
     def show_error(self,s):
         self.running=False
         self.error=True
-        Gtk.threads_enter()
+        Gdk.threads_enter()
         error_dlg = Gtk.MessageDialog(
             self.dialog,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             Gtk.MessageType.ERROR, Gtk.ButtonsType.OK,s)
         error_dlg.run()
         error_dlg.destroy()
-        Gtk.threads_leave()
+        Gdk.threads_leave()
         event = Gdk.Event(Gdk.DELETE)
         self.dialog.emit('delete_event', event)
     

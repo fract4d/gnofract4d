@@ -86,7 +86,7 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
         filelist = self.anim.create_list()
         for f in filelist:
             if os.path.exists(f):
-                Gtk.threads_enter()
+                Gdk.threads_enter()
                 try:
                     folder_png = self.anim.get_png_dir()
                     response = self.ask_question(
@@ -95,10 +95,10 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
 
                 except Exception as err:
                     print(err)
-                    Gtk.threads_leave()
+                    Gdk.threads_leave()
                     raise
 
-                Gtk.threads_leave()
+                Gdk.threads_leave()
             
                 if response==Gtk.ResponseType.ACCEPT:
                     create=False
