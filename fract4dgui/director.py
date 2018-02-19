@@ -510,14 +510,12 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         #--------------Keyframes box-----------------------------------
         self.frm_kf = Gtk.Frame.new("Keyframes")
         self.frm_kf.set_border_width(10)
-        self.hbox_kfs=Gtk.HBox(homogeneous=False,spacing=0)
-        self.tbl_keyframes_left=Gtk.Table(n_rows=2,n_columns=2,homogeneous=False)
-        self.tbl_keyframes_left.set_row_spacings(10)
-        self.tbl_keyframes_left.set_col_spacings(10)
-        self.tbl_keyframes_left.set_border_width(10)
-
+        vbox_kfs = Gtk.Box.new(Gtk.Orientation.VERTICAL, 8)
+        button_box_kfs = Gtk.ButtonBox()
+        button_box_kfs.set_layout(Gtk.ButtonBoxStyle.SPREAD)
         self.sw=Gtk.ScrolledWindow()
         self.sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        self.sw.set_size_request(-1, 100)
 #        filenames=Gtk.ListStore(GObject.TYPE_STRING,
 #            GObject.TYPE_STRING)
 #        self.tv_keyframes=Gtk.TreeView(filenames)
@@ -546,23 +544,25 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         column = Gtk.TreeViewColumn('Interpolation type', Gtk.CellRendererText(),text=3)
         self.tv_keyframes.append_column(column)
 
-        self.sw.add_with_viewport(self.tv_keyframes)
+        self.sw.add(self.tv_keyframes)
         self.tv_keyframes.get_selection().connect("changed",self.selection_changed,None)
         self.tv_keyframes.get_selection().set_select_function(self.before_selection,None)
         self.current_select=-1
-        self.tbl_keyframes_left.attach(self.sw,0,2,0,1)
 
         self.btn_add_keyframe=Gtk.Button.new_from_stock(Gtk.STOCK_ADD)
         #self.btn_add_keyframe.connect("clicked",self.add_keyframe_clicked,None)
         self.btn_add_keyframe.connect_object("event",self.add_keyframe_clicked,self.popup_menu)
-        self.tbl_keyframes_left.attach(self.btn_add_keyframe,0,1,1,2,0,0)
 
         self.btn_remove_keyframe=Gtk.Button.new_from_stock(Gtk.STOCK_REMOVE)
         self.btn_remove_keyframe.connect("clicked",self.remove_keyframe_clicked,None)
-        self.tbl_keyframes_left.attach(self.btn_remove_keyframe,1,2,1,2,0,0)
-        self.hbox_kfs.pack_start(self.tbl_keyframes_left,True,True,10)
 
-        self.frm_kf.add(self.hbox_kfs)
+        button_box_kfs.pack_start(self.btn_add_keyframe, True, True, 0)
+        button_box_kfs.pack_start(self.btn_remove_keyframe, True, True, 0)
+
+        vbox_kfs.pack_start(self.sw, True, True, 0)
+        vbox_kfs.pack_start(button_box_kfs, True, True, 10)
+        
+        self.frm_kf.add(vbox_kfs)
         self.box_main.pack_start(self.frm_kf,True,True,0)
 
         # current keyframe box
