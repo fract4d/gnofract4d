@@ -676,9 +676,9 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.box_main.pack_start(self.frm_output,False,False,0)
 
 
-        # check if transcode can be found
-        self.transpath = fractconfig.instance.find_on_path("transcode")
-        if not self.transpath:
+        # check if video converter can be found
+        self.converterpath = fractconfig.instance.find_on_path("ffmpeg")
+        if not self.converterpath:
             # put a message at the bottom to warn user
             warning_box = Gtk.HBox()
             image = Gtk.Image.new_from_stock(
@@ -687,7 +687,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
             warning_box.pack_start(image, True, True, 0)
             
             message = Gtk.Label(label=
-                _("Transcode utility not found. Without it we can't generate any video but can still save sequences of still images."))
+                _("ffmpeg utility not found. Without it we can't generate any video but can still save sequences of still images."))
 
             message.set_line_wrap(True)
             warning_box.pack_start(message, True, True, 0)

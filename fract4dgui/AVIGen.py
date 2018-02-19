@@ -36,12 +36,9 @@ class AVIGeneration:
     def generate_avi(self):
         #-------getting all needed information------------------------------
         folder_png=self.animation.get_png_dir()
-        if folder_png[-1]!="/":
-            folder_png=folder_png+"/"
+        list_file = os.path.join(folder_png, "list")
 
         avi_file=self.animation.get_avi_file()
-        width=self.animation.get_width()
-        height=self.animation.get_height()
         framerate=self.animation.get_framerate()
         yield True
         #------------------------------------------------------------------
@@ -51,7 +48,7 @@ class AVIGeneration:
                 yield False
                 return
 
-            if not(os.path.exists(folder_png+"list")):#check if image listing already exist
+            if not os.path.exists(list_file):
                 Gdk.threads_enter()
                 error_dlg = Gtk.MessageDialog(
                     self.dialog,
@@ -61,7 +58,7 @@ class AVIGeneration:
                 response=error_dlg.run()
                 error_dlg.destroy()
                 Gdk.threads_leave()
-                event = Gdk.Event(Gdk.DELETE)
+                event = Gdk.Event(Gdk.EventType.DELETE)
                 self.dialog.emit('delete_event', event)
                 yield False
                 return
@@ -69,12 +66,13 @@ class AVIGeneration:
             #--------calculating total number of frames------------
             count=self.animation.get_total_frames()
             #------------------------------------------------------
-            #calling transcode
+            # calling ffmpeg
             swap=""
             if self.animation.get_redblue():
-                swap="-k"
+                swap='-vf "colorchannelmixer=rr=0:rb=1:br=1:bb=0"'
 
-            call="transcode -z -i %slist -x imlist,null -g %dx%d -y ffmpeg,null -F mpeg4 -f %d -o %s -H 0 --use_rgb %s 2>/dev/null"%(folder_png,width,height,framerate,avi_file,swap)
+            call = "ffmpeg -r %d -f concat -safe 0 -i %s %s -r %d %s" % \
+                (framerate, list_file, swap, framerate, avi_file)
             dt=DummyThread(call,self.pbar,float(count))
             dt.start()
 

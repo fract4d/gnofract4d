@@ -200,11 +200,10 @@ class GenerationThread(Thread):
             #wait for last image to finish rendering
             self.next_image.acquire()
             #generate list file
-            list = self.anim.create_list()
             lfilename = os.path.join(self.anim.get_png_dir(), "list")
-            lfile = open(lfilename,"w")
-            print("\n".join(list), file=lfile)
-            lfile.close()
+            with open(lfilename, "w") as lfile:
+                for imagefile in self.anim.create_list():
+                    print("file '%s'" % imagefile, file=lfile)
             
         except:
             traceback.print_exc()
