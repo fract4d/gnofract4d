@@ -5,15 +5,11 @@
 #   DlgAdvOpt.py: dialog for advanced interpolation options for director
 #
 
-from gi.repository import Gtk
-from gi.repository import GObject
-import os
-import re
 from threading import *
 
+from gi.repository import Gtk
 
 class DlgAdvOptions:
-
     def __init__(self,current_kf,animation,parent):
         self.dialog=Gtk.Dialog(
             transient_for=parent,
