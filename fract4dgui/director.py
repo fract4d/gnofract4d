@@ -131,6 +131,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         dialog = Gtk.FileChooserDialog("Save AVI file...",self,Gtk.FileChooserAction.SAVE,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         dialog.set_default_response(Gtk.ResponseType.OK)
+        dialog.set_filename(self.txt_temp_avi.get_text())
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             temp_file=dialog.get_filename()
@@ -188,9 +189,8 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 
     def temp_avi_clicked(self,widget, data=None):
         avi=self.get_avi_file()
-        if avi!="":
+        if avi:
             self.txt_temp_avi.set_text(avi)
-            self.animation.set_avi_file(avi)
 
     def output_width_changed(self,widget,data=None):
         self.animation.set_width(self.spin_width.get_value())
@@ -623,7 +623,6 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.box_output_file.pack_start(self.lbl_temp_avi,False,False,10)
 
         self.txt_temp_avi = Gtk.Entry()
-        self.txt_temp_avi.set_editable(False)
         self.box_output_file.pack_start(self.txt_temp_avi,True,True,10)
 
         self.btn_temp_avi=Gtk.Button(label="Browse")
@@ -706,7 +705,8 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
                id == Gtk.ResponseType.DELETE_EVENT:
             self.hide()
         elif id == DirectorDialog.RESPONSE_RENDER:
-            self.generate(self.transpath != None)
+            self.animation.set_avi_file(self.txt_temp_avi.get_text())
+            self.generate(self.converterpath is not None)
 
     def main(self):
         Gtk.main()
