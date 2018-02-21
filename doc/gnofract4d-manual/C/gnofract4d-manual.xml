@@ -354,7 +354,7 @@ Tips:
 
 <listitem><para>
 In order to end up with a video file, not just a bunch of images, you need to have
-<emphasis>ffmpeg</emphasis> compiled with support for zlib.
+<emphasis>ffmpeg</emphasis> compiled with support for zlib and libvpx.
 </para></listitem>
 
 <listitem><para>
