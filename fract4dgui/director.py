@@ -640,7 +640,6 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         adj_width = Gtk.Adjustment.new(640,320,2048,10,100,0)
         self.spin_width = Gtk.SpinButton()
         self.spin_width.set_adjustment(adj_width)
-        self.spin_width.connect("output",self.output_width_changed,None)
         self.box_output_res.pack_start(self.spin_width,False,False,10)
 
         self.lbl_x=Gtk.Label(label="x")
@@ -649,7 +648,6 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         adj_height=Gtk.Adjustment.new(480,240,1536,10,100,0)
         self.spin_height = Gtk.SpinButton()
         self.spin_height.set_adjustment(adj_height)
-        self.spin_height.connect("output",self.output_height_changed,None)
         self.box_output_res.pack_start(self.spin_height,False,False,10)
 
         self.box_output_main.pack_start(self.box_output_res,True,True,0)
@@ -662,12 +660,9 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         adj_framerate = Gtk.Adjustment.new(25,5,100,1,5,0)
         self.spin_framerate = Gtk.SpinButton()
         self.spin_framerate.set_adjustment(adj_framerate)
-        self.spin_framerate.connect("output",self.output_framerate_changed,None)
         self.box_output_framerate.pack_start(self.spin_framerate,False,False,10)
 
         self.chk_swapRB=Gtk.CheckButton(label="Swap red and blue component")
-        self.chk_swapRB.set_active(True)
-        self.chk_swapRB.connect("toggled",self.swap_redblue_clicked,None)
         self.box_output_framerate.pack_start(self.chk_swapRB,False,False,50)
 
         self.box_output_main.pack_start(self.box_output_framerate,True,True,0)
@@ -692,12 +687,22 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
             warning_box.pack_start(message, True, True, 0)
             self.box_main.pack_end(warning_box, True, True, 0)
 
+        # initialise default settings
+        if conf_file:
+            self.load_configuration(conf_file)
+        else:
+            self.updateGUI()
+
+        # don't connect signals until after settings initialised
+        self.spin_height.connect("value-changed",self.output_height_changed,None)
+        self.spin_width.connect("value-changed",self.output_width_changed,None)
+        self.spin_framerate.connect("value-changed",self.output_framerate_changed,None)
+        self.chk_swapRB.connect("toggled",self.swap_redblue_clicked,None)
+
         # --------------showing all-------------------------------
         self.vbox.add(self.box_main)
         self.vbox.show_all()
         self.controls = self.vbox
-        if conf_file!="":
-            self.load_configuration(conf_file)
 
     def onResponse(self,widget,id):
         if id == Gtk.ResponseType.CLOSE or \
