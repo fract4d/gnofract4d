@@ -67,7 +67,7 @@ class T:
         self.width = 640
         self.height = 480
         self.framerate = 25
-        self.redblue = True
+        self.redblue = False
         # keyframes is a list of KeyFrame objects
         self.keyframes = []
 
