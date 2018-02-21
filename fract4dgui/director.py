@@ -447,13 +447,14 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.compiler = f.compiler
 
         # main VBox
-        self.box_main=Gtk.VBox(False,0)
+        self.box_main=Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
+        self.box_main.set_homogeneous(False)
         # --------------------menu-------------------------------
         self.manager = Gtk.UIManager()
         accelgroup = self.manager.get_accel_group()
         self.add_accel_group(accelgroup)
 
-        actiongroup = Gtk.ActionGroup("Director")
+        actiongroup = Gtk.ActionGroup.new("Director")
         actiongroup.add_actions([
                 ('DirectorMenuAction', None, _('_Director')),
                 ('DirectorEditAction', None, _('_Edit')),
@@ -492,11 +493,11 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         # -----------creating popup menu-------------------------------
         # popup menu for keyframes
         self.popup_menu=Gtk.Menu()
-        self.mnu_pop_add_file=Gtk.MenuItem("From file")
+        self.mnu_pop_add_file=Gtk.MenuItem.new_with_label("From file")
         self.popup_menu.append(self.mnu_pop_add_file)
         self.mnu_pop_add_file.connect("activate", self.add_from_file, None)
         self.mnu_pop_add_file.show()
-        self.mnu_pop_add_current=Gtk.MenuItem("From current fractal")
+        self.mnu_pop_add_current=Gtk.MenuItem.new_with_label("From current fractal")
         self.popup_menu.append(self.mnu_pop_add_current)
         self.mnu_pop_add_current.connect("activate", self.add_from_current, None)
         self.mnu_pop_add_current.show()
@@ -525,7 +526,8 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 #        self.tv_column_name.add_attribute(self.cell_duration, 'text', 0)
         filenames=Gtk.ListStore(GObject.TYPE_STRING, GObject.TYPE_UINT,
                             GObject.TYPE_UINT, GObject.TYPE_STRING)
-        self.tv_keyframes = Gtk.TreeView(filenames)
+        self.tv_keyframes = Gtk.TreeView()
+        self.tv_keyframes.set_model(filenames)
         column = Gtk.TreeViewColumn('Keyframes', Gtk.CellRendererText(),text=0)
         self.tv_keyframes.append_column(column)
 
@@ -565,31 +567,33 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 
         self.box_main.pack_start(self.current_kf,True,True,0)
 
-        self.tbl_keyframes_right=Gtk.Table(n_rows=4,n_columns=2,homogeneous=True)
-        self.tbl_keyframes_right.set_row_spacings(10)
-        self.tbl_keyframes_right.set_col_spacings(10)
+        self.tbl_keyframes_right = Gtk.Grid()
+        self.tbl_keyframes_right.set_column_homogeneous(True)
+        self.tbl_keyframes_right.set_row_homogeneous(True)
+        self.tbl_keyframes_right.set_row_spacing(10)
+        self.tbl_keyframes_right.set_column_spacing(10)
         self.tbl_keyframes_right.set_border_width(10)
 
-        self.lbl_duration=Gtk.Label(label="Duration")
-        self.tbl_keyframes_right.attach(self.lbl_duration,0,1,0,1)
+        self.lbl_duration = Gtk.Label(label="Duration:")
+        self.tbl_keyframes_right.attach(self.lbl_duration,0,0,1,1)
 
-        adj_duration = Gtk.Adjustment(25,1,10000,1,10)
+        adj_duration = Gtk.Adjustment.new(25,1,10000,1,10,0)
         self.spin_duration = Gtk.SpinButton()
         self.spin_duration.set_adjustment(adj_duration)
         self.spin_duration.connect("output",self.duration_changed,None)
-        self.tbl_keyframes_right.attach(self.spin_duration,1,2,0,1)
+        self.tbl_keyframes_right.attach(self.spin_duration,1,0,1,1)
 
         self.lbl_kf_stop=Gtk.Label(label="Keyframe stopped for:")
-        self.tbl_keyframes_right.attach(self.lbl_kf_stop,0,1,1,2)
+        self.tbl_keyframes_right.attach(self.lbl_kf_stop,0,1,1,1)
 
-        adj_kf_stop = Gtk.Adjustment(1,1,10000,1,10)
+        adj_kf_stop = Gtk.Adjustment.new(1,1,10000,1,10,0)
         self.spin_kf_stop = Gtk.SpinButton()
         self.spin_duration.set_adjustment(adj_kf_stop)
         self.spin_kf_stop.connect("output",self.stop_changed,None)
-        self.tbl_keyframes_right.attach(self.spin_kf_stop,1,2,1,2)
+        self.tbl_keyframes_right.attach(self.spin_kf_stop,1,1,1,1)
 
         self.lbl_int_type=Gtk.Label(label="Interpolation type:")
-        self.tbl_keyframes_right.attach(self.lbl_int_type,0,1,2,3)
+        self.tbl_keyframes_right.attach(self.lbl_int_type,0,2,1,1)
 
         self.cmb_interpolation_type=Gtk.ComboBoxText() #Gtk.ComboBox()
         self.cmb_interpolation_type.append_text("Linear")
@@ -598,20 +602,23 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.cmb_interpolation_type.append_text("Cosine")
         self.cmb_interpolation_type.set_active(0)
         self.cmb_interpolation_type.connect("changed",self.interpolation_type_changed,None)
-        self.tbl_keyframes_right.attach(self.cmb_interpolation_type,1,2,2,3)
+        self.tbl_keyframes_right.attach(self.cmb_interpolation_type,1,2,1,1)
 
         self.btn_adv_opt=Gtk.Button(label="Advanced options")
         self.btn_adv_opt.connect("clicked",self.adv_opt_clicked,None)
-        self.tbl_keyframes_right.attach(self.btn_adv_opt,0,2,3,4)
+        self.tbl_keyframes_right.attach(self.btn_adv_opt,0,3,2,1)
 
-        self.current_kf.add(self.tbl_keyframes_right) #,False,False,10)
+        self.current_kf.add(self.tbl_keyframes_right)
         # -------------------------------------------------------------------
         # ----------------------output box-----------------------------------
         self.frm_output = Gtk.Frame.new("Output options")
         self.frm_output.set_border_width(10)
 
-        self.box_output_main=Gtk.VBox(homogeneous=True,spacing=10)
-        self.box_output_file=Gtk.HBox(homogeneous=False,spacing=10)
+        self.box_output_main = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
+            homogeneous=True, spacing=10)
+        self.box_output_main.set_border_width(10)
+        self.box_output_file = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
+            homogeneous=False, spacing=10)
 
         self.lbl_temp_avi=Gtk.Label(label="Resulting video file:")
         self.box_output_file.pack_start(self.lbl_temp_avi,False,False,10)
@@ -630,7 +637,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.lbl_res=Gtk.Label(label="Resolution:")
         self.box_output_res.pack_start(self.lbl_res,False,False,10)
 
-        adj_width = Gtk.Adjustment(640,320,2048,10,100,0)
+        adj_width = Gtk.Adjustment.new(640,320,2048,10,100,0)
         self.spin_width = Gtk.SpinButton()
         self.spin_width.set_adjustment(adj_width)
         self.spin_width.connect("output",self.output_width_changed,None)
@@ -639,7 +646,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.lbl_x=Gtk.Label(label="x")
         self.box_output_res.pack_start(self.lbl_x,False,False,10)
 
-        adj_height=Gtk.Adjustment(480,240,1536,10,100,0)
+        adj_height=Gtk.Adjustment.new(480,240,1536,10,100,0)
         self.spin_height = Gtk.SpinButton()
         self.spin_height.set_adjustment(adj_height)
         self.spin_height.connect("output",self.output_height_changed,None)
@@ -652,7 +659,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.lbl_framerate=Gtk.Label(label="Frame rate:")
         self.box_output_framerate.pack_start(self.lbl_framerate,False,False,10)
 
-        adj_framerate = Gtk.Adjustment(25,5,100,1,5,0)
+        adj_framerate = Gtk.Adjustment.new(25,5,100,1,5,0)
         self.spin_framerate = Gtk.SpinButton()
         self.spin_framerate.set_adjustment(adj_framerate)
         self.spin_framerate.connect("output",self.output_framerate_changed,None)
