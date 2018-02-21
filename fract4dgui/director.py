@@ -221,9 +221,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
             self.check_sanity()
         except SanityCheckError as exn:
             self.show_error(_("Cannot Generate Animation"), str(exn))
-            return
-        except UserCancelledError:
-            return
+            raise
 
         png_gen=PNGGen.PNGGeneration(self.animation, self.compiler, self)
         res=png_gen.show()
@@ -711,7 +709,11 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
             self.hide()
         elif id == DirectorDialog.RESPONSE_RENDER:
             self.animation.set_avi_file(self.txt_temp_avi.get_text())
-            self.generate(self.converterpath is not None)
+            try:
+                self.generate(self.converterpath is not None)
+            except (SanityCheckError, UserCancelledError):
+                # prevent dialog closing if being run
+                GObject.signal_stop_emission_by_name(self, "response")
 
     def main(self):
         Gtk.main()
