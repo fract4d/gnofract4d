@@ -66,13 +66,14 @@ class Test(unittest.TestCase):
 
     def testQueueDialog(self):
         f = fractal.T(g_comp)
-        renderqueue.show(None,None,f)
-        rq = renderqueue.instance
+        rq = renderqueue.T()
         rq.add(f,"foo.png",124,276)
         rq.add(f,"foo2.png",204,153)
         rq.add(f,"foo3.png",80,40)
         rq.connect('done', self.quitloop)
         rq.start()
+        d = renderqueue.QueueDialog(None, f, rq)
+        d.show()
         self.wait()
         os.remove("foo.png"); os.remove("foo2.png"); os.remove("foo3.png")
 

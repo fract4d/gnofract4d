@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
         self.compiler.add_func_path("../fract4d")
         
         self.f = gtkfractal.T(self.compiler)
-        self.settings = settings.SettingsDialog(None,self.f)
+        self.settings = settings.SettingsPane(None,self.f)
         
     def tearDown(self):
         pass

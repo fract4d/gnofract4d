@@ -4,12 +4,9 @@
 
 import copy
 
-from gi.repository import GObject
-from gi.repository import Gtk
+from gi.repository import Gtk, GObject
 
-from . import gtkfractal
-from . import dialog
-from . import preferences
+from . import dialog, gtkfractal, preferences
 
 class QueueEntry:
     def __init__(self, f, name, w, h):
@@ -43,7 +40,7 @@ class T(GObject.GObject):
         self.emit('changed')
         
     def start(self):
-        if self.current == None:
+        if self.current is None:
             next(self)
 
     def empty(self):
@@ -78,43 +75,30 @@ class T(GObject.GObject):
 # explain our existence to GTK's object system
 GObject.type_register(T)
 
-def show(parent, alt_parent, f):
-    QueueDialog.show(parent, alt_parent, f)
-
-instance = T()
-
 class CellRendererProgress(Gtk.CellRendererProgress):
     def __init__(self):
         Gtk.CellRendererProgress.__init__(self)
         self.set_property("text", "Progress")
 
 class QueueDialog(dialog.T):
-    def show(parent, alt_parent, f):
-        dialog.T.reveal(QueueDialog,True, parent, alt_parent, f)
-            
-    show = staticmethod(show)
-
-    def __init__(self, main_window, f):
+    def __init__(self, main_window, f, renderQueue):
         dialog.T.__init__(
             self,
             _("Render Queue"),
             main_window,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
-            destroy_with_parent=True
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         )
 
-        self.main_window = main_window
-
-        self.q = instance
+        self.q = renderQueue
 
         self.q.connect('changed', self.onQueueChanged)
         self.q.connect('progress-changed', self.onProgressChanged)
         
         self.controls = Gtk.VBox()
         self.store = Gtk.ListStore(
-            GObject.TYPE_STRING, # name
-            GObject.TYPE_STRING, # size
-            GObject.TYPE_FLOAT, # % complete
+            str, # name
+            str, # size
+            float # % complete
             )
 
         self.view = Gtk.TreeView.new_with_model(self.store)
@@ -130,6 +114,7 @@ class QueueDialog(dialog.T):
         
         self.controls.add(self.view)
         self.vbox.add(self.controls)
+        self.vbox.show_all()
 
     def onQueueChanged(self,q):
         self.store.clear()
@@ -140,4 +125,3 @@ class QueueDialog(dialog.T):
         iter = self.store.get_iter_first()
         if iter:
             self.store.set_value(iter,2,progress)
-    

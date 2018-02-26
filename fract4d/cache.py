@@ -33,7 +33,6 @@ class T:
         self.createPickledFile(self._indexName(), self.files)
     
     def clear(self):
-        if not os: return # get 'NoneType not callable' sometimes otherwise, which seems weird
         for f in os.listdir(self.dir):
             try:
                 os.remove(os.path.join(self.dir,f))

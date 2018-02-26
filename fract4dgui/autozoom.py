@@ -7,17 +7,13 @@ from gi.repository import Gtk
 
 from . import dialog
 
-def show_autozoom(parent,f):
-    AutozoomDialog.show(parent,f)
-    
 class AutozoomDialog(dialog.T):
     def __init__(self,main_window,f):
         dialog.T.__init__(
             self,
             _("Autozoom"),
             main_window,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
-            destroy_with_parent=True
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         )
 
         self.f = f
@@ -58,11 +54,8 @@ class AutozoomDialog(dialog.T):
         self.table.attach(self.minsize_entry,
                           1,2,1,2,
                           Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
-
-    def show(parent, f):
-        dialog.T.reveal(AutozoomDialog, True, parent, None, f)
-
-    show = staticmethod(show)
+        
+        self.vbox.show_all()
 
     def onResponse(self,widget,id):
         self.zoombutton.set_active(False)

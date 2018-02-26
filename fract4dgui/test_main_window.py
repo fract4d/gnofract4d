@@ -9,10 +9,14 @@ import os
 import sys
 import random
 
+import gi
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
+
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import fractal
@@ -116,17 +120,6 @@ class Test(unittest.TestCase):
         finally:
             if os.path.exists("mygood.png"):
                 os.remove("mygood.png")
-            
-    def testLoadFormula(self):
-        # load good formula file
-        result = self.mw.load_formula("../formulas/fractint.cfrm")
-        self.assertEqual(result, True, "failed to load formula")
-
-        #load missing file
-        result = self.mw.load_formula("/no_such_dir/wibble.frm")
-        self.assertEqual(result, False, "load bad formula succeeded")
-        self.assertEqual(
-            self.mw.errors[0][0], "Error opening /no_such_dir/wibble.frm")
 
     def testPreview(self):
         'Check for problem where preview differs from main image'
@@ -140,12 +133,8 @@ class Test(unittest.TestCase):
         self.assertEqual(fct1, fct2)
         
     def testDialogs(self):
-        self.mw.director(None,None)
         self.mw.settings(None,None)
-        self.mw.preferences(None,None)
-        self.mw.autozoom(None,None)
         self.mw.contents(None,None)
-        self.mw.browser(None,None)
         self.mw.painter(None,None)
         
     def testFileDialogs(self):

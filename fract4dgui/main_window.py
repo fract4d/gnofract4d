@@ -2,22 +2,18 @@
 
 import sys
 import os
-import signal
-import copy
 import math
 import re
-import urllib.request, urllib.parse, urllib.error
 
 from gi.repository import Gdk, Gtk
 
-# If we haven't been installed (we're running from the dir we 
+# If we haven't been installed (we're running from the dir we
 # were unpacked in) this is where fract4d is.
 
-from fract4d import fractal,fc,fract4dc,image, fracttypes, fractconfig
-
+from fract4d import fractal, fc, image, fracttypes, fractconfig
 
 from . import gtkfractal, model, preferences, autozoom, settings, toolbar
-from . import undo, browser, fourway, angle, utils, hig, painter
+from . import browser, fourway, angle, utils, hig, painter
 from . import icons, renderqueue, director
 
 re_ends_with_num = re.compile(r'\d+\Z')
@@ -25,17 +21,15 @@ re_cleanup = re.compile(r'[\s\(\)]+')
 
 class MainWindow:
     def __init__(self, extra_paths=[]):
-        self.quit_when_done =False
+        self.quit_when_done = False
         self.save_filename = None
         self.compress_saves = True
         self.f = None
         self.use_preview = True
 
         self.four_d_sensitives = []
-        # window widget
 
-        self.set_icon()
-        
+        # window widget
         self.window = Gtk.Window()
         self.window.set_default_size(900,700)
         self.window.connect('delete-event', self.quit)
@@ -66,7 +60,8 @@ class MainWindow:
 
         # create fractal compiler and load standard formula and
         # coloring algorithm files
-        self.compiler = fc.instance
+        self.compiler = fc.Compiler()
+        self.compiler.update_from_prefs(fractconfig.instance)
 
         for path in extra_paths:
             self.compiler.add_func_path(path)
@@ -76,7 +71,7 @@ class MainWindow:
         self.vbox = Gtk.VBox()
         self.window.add(self.vbox)
         
-        self.f = gtkfractal.T(self.compiler,self)            
+        self.f = gtkfractal.T(self.compiler,self)
         self.f.freeze() # create frozen - main prog will thaw us
         self.create_subfracts(self.f)
         
@@ -98,20 +93,28 @@ class MainWindow:
             'image-preferences-changed',
             self.on_prefs_changed)
 
-        browser.update(self.f.forms[0].funcFile, self.f.forms[0].funcName)
-            
         self.create_ui()
         self.create_toolbar()
-        self.create_fractal(self.f)
+        self.panes = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
+        self.vbox.add(self.panes)
         self.create_status_bar()
+
+        self.create_fractal(self.f)
+        self.panes.pack1(self.swindow, resize=True, shrink=True)
+
+        # show everything apart from the settings pane
+        self.window.show_all()
+
+        self.settingsPane = settings.SettingsPane(self, self.f)
+        self.panes.pack2(self.settingsPane, resize=False, shrink=False)
 
         # create these properly later to avoid 'end from FAM server connection' messages
         self.saveas_fs = None
         self.saveimage_fs = None
         self.hires_image_fs = None
-        self.open_fs = None        
+        self.open_fs = None
         
-        self.window.show_all()
+        self.renderQueue = renderqueue.T()
 
         self.update_subfract_visibility(False)
         self.populate_warpmenu(self.f)
@@ -127,6 +130,9 @@ class MainWindow:
                           _("Reducing Periodicity Tolerance")]
 
         self.f.set_saved(True)
+
+        self.painterDialog = painter.PainterDialog(self.window, self.f)
+        self.renderqueueDialog = renderqueue.QueueDialog(self.window, self.f, self.renderQueue)
 
     def create_rtd_widgets(self):
         table = Gtk.Table(n_rows=2,n_columns=3,homogeneous=False)
@@ -159,7 +165,7 @@ class MainWindow:
             1, 2, 1, 2,
             Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
             Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            1,1)        
+            1,1)
         return table
     
     def get_file_save_chooser(self, title, parent, patterns=[]):
@@ -188,14 +194,14 @@ class MainWindow:
         return filter
 
     def add_filters(self,chooser):
-        param_patterns = [ "*.fct" ]
+        param_patterns = ["*.fct"]
         param_filter = self.get_filter(
             _("Parameter Files"), param_patterns)
 
         chooser.add_filter(param_filter)
 
         formula_patterns = ["*.frm", "*.ufm", "*.ucl", "*.cfrm", "*.uxf"]
-        formula_filter = self.get_filter(            
+        formula_filter = self.get_filter(
             _("Formula Files"), formula_patterns)
         chooser.add_filter(formula_filter)
 
@@ -205,7 +211,7 @@ class MainWindow:
         chooser.add_filter(gradient_filter)
 
         all_filter = self.get_filter(
-            _("All Gnofract 4D Files"), 
+            _("All Gnofract 4D Files"),
             param_patterns + formula_patterns + gradient_patterns)
 
         chooser.add_filter(all_filter)
@@ -215,7 +221,7 @@ class MainWindow:
     def get_file_open_chooser(self, parent):
         chooser = Gtk.FileChooserDialog(
             title, parent, Gtk.FileChooserAction.OPEN,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK, 
+            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
              Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
 
         self.add_filters(chooser)
@@ -223,7 +229,7 @@ class MainWindow:
         return chooser
 
     def get_save_as_fs(self):
-        if self.saveas_fs == None:
+        if self.saveas_fs is None:
             self.saveas_fs = self.get_file_save_chooser(
                 _("Save Parameters"),
                 self.window,
@@ -231,7 +237,7 @@ class MainWindow:
         return self.saveas_fs
     
     def get_save_image_as_fs(self):
-        if self.saveimage_fs == None:
+        if self.saveimage_fs is None:
             self.saveimage_fs = self.get_file_save_chooser(
                 _("Save Image"),
                 self.window,
@@ -239,7 +245,7 @@ class MainWindow:
         return self.saveimage_fs
 
     def get_save_hires_image_as_fs(self):
-        if self.hires_image_fs == None:
+        if self.hires_image_fs is None:
             self.saveimage_fs = self.get_file_save_chooser(
                 _("Save High Resolution Image"),
                 self.window,
@@ -251,15 +257,15 @@ class MainWindow:
         return self.saveimage_fs
         
     def get_open_fs(self):
-        if self.open_fs != None:
+        if self.open_fs is not None:
             return self.open_fs
 
         self.open_fs = Gtk.FileChooserDialog(
-            title=_("Open File"), transient_for=self.window, 
+            title=_("Open File"), transient_for=self.window,
             action=Gtk.FileChooserAction.OPEN)
 
         self.open_fs.add_buttons(
-            Gtk.STOCK_OK, Gtk.ResponseType.OK, 
+            Gtk.STOCK_OK, Gtk.ResponseType.OK,
             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
 
         self.add_filters(self.open_fs)
@@ -271,9 +277,9 @@ class MainWindow:
             try:
                 preview.loadFctFile(open(filename))
                 preview.draw_image(False, False)
-                active=True
+                active = True
             except Exception as err:
-                active=False
+                active = False
             chooser.set_preview_widget_active(active)
                 
         self.open_fs.set_preview_widget(self.open_preview.widget)
@@ -281,16 +287,7 @@ class MainWindow:
             'update-preview', on_update_preview, self.open_preview)
 
         return self.open_fs
-    
-    def set_icon(self):
-        return # can't get this to work
-        try:
-            Gtk.window_set_default_icon_list([icons.logo.pixbuf])
-        except Exception as err:
-            print(err)
-            # not supported in this pyGtk. Oh well...
-            pass
-        
+
     def update_subfract_visibility(self,visible):
         if visible:
             for f in self.subfracts:
@@ -322,7 +319,7 @@ class MainWindow:
             f.draw_image(aa,auto_deepen)
             
     def create_subfracts(self,f):
-        self.subfracts = [ None ] * 12
+        self.subfracts = [None] * 12
         for i in range(12):
             self.subfracts[i] = gtkfractal.SubFract(
                 self.compiler,f.width//4,f.height//4)
@@ -383,14 +380,8 @@ class MainWindow:
         f.connect('status_changed',self.status_changed)
         f.connect('stats-changed', self.stats_changed)
 
-        hbox = Gtk.HBox()
-        hbox.pack_start(self.swindow, True, True, 0)
-        self.control_box = Gtk.VBox()
-        hbox.pack_start(self.control_box, False, False, 0)
-        self.vbox.pack_start(hbox, True, True, 0)
-
-    def draw(self):        
-        nt = preferences.userPrefs.getint("general","threads") 
+    def draw(self):
+        nt = preferences.userPrefs.getint("general","threads")
         self.f.set_nthreads(nt)
 
         self.f.draw_image()
@@ -406,10 +397,12 @@ class MainWindow:
         (w,h) = (prefs.getint("display","width"),
                  prefs.getint("display","height"))
         if self.show_subfracts:
-            w = w //2 ; h = h // 2
+            w = w // 2
+            h = h // 2
             for f in self.subfracts:
                 f.set_size(w//2, h//2)
-            w += 2; h += 2
+            w += 2
+            h += 2
         self.f.set_size(w,h)
             
         self.f.set_antialias(
@@ -427,13 +420,13 @@ class MainWindow:
             self.draw()
 
     def display_filename(self):
-        if self.filename == None:
+        if self.filename is None:
             return _("(Untitled %s)") % self.f.get_func_name()
         else:
             return self.filename
 
     def base_filename(self, extension):
-        if self.filename == None:
+        if self.filename is None:
             base_name = self.f.get_func_name()
             base_name = re_cleanup.sub("_", base_name) + extension
         else:
@@ -525,7 +518,7 @@ class MainWindow:
             text = self.statuses[status] % self.f.maxiter
         elif status == 0:
             # done
-            text = self.statuses[status] 
+            text = self.statuses[status]
             if self.save_filename:
                 self.save_image_file(self.save_filename)
             if self.quit_when_done:
@@ -573,7 +566,7 @@ class MainWindow:
     def get_toggle_actions(self):
         return [
             ('ToolsExplorerAction', icons.explorer.stock_name, _('_Explorer'),
-             '<control>E', _('Create random fractals similar to this one'), 
+             '<control>E', _('Create random fractals similar to this one'),
              self.toggle_explorer)
             ]
             
@@ -582,32 +575,32 @@ class MainWindow:
             ('FileMenuAction', None, _('_File')),
             ('FileOpenAction', Gtk.STOCK_OPEN, _('_Open...'), 
              None, _('Open a Parameter or Formula File'), self.open),
-            ('FileSaveAction', Gtk.STOCK_SAVE, None, 
+            ('FileSaveAction', Gtk.STOCK_SAVE, None,
              None, _("Save current parameters"), self.save),
             ('FileSaveAsAction', Gtk.STOCK_SAVE_AS, None,
              '<control><shift>S', _("Save current parameters in a new location"), self.saveas),
             ('FileSaveImageAction', None, _('Save Current _Image'),
              '<control>I', _('Save the current image'), self.save_image),
             ('FileSaveHighResImageAction', None, _('Save _High-Res Image...'),
-             '<control><shift>I', _('Save a higher-resolution version of the current image'), 
+             '<control><shift>I', _('Save a higher-resolution version of the current image'),
              self.save_hires_image),
 
             # FIXME: UI merging would seem to be better, but it's a bit bloody complicated
             # There's a special widget in pygtk 2.10 for this but that's too new, not all
             # interesting distributions have it
-            ('FileRecent1Action', None, _('_1'), None, None, 
+            ('FileRecent1Action', None, _('_1'), None, None,
              lambda *args : self.load_recent_file(1)),
-            ('FileRecent2Action', None, _('_2'), None, None, 
+            ('FileRecent2Action', None, _('_2'), None, None,
              lambda *args : self.load_recent_file(2)),
-            ('FileRecent3Action', None, _('_3'), None, None, 
+            ('FileRecent3Action', None, _('_3'), None, None,
              lambda *args : self.load_recent_file(3)),
-            ('FileRecent4Action', None, _('_4'), None, None, 
+            ('FileRecent4Action', None, _('_4'), None, None,
              lambda *args : self.load_recent_file(4)),
 
-            ('FileQuitAction', Gtk.STOCK_QUIT, None, 
+            ('FileQuitAction', Gtk.STOCK_QUIT, None,
              None, _('Quit'), self.quit),
 
-            ('EditMenuAction', None, _('_Edit')),                
+            ('EditMenuAction', None, _('_Edit')),
             ('EditFractalSettingsAction', Gtk.STOCK_PROPERTIES, _('_Fractal Settings...'),
              '<control>F', _('Edit the fractal\'s settings'), self.settings),
             ('EditPreferencesAction', Gtk.STOCK_PREFERENCES, None,
@@ -644,11 +637,11 @@ class MainWindow:
             ('HelpCommandReferenceAction', None, _('Command _Reference'),
              None, _('A list of keyboard and mouse shortcuts'), self.command_reference),
             ('HelpFormulaReferenceAction', None, _('_Formula Reference'),
-             None, _('Reference for functions and objects in the formula compiler'), 
+             None, _('Reference for functions and objects in the formula compiler'),
              self.formula_reference),
             ('HelpReportBugAction', icons.face_sad.stock_name, _('_Report a Bug'),
              '', _('Report a bug you\'ve found'), self.report_bug),
-            ('HelpAboutAction', Gtk.STOCK_ABOUT, _('_About'), 
+            ('HelpAboutAction', Gtk.STOCK_ABOUT, _('_About'),
              None, _('About Gnofract 4D'), self.about)
             ]
 
@@ -709,26 +702,29 @@ class MainWindow:
             self.manager.get_widget("/MenuBar/FileMenu/Recent3"),
             self.manager.get_widget("/MenuBar/FileMenu/Recent4")]
 
-
     def director(self,*args):
         """Display the Director (animation) window."""
-        director.show(self.window,self.control_box, self.f, True)
+        dialog = director.DirectorDialog(self.window, self.f)
+        dialog.run()
+        dialog.destroy()
         
     def browser(self,*args):
         """Display formula browser."""
-        browser.show(self.window,self.f)
+        dialog = browser.BrowserDialog(self, self.f)
+        dialog.run()
+        dialog.destroy()
 
     def randomize_colors(self,*args):
         """Create a new random color scheme."""
         self.f.make_random_colors(8)
 
     def painter(self,*args):
-        painter.show(self.window,self.f)
+        self.painterDialog.show()
 
     def add_to_queue(self,name,w,h):
-        renderqueue.show(self.window,None,self.f)
-        renderqueue.instance.add(self.f.f,name,w,h)
-        renderqueue.instance.start()
+        self.renderqueueDialog.show()
+        self.renderQueue.add(self.f.f,name,w,h)
+        self.renderQueue.start()
         
     def toggle_explorer(self, action):
         """Enter (or leave) Explorer mode."""
@@ -839,7 +835,7 @@ class MainWindow:
         
         self.add_fourway(
             _("pan"),
-            _("Pan around the image"), 0, True)
+            _("Pan around the image"), 0, False)
         self.add_fourway(
             _("warp"),
             _("Mutate the image by moving along the other 2 axes"), 2, True)
@@ -859,7 +855,7 @@ class MainWindow:
         self.toolbar.add_widget(
             res_menu,
             _("Resolution"),
-            _("Change fractal's resolution"))            
+            _("Change fractal's resolution"))
 
         # undo/redo
         self.toolbar.add_space()
@@ -932,12 +928,12 @@ class MainWindow:
         self.resolutions = [
             (320,240), (640,480),
             (800,600), (1024, 768),
-            (1280, 800), (1280, 960), (1280,1024), 
+            (1280, 800), (1280, 960), (1280,1024),
             (1400, 1050), (1440, 900),
-            (1600,1200), (1680, 1050), 
+            (1600,1200), (1680, 1050),
             (1920, 1200), (2560, 1600)]
 
-        res_names= [ "%dx%d" % (w,h) for (w,h) in self.resolutions]
+        res_names= ["%dx%d" % (w,h) for (w,h) in self.resolutions]
         
         res_menu = utils.create_option_menu(res_names)
 
@@ -992,12 +988,12 @@ class MainWindow:
         my_angle.axis = axis
 
         self.toolbar.add_widget(
-            my_angle.widget,
+            my_angle,
             tip,
             tip)
 
         if is4dsensitive:
-            self.four_d_sensitives.append(my_angle.widget)
+            self.four_d_sensitives.append(my_angle)
         
     def update_angle_widget(self,f,widget):
         widget.set_value(f.get_param(widget.axis))
@@ -1027,7 +1023,6 @@ class MainWindow:
     def on_release_fourway(self,widget,dx,dy):
         self.f.nudge(dx/10.0, dy/10.0, widget.axis)
 
-
     def populate_warpmenu(self,f):
         params = f.forms[0].params_of_type(fracttypes.Complex, True)
         if params == []:
@@ -1035,9 +1030,10 @@ class MainWindow:
         else:
             utils.set_menu_from_list(self.warpmenu, ["None"] + params)
             p = f.warp_param
-            if p == None: p = "None"
+            if p is None:
+                p = "None"
             utils.set_selected_value(self.warpmenu, p)
-            self.warpmenu.show()                
+            self.warpmenu.show()
 
     def add_warpmenu(self,tip):
         self.warpmenu = utils.create_option_menu(["None"])
@@ -1047,7 +1043,7 @@ class MainWindow:
             if param == "None":
                 param = None
 
-            f.set_warp_param(param)                
+            f.set_warp_param(param)
             self.on_formula_change(f)
             
         #self.populate_warpmenu(self.f,warpmenu)
@@ -1064,7 +1060,7 @@ class MainWindow:
     def add_fourway(self, name, tip, axis, is4dsensitive):
         my_fourway = fourway.T(name)
         self.toolbar.add_widget(
-            my_fourway.widget,
+            my_fourway,
             tip,
             None)
 
@@ -1074,7 +1070,7 @@ class MainWindow:
         my_fourway.connect('value-changed', self.on_release_fourway)
 
         if is4dsensitive:
-            self.four_d_sensitives.append(my_fourway.widget)
+            self.four_d_sensitives.append(my_fourway)
 
     def update_recent_files(self, file):
         self.recent_files = preferences.userPrefs.update_list("recent_files",file,4)
@@ -1096,10 +1092,10 @@ class MainWindow:
         self.load(self.recent_files[file_num-1])
         
     def save_file(self,file):
-        fileHandle=None
+        fileHandle = None
         try:
             comp = preferences.userPrefs.getboolean("general","compress_fct")
-            fileHandle = open(file,'w') 
+            fileHandle = open(file,'w')
             self.f.save(fileHandle,compress=comp)
             self.set_filename(file)
             self.update_recent_files(file)
@@ -1109,12 +1105,12 @@ class MainWindow:
                 _("Error saving to file %s") % file, err)
             return False
         finally:
-            if fileHandle != None:
+            if fileHandle is not None:
                 fileHandle.close()
                 
     def save(self,action):
         """Save the current parameters."""
-        if self.filename == None:
+        if self.filename is None:
             self.saveas(action)
         else:
             self.save_file(self.filename)
@@ -1150,7 +1146,7 @@ class MainWindow:
                 transient_for=self.window,
                 proceed_button=_("Overwrite"))
 
-            response = d.run()                
+            response = d.run()
             d.destroy()
             return response == Gtk.ResponseType.ACCEPT
         else:
@@ -1164,7 +1160,7 @@ class MainWindow:
         d.destroy()
         
     def show_error_message(self,message,exception=None):
-        if exception == None:
+        if exception is None:
             secondary_message = ""
         else:
             if isinstance(exception,EnvironmentError):
@@ -1215,11 +1211,13 @@ class MainWindow:
         
     def settings(self,*args):
         """Show fractal settings controls."""
-        settings.show_settings(self.window, self.control_box, self.f, False)
+        self.settingsPane.show()
         
     def preferences(self,*args):
         """Change current preferences."""
-        preferences.show_preferences(self.window, self.f)
+        dialog = preferences.PrefsDialog(self.window, self.f)
+        dialog.run()
+        dialog.destroy()
         
     def undo(self,*args):
         """Undo the last operation."""
@@ -1269,7 +1267,9 @@ class MainWindow:
 
     def autozoom(self,*args):
         """Display AutoZoom dialog."""
-        autozoom.show_autozoom(self.window, self.f)
+        dialog = autozoom.AutozoomDialog(self.window, self.f)
+        dialog.run()
+        dialog.destroy()
 
     def contents(self,*args):
         """Show help file contents page."""
@@ -1282,7 +1282,7 @@ class MainWindow:
         self.display_help("formref")
 
     def report_bug(self, *args):
-        url="https://github.com/edyoung/gnofract4d/issues"
+        url = "https://github.com/edyoung/gnofract4d/issues"
         utils.launch_browser(
             preferences.userPrefs,
             url,
@@ -1312,7 +1312,7 @@ class MainWindow:
                 _("Can't find help file '%s'") % abs_file)
             return
         
-        if section == None:
+        if section is None:
             anchor = ""
         else:
             anchor = "#" + section
@@ -1320,20 +1320,19 @@ class MainWindow:
         if yelp_path:
             os.system("yelp ghelp://%s%s >/dev/null 2>&1 &" % (abs_file, anchor))
         else:
-            url="file://%s%s" % (abs_file, anchor)
+            url = "file://%s%s" % (abs_file, anchor)
             utils.launch_browser(
                 preferences.userPrefs,
                 url,
                 self.window)
-            
-        
+
     def open(self,action):
         """Open a parameter or formula file."""
         fs = self.get_open_fs()
         fs.show_all()
         
         while True:
-            result = fs.run()            
+            result = fs.run()
             if result == Gtk.ResponseType.OK:
                 if self.load(fs.get_filename()):
                     break
@@ -1354,7 +1353,6 @@ class MainWindow:
                 fh.close()
             self.update_recent_files(file)
             self.set_filename(file)
-            browser.update(self.f.forms[0].funcFile, self.f.forms[0].funcName)
             return True
         except Exception as err:
             self.show_error_message(_("Error opening %s") % file,err)
@@ -1363,10 +1361,10 @@ class MainWindow:
     def load_formula(self,file):
         try:
             self.compiler.load_formula_file(file)
-            type = browser.guess_type(file)
-            browser.set_type(type)
-            browser.update(file)
-            browser.show(self.window, self.f, type)
+            dialog = browser.BrowserDialog(self, self.f)
+            dialog.load_file(file)
+            dialog.run()
+            dialog.destroy()
 
             return True
         except Exception as err:
@@ -1374,13 +1372,13 @@ class MainWindow:
             return False
 
     def check_save_fractal(self):
-        "Prompt user to save if necessary. Return whether to quit"        
+        "Prompt user to save if necessary. Return whether to quit"
         while not self.f.is_saved():
             d = hig.SaveConfirmationAlert(
                 document_name=self.display_filename(),
                 parent=self.window)
 
-            response = d.run()                
+            response = d.run()
             d.destroy()
             if response == Gtk.ResponseType.ACCEPT:
                 self.save(None)
@@ -1389,13 +1387,13 @@ class MainWindow:
             elif response == hig.SaveConfirmationAlert.NOSAVE:
                 break
 
-        while not renderqueue.instance.empty():
+        while not self.renderQueue.empty():
             d = hig.ConfirmationAlert(
                 primary=_("Render queue still processing."),
                 secondary=_("If you proceed, queued images will not be saved"),
                 proceed_button=_("Close anyway"))
                 
-            response = d.run()                
+            response = d.run()
             d.destroy()
             if response == Gtk.ResponseType.ACCEPT:
                 break
@@ -1426,7 +1424,7 @@ class MainWindow:
         finally:
             Gtk.main_quit()
             if 'win' == sys.platform[:3]:
-                exit(0);
+                exit(0)
 #            return False
 
     def apply_options(self,opts):

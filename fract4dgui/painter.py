@@ -3,29 +3,19 @@
 from gi.repository import Gtk
 
 from . import dialog
-from . import browser
-from . import utils
-
-def show(parent,f):
-    PainterDialog.show(parent,f)
 
 class PainterDialog(dialog.T):
-    def show(parent, f):
-        dialog.T.reveal(PainterDialog, True, parent, None, f)
-
-    show = staticmethod(show)
-    
     def __init__(self,main_window,f):
         dialog.T.__init__(
             self,
             _("Painter"),
             main_window,
             (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
-            destroy_with_parent=True)
+            modal=False
+        )
 
-        self.main_window = main_window
         self.f = f
-        self.paint_toggle = Gtk.ToggleButton(_("Painting"))
+        self.paint_toggle = Gtk.ToggleButton.new_with_label(_("Painting"))
         self.paint_toggle.set_active(True)
         self.paint_toggle.connect('toggled',self.onChangePaintMode)
         self.csel = Gtk.ColorSelection()
@@ -42,4 +32,4 @@ class PainterDialog(dialog.T):
                id == Gtk.ResponseType.NONE or \
                id == Gtk.ResponseType.DELETE_EVENT:
             self.hide()
-            self.f.set_paint_mode(False,None) 
+            self.f.set_paint_mode(False,None)

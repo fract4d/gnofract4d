@@ -38,7 +38,7 @@ class Test(unittest.TestCase):
     def testAddToWindow(self):
         w = Gtk.Window()
         f = fourway.T("wibble")
-        w.add(f.widget)
+        w.add(f)
         w.show()
         Gtk.main_iteration()
 

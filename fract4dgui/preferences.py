@@ -1,14 +1,8 @@
 # GUI for user settings
 
-import os
-import sys
+from gi.repository import Gtk, GObject
 
-from gi.repository import Gtk
-from gi.repository import GObject
-
-from . import dialog
-from . import utils
-
+from . import dialog, utils
 from fract4d import fractconfig
 
 class Preferences(GObject.GObject):
@@ -67,10 +61,8 @@ class Preferences(GObject.GObject):
 GObject.type_register(Preferences)
 
 userPrefs = Preferences(fractconfig.instance)
-    
-def show_preferences(parent,f):
-    PrefsDialog.show(parent,f)
-    
+
+
 class PrefsDialog(dialog.T):
     def __init__(self,main_window,f):
         global userPrefs
@@ -78,8 +70,8 @@ class PrefsDialog(dialog.T):
             self,
             _("Gnofract 4D Preferences"),
             main_window,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
-            destroy_with_parent=True)
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        )
 
         self.dirchooser = utils.get_directory_chooser(
             _("Select a Formula Directory"),
@@ -94,13 +86,9 @@ class PrefsDialog(dialog.T):
         self.create_compiler_options_page()
         self.create_general_page()
         self.create_helper_options_page()
+        self.vbox.show_all()
         
         self.set_size_request(500,-1)
-
-    def show(parent, f):
-        dialog.T.reveal(PrefsDialog, True, parent, None, f)
-
-    show = staticmethod(show)
 
     def show_error(self,message):
         d = Gtk.MessageDialog(self, Gtk.DialogFlags.MODAL,
@@ -125,7 +113,7 @@ class PrefsDialog(dialog.T):
                 except ValueError:
                     Gtk.idle_add(
                         self.show_error,
-                        "Invalid value for width: '%s'. Must be an integer" % \
+                        "Invalid value for width: '%s'. Must be an integer" %
                         entry.get_text())
                     return False
 
@@ -157,7 +145,7 @@ class PrefsDialog(dialog.T):
                 except ValueError:
                     utils.idle_add(
                         self.show_error,
-                        "Invalid value for height: '%s'. Must be an integer" % \
+                        "Invalid value for height: '%s'. Must be an integer" %
                         entry.get_text())
                     return False
 
@@ -235,11 +223,11 @@ class PrefsDialog(dialog.T):
         self.path_list = Gtk.ListStore(
             GObject.TYPE_STRING)
         
-        path_treeview = Gtk.TreeView (model=self.path_list)
+        path_treeview = Gtk.TreeView(model=self.path_list)
 
-        renderer = Gtk.CellRendererText ()
-        column = Gtk.TreeViewColumn (_('_Directory'), renderer, text=0)
-        path_treeview.append_column (column)
+        renderer = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn(_('_Directory'), renderer, text=0)
+        path_treeview.append_column(column)
         path_treeview.set_headers_visible(False)
         
         paths = self.prefs.get_list(section_name)
@@ -247,7 +235,7 @@ class PrefsDialog(dialog.T):
             iter = self.path_list.append()
             self.path_list.set(iter,0,path)
 
-        return path_treeview 
+        return path_treeview
 
     def update_prefs(self,name, model):
         list = []
@@ -265,7 +253,7 @@ class PrefsDialog(dialog.T):
         if result == Gtk.ResponseType.OK:
             path = self.dirchooser.get_filename()
 
-            model = pathlist.get_model() 
+            model = pathlist.get_model()
             iter = model.append()
             
             model.set(iter,0,path)
@@ -305,10 +293,10 @@ class PrefsDialog(dialog.T):
         table.attach(flags_label,0,1,1,2,0,0,2,2)
         flags_label.set_mnemonic_widget(entry)
 
-        sw = Gtk.ScrolledWindow ()
-        sw.set_shadow_type (Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy (Gtk.PolicyType.NEVER,
-                       Gtk.PolicyType.AUTOMATIC)
+        sw = Gtk.ScrolledWindow()
+        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        sw.set_policy(Gtk.PolicyType.NEVER,
+                      Gtk.PolicyType.AUTOMATIC)
 
         form_path_section = "formula_path"
 
@@ -331,8 +319,7 @@ class PrefsDialog(dialog.T):
         remove_button = Gtk.Button.new_from_stock(Gtk.STOCK_REMOVE)
         remove_button.connect('clicked', self.remove_dir, form_path_section, pathlist)
         table.attach(remove_button,0,1,4,5,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
-        
-        
+
     def create_helper_options_page(self):
         table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
         label = Gtk.Label(label=_("_Helpers"))
@@ -460,4 +447,3 @@ class PrefsDialog(dialog.T):
         aalabel.set_use_underline(True)
         aalabel.set_mnemonic_widget(optMenu)
         table.attach(aalabel,0,1,5,6,0,0,2,2)
-        

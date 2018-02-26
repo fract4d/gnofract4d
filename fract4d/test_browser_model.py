@@ -65,7 +65,8 @@ class Test(testbase.TestBase):
 
     def testSetType(self):
         bm = Wrapper()
-        self.assertEqual([], bm.type_changelist)
+        bm.set_type(browser_model.FRACTAL)
+        self.assertEqual([browser_model.FRACTAL], bm.type_changelist)
         self.assertEqual(browser_model.FRACTAL, bm.current_type)
         self.assertEqual(            
             bm.typeinfo[bm.current_type], bm.current)
@@ -73,11 +74,12 @@ class Test(testbase.TestBase):
         bm.set_type(browser_model.INNER)
         self.assertEqual(browser_model.INNER, bm.current_type)
         self.assertEqual(
-            [browser_model.INNER],
+            [browser_model.FRACTAL, browser_model.INNER],
             bm.type_changelist)
 
     def testFileList(self):
         bm = browser_model.T(g_comp)
+        bm.set_type(browser_model.FRACTAL)
         self.assertNotEqual(bm.current.files, [])
         self.assertListSorted(bm.current.files)
         
@@ -91,6 +93,7 @@ class Test(testbase.TestBase):
 
     def testSetTypeUpdatesFnames(self):
         bm = browser_model.T(g_comp)
+        bm.set_type(browser_model.FRACTAL)
 
         bm.current.fname = "fish"
         bm.current.formula = "haddock"
@@ -107,6 +110,7 @@ class Test(testbase.TestBase):
 
     def testSetFile(self):
         bm = Wrapper()
+        bm.set_type(browser_model.FRACTAL)
         bm.set_file("gf4d.frm")
         self.assertEqual("gf4d.frm",bm.current.fname)
         self.assertEqual(
@@ -116,6 +120,7 @@ class Test(testbase.TestBase):
 
     def testSetBadFile(self):
         bm = browser_model.T(g_comp)
+        bm.set_type(browser_model.FRACTAL)
         self.assertRaises(IOError,bm.set_file,"nonexistent.frm")
 
     def assertListSorted(self,l):
@@ -126,6 +131,7 @@ class Test(testbase.TestBase):
         
     def testFormulasSorted(self):
         bm = browser_model.T(g_comp)
+        bm.set_type(browser_model.FRACTAL)
         bm.set_file("gf4d.frm")
         self.assertListSorted(bm.current.formulas)
         
@@ -141,6 +147,7 @@ class Test(testbase.TestBase):
 
     def testSetFormula(self):
         bm = Wrapper()
+        bm.set_type(browser_model.FRACTAL)
         bm.set_file("gf4d.frm")
         bm.set_formula("Mandelbrot")
         self.assertEqual("Mandelbrot",bm.current.formula)
@@ -149,6 +156,7 @@ class Test(testbase.TestBase):
 
     def testSetFileResetsFormula(self):
         bm = Wrapper()
+        bm.set_type(browser_model.FRACTAL)
         bm.set_file("gf4d.frm")
         bm.set_formula("Mandelbrot")
         bm.set_file("fractint-g4.frm")
@@ -158,7 +166,9 @@ class Test(testbase.TestBase):
 
     def testUpdate(self):
         bm = Wrapper()
-        bm.update("gf4d.frm","Mandelbrot")
+        bm.set_type(browser_model.FRACTAL)
+        bm.set_file("gf4d.frm")
+        bm.set_formula("Mandelbrot")
         self.assertEqual("gf4d.frm",bm.current.fname)
         self.assertEqual("Mandelbrot", bm.current.formula)
 
@@ -172,6 +182,7 @@ class Test(testbase.TestBase):
 
     def testApplyStatus(self):
         bm = browser_model.T(g_comp)
+        bm.set_type(browser_model.FRACTAL)
         self.assertEqual(False, bm.current.can_apply)
 
         bm.set_file("gf4d.frm")
@@ -198,9 +209,7 @@ class Test(testbase.TestBase):
         files = bm.current.files
         self.assertEqual(1,files.count("blatte1.ugr"))
 
-    def testInstance(self):
-        x = browser_model.instance
-        
+
 def suite():
     return unittest.makeSuite(Test,'test')
 
