@@ -9,29 +9,26 @@
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
-#                                                                             
+#
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-#                                                                             
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
 
-
-from gi.repository import Gtk
-from gi.repository import GObject
-import re
 import math
-import sys
 import os
-import math
-from fract4d import animation, fractal, fc, fractconfig
 
-class FCTGeneration:    
+from gi.repository import Gtk, GObject
+
+from fract4d import fractal, fc, fractconfig
+
+class FCTGeneration:
     def __init__(self,dir_bean,parent):
         self.dialog=Gtk.Dialog(
             "Generating .fct files...",parent,
@@ -52,7 +49,7 @@ class FCTGeneration:
             self.show_error("Could not find gnofract4d version. Can not continue")
             yield False
             return
-        #-------------loads gnofract4d libs----------------------------
+        # -------------loads gnofract4d libs----------------------------
         try:
             self.fractal=fractal
             self.compiler=fc.Compiler()
@@ -64,8 +61,8 @@ class FCTGeneration:
             self.show_error("Gnofract4d libs could not be found")
             yield False
             return
-        #--------------------------------------------------------------
-        #find values from base keyframe first
+        # --------------------------------------------------------------
+        # find values from base keyframe first
         try:
             ret=self.find_values(self.dir_bean.get_base_keyframe())
             if len(ret)==11:
@@ -79,7 +76,7 @@ class FCTGeneration:
             yield False
             return
         try:
-            #find values and duration from all keyframes
+            # find values and duration from all keyframes
             for i in range(self.dir_bean.keyframes_count()):
                 ret=self.find_values(self.dir_bean.get_keyframe_filename(i))
                 if len(ret)==11:
@@ -93,14 +90,14 @@ class FCTGeneration:
                     yield False
                     return
                 self.durations.append(self.dir_bean.get_keyframe_duration(i))
-            #interpolate and write .fct files
+            # interpolate and write .fct files
             for i in range(self.dir_bean.keyframes_count()):
-                if self.running==False:
+                if self.running is False:
                     yield False
                     break
                 self.write_fct_file(i)
                 percent=float(i+1)/float(self.dir_bean.keyframes_count())
-                if self.running==False:
+                if self.running is False:
                     break
                 self.pbar.set_fraction(percent)
                 self.pbar.set_text(str(percent*100)+"%")
@@ -110,10 +107,10 @@ class FCTGeneration:
             yield False
             return
             
-        if self.running==False:
+        if self.running is False:
             yield False
             return
-        self.running=False
+        self.running = False
         self.dialog.destroy()
         yield False
 
@@ -130,7 +127,7 @@ class FCTGeneration:
         pipe.close()
         return version
             
-    #finding x,y,z,w,size values from argument file and returns them as tuple
+    # finding x,y,z,w,size values from argument file and returns them as tuple
     def find_values(self,file):
         f=self.fractal.T(self.compiler)
         f.loadFctFile(open(file))
@@ -147,18 +144,18 @@ class FCTGeneration:
         zw=f.params[f.ZWANGLE]
         return (x,y,z,w,size,xy,xz,xw,yz,yw,zw)
     
-    #interpolate values and writes .fct files
+    # interpolate values and writes .fct files
     def write_fct_file(self,iteration):
-        #sum of all frames, needed for padding output files
+        # sum of all frames, needed for padding output files
         sumN=sum(self.durations)
         lenN=len(str(sumN))
         sumBefore=sum(self.durations[0:iteration])
-        #current duration
+        # current duration
         N=self.durations[iteration]
-        #get content of file
+        # get content of file
         f=self.fractal.T(self.compiler)
         f.loadFctFile(open(self.dir_bean.get_base_keyframe()))
-        #get all values
+        # get all values
         x1=float(self.values[iteration][f.XCENTER])
         x2=float(self.values[iteration+1][f.XCENTER])
         y1=float(self.values[iteration][f.YCENTER])
@@ -181,9 +178,9 @@ class FCTGeneration:
         yw2=float(self.values[iteration+1][f.YWANGLE])
         zw1=float(self.values[iteration][f.ZWANGLE])
         zw2=float(self.values[iteration+1][f.ZWANGLE])
-        #------------find direction for angles----------------------
+        # ------------find direction for angles----------------------
         to_right=[False]*6
-        #----------xy--------------
+        # ----------xy--------------
         dir_xy=self.dir_bean.get_directions(iteration)[0]
         if dir_xy==0:
             if abs(xy2-xy1)<math.pi and xy1<xy2:
@@ -197,12 +194,12 @@ class FCTGeneration:
                 to_right[0]=True
         elif dir_xy==2:
             to_right[0]=True
-        if to_right[0]==True and xy2<xy1:
+        if to_right[0] is True and xy2<xy1:
                 xy2=xy2+2*math.pi
-        if to_right[0]==False and xy2>xy1:
+        if to_right[0] is False and xy2>xy1:
                 xy1=xy1+2*math.pi
-        #--------------------------
-        #----------xz--------------
+        # --------------------------
+        # ----------xz--------------
         dir_xz=self.dir_bean.get_directions(iteration)[1]
         if dir_xz==0:
             if abs(xz2-xz1)<math.pi and xz1<xz2:
@@ -216,12 +213,12 @@ class FCTGeneration:
                 to_right[1]=True
         elif dir_xz==2:
             to_right[1]=True
-        if to_right[1]==True and xz2<xz1:
+        if to_right[1] is True and xz2<xz1:
                 xz2=xz2+2*math.pi
-        if to_right[1]==False and xz2>xz1:
+        if to_right[1] is False and xz2>xz1:
                 xz1=xz1+2*math.pi
-        #--------------------------
-        #----------xw--------------
+        # --------------------------
+        # ----------xw--------------
         dir_xw=self.dir_bean.get_directions(iteration)[2]
         if dir_xw==0:
             if abs(xw2-xw1)<math.pi and xw1<xw2:
@@ -235,12 +232,12 @@ class FCTGeneration:
                 to_right[2]=True
         elif dir_xw==2:
             to_right[2]=True
-        if to_right[2]==True and xw2<xw1:
+        if to_right[2] is True and xw2<xw1:
                 xw2=xw2+2*math.pi
-        if to_right[2]==False and xw2>xw1:
+        if to_right[2] is False and xw2>xw1:
                 xw1=xw1+2*math.pi
-        #--------------------------
-        #----------yz--------------
+        # --------------------------
+        # ----------yz--------------
         dir_yz=self.dir_bean.get_directions(iteration)[3]
         if dir_yz==0:
             if abs(yz2-yz1)<math.pi and yz1<yz2:
@@ -254,12 +251,12 @@ class FCTGeneration:
                 to_right[3]=True
         elif dir_yz==2:
             to_right[3]=True
-        if to_right[3]==True and yz2<yz1:
+        if to_right[3] is True and yz2<yz1:
                 yz2=yz2+2*math.pi
-        if to_right[3]==False and yz2>yz1:
+        if to_right[3] is False and yz2>yz1:
                 yz1=yz1+2*math.pi
-        #--------------------------
-        #----------yw--------------
+        # --------------------------
+        # ----------yw--------------
         dir_yw=self.dir_bean.get_directions(iteration)[4]
         if dir_yw==0:
             if abs(yw2-yw1)<math.pi and yw1<yw2:
@@ -273,12 +270,12 @@ class FCTGeneration:
                 to_right[4]=True
         elif dir_yw==2:
             to_right[4]=True
-        if to_right[4]==True and yw2<yw1:
+        if to_right[4] is True and yw2<yw1:
                 yw2=yw2+2*math.pi
-        if to_right[4]==False and yw2>yw1:
+        if to_right[4] is False and yw2>yw1:
                 yw1=yw1+2*math.pi
-        #--------------------------
-        #----------zw--------------
+        # --------------------------
+        # ----------zw--------------
         dir_zw=self.dir_bean.get_directions(iteration)[5]
         if dir_zw==0:
             if abs(zw2-zw1)<math.pi and zw1<zw2:
@@ -292,14 +289,14 @@ class FCTGeneration:
                 to_right[5]=True
         elif dir_zw==2:
             to_right[5]=True
-        if to_right[5]==True and zw2<zw1:
+        if to_right[5] is True and zw2<zw1:
                 zw2=zw2+2*math.pi
-        if to_right[5]==False and zw2>zw1:
+        if to_right[5] is False and zw2>zw1:
                 zw1=zw1+2*math.pi
-        #--------------------------
-        #------------------------------------------------------------
+        # --------------------------
+        # ------------------------------------------------------------
         for i in range(N+1):
-            #depending on interpolation type, mu constant get different values from 0 to 1
+            # depending on interpolation type, mu constant get different values from 0 to 1
             int_type=self.dir_bean.get_keyframe_int(iteration)
             mu=float(i)/float(N)
             if int_type==INT_LINEAR:
@@ -310,7 +307,7 @@ class FCTGeneration:
                 mu=(math.exp(mu)-1)/(math.e-1)
             else:
                 mu=(1-math.cos(mu*math.pi))/2
-            #calculating new values
+            # calculating new values
             new_x=x1*(1-mu)+x2*mu
             new_y=y1*(1-mu)+y2*mu
             new_z=z1*(1-mu)+z2*mu
@@ -334,7 +331,7 @@ class FCTGeneration:
             new_zw=zw1*(1-mu)+zw2*mu
             while new_zw>math.pi:
                 new_zw=new_zw-2*math.pi
-            #replacing them in fractal
+            # replacing them in fractal
             f.params[f.XCENTER]=new_x
             f.params[f.YCENTER]=new_y
             f.params[f.ZCENTER]=new_z
@@ -346,7 +343,7 @@ class FCTGeneration:
             f.params[f.YZANGLE]=new_yz
             f.params[f.YWANGLE]=new_yw
             f.params[f.ZWANGLE]=new_zw
-            #writes .fct file
+            # writes .fct file
             folder=self.dir_bean.get_fct_dir()
             if folder[-1]!="/":
                 folder=folder+"/"
@@ -356,15 +353,15 @@ class FCTGeneration:
     def show_error(self,s):
         self.running=False
         self.error=True
-        Gtk.threads_enter()
+        Gdk.threads_enter()
         error_dlg = Gtk.MessageDialog(
             self.dialog,
             Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
             Gtk.MessageType.ERROR, Gtk.ButtonsType.OK,s)
         error_dlg.run()
         error_dlg.destroy()
-        Gtk.threads_leave()
-        event = Gdk.Event(Gdk.DELETE)
+        Gdk.threads_leave()
+        event = Gdk.Event(Gdk.EventType.DELETE)
         self.dialog.emit('delete_event', event)
     
     def show(self):
@@ -375,18 +372,18 @@ class FCTGeneration:
         GObject.idle_add(task.__next__)
         response = self.dialog.run()
         if response != Gtk.ResponseType.CANCEL:
-            if self.running==True: #destroy by user
+            if self.running is True:  # destroy by user
                 self.running=False
                 self.dialog.destroy()
                 return 1
             else:
-                if self.error==True: #error
+                if self.error is True:  # error
                     self.dialog.destroy()
                     return -1
-                else: #everything ok
+                else:  # everything ok
                     self.dialog.destroy()
                     return 0
-        else: #cancel pressed
+        else:  # cancel pressed
             self.running=False
             self.dialog.destroy()
             return 1

@@ -5,19 +5,20 @@
 #   DlgAdvOpt.py: dialog for advanced interpolation options for director
 #
 
-from gi.repository import Gtk
-from gi.repository import GObject
-import os
-import re
 from threading import *
 
+from gi.repository import Gtk
 
 class DlgAdvOptions:
-
-    def __init__(self,current_kf,animation):
-        self.dialog=Gtk.Dialog("Keyframe advanced options...",None,
-                    Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                    (Gtk.STOCK_OK,Gtk.ResponseType.OK,Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL))
+    def __init__(self,current_kf,animation,parent):
+        self.dialog=Gtk.Dialog(
+            transient_for=parent,
+            title="Keyframe advanced options",
+            modal=True,
+            destroy_with_parent=True
+        )
+        self.dialog.add_buttons(Gtk.STOCK_OK, Gtk.ResponseType.OK,
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
 
         self.current_kf=current_kf
         self.animation=animation

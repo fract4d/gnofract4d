@@ -2,10 +2,9 @@
 
 # unit tests for renderqueue module
 
-import unittest
-import sys
 import os
-import subprocess
+import sys
+import unittest
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -17,8 +16,7 @@ gettext.install('gnofract4d')
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 from fract4dgui import director, PNGGen, hig
-
-from fract4d import fractal, image, fc, animation
+from fract4d import fractal, fc, animation
 
 g_comp = fc.Compiler()
 g_comp.add_func_path("../fract4d")
@@ -62,8 +60,8 @@ class Test(unittest.TestCase):
             
         self.assertEqual(True,os.path.exists("./image_0000000.png"))
         self.assertEqual(True,os.path.exists("./image_0000001.png"))
-        if dd.transpath != None:
-            # only check for video if transcode is installed
+        if dd.converterpath:
+            # only check for video if video converter is installed
             self.assertEqual(True,os.path.exists("video.avi"))
 
         dd.destroy()
@@ -137,11 +135,11 @@ class Test(unittest.TestCase):
     def testPNGGen(self):
         f = fractal.T(g_comp)
         dd= director.DirectorDialog(None,f,"")
-        pg = PNGGen.PNGGeneration(dd.animation,g_comp)
+        pg = PNGGen.PNGGeneration(dd.animation,g_comp,dd)
         pg.generate_png()
         
         dd.destroy()
-        
+
 def suite():
     return unittest.makeSuite(Test,'test')
 

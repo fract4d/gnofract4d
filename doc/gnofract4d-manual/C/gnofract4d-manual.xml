@@ -345,17 +345,16 @@ keyframe will stay in video (<guilabel>stopped for</guilabel>) and
 interpolation type between several possibilities. When you hit
 <guibutton>Render</guibutton> button, Director will render all frames
 and put them in directory you selected and then it will try to create
-video using <ulink
-url="http://www.transcoding.org/"><emphasis>transcode</emphasis></ulink>
-tool.  </para>
+a video using <ulink url="https://www.ffmpeg.org/">
+<emphasis>FFmpeg</emphasis></ulink>.</para>
 
 <para>
 Tips:
 <itemizedlist>
 
 <listitem><para>
-In order to end up with video file, not just a bunch of images, you need to have
-<emphasis>transcode</emphasis> tool compiled with support for ImageMagick.
+In order to end up with a video file, not just a bunch of images, you need to have
+<emphasis>ffmpeg</emphasis> compiled with support for zlib and libvpx.
 </para></listitem>
 
 <listitem><para>

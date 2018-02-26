@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
         self.assertEqual(self.anim.get_width(),640)
         self.assertEqual(self.anim.get_height(),480)
         self.assertEqual(self.anim.get_framerate(),25)
-        self.assertEqual(self.anim.get_redblue(),True)
+        self.assertEqual(self.anim.get_redblue(),False)
         self.assertEqual(self.anim.keyframes_count(),0)
 
     def testChangeOptions(self):

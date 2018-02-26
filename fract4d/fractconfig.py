@@ -27,8 +27,7 @@ class T(configparser.ConfigParser):
             "helpers" : {
               "editor" : self.get_default_editor(),
               "mailer" : self.get_default_mailer(),
-              "browser" : self.get_default_browser(),
-              "video_encoder" : "transcode"
+              "browser" : self.get_default_browser()
             },
             "general" : {
               "threads" : "1",
