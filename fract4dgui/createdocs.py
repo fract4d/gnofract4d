@@ -6,6 +6,7 @@
 from xml.sax.saxutils import escape
 import os
 import re
+import tempfile
 
 import gettext
 os.environ.setdefault('LANG', 'en')
@@ -92,7 +93,11 @@ def main(outfile):
     out = open(outfile,"w")
     printer = CommandPrinter(out)
 
-    mw = main_window.MainWindow(fractconfig.T(""), ["../formulas"])
+    tmpdir = tempfile.TemporaryDirectory(prefix="fract4d_")
+    config = fractconfig.T("")
+    config.set("general","cache_dir",
+               os.path.join(tmpdir.name, "gnofract4d-cache"))
+    mw = main_window.MainWindow(config, ["../formulas"])
 
     menu_items = mw.get_all_actions()
     for item in menu_items:
@@ -120,6 +125,7 @@ def main(outfile):
     
     printer.output_all()
     out.close()
+    tmpdir.cleanup()
     
 if __name__ == '__main__':
     main('../doc/gnofract4d-manual/C/commands.xml')
