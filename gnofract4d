@@ -110,9 +110,13 @@ def main_n(n):
 
 if __name__ == '__main__':
     if os.environ.get("DO_GF4D_PROFILE"):
-        import hotshot
-        prof = hotshot.Profile("gf4d.prof")
+        import cProfile
+        import pstats
+        prof = cProfile.Profile()
         prof.runcall(main_n, 5)
-        prof.close()
+        stats = pstats.Stats(prof)
+        stats.sort_stats("cumulative")
+        stats.dump_stats("gf4d.prof")
+        stats.print_stats()
     else:
         main(sys.argv[1:])
