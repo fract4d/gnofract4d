@@ -16,9 +16,8 @@ else:
 
 try:
     # nogui modules
-    from fract4d import fractconfig, fractal, fractmain
+    from fract4d import fractconfig, fractmain
     from fract4d.options import Arguments
-
 except ImportError as err:
     print((_('''
 Can't import a required module.
@@ -43,7 +42,7 @@ def main(args):
         raise
 
 def gtkmain(userConfig, options):
-    # gtk
+    # GTK+
     import gi
     gi.require_version('Gtk', '3.0')
     try:
@@ -53,9 +52,8 @@ def gtkmain(userConfig, options):
         sys.exit(1)
 
     try:
-        # gui modules
-        from fract4dgui import main_window, preferences, utils
-
+        # GUI module
+        from fract4dgui import main_window
     except ImportError as err:
         print(_('''
     Can't import a required module.
@@ -64,7 +62,6 @@ def gtkmain(userConfig, options):
         sys.exit(1)
     
     mainWindow = main_window.MainWindow(userConfig)
-
     mainWindow.apply_options(options)
     
     if mainWindow.f.thaw():
