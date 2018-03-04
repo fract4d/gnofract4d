@@ -3,7 +3,6 @@
 from gi.repository import Gtk, GObject
 
 from . import dialog, utils
-from fract4d import fractconfig
 
 class Preferences(GObject.GObject):
     # A wrapper for the preference data
@@ -63,12 +62,9 @@ class Preferences(GObject.GObject):
 # explain our existence to GTK's object system
 GObject.type_register(Preferences)
 
-userPrefs = Preferences(fractconfig.instance)
-
 
 class PrefsDialog(dialog.T):
-    def __init__(self,main_window,f):
-        global userPrefs
+    def __init__(self, main_window, f, userPrefs):
         dialog.T.__init__(
             self,
             _("Gnofract 4D Preferences"),

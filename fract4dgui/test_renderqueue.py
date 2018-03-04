@@ -16,12 +16,14 @@ gettext.install('gnofract4d')
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import fractal, fc
-from fract4dgui import renderqueue
+from fract4d import fractal, fc, fractconfig
+from fract4dgui import preferences, renderqueue
 
 g_comp = fc.Compiler()
 g_comp.add_func_path("../fract4d")
 g_comp.add_func_path("../formulas")
+
+userPrefs = preferences.Preferences(fractconfig.instance)
 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -37,7 +39,7 @@ class Test(unittest.TestCase):
         Gtk.main_quit()
 
     def testRQ(self):
-        rq = renderqueue.T()
+        rq = renderqueue.T(userPrefs)
         self.assertEqual(0, len(rq.queue))
 
         # should be a no-op
@@ -64,7 +66,7 @@ class Test(unittest.TestCase):
 
     def testQueueDialog(self):
         f = fractal.T(g_comp)
-        rq = renderqueue.T()
+        rq = renderqueue.T(userPrefs)
         rq.add(f,"foo.png",124,276)
         rq.add(f,"foo2.png",204,153)
         rq.add(f,"foo3.png",80,40)

@@ -23,13 +23,15 @@ class MainWindow:
         self.f = None
         self.use_preview = True
 
+        self.userPrefs = preferences.Preferences(fractconfig.instance)
+
         self.four_d_sensitives = []
 
         # window widget
         self.window = Gtk.Window()
         self.window.set_default_size(
-            preferences.userPrefs.getint("main_window","width"),
-            preferences.userPrefs.getint("main_window","height"))
+            self.userPrefs.getint("main_window","width"),
+            self.userPrefs.getint("main_window","height"))
         self.window.connect('delete-event', self.quit)
         self.window.set_name('main_window')
 
@@ -64,7 +66,7 @@ class MainWindow:
         for path in extra_paths:
             self.compiler.add_func_path(path)
 
-        self.recent_files = preferences.userPrefs.get_list("recent_files")
+        self.recent_files = self.userPrefs.get_list("recent_files")
         
         self.vbox = Gtk.VBox()
         self.window.add(self.vbox)
@@ -87,7 +89,7 @@ class MainWindow:
             
         self.model = model.Model(self.f)
 
-        preferences.userPrefs.connect(
+        self.userPrefs.connect(
             'image-preferences-changed',
             self.on_prefs_changed)
 
@@ -112,13 +114,13 @@ class MainWindow:
         self.hires_image_fs = None
         self.open_fs = None
         
-        self.renderQueue = renderqueue.T()
+        self.renderQueue = renderqueue.T(self.userPrefs)
 
         self.update_subfract_visibility(False)
         self.populate_warpmenu(self.f)
         self.update_recent_file_menu()
         
-        self.update_image_prefs(preferences.userPrefs)
+        self.update_image_prefs(self.userPrefs)
         
         self.statuses = [ _("Done"),
                           _("Calculating"),
@@ -279,14 +281,14 @@ class MainWindow:
             self.weirdbox.hide()
 
         self.show_subfracts = visible
-        self.update_image_prefs(preferences.userPrefs)
+        self.update_image_prefs(self.userPrefs)
         
     def update_subfracts(self):
         if not self.show_subfracts:
             return
 
-        aa = preferences.userPrefs.getint("display","antialias")
-        auto_deepen = preferences.userPrefs.getboolean("display","autodeepen")
+        aa = self.userPrefs.getint("display","antialias")
+        auto_deepen = self.userPrefs.getboolean("display","autodeepen")
 
         for f in self.subfracts:
             f.interrupt()
@@ -349,7 +351,7 @@ class MainWindow:
         f.connect('stats-changed', self.stats_changed)
 
     def draw(self):
-        nt = preferences.userPrefs.getint("general","threads")
+        nt = self.userPrefs.getint("general","threads")
         self.f.set_nthreads(nt)
 
         self.f.draw_image()
@@ -721,7 +723,7 @@ class MainWindow:
             self.window.move(0, 0)
 
             screen = self.window.get_display().get_monitor_at_window(self.window.get_window()).get_geometry()
-            preferences.userPrefs.set_size(screen.width, screen.height)
+            self.userPrefs.set_size(screen.width, screen.height)
 
             # TODO: may be useful for 'desktop mode' one day
             #self.set_type_hint(Gdk.WindowTypeHint.DESKTOP)
@@ -752,7 +754,7 @@ class MainWindow:
             self.draw_preview()
         
     def draw_preview(self):
-        auto_deepen = preferences.userPrefs.getboolean("display","autodeepen")
+        auto_deepen = self.userPrefs.getboolean("display","autodeepen")
         self.preview.draw_image(False,auto_deepen)
 
     def improve_now(self, widget):
@@ -924,13 +926,13 @@ class MainWindow:
             index = utils.get_selected(res_menu)
             if index != -1:
                 (w,h) = self.resolutions[index]
-                preferences.userPrefs.set_size(w,h)
+                self.userPrefs.set_size(w,h)
                 self.update_subfracts()
                 
-        set_selected_resolution(preferences.userPrefs)
+        set_selected_resolution(self.userPrefs)
         res_menu.connect('changed', set_resolution)
 
-        preferences.userPrefs.connect('preferences-changed',
+        self.userPrefs.connect('preferences-changed',
                                       set_selected_resolution)
 
         return res_menu
@@ -1041,7 +1043,7 @@ class MainWindow:
             self.four_d_sensitives.append(my_fourway)
 
     def update_recent_files(self, file):
-        self.recent_files = preferences.userPrefs.update_list("recent_files",file,4)
+        self.recent_files = self.userPrefs.update_list("recent_files",file,4)
         self.update_recent_file_menu()
         
     def update_recent_file_menu(self):
@@ -1062,7 +1064,7 @@ class MainWindow:
     def save_file(self,file):
         fileHandle = None
         try:
-            comp = preferences.userPrefs.getboolean("general","compress_fct")
+            comp = self.userPrefs.getboolean("general","compress_fct")
             fileHandle = open(file,'w')
             self.f.save(fileHandle,compress=comp)
             self.set_filename(file)
@@ -1183,7 +1185,7 @@ class MainWindow:
         
     def preferences(self,*args):
         """Change current preferences."""
-        dialog = preferences.PrefsDialog(self.window, self.f)
+        dialog = preferences.PrefsDialog(self.window, self.f, self.userPrefs)
         dialog.run()
         dialog.destroy()
         
@@ -1252,7 +1254,7 @@ class MainWindow:
     def report_bug(self, *args):
         url = "https://github.com/edyoung/gnofract4d/issues"
         utils.launch_browser(
-            preferences.userPrefs,
+            self.userPrefs,
             url,
             self.window)
         
@@ -1290,7 +1292,7 @@ class MainWindow:
         else:
             url = "file://%s%s" % (abs_file, anchor)
             utils.launch_browser(
-                preferences.userPrefs,
+                self.userPrefs,
                 url,
                 self.window)
 
@@ -1384,8 +1386,8 @@ class MainWindow:
             return True
         
         try:
-            preferences.userPrefs.set_main_window_size(*self.window.get_size())
-            preferences.userPrefs.save()
+            self.userPrefs.set_main_window_size(*self.window.get_size())
+            self.userPrefs.save()
             del self.f
             for f in self.subfracts:
                 del f
@@ -1398,8 +1400,8 @@ class MainWindow:
 
     def apply_options(self,opts):
         "Deal with opts gathered from cmd-line"
-        width = opts.width or preferences.userPrefs.getint("display","width")
-        height = opts.height or preferences.userPrefs.getint("display","height")
+        width = opts.width or self.userPrefs.getint("display","width")
+        height = opts.height or self.userPrefs.getint("display","height")
 
         self.quit_when_done = opts.quit_when_done
         self.save_filename = opts.save_filename

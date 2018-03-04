@@ -6,7 +6,7 @@ import copy
 
 from gi.repository import Gtk, GObject
 
-from . import dialog, gtkfractal, preferences
+from . import dialog, gtkfractal
 
 class QueueEntry:
     def __init__(self, f, name, w, h):
@@ -29,8 +29,9 @@ class T(GObject.GObject):
         None, (GObject.TYPE_FLOAT,))
         }
 
-    def __init__(self):
+    def __init__(self, userPrefs):
         GObject.GObject.__init__(self)
+        self.userPrefs = userPrefs
         self.queue = []
         self.current = None
         
@@ -60,7 +61,7 @@ class T(GObject.GObject):
         self.current.connect('status-changed', self.onImageComplete)
         self.current.connect('progress-changed', self.onProgressChanged)
 
-        self.current.set_nthreads(preferences.userPrefs.getint("general","threads"))
+        self.current.set_nthreads(self.userPrefs.getint("general","threads"))
         self.current.draw_image(entry.name)
 
     def onImageComplete(self, f, status):

@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
         self.assertEqual(counter.count,2)
 
     def testInstance(self):
-        dummy = preferences.userPrefs
+        dummy = preferences.Preferences(fractconfig.instance)
         self.assertNotEqual(None,dummy)
         
 def suite():
