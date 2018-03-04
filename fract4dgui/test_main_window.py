@@ -16,13 +16,13 @@ gettext.install('gnofract4d')
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import fractal
+from fract4d import fractal, fractconfig
 from fract4dgui import main_window
 
 class WrapMainWindow(main_window.MainWindow):
     def __init__(self):
         self.errors = []
-        main_window.MainWindow.__init__(self, ['../formulas'])
+        main_window.MainWindow.__init__(self, fractconfig.T(""), ['../formulas'])
 
     def show_error_message(self,message,exception):
         self.errors.append((message,exception))

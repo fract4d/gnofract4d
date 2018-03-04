@@ -25,7 +25,7 @@ class Test(unittest.TestCase):
         m = doc_re.search(doc)
 
         self.assertTrue(m,"setup.py doesn't specify version")
-        self.assertEqual(options.version, m.group(1))
+        self.assertEqual(options.VERSION, m.group(1))
 
     def testDocVersionMatches(self):        
         # check the docs
@@ -34,7 +34,7 @@ class Test(unittest.TestCase):
 
         m = doc_re.search(doc)
         self.assertTrue(m,"doc doesn't specify version")
-        self.assertEqual(options.version,m.group(1), "Version mismatch")
+        self.assertEqual(options.VERSION,m.group(1), "Version mismatch")
 
     def testWebsiteVersionMatches(self):
         if not os.path.exists("website"):
@@ -45,7 +45,7 @@ class Test(unittest.TestCase):
 
         m = ver_re.search(mkweb)
         self.assertTrue(m,"doc doesn't specify version")
-        self.assertEqual(options.version,m.group(1), "Version mismatch")
+        self.assertEqual(options.VERSION,m.group(1), "Version mismatch")
 
     def testGenerateMandelbrot(self):
         if os.path.exists("test.png"):

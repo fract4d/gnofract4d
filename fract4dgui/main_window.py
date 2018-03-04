@@ -1411,8 +1411,8 @@ class MainWindow:
         for path in opts.extra_paths:
             self.compiler.add_func_path(path)
 
-        if len(opts.args) > 0:
-            self.load(opts.args[0])
+        if opts.paramfile:
+            self.load(opts.paramfile)
 
         self.f.apply_options(opts)
         self.update_preview(self.f)

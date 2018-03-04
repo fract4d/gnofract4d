@@ -1,83 +1,72 @@
 #!/usr/bin/env python3
+
 import unittest
 import sys
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import options
+from fract4d.options import Arguments, Formula
 
 class Test(unittest.TestCase):
     def testDefaults(self):
-        o = options.T()
+        o = Arguments()
+        ns = o.parse_args()
         
-        for x in [o.basename, o.func,
-                  o.innername, o.innerfunc, o.outername, o.outerfunc, o.map]:
+        for x in [ns.formula.name, ns.formula.func,
+                  ns.inner.name, ns.inner.func, ns.outer.name, ns.outer.func, ns.map]:
             self.assertEqual(None,x)
         
-        for flag in [o.trace, o.tracez, o.print_version,
-                     o.quit_now, o.quit_when_done,
-                     o.explore, o.nogui]:
+        for flag in [ns.trace, ns.tracez, ns.quit_when_done,
+                     ns.explore, ns.nogui]:
             self.assertEqual(False, flag)
             
-        self.assertEqual(-1,o.maxiter)
-        self.assertEqual({},o.paramchanges)
-        self.assertEqual("",o.output)
-        self.assertEqual([],o.extra_paths)
+        self.assertEqual(-1,ns.maxiter)
+        self.assertEqual({},ns.paramchanges)
+        self.assertEqual([],ns.extra_paths)
 
-        self.assertEqual(0,o.width)
-        self.assertEqual(0,o.height)
+        self.assertEqual(None,ns.width)
+        self.assertEqual(None,ns.height)
 
     def testBadOption(self):
-        o = options.T()
-        self.assertRaises(options.OptionError, o.parse,["--fish"])
+        o = Arguments()
+        self.assertRaises(SystemExit, o.parse_args, ["--fish"])
 
     def testHelp(self):
-        o = options.T()
-        o.parse(["-h"])
-        self.assertEqual(1, o.output.count("To generate an image"))
-        self.assertEqual(True, o.quit_now)
+        o = Arguments()
+        help = o.format_help()
+        self.assertEqual(1, help.count("To generate an image"))
 
     def testGeneralOptions(self):
-        o = options.T()
-        o.parse(["-P", "foo", "-f", "bar/baz.frm#wibble"])
-
-        self.assertEqual(["foo","bar"],o.extra_paths)
-        self.assertEqual("baz.frm",o.basename)
-        self.assertEqual("wibble",o.func)
+        o = Arguments()
+        ns = o.parse_args(["-P", "foo", "bar", "-f", "baz/baz.frm#wibble"])
+        self.assertEqual(["foo", "bar", "baz"],ns.extra_paths)
+        self.assertEqual("baz.frm",ns.formula.name)
+        self.assertEqual("wibble",ns.formula.func)
 
     def testBadSplit(self):
-        o = options.T()
-        self.assertRaises(options.OptionError,o.parse,["-f", "bar"])
+        o = Arguments()
+        self.assertRaises(SystemExit, o.parse_args, ["-f", "bar"])
         
     def testHeightWidth(self):
-        o = options.T()
-        o.parse(["-i", "780", "-j", "445"])
+        o = Arguments()
+        ns = o.parse_args(["-i", "780", "-j", "445"])
 
-        self.assertEqual(780, o.width)
-        self.assertEqual(445, o.height)
+        self.assertEqual(780, ns.width)
+        self.assertEqual(445, ns.height)
 
     def testArgument(self):
-        o = options.T()
-        o.parse(["--params", "foo"])
+        o = Arguments()
+        ns = o.parse_args(["foo"])
 
-        self.assertEqual(["foo"], o.args)
+        self.assertEqual("foo", ns.paramfile)
 
     def testTransforms(self):
-        o = options.T()
-        o.parse(["--transforms", "a#b,x#y"])
-        self.assertEqual([("a","b"), ("x","y")], o.transforms)
-        
-    def testAllOptionsHaveHelp(self):
-        o = options.T()
-        help = o.help()
+        o = Arguments()
+        ns = o.parse_args(["--transforms", "a#b,x#y"])
+        self.assertEqual([Formula("", "a","b"), Formula("", "x","y")], ns.transforms)
 
-        names = ["--" + x.rstrip("=") for x in options.T.longparams]
-        for name in names:
-            self.assertNotEqual(0, help.count(name), "%s has no help" % name)
-            
 def suite():
     return unittest.makeSuite(Test,'test')
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')
-

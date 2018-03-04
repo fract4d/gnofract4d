@@ -580,26 +580,26 @@ class T(fctutils.T):
         self.dirtyFormula = True
 
     def apply_options(self,options):
-        if options.basename and options.func:
-            self.set_formula(options.basename,options.func)
+        if options.formula.name and options.formula.func:
+            self.set_formula(options.formula.name, options.formula.func)
             self.reset()
 
-        if options.innername and options.innerfunc:
-            self.set_inner(options.innername, options.innerfunc)
+        if options.inner.name and options.inner.func:
+            self.set_formula(options.inner.name, options.inner.func)
             self.reset()
 
-        if options.outername and options.outerfunc:
-            self.set_outer(options.outername, options.outerfunc)
+        if options.outer.name and options.outer.func:
+            self.set_formula(options.outer.name, options.outer.func)
             self.reset()
 
         if options.maxiter != -1:
             self.set_maxiter(options.maxiter)
 
-        for (num,val) in list(options.paramchanges.items()):
-            self.set_param(num,val)
+        for num, val in options.paramchanges.items():
+            self.set_param(num, val)
 
-        for (file,func) in options.transforms:
-            self.append_transform(file,func)
+        for t in options.transforms:
+            self.append_transform(t.name, t.func)
             
         if options.map:
             self.set_cmap(options.map)

@@ -16,7 +16,8 @@ else:
 
 try:
     # nogui modules
-    from fract4d import fractconfig, fractal, fractmain, options
+    from fract4d import fractconfig, fractal, fractmain
+    from fract4d.options import Arguments
 
 except ImportError as err:
     print((_('''
@@ -25,43 +26,12 @@ If you haven't set up Gnofract 4D yet, run './setup.py build'
 Error was: '%s' ''') % err))
     sys.exit(1)
 
-def get_version_info():
-    try:
-        from gi.repository import Gtk
-        gtk_version = "%d.%d.%d" % (Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version())
-    except:
-        gtk_version = "unknown"
-
-    return """Gnofract 4D %s
-GTK %s""" % (options.version, gtk_version)
-               
-def main(args):    
+def main(args):
     # saved options
     userConfig = fractconfig.userConfig()
 
     # command line options
-    opts = options.T()
-    try:
-        opts.parse(args)
-    except options.OptionError as err:
-        print(get_version_info())
-        print(opts.help())
-
-        print("Error parsing arguments: %s" % err)
-        return 1
-
-    # having parsed them, apply them. The reason for this 2-pass
-    # approach is that it matters what order these operations are
-    # done in, but it shouldn't matter what order params are
-    # presented on the command-line
-    if len(opts.output) > 0:
-        print(opts.output)
-
-    if opts.print_version:
-        print(get_version_info())
-        
-    if opts.quit_now:
-        sys.exit(0)
+    opts = Arguments().parse_args(args)
 
     try:
         if opts.nogui:

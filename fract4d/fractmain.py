@@ -25,8 +25,8 @@ class T:
         threads = options.threads or self.userConfig.getint(
             "general","threads")
 
-        if len(options.args) > 0:
-            self.load(options.args[0])
+        if options.paramfile:
+            self.load(options.paramfile)
 
         self.f.apply_options(options)
         self.f.antialias = options.antialias or \
