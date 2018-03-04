@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-#unit tests for settings window
+# unit tests for settings window
 
 import unittest
-import copy
-import math
 import os
 import sys
 
@@ -18,9 +16,8 @@ gettext.install('gnofract4d')
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import fc, fractal
-from fract4dgui import painter
-from fract4dgui import gtkfractal
+from fract4d import fc
+from fract4dgui import gtkfractal, painter
 
 class FakeEvent:
     def __init__(self,**kwds):
@@ -51,8 +48,7 @@ class Test(unittest.TestCase):
         self.f.onButtonPress(self.f.widget,event)
         self.f.onButtonRelease(self.f.widget,event)
 
-        
-        
+
 def suite():
     return unittest.makeSuite(Test,'test')
 

@@ -5,7 +5,6 @@
 import unittest
 import sys
 import os
-import subprocess
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -17,9 +16,8 @@ gettext.install('gnofract4d')
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
+from fract4d import fractal, fc
 from fract4dgui import renderqueue
-
-from fract4d import fractal, image, fc
 
 g_comp = fc.Compiler()
 g_comp.add_func_path("../fract4d")

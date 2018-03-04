@@ -16,7 +16,8 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, Gtk
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
-from fract4d import fc, fractal
+
+from fract4d import fc
 from fract4dgui import gtkfractal
 
 # centralized to speed up tests
@@ -99,10 +100,10 @@ class TestHidden(unittest.TestCase):
         f = gtkfractal.Hidden(self.compiler,64,40)
         with open("../testdata/test_bail.fct") as fh:
             f.loadFctFile(fh)
-        self.assertEqual(f.saved, True)        
+        self.assertEqual(f.saved, True)
         f.connect('status-changed', self.quitloop)
         f.draw_image(0,1)
-        self.wait()        
+        self.wait()
 
     def testBigImage(self):
         f = gtkfractal.HighResolution(self.compiler,640,400)
@@ -135,7 +136,7 @@ class Test(unittest.TestCase):
         # draw a default fractal
         self.f.connect('status-changed', self.quitloop)
         self.f.draw_image(0,1)
-        self.wait()        
+        self.wait()
 
     def disabled_testSignalsDontRecurse(self):
         # test no recurse, but doesn't work. Maybe I've misunderstood
@@ -241,7 +242,6 @@ class Test(unittest.TestCase):
                           FakeEvent(button=1,state=Gdk.ModifierType.SHIFT_MASK))
         self.assertEqual(f.params(),tparams)
 
-        
     def testZooms(self):
         self.doTestZooms(1)
 
@@ -323,7 +323,7 @@ class Test(unittest.TestCase):
         f = self.f
         tparams = copy.copy(f.params())
 
-        # middle click in center goes to Julia 
+        # middle click in center goes to Julia
         evt = FakeEvent(button=2,x=f.width/2,y=f.height/2)
         f.onButtonRelease(f.widget,evt)
         tparams[f.XZANGLE] = math.pi/2

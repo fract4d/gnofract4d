@@ -3,8 +3,6 @@
 #unit tests for browser window
 
 import unittest
-import copy
-import math
 import os
 import sys
 
@@ -15,9 +13,10 @@ from gi.repository import Gtk
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
+
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import fc, fractal, browser_model
+from fract4d import fc, fractal
 from fract4dgui import browser
 
 class MockMainWindow:
@@ -42,7 +41,7 @@ class Test(unittest.TestCase):
         if status == 0:
             Gtk.main_quit()
 
-    def testCreate(self):        
+    def testCreate(self):
         b = browser.BrowserDialog(self.mainWindow, self.f)
         self.assertNotEqual(b,None)
 
@@ -78,7 +77,7 @@ class Test(unittest.TestCase):
         # load good formula file
         b.load_file("../formulas/fractint.cfrm")
         self.assertEqual('fractint.cfrm', m.current.fname, "failed to load formula")
-        #load missing file
+        # load missing file
         self.assertRaises(OSError, b.load_file, "/no_such_dir/wibble.frm")
 
 def suite():

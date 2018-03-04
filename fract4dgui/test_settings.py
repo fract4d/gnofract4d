@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-#unit tests for settings window
+# unit tests for settings window
 
 import unittest
-import copy
-import math
 import os
 import sys
 
@@ -18,9 +16,8 @@ gettext.install('gnofract4d')
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import fc, fractal
-from fract4dgui import settings
-from fract4dgui import gtkfractal
+from fract4d import fc
+from fract4dgui import gtkfractal, settings
 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -62,7 +59,7 @@ class Test(unittest.TestCase):
         notebook = self.settings.notebook
         i = 0
         page = notebook.get_nth_page(0)
-        while page != None:
+        while page is not None:
             this_page_name = notebook.get_tab_label_text(page)
             if this_page_name == page_name:
                 widget = self.search_for_named_widget(page,label_name)
@@ -77,7 +74,7 @@ class Test(unittest.TestCase):
 
     def get_first_transform(self):
         iter = self.settings.transform_store.get_iter_first()
-        if iter == None:
+        if iter is None:
             return None
         val = self.settings.transform_store.get(iter,0)[0]
         return val
@@ -117,9 +114,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(exp_pagelist, pagelist)
 
-    def testColorsPage(self):
-        gradarea = self.settings.gradarea
-            
+
 def suite():
     return unittest.makeSuite(Test,'test')
 

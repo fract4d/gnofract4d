@@ -3,11 +3,8 @@
 # high-level unit tests for main window
 
 import unittest
-import copy
-import math
 import os
 import sys
-import random
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -20,7 +17,6 @@ gettext.install('gnofract4d')
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import fractal
-
 from fract4dgui import main_window
 
 class WrapMainWindow(main_window.MainWindow):
@@ -62,7 +58,7 @@ class Test(unittest.TestCase):
         result = self.mw.load(fn_bad)
         self.assertEqual(result, False, "load of bad file succeeded")
         # filename shouldn't change
-        self.assertEqual(self.mw.filename, fn_good) 
+        self.assertEqual(self.mw.filename, fn_good)
         self.assertEqual(
             self.mw.errors[0][0], "Error opening test_main_window.py")
 
@@ -71,7 +67,7 @@ class Test(unittest.TestCase):
         result = self.mw.load(fn_bad)
         self.assertEqual(result, False, "load of missing file succeeded")
         # filename shouldn't change
-        self.assertEqual(self.mw.filename, fn_good) 
+        self.assertEqual(self.mw.filename, fn_good)
         self.assertEqual(
             self.mw.errors[1][0], "Error opening wibble.fct")
 
@@ -127,7 +123,7 @@ class Test(unittest.TestCase):
         self.assertTrue(result, "load failed")
 
         self.mw.update_preview(self.mw.f, False)
-        fct1 = self.mw.f.serialize()        
+        fct1 = self.mw.f.serialize()
         fct2 = self.mw.preview.f.serialize()
 
         self.assertEqual(fct1, fct2)
@@ -144,7 +140,7 @@ class Test(unittest.TestCase):
         self.mw.get_open_fs()
         
     def testExplorer(self):
-        result = self.mw.load("../testdata/nexus.fct")
+        self.mw.load("../testdata/nexus.fct")
         self.mw.set_explorer_state(True)
         self.mw.update_subfracts()
         fh = open("sub3.fct","w")
@@ -152,7 +148,7 @@ class Test(unittest.TestCase):
         fh.close()
         
         self.mw.subfracts[3].onButtonRelease(None,None)
-        fh= open("main.fct","w")
+        fh = open("main.fct","w")
         self.mw.f.save(fh,False)
         fh.close()
         
@@ -182,12 +178,12 @@ class Test(unittest.TestCase):
 
     def testCantFindDefault(self):
         old_default = fractal.T.DEFAULT_FORMULA_FILE
-        fractal.T.DEFAULT_FORMULA_FILE="no_such_file.frm"
+        fractal.T.DEFAULT_FORMULA_FILE = "no_such_file.frm"
         try:
             self.assertRaises(IOError, WrapMainWindow)
         finally:
-            fractal.T.DEFAULT_FORMULA_FILE=old_default
-            
+            fractal.T.DEFAULT_FORMULA_FILE = old_default
+
 
 def suite():
     return unittest.makeSuite(Test,'test')

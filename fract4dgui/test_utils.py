@@ -11,10 +11,8 @@ from gi.repository import Gtk
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4dgui import utils
-from fract4dgui import gtkfractal
-
 from fract4d import fc
+from fract4dgui import utils
 
 # centralized to speed up tests
 g_comp = fc.Compiler()
