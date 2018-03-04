@@ -115,7 +115,6 @@ def createDefaultDict():
         "t__h_pixel": Alias("pixel"),
         "t__h_xypixel": Alias("pixel"),
         "pixel" : Var(Complex,doc="The (X,Y) coordinates of the current point. When viewing the Mandelbrot set, this has a different value for each pixel. When viewing the Julia set, it remains constant for each pixel."),
-        "pi": Var(Float),
         "t__h_z" : Alias("z"),
         "z"  : Var(Complex),
         "t__h_index": Var(Float,doc="The point in the gradient to use for the color of this point."),
