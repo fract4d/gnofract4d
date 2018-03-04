@@ -711,6 +711,8 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
             except (SanityCheckError, UserCancelledError):
                 # prevent dialog closing if being run
                 GObject.signal_stop_emission_by_name(self, "response")
+            else:
+                self.hide()
 
     def main(self):
         Gtk.main()

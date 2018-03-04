@@ -131,6 +131,7 @@ class MainWindow:
 
         self.f.set_saved(True)
 
+        self.directorDialog = director.DirectorDialog(self.window, self.f, self.userConfig)
         self.painterDialog = painter.PainterDialog(self.window, self.f)
         self.renderqueueDialog = renderqueue.QueueDialog(self.window, self.f, self.renderQueue)
 
@@ -675,9 +676,7 @@ class MainWindow:
 
     def director(self,*args):
         """Display the Director (animation) window."""
-        dialog = director.DirectorDialog(self.window, self.f, self.userConfig)
-        dialog.run()
-        dialog.destroy()
+        self.directorDialog.show()
         
     def browser(self,*args):
         """Display formula browser."""
