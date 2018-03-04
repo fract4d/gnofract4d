@@ -17,6 +17,10 @@ class T(configparser.ConfigParser):
             "optimize" : {
               "peephole" : "1"
             },
+            "main_window" : {
+              "width" : "933",
+              "height" : "594",
+            },
             "display" : {
               "width" : "640",
               "height" : "480",
@@ -152,6 +156,15 @@ class T(configparser.ConfigParser):
         configparser.ConfigParser.set(self,"display","height",str(height))
         configparser.ConfigParser.set(self,"display","width",str(width))
         self.changed("display")
+
+    def set_main_window_size(self, width, height):
+        if self.getint("main_window","height") == height and \
+           self.getint("main_window","width") == width:
+            return
+        
+        configparser.ConfigParser.set(self,"main_window","height",str(height))
+        configparser.ConfigParser.set(self,"main_window","width",str(width))
+        self.changed("main_window")
 
     def get_list(self, name):
         i = 0

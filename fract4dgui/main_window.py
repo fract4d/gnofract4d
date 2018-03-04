@@ -27,7 +27,9 @@ class MainWindow:
 
         # window widget
         self.window = Gtk.Window()
-        self.window.set_default_size(900,700)
+        self.window.set_default_size(
+            preferences.userPrefs.getint("main_window","width"),
+            preferences.userPrefs.getint("main_window","height"))
         self.window.connect('delete-event', self.quit)
         self.window.set_name('main_window')
 
@@ -1382,6 +1384,7 @@ class MainWindow:
             return True
         
         try:
+            preferences.userPrefs.set_main_window_size(*self.window.get_size())
             preferences.userPrefs.save()
             del self.f
             for f in self.subfracts:

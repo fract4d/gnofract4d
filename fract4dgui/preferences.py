@@ -42,6 +42,9 @@ class Preferences(GObject.GObject):
     def set_size(self,width,height):
         self.config.set_size(width,height)
 
+    def set_main_window_size(self,width,height):
+        self.config.set_main_window_size(width,height)
+
     def get_list(self,name):
         return self.config.get_list(name)
 
