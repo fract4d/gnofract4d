@@ -74,7 +74,7 @@ class Tolerance(T):
     name = property(get_name)
 
 class Stats(T):
-    def fromList(list):        
+    def fromList(list):
         instance = Stats()
         instance.iterations = list[0]
         instance.pixels = list[1]
@@ -90,9 +90,9 @@ class Stats(T):
 
     def __init__(self,buffer=None):
         if buffer:
-            (self.iterations, 
-             self.pixels, 
-             self.pixels_calculated, 
+            (self.iterations,
+             self.pixels,
+             self.pixels_calculated,
              self.pixels_skipped,
              self.pixels_skipped_wrong,
              self.pixels_skipped_right,
@@ -102,7 +102,7 @@ class Stats(T):
              dummy,
              dummy,
              dummy,
-             dummy) = struct.unpack("13L",buffer)        
+             dummy) = struct.unpack("13L",buffer)
 
     def _get_name(self):
         return "Stats"
@@ -144,7 +144,7 @@ class Stats(T):
         return (
             "Calculation Statistics:\n" +
             "Total pixels:%d\n" % self.pixels +
-            "Calculated pixels:%d(%2g%%)\n" % \
+            "Calculated pixels:%d(%2g%%)\n" %
                 (self.pixels_calculated, self.percent_calculated) +
             "  Inside pixels:%d(%2g%%)\n" % (self.pixels_inside, self.percent_inside) +
             "    Perodic pixels:%d(%2g%%)\n" % (self.pixels_periodic, self.percent_periodic) +

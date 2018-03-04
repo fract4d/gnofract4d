@@ -3,18 +3,12 @@
 # Trivial symbol table implementation
 
 import copy
-from collections import UserDict
-from collections import UserList
-import string
-import types
+from collections import UserDict, UserList
 import re
 import math
-import copy
-import inspect
 
 from .fracttypes import *
 from . import ir
-from . import stdlib
 
 class OverloadList(UserList):
     def __init__(self,list,**kwds):
@@ -25,7 +19,7 @@ class OverloadList(UserList):
         self.declared = False
         
     def __copy__(self):
-        copied_data = [ copy.copy(x) for x in self.data]
+        copied_data = [copy.copy(x) for x in self.data]
         c = OverloadList(copied_data)
         c.pos = self.pos
         c._is_operator = self._is_operator
@@ -41,17 +35,15 @@ class OverloadList(UserList):
 def efl(fname, template, tlist,**kwds):
     'short-hand for expandFuncList - just reduces the amount of finger-typing'
     list = []
-    for t in tlist:            
+    for t in tlist:
         f = "Func(%s,\"%s\")" % (re.sub("_", str(t), template), fname)
-        realf = eval(f)
         list.append(eval(f))
     return OverloadList(list,**kwds)
 
 def cfl(template, tlist):
     list = []
-    for t in tlist:            
+    for t in tlist:
         f = re.sub("_", str(t), template)
-        realf = eval(f)
         list.append(eval(f))
     return list
 
@@ -166,7 +158,7 @@ def createDefaultDict():
       hyper(a,b,c,d) is equivalent to the shorthand (a,b,c,d).''')
 
     f("sqr",
-      cfl("[_] , _",  [Int, Float, Complex, Hyper]),
+      cfl("[_] , _", [Int, Float, Complex, Hyper]),
       doc="Square the argument. sqr(x) is equivalent to x*x or x^2.")
 
     #f("cube",
@@ -174,7 +166,7 @@ def createDefaultDict():
     #  doc="Cube the argument. cube(x) is equivalent to x*x*x or x^3.")
     
     f("ident",
-      cfl("[_] , _",  [Int, Float, Complex, Bool, Hyper]),
+      cfl("[_] , _", [Int, Float, Complex, Bool, Hyper]),
       doc='''Do nothing. ident(x) is equivalent to x.
       This function is useless in normal formulas but
       comes in useful as a value for a function parameter
@@ -183,11 +175,11 @@ def createDefaultDict():
       Note: ident() is compiled out so there\'s no speed penalty involved.''')
     
     f("conj",
-      cfl("[_] , _",  [Complex, Hyper]),
+      cfl("[_] , _", [Complex, Hyper]),
       doc="The complex conjugate. conj(a,b) is equivalent to (a,-b).")
 
     f("flip",
-      cfl("[_] , _",  [Complex, Hyper]),
+      cfl("[_] , _", [Complex, Hyper]),
       doc='''Swap the real and imaginary parts of a complex number.
       flip(a,b) = (b,a).''')
 
@@ -322,7 +314,7 @@ def createDefaultDict():
       cfl("[_], _", [Float, Complex, Hyper]),
       doc='''The square root.
       The square root of a negative float number is NaN
-      (ie it is NOT converted to complex). Thus sqrt((-3,0)) != sqrt(-3).''' )
+      (ie it is NOT converted to complex). Thus sqrt((-3,0)) != sqrt(-3).''')
 
     f("exp",
       cfl("[_], _", [Float, Complex, Hyper]),
@@ -362,20 +354,20 @@ def createDefaultDict():
       backwards compatibility.''')
 
     f("sin",
-      cfl( "[_], _", [Float, Complex, Hyper]),
+      cfl("[_], _", [Float, Complex, Hyper]),
       doc='trigonometric sine function.')
     
     f("cos",
-      cfl( "[_], _", [Float, Complex, Hyper]),
+      cfl("[_], _", [Float, Complex, Hyper]),
       doc='trigonometric sine function.')
 
     f("cosxx",
-      cfl( "[_], _", [Complex, Hyper]),
+      cfl("[_], _", [Complex, Hyper]),
       doc='''Incorrect version of cosine function. Provided for backwards
       compatibility with equivalent wrong function in Fractint.''')
     
     f("tan",
-      cfl( "[_], _", [Float, Complex, Hyper]),
+      cfl("[_], _", [Float, Complex, Hyper]),
       doc='trigonometric sine function.')
 
     f("cotan",
@@ -383,15 +375,15 @@ def createDefaultDict():
       doc="Trigonometric cotangent function.")
       
     f("sinh",
-      cfl( "[_], _", [Float, Complex, Hyper]),
+      cfl("[_], _", [Float, Complex, Hyper]),
       doc='Hyperbolic sine function.')
     
     f("cosh",
-      cfl( "[_], _", [Float, Complex, Hyper]),
+      cfl("[_], _", [Float, Complex, Hyper]),
       doc='Hyperbolic cosine function.')
     
     f("tanh",
-      cfl( "[_], _", [Float, Complex, Hyper]),
+      cfl("[_], _", [Float, Complex, Hyper]),
       doc='Hyperbolic tangent function.')
 
     f("cotanh",
@@ -399,15 +391,15 @@ def createDefaultDict():
       doc='Hyperbolic cotangent function.')
         
     f("asin",
-      cfl( "[_], _", [Float, Complex, Hyper]),
+      cfl("[_], _", [Float, Complex, Hyper]),
       doc='Inverse sine function.')
     
     f("acos",
-      cfl( "[_], _", [Float, Complex, Hyper]),
+      cfl("[_], _", [Float, Complex, Hyper]),
       doc='Inverse cosine function.')
     
     f("atan",
-      cfl( "[_], _", [Float, Complex, Hyper]),
+      cfl("[_], _", [Float, Complex, Hyper]),
       doc='Inverse tangent function.')
 
     f("atan2",
@@ -416,15 +408,15 @@ def createDefaultDict():
       aka the complex argument.''')
     
     f("asinh",
-      cfl( "[_], _", [Float, Complex, Hyper]),
+      cfl("[_], _", [Float, Complex, Hyper]),
       doc='Inverse hyperbolic sine function.')
     
     f("acosh",
-      cfl( "[_], _", [Float, Complex, Hyper]),
+      cfl("[_], _", [Float, Complex, Hyper]),
       doc='Inverse hyperbolic cosine function.')
     
     f("atanh",
-      cfl( "[_], _", [Float, Complex, Hyper]),
+      cfl("[_], _", [Float, Complex, Hyper]),
       doc='Inverse hyperbolic tangent function.')
 
     # color functions
@@ -518,7 +510,7 @@ by the 3rd parameter.''')
     
     # operators
     
-    f("+", 
+    f("+",
       cfl("[_,_] , _", [Int, Float, Complex, Hyper, Color]),
       fname="add",
       operator=True,
@@ -604,7 +596,7 @@ by the 3rd parameter.''')
     for p in range(1,7):
         name = "p%d" % p
         d[name] = Alias("t__a_" + name)
-        d["t__a_" + name]  = Var(Complex,doc="Predefined parameter used by Fractint formulas")
+        d["t__a_" + name] = Var(Complex,doc="Predefined parameter used by Fractint formulas")
         
     # predefined functions
     for p in range(1,5):
@@ -623,7 +615,7 @@ by the 3rd parameter.''')
     d["t__a__gradient"] = Var(Gradient)
     
     for (k,v) in list(d.items()):
-        if hasattr(v,"cname") and v.cname == None:
+        if hasattr(v,"cname") and v.cname is None:
             v.cname = k
             
     return d
@@ -639,6 +631,7 @@ def mangle(k,prefix=""):
                
 class T(UserDict):
     default_dict = createDefaultDict()
+
     def __init__(self,prefix=""):
         UserDict.__init__(self)
         self.reset()
@@ -692,12 +685,12 @@ class T(UserDict):
     
     def has_key(self,key):
         if mangle(key) in self.data:
-            return True        
+            return True
         return mangle(key) in self.default_dict
 
     def is_user(self,key):
         val = self.data.get(mangle(key),None)
-        if val == None:
+        if val is None:
             val = self.default_dict.get(mangle(key))
         return val.pos != -1
 
@@ -725,12 +718,12 @@ class T(UserDict):
 
     def _realName(self,k):
         val = self.data.get(k,None)
-        if val == None:
+        if val is None:
             val = self.default_dict.get(k)
         if isinstance(val,Alias):
             val = self.default_dict.get(val.realName)
-        if val != None:
-            if val.cname == None:
+        if val is not None:
+            if val.cname is None:
                 #print k
                 raise Exception("argh" + k)
             return val.cname
@@ -745,16 +738,15 @@ class T(UserDict):
     def __contains__(self, key):
         k = mangle(key)
         val = self.data.get(k,None)
-        if val == None:
+        if val is None:
             val = self.default_dict.get(k,None)
 
         return val
 
-    
     def __getitem__(self,key):
         k = mangle(key)
         val = self.data.get(k,None)
-        if val == None:
+        if val is None:
             val = self.default_dict[k]
             if isinstance(val,Alias):
                 key = val.realName
@@ -771,9 +763,9 @@ class T(UserDict):
         return key[0] == '#'
 
     def clashes_with_private(self,mangled_key,old_key):
-        if mangled_key.find("t__",0,3)!=0:
+        if mangled_key.find("t__",0,3) != 0:
             return False
-        if old_key[0]=='@':
+        if old_key[0] == '@':
             return False
         return True
 
@@ -789,9 +781,9 @@ class T(UserDict):
         k = mangle(key)
         if k in self.data:
             pre_type = self.data[k].type
-            if  pre_type != value.type:                
+            if  pre_type != value.type:
                 l = self.data[k].pos
-                msg = ("was already defined as %s on line %d" % \
+                msg = ("was already defined as %s on line %d" %
                        (strOfType(pre_type), l))
                 raise KeyError("symbol '%s' %s" % (key,msg))
             return
@@ -812,7 +804,7 @@ class T(UserDict):
             return
         elif self.is_builtin(key):
             msg = "symbol '%s': only predefined symbols can begin with #" % key
-            raise KeyError(msg)                  
+            raise KeyError(msg)
         elif self.clashes_with_private(k,key):
             raise KeyError("symbol '%s': no symbol starting with t__ is allowed" % key)
         self.data[k] = value
@@ -822,8 +814,8 @@ class T(UserDict):
         else:
             pass #print "not recording",k
             
-        if hasattr(value,"cname") and value.cname == None:
-            value.cname=self.insert_prefix(self.prefix,k)
+        if hasattr(value,"cname") and value.cname is None:
+            value.cname = self.insert_prefix(self.prefix,k)
 
     def ensure(self, name, var):
         # make sure an item is referred to in main dict
@@ -899,11 +891,11 @@ class T(UserDict):
         # a hash which maps param name -> order in input list
         p = self.parameters(True)
 
-        op = {}; 
+        op = {}
         for k in list(p.keys()):
             op[k] = self[k].param_slot
 
-        op["__SIZE__"]=self.nextParamSlot
+        op["__SIZE__"] = self.nextParamSlot
 
         return op
 
@@ -911,7 +903,7 @@ class T(UserDict):
         # an array from param order -> type
         p = self.parameters(True)
 
-        tp = [ None] * self.nextParamSlot; 
+        tp = [None] * self.nextParamSlot
         for k in list(p.keys()):
             i = self[k].param_slot
             t = p[k].type
@@ -955,7 +947,7 @@ class T(UserDict):
             elif param.type == Image:
                 defaults[i] = 0
             else:
-                if not defval:                    
+                if not defval: 
                     defaults[i] = default_value(param.type)
                 else:
                     defaults[i] = defval.value
@@ -969,7 +961,7 @@ class T(UserDict):
         del self.data[mangle(key)]
         
     def reset(self):
-        self.data = {} 
+        self.data = {}
 
     def newLabel(self):
         label = "%slabel%d" % (self.prefix, self.nextlabel)
@@ -988,7 +980,7 @@ class T(UserDict):
     def newEnum(self,name,val,pos):
         var = Var(Int, val, pos)
         # set cname because the enum value may not be a valid C identifier
-        var.cname = "enum%s%d" % (self.prefix,self.nextEnum) 
+        var.cname = "enum%s%d" % (self.prefix,self.nextEnum)
         self.nextEnum += 1
         self["__enum_" + name] = var
         return var

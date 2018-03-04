@@ -2,7 +2,7 @@
 # Not a very general implementation
 # based on the description in Appel's book
 
-from bisect import bisect, insort
+from bisect import bisect
 
 class T:
     def __init__(self):
@@ -50,9 +50,7 @@ class T:
         s = self._pred[b]
         i = bisect(s,a)
         if i == 0 or s[-1] != a:
-            s.insert(i,a)        
+            s.insert(i,a)
 
     def delEdge(self, a, b):
         "remove the edge between a and b"
-
-    

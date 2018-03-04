@@ -16,17 +16,18 @@ file_types = {
     }
 
 def file_matches():
-    return [ "*" + x for x in list(file_types.keys())]
+    return ["*" + x for x in list(file_types.keys())]
 
 class T:
     FATE_SIZE = 4
     COL_SIZE = 3
     SOLID = 128
-    OUT=0
-    IN=32 | SOLID # in pixels have solid bit set
-    UNKNOWN=255
-    BLACK=[0,0,0]
-    WHITE=[255,255,255]
+    OUT = 0
+    IN = 32 | SOLID  # in pixels have solid bit set
+    UNKNOWN = 255
+    BLACK = [0,0,0]
+    WHITE = [255,255,255]
+
     def __init__(self,xsize,ysize,txsize=-1,tysize=-1):
         self._img = fract4dc.image_create(xsize,ysize,txsize, tysize)
         self.update_bufs()
@@ -70,19 +71,18 @@ class T:
 
     def lookup(self,x,y):
         return fract4dc.image_lookup(self._img,x,y)
-    
 
     def file_type(self,name):
         ext = os.path.splitext(name)[1]
         if ext == "":
             raise ValueError(
-                "No file extension in '%s'. Can't determine file format. %s" %\
+                "No file extension in '%s'. Can't determine file format. %s" %
                 (name, self.get_suggest_string()))
         
         type = file_types.get(ext.lower(), None)
-        if type == None:
+        if type is None:
             raise ValueError(
-                "Unsupported file format '%s'. %s" % \
+                "Unsupported file format '%s'. %s" %
                 (ext, self.get_suggest_string()))
         return type
     
@@ -101,7 +101,7 @@ class T:
         fract4dc.image_save_header(self.writer)
 
     def save_tile(self):
-        if None == self.writer:
+        if self.writer is None:
             return
         fract4dc.image_save_tile(self.writer)
 

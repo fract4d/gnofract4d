@@ -50,7 +50,7 @@ class T:
         return hash.hexdigest()
 
     def makePickleName(self,s,*extras):
-        name = self.hashcode(s,*extras) +".pkl"
+        name = self.hashcode(s,*extras) + ".pkl"
         fullname = os.path.join(self.dir, name)
         return fullname
     
@@ -74,7 +74,7 @@ class T:
         mtime = os.stat(file)[stat.ST_MTIME]
 
         tso = self.files.get(file,None)
-        if tso:            
+        if tso:
             if tso.time == mtime:
                 return tso.obj
 
@@ -87,4 +87,3 @@ class T:
         self.files[file] = TimeStampedObject(val,mtime,hashname)
         
         return val
-    

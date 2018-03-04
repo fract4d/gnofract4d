@@ -3,14 +3,9 @@
 # Translate an abstract syntax tree into tree-structured intermediate
 # code, performing type checking as a side effect
 import sys
-    
-from fract4d.absyn import *
-from . import fsymbol
-from . import fractparser
-from . import fractlexer
-from . import ir
-from . import canon
 
+from fract4d.absyn import *
+from . import fsymbol, fractparser, ir, canon
 from .fracttypes import *
     
 allowed_param_names = [
@@ -33,7 +28,7 @@ class TBase:
         self.canon_sections = {}
         self.output_sections = {}
         self.defaults = {}
-        self.fakeNode = Empty(-1) # node used for code not written by user
+        self.fakeNode = Empty(-1)  # node used for code not written by user
         
         self.dumpCanon = 0
         self.dumpDecorated = 0
@@ -42,10 +37,10 @@ class TBase:
         self.dumpVars = 0
         self.dumpPreCanon = 0
 
-        if dump != None:
+        if dump is not None:
             for k in list(dump.keys()):
                 print(k)
-                self.__dict__[k]=1
+                self.__dict__[k] = 1
 
     def post_init(self):
         if self.dumpProbs:
@@ -61,7 +56,7 @@ class TBase:
                     try:
                         print(name,": ",sym)
                     except Exception as err:
-                        print("Error \"%s\" dumping %s" %(err,name))
+                        print("Error \"%s\" dumping %s" % (err,name))
 
         if self.dumpTranslation:
             print(self.dumpSections(f,self.canon_sections))
@@ -89,7 +84,7 @@ class TBase:
                 for t in tree:
                     print(t.pretty(2))
                 print(" )")
-            elif tree == None:
+            elif tree is None:
                 pass
             else:
                 print("Unknown tree %s in section %s" % (tree, name))
@@ -101,14 +96,14 @@ class TBase:
         out = []
         for (name,tree) in list(self.sections.items()):
             if isinstance(tree,ir.T):
-                out.append( " " + name + "(")
+                out.append(" " + name + "(")
                 out.append(tree.pretty(2) + " )")
             elif isinstance(tree,list):
                 out.append(" " + name + "(")
                 for t in tree:
                     out.append(t.pretty(2))
                 out.append(" )")
-            elif tree == None:
+            elif tree is None:
                 pass
             else:
                 out.append("Unknown tree %s in section %s" % (tree, name))
@@ -116,6 +111,7 @@ class TBase:
     
     def error(self,msg):
         self.errors.append(msg)
+
     def warning(self,msg):
         self.warnings.append(msg)
             
@@ -128,8 +124,8 @@ class TBase:
 
     def dupSectionWarning(self,sect):
         self.warning(
-                    ("Formula contains a fractint-style implicit %s section "+
-                    "and an explicit UltraFractal %s section. "+
+                    ("Formula contains a fractint-style implicit %s section "
+                    "and an explicit UltraFractal %s section. "
                     "Using explicit section.") % (sect,sect))
         
     def sectionOrNone(self,sectname):
@@ -146,7 +142,7 @@ class TBase:
 
     def add_to_section(self,sectname,stmlist):
         current = self.sections.get(sectname)
-        if current == None:
+        if current is None:
             self.sections[sectname] = stmlist
         else:
             self.sections[sectname].children += stmlist.children
@@ -159,21 +155,21 @@ class TBase:
 
     def setlist(self, node):
         children = [c for c in node.children if c.type != "empty"]
-        settings = [self.setting(c) for c in children]        
-        seq = ir.Seq([c for c in settings if c != None], node)
+        settings = [self.setting(c) for c in children]
+        seq = ir.Seq([c for c in settings if c is not None], node)
         return seq
 
     def paramsetting(self,node,var):
         name = node.children[0].leaf
 
-        if not name in allowed_param_names:
+        if name not in allowed_param_names:
             self.warning(
-                "%d: Unrecognized parameter setting '%s' ignored" % \
+                "%d: Unrecognized parameter setting '%s' ignored" %
                 (node.pos, name))
             return
 
         if name == "visible" or name == "enabled":
-            #FIXME ignore visibility for now, parser can't deal with it
+            # FIXME ignore visibility for now, parser can't deal with it
             return
         
         if name == "default":
@@ -213,7 +209,7 @@ class TBase:
                 node.datatype = fracttypes.Int
                 break
 
-        if node.datatype == None:
+        if node.datatype is None:
             # datatype not specified. Must try to infer from default value
             # in the meantime, will assume it's complex
             datatype = fracttypes.Complex
@@ -224,7 +220,7 @@ class TBase:
 
         # create param if not already present
         #print "call get with", name
-        v = self.symbols.get(name)    
+        v = self.symbols.get(name)
         set_v = False
         #print "name:%s val:%s" % (name, v)
         if not v:
@@ -238,17 +234,17 @@ class TBase:
         
         v.declared = True
         
-        # process settings        
+        # process settings
         for child in node.children:
             if child.type == "set":
                 self.paramsetting(child,v)
             else:
                 self.error("%d: invalid statement in parameter block" % node.pos)
 
-        if hasattr(v,"default") and v.default != None:
-            if node.datatype == None:
+        if hasattr(v,"default") and v.default is not None:
+            if node.datatype is None:
                 # oddly, this was bypassing the property when I used v.type
-                v._set_type(v.default.datatype) 
+                v._set_type(v.default.datatype)
                 v.value = default_value(v.type)
 
             v.default = self.expand_enum(node, v, name)
@@ -275,7 +271,7 @@ class TBase:
         if name == "default":
             fname = node.children[1].leaf
             fol = self.symbols.get(fname)
-            if fol == None:
+            if fol is None:
                 msg = "%d: unknown default function '%s'" % (node.pos,fname)
                 raise TranslationError(msg)
                 
@@ -339,7 +335,7 @@ class TBase:
         if set_f:
             fol = fsymbol.OverloadList([f])
             fol.declared = True
-            self.symbols[name] = fol 
+            self.symbols[name] = fol
 
     def raise_declare_error(self, obj, node):
         type = isinstance(obj, fracttypes.Var) and "parameter" or "function"
@@ -438,9 +434,9 @@ class TBase:
 
     def const_convert(self,val,type_out):
         if not fracttypes.canBeCast(val.datatype,type_out):
-            self.error("%d: Cannot convert %s (%s) to %s" % \
+            self.error("%d: Cannot convert %s (%s) to %s" %
                   (val.node.pos, fracttypes.strOfType(val.datatype),
-                   val.value, fracttypes.strOfType(type_out)))            
+                   val.value, fracttypes.strOfType(type_out)))
             return val
         
         if val.datatype == type_out:
@@ -479,7 +475,7 @@ class TBase:
         seq = ir.Seq([self.stm(c) for c in children], node)
         return seq
 
-    def stmlist_with_label(self, node, label):        
+    def stmlist_with_label(self, node, label):
         seq = self.stmlist(node)
         seq.children.insert(0, label)
         return seq
@@ -502,7 +498,7 @@ class TBase:
     def isCompare(self,node):
         op = node.leaf
         return node.type == "binop" and \
-               (op == ">" or op == ">=" or op == "<" or op == "<=" or \
+               (op == ">" or op == ">=" or op == "<" or op == "<=" or
                 op == "==" or op == "!=")
 
     def isShortcut(self,node):
@@ -595,7 +591,7 @@ class TBase:
         try:
             arity = self.symbols[name].arity
             
-            if len(indexes) != arity:                   
+            if len(indexes) != arity:
                 raise TranslationError("%d: wrong number of indexes for %s" % (pos, name))
 
         except KeyError as err:
@@ -603,8 +599,7 @@ class TBase:
         except AttributeError as err:
             # not an array
             raise TranslationError("%d: %s is not an array" % (pos, name))
-                               
-                
+
     def arraylookup(self, node):
         name = node.leaf
         indexes = self.indexes(node)
@@ -630,7 +625,7 @@ class TBase:
                 self.symbols[name] = \
                     Var(Complex,None,lvalue.pos)
 
-            if isinstance(self.symbols[name],fracttypes.Var): 
+            if isinstance(self.symbols[name],fracttypes.Var):
                 expectedType = self.symbols[name].type
             else:
                 msg = "%d: %s is not a variable, assignment to it is not allowed" % (node.pos, name)
@@ -639,7 +634,7 @@ class TBase:
             if lvalue.type == "id":
                 lhs = ir.Var(name, node, expectedType)
             else:
-                # array lookup                
+                # array lookup
                 var = ir.Var(name, node, expectedType)
                 
                 indexes = self.indexes(node.children[0])
@@ -647,13 +642,13 @@ class TBase:
                 self.checkArrayArity(name, indexes, node.pos)
                 elementType = fracttypes.elementTypeOf(expectedType)
                 rhs = self.coerce(rhs,elementType)
-                return ir.Call("_write_lookup", [var] + indexes + [rhs], node, elementType)                
+                return ir.Call("_write_lookup", [var] + indexes + [rhs], node, elementType)
                 
         elif lvalue.type == "funcall":
             lhs = self.funcall(lvalue)
             expectedType = lhs.datatype
         else:
-            self.error("Internal Compiler Error: bad lvalue %s for assign on %d:"\
+            self.error("Internal Compiler Error: bad lvalue %s for assign on %d:"
                        % (lvalue.type, node.pos))
 
         return ir.Move(lhs,self.coerce(rhs,expectedType),node,expectedType)
@@ -693,7 +688,7 @@ class TBase:
                 return ol
         
         raise TranslationError(
-            "Invalid argument types %s for %s on line %s" % \
+            "Invalid argument types %s for %s on line %s" %
             (list(map(fracttypes.strOfType,typelist)), func, pos))
     
     def decl(self,node):
@@ -706,7 +701,7 @@ class TBase:
         try:
             self.symbols[node.leaf] = Var(node.datatype, None, node.pos)
             return ir.Move(
-                ir.Var(node.leaf, node, node.datatype),                
+                ir.Var(node.leaf, node, node.datatype),
                 self.coerce(exp, node.datatype),
                 node, node.datatype)
         
@@ -742,7 +737,7 @@ class TBase:
         size = ir.Const(fracttypes.elementSizeOf(atype), node, fracttypes.Int)
 
         # a bit of a hack. Complex arrays are just float arrays twice as big
-        if atype == fracttypes.ComplexArray:            
+        if atype == fracttypes.ComplexArray:
             indexes[-1] = ir.Binop(
                 '*',
                 [ir.Const(2,node,fracttypes.Int), indexes[-1]],
@@ -757,7 +752,7 @@ class TBase:
             ir.Var(node.leaf, node, atype),
             init_exp,
             node,
-            atype)            
+            atype)
                 
     def exp(self,node):
         if node.type == "const":
@@ -831,8 +826,8 @@ class TBase:
         
         node.children[0] = self.makeCompare(node.children[0])
 
-        children = [self.exp(n) for n in node.children]        
-        op = self.findOp(node.leaf, node.pos ,children)
+        children = [self.exp(n) for n in node.children]
+        op = self.findOp(node.leaf, node.pos, children)
         children = self.coerceList(op.args,children)
 
         temp = ir.Var(self.symbols.newTemp(Bool),node, Bool)
@@ -905,7 +900,7 @@ class TBase:
             node.datatype = self.symbols[node.leaf].type
         except KeyError as e:
             self.warning(
-                "Uninitialized variable %s referenced on line %d" % \
+                "Uninitialized variable %s referenced on line %d" %
                 (node.leaf, node.pos))
             try:
                 self.symbols[node.leaf] = Var(
@@ -931,10 +926,10 @@ class TBase:
         return ir.Var(node.leaf, node, node.datatype)
         
     def const(self,node):
-        return ir.Const(node.leaf, node, node.datatype)        
+        return ir.Const(node.leaf, node, node.datatype)
 
     def string(self,node):
-        if node.children == None or node.children == []:
+        if node.children is None or node.children == []:
             return ir.Const(node.leaf, node, node.datatype)
         else:
             strings = [node.leaf]
@@ -945,7 +940,7 @@ class TBase:
         try:
             val = self.symbols["__enum_" + node.leaf].value
             return ir.Const(val, node, fracttypes.Int)
-        except KeyError as err:            
+        except KeyError as err:
             msg = "%d: Unknown enumeration value '%s'" % (node.pos,node.leaf)
             raise TranslationError(msg)
         
@@ -953,7 +948,7 @@ class TBase:
         return [self.coerce(exp_ty[0],exp_ty[1]) for exp_ty in zip(typeList, expList)]
     
     def coerce(self, exp, expectedType):
-        '''insert code to cast exp to expectedType 
+        '''insert code to cast exp to expectedType
            or produce an error if conversion is not permitted'''
 
         #if exp.datatype == None or expectedType == None:
@@ -984,7 +979,7 @@ class TBase:
             bail_stm = ir.Move(
                 ir.Var("__bailout",node, Bool),
                 bail_stm,node,Bool)
-            bailList.children[-1] = bail_stm            
+            bailList.children[-1] = bail_stm
             self.sections["bailout"] = bailList
         except IndexError:
             self.warnings.append("No bailout expression found. Calculation will never bail out.")
@@ -1053,7 +1048,7 @@ class T(TBase):
 
         #  ignore switch and builtin for now
 
-    def canonicalizeSections(self,f):        
+    def canonicalizeSections(self,f):
         '''a nameless section (started by ':') is the same as a loop
            section with the last stm as a bailout section - make this
            change'''
@@ -1221,13 +1216,13 @@ class ColorFunc(TBase):
         density = Var(Float, 0.0, -1)
         density.default = ir.Const(1.0,-1,fracttypes.Float)
         density.caption = ir.Const("Color Density", -1, fracttypes.String)
-        self.symbols["@_density"] = density        
+        self.symbols["@_density"] = density
         
     def index_calc(self, var):
         # @transfer(var) * @density + @offset
         return \
-            Binop('+', 
-                  Binop('*', 
+            Binop('+',
+                  Binop('*',
                         ID("@_density",-1),
                         Funcall("@_transfer",[var],-1), -1),
                   ID("@_offset",-1),-1)
@@ -1236,7 +1231,7 @@ class ColorFunc(TBase):
         # special handling for gradient function to insert density,
         # offset and transfer
         if node.leaf == "gradient":
-            children = [ self.exp(self.index_calc(node.children[0]))]
+            children = [self.exp(self.index_calc(node.children[0]))]
             op = self.findOp(node.leaf, node.pos, children)
             children = self.coerceList(op.args,children)
             return ir.Call(node.leaf, children, node, op.ret)
@@ -1247,7 +1242,7 @@ class ColorFunc(TBase):
         # append [#index = @transfer(#index) * @density + @offset]
         transfer = Stmlist(
             "",
-            [ Assign(ID("#index",-1), self.index_calc(ID("#index",-1)), -1)],
+            [Assign(ID("#index",-1), self.index_calc(ID("#index",-1)), -1)],
             -1)
         
         TBase.final(self,f)
@@ -1289,7 +1284,7 @@ parser = fractparser.parser
 
 def main(args):
     for arg in args:
-        s = open(arg,"r").read() # read in a whole file
+        s = open(arg,"r").read()  # read in a whole file
         result = parser.parse(s)
         for formula in result.children:
             print(formula.leaf)
@@ -1302,4 +1297,3 @@ def main(args):
 # debugging
 if __name__ == '__main__':
     main(sys.argv[1:])
-    

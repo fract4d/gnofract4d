@@ -1,7 +1,5 @@
 # fract compiler datatypes
 
-import string
-import types
 import copy
 
 # order is significant - we use X > Y on types
@@ -23,7 +21,7 @@ ComplexArray = 12
 class Type(object):
     def __init__(self,**kwds):
         self.suffix = kwds["suffix"]
-        self.printf = kwds.get("printf") # optional
+        self.printf = kwds.get("printf")  # optional
         self.typename = kwds["typename"]
         self.default = kwds["default"]
         self.slots = kwds.get("slots",1)
@@ -52,7 +50,7 @@ class ComplexType(Type):
         if var.param_slot == -1:
             return [
                 "%.17f" % var.value[0],
-                "%.17f" % var.value[1]]     
+                "%.17f" % var.value[1]]
         else:
             return [
                 "t__pfo->p[%d].doubleval" % var.param_slot,
@@ -64,10 +62,10 @@ class QuadType(Type):
 
     def init_val(self,var):
         if var.param_slot == -1:
-            return [ "%.17f" % x for x in var.value]
+            return ["%.17f" % x for x in var.value]
         else:
             return [
-                "t__pfo->p[%d].doubleval" % \
+                "t__pfo->p[%d].doubleval" %
                 x for x in range(var.param_slot,var.param_slot+4)]
 
 class IntType(Type):
@@ -76,7 +74,7 @@ class IntType(Type):
 
     def init_val(self,var):
         if var.param_slot == -1:
-            return [ "%d" % var.value] 
+            return ["%d" % var.value]
         else:
             return [
                 "t__pfo->p[%d].intval" % var.param_slot]
@@ -90,7 +88,7 @@ class GradientType(Type):
             raise TranslationError(
                 "Internal Compiler Error: gradient not initialized as a param")
         else:
-            return [ "t__pfo->p[%d].gradient" % var.param_slot]
+            return ["t__pfo->p[%d].gradient" % var.param_slot]
 
         return []
 
@@ -103,7 +101,7 @@ class ImageType(Type):
             raise TranslationError(
                 "Internal Compiler Error: image not initialized as a param")
         else:
-            return [ "t__pfo->p[%d].image" % var.param_slot]
+            return ["t__pfo->p[%d].image" % var.param_slot]
 
         return []
 
@@ -254,7 +252,7 @@ def arrayTypeOf(t,node=None):
         pos = ""
     else:
         pos = "%d: " % node.pos
-    raise TranslationError(        
+    raise TranslationError(
         "%sArrays of type %s are not supported" % (pos, strOfType(t)))
 
 def elementTypeOf(t,node=None):
@@ -270,7 +268,7 @@ def elementTypeOf(t,node=None):
         pos = ""
     else:
         pos = "%d: " % node.pos
-    raise TranslationError(        
+    raise TranslationError(
         "%sArrays of type %s are not supported" % (pos, strOfType(t)))
 
 
@@ -307,7 +305,7 @@ _canBeCast = [
 
 def canBeCast(t1,t2):
     ' can t1 be cast to t2?'
-    if t1 == None or t2 == None:
+    if t1 is None or t2 is None:
         return 0
     return _canBeCast[t1][t2]
 
@@ -352,7 +350,7 @@ class Func:
     def set_func(self,fname):
         # compute the name of the stdlib function to call
         # this is similar in purpose to C++ name mangling
-        if fname == None:
+        if fname is None:
             self.genFunc = None
         else:
             typed_fname = fname + "_"
@@ -373,14 +371,14 @@ class Func:
             if not canBeCast(potentialArgs[i],arg):
                 return False
             i = i + 1
-        return True 
+        return True
 
 class Var:
     def __init__(self,type,value=None,pos=-1,**kwds):
         #assert(type_ != None)
         #assert(isinstance(pos,types.IntType))
         self._set_type(type)
-        if value == None:
+        if value is None:
             self.value = self._typeobj.default
         else:
             self.value = value
@@ -437,4 +435,3 @@ class Temp(Var):
         return True
 
     is_temp = property(_get_is_temp)
-

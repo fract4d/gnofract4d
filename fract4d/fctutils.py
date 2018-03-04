@@ -1,15 +1,13 @@
 # generally useful funcs for reading in .fct files
 
-import string
 import base64
 import io
 import gzip
-import struct
 
 class T:
     def __init__(self,parent=None):
         self.endsect = "[endsection]"
-        self.tr = str.maketrans("[] ","___")
+        self.tr = str.maketrans("[] ", "___")
         self.parent = parent
         
     def warn(self,msg):
@@ -18,13 +16,13 @@ class T:
 
     def load(self,f):
         line = f.readline()
-        while line != "":
+        while line:
             (name,val) = self.nameval(line)
-            if name != None:
+            if name is not None:
                 if name == self.endsect:
                     break
 
-                if name=="compressed":
+                if name == "compressed":
                     compressed = True
                 else:
                     compressed = False
@@ -36,7 +34,7 @@ class T:
                         if compressed:
                             line = line.rstrip()
                         vals.append(line)
-                        line = f.readline()                    
+                        line = f.readline()
                     val = "".join(vals)
 
                 if name == "compressed":
@@ -56,10 +54,10 @@ class T:
         klass = self.__class__
         while True:
             meth = klass.__dict__.get(methname)
-            if meth != None:
+            if meth is not None:
                 break
             bases = klass.__bases__
-            if len(bases) > 0:                    
+            if len(bases) > 0:
                 klass = bases[0]
             else:
                 break
@@ -105,12 +103,8 @@ class ParamBag(T):
     def parseVal(self,name,val,f,sect=""):
         if name[0] == '[' and name[-1] == "]":
             # start of a section
-            sectname = name[1:-1]
             sub_bag = ParamBag()
             sub_bag.load(f)
             val = (val, sub_bag)
 
         self.dict[sect + name] = val
-
-        
-            

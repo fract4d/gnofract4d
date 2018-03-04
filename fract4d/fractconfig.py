@@ -99,7 +99,7 @@ class T(configparser.ConfigParser):
 
     @staticmethod
     def get_data_path(subpath=""):
-        # find where data files are present. 
+        # find where data files are present.
         # use share path one level up from gnofract4d script location
         # e.g., if invoked as /usr/bin/gnofract4d, use /usr/share/gnofract4d
         path = os.path.normpath(os.path.join(
@@ -190,14 +190,14 @@ class T(configparser.ConfigParser):
     def remove_all_in_list_section(self,name):
         i = 0
         items_left = True
-        while items_left:            
+        while items_left:
             items_left = self.remove_option(name,"%d" % i)
             i += 1
         
     def set_list(self, name, list):
         self.remove_all_in_list_section(name)
 
-        i = 0        
+        i = 0
         for item in list:
             configparser.ConfigParser.set(self, name,"%d" % i, item)
             i += 1

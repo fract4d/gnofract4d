@@ -42,12 +42,7 @@ import os
 import inspect
 
 # This tuple contains known string types
-try:
-    # Python 2.6
-    StringTypes = (types.StringType, types.UnicodeType)
-except AttributeError:
-    # Python 3.0
-    StringTypes = (str, bytes)
+StringTypes = (str, bytes)
 
 # This regular expression is used to match valid token names
 _is_identifier = re.compile(r'^[a-zA-Z0-9_]+$')
@@ -184,7 +179,7 @@ class Lexer:
             tf.write('_lexliterals  = %s\n' % repr(self.lexliterals))
             tf.write('_lexstateinfo = %s\n' % repr(self.lexstateinfo))
 
-            # Rewrite the lexstatere table, replacing function objects with function names 
+            # Rewrite the lexstatere table, replacing function objects with function names
             tabre = {}
             for statename, lre in self.lexstatere.items():
                 titem = []
@@ -531,7 +526,6 @@ def _form_master_re(relist, reflags, ldict, toknames):
 # calling this with s = "t_foo_bar_SPAM" might return (('foo','bar'),'SPAM')
 # -----------------------------------------------------------------------------
 def _statetoken(s, names):
-    nonstate = 1
     parts = s.split('_')
     for i, part in enumerate(parts[1:], 1):
         if part not in names and part != 'ANY':
@@ -949,8 +943,6 @@ def lex(module=None, object=None, debug=False, optimize=False, lextab='lextab',
 
         # Add rules defined by functions first
         for fname, f in linfo.funcsym[state]:
-            line = f.__code__.co_firstlineno
-            file = f.__code__.co_filename
             regex_list.append('(?P<%s>%s)' % (fname, _get_regex(f)))
             if debug:
                 debuglog.info("lex: Adding rule %s -> '%s' (state '%s')", fname, _get_regex(f), state)
@@ -1097,4 +1089,3 @@ def TOKEN(r):
 
 # Alternative spelling of the TOKEN decorator
 Token = TOKEN
-

@@ -1,7 +1,9 @@
 # This is called by the main gnofract4d script
 
-import shutil, os
-from . import fractal, fc, fract4dc, image, fracttypes
+import os
+import shutil
+
+from . import fractal, fc, image
 
 class T:
     def __init__(self, userConfig):
@@ -14,10 +16,10 @@ class T:
         self.compiler.update_from_prefs(prefs)
         
     def run(self,options):
-        for path in options.extra_paths:            
+        for path in options.extra_paths:
             self.compiler.add_func_path(path)
         
-        if options.flags != None:
+        if options.flags is not None:
             self.compiler.set_flags(options.flags)
 
         width = options.width or self.userConfig.getint("display","width")
@@ -34,9 +36,9 @@ class T:
 
         outfile = self.compile(options)
 
-        if options.buildonly != None:
+        if options.buildonly is not None:
             self.buildonly(options, outfile)
-            return            
+            return
 
         if options.singlepoint:
             self.f.drawpoint()
@@ -48,11 +50,10 @@ class T:
             im.save(options.save_filename)
 
     def compile(self,options):
-        if options.usebuilt == None:
+        if options.usebuilt is None:
             return self.f.compile()
         else:
             self.f.set_output_file(options.usebuilt)
-
 
     def buildonly(self, options, outfile):
         outdirname = os.path.dirname(options.buildonly)

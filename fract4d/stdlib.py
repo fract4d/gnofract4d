@@ -8,7 +8,7 @@ class Constants:
     def __init__(self):
         self.i = ComplexArg(ConstFloatArg(0.0),ConstFloatArg(1.0))
         self.iby2 = ComplexArg(ConstFloatArg(0.0),ConstFloatArg(0.5))
-        self.minus_i = ComplexArg(ConstFloatArg(0.0),ConstFloatArg(-1.0))  
+        self.minus_i = ComplexArg(ConstFloatArg(0.0),ConstFloatArg(-1.0))
         self.one = ComplexArg(ConstFloatArg(1.0),ConstFloatArg(0.0))
 
 const = Constants()
@@ -146,7 +146,7 @@ def clamp_f_f(gen,t,srcs):
     smaller_than_one = gen.symbols.newLabel()
     done = gen.symbols.newLabel()
 
-    one= ConstFloatArg(1.0)
+    one = ConstFloatArg(1.0)
     zero = ConstFloatArg(0.0)
     src = srcs[0]
     dst = TempArg(gen.symbols.newTemp(Float),Float)
@@ -371,7 +371,7 @@ def pow_cc_c(gen,t,srcs):
 
     return ComplexArg(dst_re,dst_im)
     
-def lt_cc_b(gen,t,srcs):    
+def lt_cc_b(gen,t,srcs):
     # compare real parts only
     return gen.emit_binop(t.op,reals(srcs), Bool)
 
@@ -402,7 +402,7 @@ def sqr_c_c(gen,t,srcs):
     ab = gen.emit_binop('*', [src.re, src.im], Float)
     dst = ComplexArg(
         gen.emit_binop('-', [a2, b2], Float),
-        gen.emit_binop('*', [ ConstFloatArg(2.0), ab], Float))
+        gen.emit_binop('*', [ConstFloatArg(2.0), ab], Float))
     return dst
     
 def sqr_f_f(gen,t,srcs):
@@ -412,7 +412,7 @@ sqr_i_i = sqr_f_f
 
 def conj_c_c(gen,t,srcs):
     # conj (a+ib) = a-ib
-    b = gen.emit_binop('-', [ ConstFloatArg(0.0), srcs[0].im], Float)
+    b = gen.emit_binop('-', [ConstFloatArg(0.0), srcs[0].im], Float)
     return ComplexArg(srcs[0].re,b)
 
 def flip_c_c(gen,t,srcs):
@@ -504,7 +504,7 @@ def recip_h_h(gen,t,srcs):
     re_k_minus_ij = gen.emit_binop('-', [
         gen.emit_binop('*', [re, k], Float),
         gen.emit_binop('*', [i, j], Float)], Float)
-    re_k_minus_ij = gen.emit_binop('+', [ re_k_minus_ij, re_k_minus_ij], Float)
+    re_k_minus_ij = gen.emit_binop('+', [re_k_minus_ij, re_k_minus_ij], Float)
 
     return HyperArg(
         gen.emit_binop('/', [
@@ -628,7 +628,7 @@ def sqrt_c_c(gen,t,srcs):
     # temp = sqrt(abs(z.im) / 2);
     # return (temp, __y < 0 ? -__temp : __temp);
     
-    temp = sqrt_f_f(gen, t, [ abs_f_f(gen,t, [
+    temp = sqrt_f_f(gen, t, [abs_f_f(gen,t, [
         gen.emit_binop('/',[srcs[0].im, ConstFloatArg(2.0)],Float)])])
 
     gen.emit_move(temp,dst_re)
@@ -651,7 +651,7 @@ def sqrt_c_c(gen,t,srcs):
     # u = temp/2
     temp = sqrt_f_f(
         gen,t,
-        [ gen.emit_binop(
+        [gen.emit_binop(
             '*',
             [ConstFloatArg(2.0),
              gen.emit_binop(
@@ -665,7 +665,7 @@ def sqrt_c_c(gen,t,srcs):
     u = gen.emit_binop('/',[temp,ConstFloatArg(2.0)], Float)
     
     #x > 0?
-    xpos = gen.emit_binop('>',[srcs[0].re,ConstFloatArg(0.0)], Float)    
+    xpos = gen.emit_binop('>',[srcs[0].re,ConstFloatArg(0.0)], Float)
     xgtzero = gen.symbols.newLabel()
     gen.emit_cjump(xpos,xgtzero)
 
@@ -674,10 +674,10 @@ def sqrt_c_c(gen,t,srcs):
     # x = abs(im)/temp
     gen.emit_move(gen.emit_binop(
         '/',
-        [abs_f_f(gen,t,[srcs[0].im]), temp], Float) , dst_re)
+        [abs_f_f(gen,t,[srcs[0].im]), temp], Float), dst_re)
 
     # y < 0 ? -u : u
-    ypos2 = gen.emit_binop('>=',[srcs[0].im,ConstFloatArg(0.0)], Float)    
+    ypos2 = gen.emit_binop('>=',[srcs[0].im,ConstFloatArg(0.0)], Float)
     ygtzero2 = gen.symbols.newLabel()
     gen.emit_cjump(ypos2,ygtzero2)
     gen.emit_move(neg_f_f(gen,t,[u]), dst_im)
@@ -703,8 +703,8 @@ def sin_f_f(gen,t,srcs):
 def sin_c_c(gen,t,srcs):
     # sin(a+ib) = (sin(a) * cosh(b), cos(a) * sinh(b))
     a = srcs[0].re ; b = srcs[0].im
-    re = gen.emit_binop('*', [ sin_f_f(gen,t,[a]), cosh_f_f(gen,t,[b])], Float)
-    im = gen.emit_binop('*', [ cos_f_f(gen,t,[a]), sinh_f_f(gen,t,[b])], Float)
+    re = gen.emit_binop('*', [sin_f_f(gen,t,[a]), cosh_f_f(gen,t,[b])], Float)
+    im = gen.emit_binop('*', [cos_f_f(gen,t,[a]), sinh_f_f(gen,t,[b])], Float)
     return ComplexArg(re,im)
 
 def cos_f_f(gen,t,srcs):
@@ -713,8 +713,8 @@ def cos_f_f(gen,t,srcs):
 def cos_c_c(gen,t,srcs):
     # cos(a+ib) = (cos(a) * cosh(b), -(sin(a) * sinh(b)))
     a = srcs[0].re ; b = srcs[0].im
-    re = gen.emit_binop('*', [ cos_f_f(gen,t,[a]), cosh_f_f(gen,t,[b])], Float)
-    im = gen.emit_binop('*', [ sin_f_f(gen,t,[a]), sinh_f_f(gen,t,[b])], Float)
+    re = gen.emit_binop('*', [cos_f_f(gen,t,[a]), cosh_f_f(gen,t,[b])], Float)
+    im = gen.emit_binop('*', [sin_f_f(gen,t,[a]), sinh_f_f(gen,t,[b])], Float)
     
     nim = gen.emit_func('-',[im], Float)
     return ComplexArg(re,nim)
@@ -751,8 +751,8 @@ def cosh_f_f(gen,t,srcs):
 def cosh_c_c(gen,t,srcs):
     # cosh(a+ib) = cosh(a)*cos(b) + i (sinh(a) * sin(b))
     a = [srcs[0].re]; b = [srcs[0].im]
-    re = gen.emit_binop('*', [ cosh_f_f(gen,t,a), cos_f_f(gen,t,b)], Float)
-    im = gen.emit_binop('*', [ sinh_f_f(gen,t,a), sin_f_f(gen,t,b)], Float)    
+    re = gen.emit_binop('*', [cosh_f_f(gen,t,a), cos_f_f(gen,t,b)], Float)
+    im = gen.emit_binop('*', [sinh_f_f(gen,t,a), sin_f_f(gen,t,b)], Float)
     return ComplexArg(re,im)
 
 def sinh_f_f(gen,t,srcs):
@@ -761,8 +761,8 @@ def sinh_f_f(gen,t,srcs):
 def sinh_c_c(gen,t,srcs):
     # sinh(a+ib) = sinh(a)*cos(b) + i (cosh(a) * sin(b))
     a = [srcs[0].re]; b = [srcs[0].im]
-    re = gen.emit_binop('*', [ sinh_f_f(gen,t,a), cos_f_f(gen,t,b)], Float)
-    im = gen.emit_binop('*', [ cosh_f_f(gen,t,a), sin_f_f(gen,t,b)], Float)    
+    re = gen.emit_binop('*', [sinh_f_f(gen,t,a), cos_f_f(gen,t,b)], Float)
+    im = gen.emit_binop('*', [cosh_f_f(gen,t,a), sin_f_f(gen,t,b)], Float)
     return ComplexArg(re,im)
 
 def tanh_f_f(gen,t,srcs):
@@ -783,7 +783,7 @@ def asin_c_c(gen,t,srcs):
     arg = add_cc_c(gen,t,[mul_cc_c(gen,t,[const.i,srcs[0]]), sq])
 
     l = log_c_c(gen,t,[arg])
-    return mul_cc_c(gen,t,[const.minus_i,l])               
+    return mul_cc_c(gen,t,[const.minus_i,l])
 
 def acos_f_f(gen,t,srcs):
     return gen.emit_func('acos', srcs, Float)
@@ -865,7 +865,7 @@ def atanh_f_f(gen,t,srcs):
     return gen.emit_func('atanh', srcs, Float)
 
 def times_i(gen,t,srcs):
-    # multiply by i = (-im,re) 
+    # multiply by i = (-im,re)
     return ComplexArg(neg_f_f(gen,t,[srcs[0].im]),srcs[0].re)
 
 def atanh_c_c(gen,t,srcs):
@@ -999,12 +999,12 @@ def mergemultiply_CC_C(gen,t,srcs):
 def gradient_Gf_C(gen,t,srcs):
     [d1,d2,d3] = gen.emit_func2_3("gradient", srcs, Float)
     # fixme get alpha from gradient
-    return ColorArg(d1,d2,d3,ConstFloatArg(1.0)) 
+    return ColorArg(d1,d2,d3,ConstFloatArg(1.0))
 
 def _image_Ic_C(gen,t,srcs):
     c = srcs[1]
     [d1,d2,d3] = gen.emit_func3_3("image_lookup", [srcs[0], c.re, c.im], Float)
-    return ColorArg(d1,d2,d3,ConstFloatArg(1.0)) 
+    return ColorArg(d1,d2,d3,ConstFloatArg(1.0))
     
 def gradient_f_C(gen,t,srcs):
     grad = gen.get_gradient_var()
@@ -1039,7 +1039,7 @@ def _read_lookup_afi_f(gen,t,srcs):
     return d
 
 def _read_lookup_aci_c(gen,t,srcs):
-    # lookup pair of floats 
+    # lookup pair of floats
     i1 = gen.emit_binop('*', [ConstIntArg(2), srcs[1]], Int)
     i2 = gen.emit_binop('+', [ConstIntArg(1), i1], Int)
     d1 = gen.emit_func2("read_float_array_1D", [srcs[0], i1], Float)
@@ -1057,7 +1057,7 @@ def _read_lookup_afii_f(gen,t,srcs):
 
 def _read_lookup_acii_c(gen,t,srcs):
 
-    # lookup pair of floats 
+    # lookup pair of floats
     i1 = gen.emit_binop('*', [ConstIntArg(2), srcs[2]], Int)
     i2 = gen.emit_binop('+', [ConstIntArg(1), i1], Int)
     d1 = gen.emit_func3("read_float_array_2D", [srcs[0], srcs[1], i1], Float)
@@ -1083,22 +1083,22 @@ def _read_lookup_aciii_c(gen,t,srcs):
 def _read_lookup_aciiii_c(gen,t,srcs):
     pass
 
-def _write_lookup_aiii_b(gen,t,srcs):    
+def _write_lookup_aiii_b(gen,t,srcs):
     d = gen.emit_func3("write_int_array_1D", srcs, Int)
     return d
 
-def _write_lookup_afif_b(gen,t,srcs):    
+def _write_lookup_afif_b(gen,t,srcs):
     d = gen.emit_func3("write_float_array_1D", srcs, Int)
     return d
 
 def _write_lookup_acic_b(gen,t,srcs):
-    # lookup pair of floats 
+    # lookup pair of floats
     i1 = gen.emit_binop('*', [ConstIntArg(2), srcs[1]], Int)
     i2 = gen.emit_binop('+', [ConstIntArg(1), i1], Int)
     d1 = gen.emit_func3(
-        "write_float_array_1D", [ srcs[0], i1, srcs[2].re], Float)
+        "write_float_array_1D", [srcs[0], i1, srcs[2].re], Float)
     d2 = gen.emit_func3(
-        "write_float_array_1D", [ srcs[0], i2, srcs[2].im], Float)
+        "write_float_array_1D", [srcs[0], i2, srcs[2].im], Float)
 
     # CONSIDER: we ignore these anyway, but here we ignore
     # one return value 'extra thoroughly' which may need fixing
@@ -1118,9 +1118,9 @@ def _write_lookup_aciic_b(gen,t,srcs):
     i1 = gen.emit_binop('*', [ConstIntArg(2), srcs[2]], Int)
     i2 = gen.emit_binop('+', [ConstIntArg(1), i1], Int)
     d1 = gen.emit_func_n(
-        4, "write_float_array_2D", [ srcs[0], srcs[1], i1, srcs[3].re], Float)
+        4, "write_float_array_2D", [srcs[0], srcs[1], i1, srcs[3].re], Float)
     d2 = gen.emit_func_n(
-        4, "write_float_array_2D", [ srcs[0], srcs[1], i2, srcs[3].im], Float)
+        4, "write_float_array_2D", [srcs[0], srcs[1], i2, srcs[3].im], Float)
 
     return d1
 

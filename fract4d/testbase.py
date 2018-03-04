@@ -2,15 +2,12 @@
 
 # a base class other test classes inherit from - some shared functionality
 
-import unittest
-import string
-import types
 import sys
+import unittest
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import ir
-from fract4d import fracttypes
+from fract4d import ir, fracttypes
 
 class TestBase(unittest.TestCase):
     def assertNearlyEqual(self,a,b,epsilon=1.0e-12):
@@ -52,7 +49,7 @@ class TestBase(unittest.TestCase):
         # must have each cjump followed by false case
         expecting = None
         for stm in trace:
-            if expecting != None:
+            if expecting is not None:
                 self.assertTrue(isinstance(stm,ir.Label))
                 self.assertEqual(stm.name,expecting)
                 expecting = None
@@ -65,15 +62,15 @@ class TestBase(unittest.TestCase):
         nsubpixels = 0
         for i in range(img.FATE_SIZE):
             fate = fates[i]
-            if fate==img.UNKNOWN and efate != None:
+            if fate == img.UNKNOWN and efate is not None:
                 fate = efate
             if fate == img.OUT:
-                if outcolor == None:
+                if outcolor is None:
                     color = img.WHITE
                 else:
                     color = outcolor
             else:
-                if incolor == None:
+                if incolor is None:
                     color = img.BLACK
                 else:
                     color = incolor
@@ -87,7 +84,7 @@ class TestBase(unittest.TestCase):
             
             r += color[0]; g += color[1]; b += color[2]
             nsubpixels += 1
-            if fate != img.UNKNOWN and efate==None:
+            if fate != img.UNKNOWN and efate is None:
                 findex = img.get_color_index(x,y,i)
                 self.assertEqual(
                     findex,index,
@@ -156,7 +153,7 @@ class TestBase(unittest.TestCase):
                 jumps_and_labs.append("J:%s" % n.dest)
             elif isinstance(n,ir.CJump):
                 jumps_and_labs.append("CJ:%s,%s" % (n.trueDest, n.falseDest))
-            elif isinstance(n,ir.Label):                
+            elif isinstance(n,ir.Label):
                 jumps_and_labs.append("L:%s" % n.name)
 
         self.assertEqual(jumps_and_labs, expected)
@@ -170,12 +167,12 @@ class TestBase(unittest.TestCase):
                 jumpTargets[n.dest] = 1
             elif isinstance(n,ir.CJump):
                 jumpTargets[n.trueDest] = jumpTargets[n.falseDest] = 1
-            elif isinstance(n,ir.Label):                
+            elif isinstance(n,ir.Label):
                 jumpLabels[n.name] = 1
 
         for target in list(jumpTargets.keys()):
             self.assertTrue(target in jumpLabels,
-                            "jump to unknown target %s" % target )
+                            "jump to unknown target %s" % target)
 
     def assertBlocksAreWellFormed(self,blocks):
         for b in blocks:
@@ -189,17 +186,16 @@ class TestBase(unittest.TestCase):
                    isinstance(stm,ir.CJump) or \
                    isinstance(stm,ir.Label):
                 self.fail("%s not allowed mid-basic-block", stm.pretty())
-    
 
     def assertStartsWithLabel(self, block, name=None):
         self.assertTrue(isinstance(block[0], ir.Label))
-        if name != None:
+        if name is not None:
             self.assertEqual(block[0].name, name)
 
     def assertEndsWithJump(self,block, name=None):
-        self.assertTrue(isinstance(block[-1], ir.Jump) or \
+        self.assertTrue(isinstance(block[-1], ir.Jump) or
                         isinstance(block[-1], ir.CJump))
-        if name != None:
+        if name is not None:
             self.assertEqual(block[-1].dest, name)
 
     def assertWellTyped(self,t):

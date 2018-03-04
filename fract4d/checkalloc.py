@@ -8,7 +8,6 @@
 # usage: ./test_fract4d.py 2>&1 | ./checkalloc.py
 
 import sys
-import os
 import re
 
 alloc_re = re.compile(r'(?P<test>.*?... )?\.?(?P<ptr>0x[0-9a-f]+)\s*:\s*(?P<type>.*?)\s*:\s*(?P<op>[A-Z]+)')
@@ -27,19 +26,19 @@ for line in lines:
             test = m.group("test")
         pointer = m.group("ptr")
         type = m.group("type")
-        op = m.group("op")        
+        op = m.group("op")
         if op == "REF":
             # it's OK to 'create' the same dlhandle several times
             # since those are refcounts
             ops[pointer] = ops.get(pointer,0) + 1
         elif op == "DEREF":
             x = ops.get(pointer)
-            if None == x:
+            if x is None:
                 raise Exception("deref on object with no refs: %s" % pointer)
             if x == 1:
                 del ops[pointer]
             else:
-                ops[pointer] = x - 1            
+                ops[pointer] = x - 1
         elif op == "CTOR":
             if ops.get(pointer):
                 raise Exception("double alloc on %s" % pointer)

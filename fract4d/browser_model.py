@@ -12,7 +12,7 @@ class TypeInfo:
     def __init__(self, parent, compiler, t, exclude=None):
         self.parent = parent
         self.formula_type = t
-        self.exclude= exclude
+        self.exclude = exclude
         self.fname = None
         self.formula = None
         self.formulas = []

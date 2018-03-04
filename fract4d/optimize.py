@@ -8,8 +8,7 @@
 #    trajectories or anything
 # b) we always ignore overflow, NaN, etc
 
-from . import instructions
-from . import graph
+from . import instructions, graph
 
 Nothing = 0
 Peephole = 1
