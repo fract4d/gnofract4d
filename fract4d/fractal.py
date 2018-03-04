@@ -113,9 +113,6 @@ class T(fctutils.T):
 
         self.saved = True # initial params not worth saving
 
-    def set_solid(self):
-        pass
-    
     def serialize(self,comp=False):
         out = io.StringIO()
         self.save(out,False,compress=comp)
