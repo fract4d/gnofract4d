@@ -460,7 +460,9 @@ class SettingsPane(Gtk.Box):
                     self.selected_transform = i
                     break
                 i += 1
-
+            else:
+                self.selected_transform = None
+                return
         self.update_transform_parameters(parent)
 
     def create_browsable_name(self, table, param_type, typename, tip):
