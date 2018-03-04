@@ -130,7 +130,18 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
                            Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.OK)
-        dialog.set_filename(self.txt_temp_avi.get_text())
+        current_file = self.txt_temp_avi.get_text()
+        dialog.set_current_name(current_file if current_file else "video.webm")
+        # ----setting filters---------
+        filter = Gtk.FileFilter()
+        filter.set_name("webm video file (*.webm)")
+        filter.add_pattern("*.webm")
+        dialog.add_filter(filter)
+        filter = Gtk.FileFilter()
+        filter.set_name("All files")
+        filter.add_pattern("*")
+        dialog.add_filter(filter)
+        # ----------------------------
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             temp_file=dialog.get_filename()
