@@ -242,15 +242,15 @@ class MainWindow:
 
     def get_save_hires_image_as_fs(self):
         if self.hires_image_fs is None:
-            self.saveimage_fs = self.get_file_save_chooser(
+            self.hires_image_fs = self.get_file_save_chooser(
                 _("Save High Resolution Image"),
                 self.window,
                 image.file_matches())
 
             rtd_widgets = self.create_rtd_widgets()
-            self.saveimage_fs.set_extra_widget(rtd_widgets)
+            self.hires_image_fs.set_extra_widget(rtd_widgets)
 
-        return self.saveimage_fs
+        return self.hires_image_fs
         
     def get_open_fs(self):
         if self.open_fs is not None:
