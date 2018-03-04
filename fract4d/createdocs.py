@@ -110,15 +110,15 @@ class SymbolPrinter:
         print('</sect2>', file=self.f)
         
 def main(outfile):
-    out = open(outfile,"w")
-    d = fsymbol.T()
-    printer = SymbolPrinter(out)
+    with open(outfile,"w") as out:
+        d = fsymbol.T()
+        printer = SymbolPrinter(out)
 
-    for k in list(d.default_dict.keys()):
-        printer.add_symbol(d.demangle(k),d[k])
+        for k in list(d.default_dict.keys()):
+            printer.add_symbol(d.demangle(k),d[k])
 
-    printer.output_all()
-    
+        printer.output_all()
+
 if __name__ == '__main__':
     main(sys.argv[1])
     

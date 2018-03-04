@@ -316,8 +316,8 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 
     def add_from_current(self,widget,data=None):
         (tmp_fd, tmp_name) = tempfile.mkstemp(suffix='.fct')
-        f = os.fdopen(tmp_fd, 'w')
-        self.f.save(f)
+        with os.fdopen(tmp_fd, 'w') as f:
+            self.f.save(f)
         self.add_keyframe(tmp_name)
         return
 

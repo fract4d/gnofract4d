@@ -2,6 +2,7 @@
 
 # run all the tests
 import os
+from pathlib import Path
 import sys
 import unittest
 import re
@@ -20,7 +21,7 @@ print("Running all unit tests. This may take several minutes.")
 
 class Test(unittest.TestCase):
     def testSetupPyVersionMatches(self):
-        doc = open("setup.py").read()
+        doc = Path("setup.py").read_text()
         doc_re = re.compile(r"gnofract4d_version = '(\S+)'")
         m = doc_re.search(doc)
 
@@ -29,7 +30,7 @@ class Test(unittest.TestCase):
 
     def testDocVersionMatches(self):        
         # check the docs
-        doc = open("doc/gnofract4d-manual/C/gnofract4d-manual.xml").read()
+        doc = Path("doc/gnofract4d-manual/C/gnofract4d-manual.xml").read_text()
         doc_re = re.compile(r'\<\!ENTITY version "(\S+)"\>')
 
         m = doc_re.search(doc)
@@ -40,7 +41,7 @@ class Test(unittest.TestCase):
         if not os.path.exists("website"):
             # not included in source dist
             return
-        mkweb = open("website/mkweb.py").read()
+        mkweb = Path("website/mkweb.py").read_text()
         ver_re = re.compile(r'text="Version (\S+) released.')
 
         m = ver_re.search(mkweb)

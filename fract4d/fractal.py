@@ -420,8 +420,8 @@ class T(fctutils.T):
             
     def set_cmap(self,mapfile):
         c = colorizer.T(self)
-        file = open(mapfile)
-        c.parse_map_file(file)
+        with open(mapfile) as file:
+            c.parse_map_file(file)
         self.set_gradient(c.gradient)
         self.set_solids(c.solids)
         self.changed(False)

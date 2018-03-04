@@ -119,6 +119,7 @@ def main(outfile):
     printer.add_mouse("Control-Right-click", "Zoom out more quickly.")
     
     printer.output_all()
+    out.close()
     
 if __name__ == '__main__':
     main('../doc/gnofract4d-manual/C/commands.xml')
