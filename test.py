@@ -67,8 +67,6 @@ def main():
     os.system('./test.py')
     os.chdir('../fract4dgui')
     os.system('./test.py')
-    os.chdir('../fractutils')
-    os.system('./test.py')
     os.chdir('..')
 
     unittest.main(defaultTest='suite')
