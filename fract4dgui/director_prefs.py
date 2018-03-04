@@ -7,8 +7,11 @@ class DirectorPrefs:
     # returns selected folder or empty string
     def get_folder(self):
         temp_folder = ""
-        dialog = Gtk.FileChooserDialog("Choose directory...",self.dialog,Gtk.FileChooserAction.SELECT_FOLDER,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog = Gtk.FileChooserDialog(title="Choose directory...",
+            transient_for=self.dialog,
+            action=Gtk.FileChooserAction.SELECT_FOLDER)
+        dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                           Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.OK)
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
@@ -31,9 +34,11 @@ class DirectorPrefs:
             self.txt_temp_png.set_text(fold)
 
     def __init__(self,animation,parent):
-        self.dialog = Gtk.Dialog("Director preferences...",parent,
-                      Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                      (Gtk.STOCK_OK,Gtk.ResponseType.OK,Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL))
+        self.dialog = Gtk.Dialog(title="Director preferences...",
+                                 transient_for=parent,
+                                 modal=True, destroy_with_parent=True)
+        self.dialog.add_buttons(Gtk.STOCK_OK, Gtk.ResponseType.OK,
+                                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
 
         self.animation = animation
         # -----------Temporary directories---------------------
@@ -86,16 +91,20 @@ class DirectorPrefs:
         if self.chk_create_fct.get_active():
             # checking fct dir
             if not os.path.isdir(self.txt_temp_fct.get_text()):
-                error_dlg = Gtk.MessageDialog(self.dialog,Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                                            Gtk.MessageType.ERROR, Gtk.ButtonsType.OK,
-                                            "Directory for temporary .fct files is not directory")
+                error_dlg = Gtk.MessageDialog(
+                    title="Directory for temporary .fct files is not directory",
+                    transient_for=self.dialog,
+                    modal=True, destroy_with_parent=True)
+                error_dlg.add_buttons(Gtk.MessageType.ERROR, Gtk.ButtonsType.OK)
                 error_dlg.run()
                 error_dlg.destroy()
                 return False
         if not os.path.isdir(self.txt_temp_png.get_text()):
-            error_dlg = Gtk.MessageDialog(self.dialog,Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                                        Gtk.MessageType.ERROR, Gtk.ButtonsType.OK,
-                                        "Directory for temporary .png files is not directory")
+            error_dlg = Gtk.MessageDialog(
+                title="Directory for temporary .png files is not directory",
+                transient_for=self.dialog,
+                modal=True, destroy_with_parent=True)
+            error_dlg.add_buttons(Gtk.MessageType.ERROR, Gtk.ButtonsType.OK)
             error_dlg.run()
             error_dlg.destroy()
             return False

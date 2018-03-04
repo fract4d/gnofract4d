@@ -98,8 +98,11 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     # returns selected file or empty string
     def get_fct_file(self):
         temp_file=""
-        dialog = Gtk.FileChooserDialog("Choose keyframe...",self,Gtk.FileChooserAction.OPEN,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog = Gtk.FileChooserDialog(title="Choose keyframe...",
+                                       transient_for=self,
+                                       action=Gtk.FileChooserAction.OPEN)
+        dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                           Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.OK)
         # ----setting filters---------
         filter = Gtk.FileFilter()
@@ -121,8 +124,11 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     # returns selected file or empty string
     def get_avi_file(self):
         temp_file=""
-        dialog = Gtk.FileChooserDialog("Save AVI file...",self,Gtk.FileChooserAction.SAVE,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog = Gtk.FileChooserDialog(title="Save AVI file...",
+                                       transient_for=self,
+                                       action=Gtk.FileChooserAction.SAVE)
+        dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                           Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_filename(self.txt_temp_avi.get_text())
         response = dialog.run()
@@ -135,8 +141,11 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     # returns selected file or empty string
     def get_cfg_file_save(self):
         temp_file=""
-        dialog = Gtk.FileChooserDialog("Save animation...",self,Gtk.FileChooserAction.SAVE,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog = Gtk.FileChooserDialog(title="Save animation...",
+                                       transient_for=self,
+                                       action=Gtk.FileChooserAction.SAVE)
+        dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                         Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_current_name("animation.fcta")
         # ----setting filters---------
@@ -159,8 +168,11 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
     # returns selected file or empty string
     def get_cfg_file_open(self):
         temp_file=""
-        dialog = Gtk.FileChooserDialog("Choose animation...",self,Gtk.FileChooserAction.OPEN,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog = Gtk.FileChooserDialog(title="Choose animation...",
+                                       transient_for=self,
+                                       action=Gtk.FileChooserAction.OPEN)
+        dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                           Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.OK)
         # ----setting filters---------
         filter = Gtk.FileFilter()
