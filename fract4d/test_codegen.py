@@ -1,28 +1,19 @@
 #!/usr/bin/env python3
 
-import unittest
-import tempfile
-import os
-import subprocess
-import math
 import cmath
+import math
 from pathlib import Path
-import sys
 import re
+import sys
+import subprocess
+import tempfile
+import unittest
 
 import testbase
 
-from fract4d import absyn
-from fract4d import ir
-from fract4d import fsymbol
+from fract4d import (absyn, ir, fsymbol, codegen, translate, fractparser,
+                     fractlexer, optimize, instructions)
 from fract4d.fracttypes import *
-from fract4d import codegen
-from fract4d import translate
-from fract4d import fractparser
-from fract4d import fractlexer
-from fract4d import stdlib
-from fract4d import optimize
-from fract4d import instructions
 
 g_exp = None
 g_x = None

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import string
 import io
 import unittest
 import sys

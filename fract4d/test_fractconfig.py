@@ -7,7 +7,7 @@ import os.path
 
 import testbase
 
-from fract4d import fractconfig, fc
+from fract4d import fractconfig
 
 class Test(testbase.TestSetup):
     def testCreate(self):

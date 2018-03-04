@@ -1,7 +1,7 @@
 # A type representing an image - this wraps the underlying C++ image type
 # exposed via fract4dmodule and provides some higher-level options around it
 
-import os
+import os.path
 
 try:
     from . import fract4dcgmp as fract4dc

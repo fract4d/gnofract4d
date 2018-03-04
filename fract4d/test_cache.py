@@ -5,7 +5,6 @@ import os.path
 from pathlib import Path
 import time
 import pickle
-import shutil
 
 import testbase
 

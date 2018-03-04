@@ -38,7 +38,7 @@ import re
 import sys
 import types
 import copy
-import os
+import os.path
 import inspect
 
 # This tuple contains known string types

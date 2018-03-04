@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
 import io
-import os
-import sys
 import math
 import copy
 import random
 from time import time as now
 
-from . import fract4dc, gradient, image, fctutils, colorizer, formsettings, fc
+from . import fract4dc, gradient, fctutils, colorizer, formsettings, fc
 
 # the version of the earliest gf4d release which can parse all the files
 # this version can output

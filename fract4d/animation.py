@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os
+import os.path
 import math
 
 from xml.sax import make_parser
