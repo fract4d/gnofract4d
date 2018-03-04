@@ -395,8 +395,10 @@ class SettingsPane(Gtk.Box):
         
     def create_transforms_page(self):
         vbox = Gtk.VBox()
-        table = Table(5,2,False)
-        vbox.pack_start(table, True, True, 0)
+        table = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        table.set_spacing(10)
+        table.set_property("margin", 10)
+        vbox.pack_start(table, False, False, 0)
 
         self.transform_store = Gtk.ListStore(str, object)
 
@@ -421,23 +423,20 @@ class SettingsPane(Gtk.Box):
         sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         sw.add(self.transform_view)
         sw.set_shadow_type(Gtk.ShadowType.IN)
-        table.attach(
-            sw, 0, 1, 0, 4,
-            0, 0, 2, 2)
+        sw.set_min_content_height(200)
+        table.pack_start(sw, True, True, 0)
 
         add_button = Gtk.Button.new_from_stock(Gtk.STOCK_ADD)
         add_button.connect(
             'clicked', self.show_browser, browser_model.TRANSFORM)
-
-        table.attach(
-            add_button, 1,2,0,1, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
-
         remove_button = Gtk.Button.new_from_stock(Gtk.STOCK_REMOVE)
         remove_button.connect(
             'clicked', self.remove_transform)
-
-        table.attach(
-            remove_button, 1,2,1,2, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        buttonbox = Gtk.ButtonBox(orientation=Gtk.Orientation.VERTICAL)
+        buttonbox.set_layout(Gtk.ButtonBoxStyle.SPREAD)
+        buttonbox.add(add_button)
+        buttonbox.add(remove_button)
+        table.pack_start(buttonbox, False, False, 0)
         
         selection = self.transform_view.get_selection()
         selection.connect('changed',self.transform_selection_changed,vbox)
@@ -604,7 +603,8 @@ class SettingsPane(Gtk.Box):
                 pass
 
         if self.selected_transform is not None:
-            self.tables[3] = Table(5,2,False)
+            self.tables[3] = Gtk.Grid()
+            self.tables[3].set_column_spacing(10)
             self.f.populate_formula_settings(
                 self.tables[3],
                 self.selected_transform+3)
@@ -633,7 +633,7 @@ class SettingsPane(Gtk.Box):
                 except AttributeError:
                     pass
 
-            table = Table(5,2,False)
+            table = Gtk.Grid()
             self.create_browsable_name(table, param_type, typename, tip)
             
             self.f.populate_formula_settings(

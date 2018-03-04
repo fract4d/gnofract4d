@@ -539,10 +539,9 @@ class T(Hidden):
         label = Gtk.Label.new(self.param_display_name(name,param)+part)
         label.set_xalign(1.0)
         label.set_yalign(0.0)
-        table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
+        table.attach(label, 0, i, 1, 1)
 
-        widget = self.make_numeric_entry(
-            form, param, order)
+        widget = self.make_numeric_entry(form, param, order)
 
         label.set_mnemonic_widget(widget)
         return widget
@@ -672,25 +671,23 @@ class T(Hidden):
         else:
             raise "Unsupported parameter type"
 
-        table.attach(widget,1,2,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL ,0,0,0)
+        table.attach(widget, 1, i, 1, 1)
 
     def add_complex_formula_setting(
         self,table,i,form,name,param,order,param_type):
         
-        widget = self.make_numeric_entry(
-                form,param,order)
+        widget = self.make_numeric_entry(form,param,order)
+        widget.set_hexpand(True)
+        table.attach(widget, 1, i, 1, 1)
 
-        table.attach(widget,1,2,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL ,0,0,0)
-
-        widget = self.make_numeric_entry(
-                form,param,order+1)
-
-        table.attach(widget,1,2,i+1,i+2,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL ,0,0,0)
+        widget = self.make_numeric_entry(form,param,order+1)
+        table.attach(widget, 1, i+1, 1, 1)
 
         name = self.param_display_name(name,param)
         fway = fourway.T(name)
         tip = self.param_tip(name,param)
         fway.set_tooltip_text(tip)
+        fway.set_hexpand(True)
         
         fway.connect('value-changed',self.fourway_released, order, form)
 
@@ -699,7 +696,7 @@ class T(Hidden):
                 'value-slightly-changed',
                 self.parent.on_drag_param_fourway, order, param_type)
         
-        table.attach(fway,0,1,i,i+2, Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL,0, 0,0)
+        table.attach(fway, 0, i, 1, 2)
 
     def fourway_released(self,widget,x,y,order,form):
         form.nudge_param(order, x,y)
