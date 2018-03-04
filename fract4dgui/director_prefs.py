@@ -1,6 +1,6 @@
 import os
 
-from gi.repository import Gtk
+from gi.repository import Gtk, GObject
 
 class DirectorPrefs:
     # wrapper to show dialog for selecting folder
@@ -79,6 +79,8 @@ class DirectorPrefs:
         self.dialog.vbox.pack_start(tbl_dirs,False,False,0)
         #self.dialog.vbox.pack_start(self.tbl_main,True,True,0)
 
+        self.dialog.connect('response', self.onResponse)
+
     # checking is txt fields valid dirs
     def check_fields(self):
         if self.chk_create_fct.get_active():
@@ -99,26 +101,17 @@ class DirectorPrefs:
             return False
         return True
 
+    def onResponse(self, widget, id):
+        if id == Gtk.ResponseType.OK and not self.check_fields():
+            GObject.signal_stop_emission_by_name(self.dialog, "response")
+
     def show(self):
         self.dialog.show_all()
-        # nasty, nasty hack to keep dialog running while either it is canceled or
-        # valid dirs are entered
-        is_ok = False
-        write = False
-        while is_ok is False:
-            response = self.dialog.run()
-            if response == Gtk.ResponseType.OK:
-                    is_ok = self.check_fields()
-                    if is_ok:
-                        write = True
-            else:
-                is_ok = True
-
-        if write:
+        response = self.dialog.run()
+        if response == Gtk.ResponseType.OK:
             self.animation.set_fct_enabled(self.chk_create_fct.get_active())
             if self.chk_create_fct.get_active():
                 self.animation.set_fct_dir(self.txt_temp_fct.get_text())
             self.animation.set_png_dir(self.txt_temp_png.get_text())
 
         self.dialog.destroy()
-        return
