@@ -13,13 +13,12 @@ class TimeStampedObject:
         self.cache_file = file
         
 class T:
-    def __init__(self,dir="~/.gnofract4d-cache"):
+    def __init__(self, dir):
         self.dir = os.path.expanduser(dir)
         self.files = {}
         
     def init(self):
-        if not os.path.exists(self.dir):
-            os.makedirs(self.dir)
+        os.makedirs(self.dir, mode=0o770, exist_ok=True)
         self._loadHash()
 
     def _indexName(self):

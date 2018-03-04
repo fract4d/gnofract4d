@@ -137,8 +137,6 @@ class Compiler:
         self.lexer = fractlexer.lexer
         self.c_code = ""
         self.path_lists = [ [], [], [], [] ]
-        self.cache = cache.T()
-        self.init_cache()
         if 'win' != sys.platform[:3]:
             self.compiler_name = "gcc"
             self.flags = "-fPIC -DPIC -g -O3 -shared"
@@ -150,6 +148,8 @@ class Compiler:
             self.output_flag = "/Fe"
             self.libs = "/link /LIBPATH:\"%s/fract4d\" fract4d_stdlib.lib" % sys.path[0] # /DELAYLOAD:fract4d_stdlib.pyd DelayImp.lib
         self.update_from_prefs(userConfig)
+        self.cache = cache.T(userConfig.get("general","cache_dir"))
+        self.init_cache()
         self.tree_cache = {}
         self.leave_dirty = False
         self.next_inline_number = 0

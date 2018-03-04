@@ -215,10 +215,18 @@ class PrefsDialog(dialog.T):
         name_label.set_use_underline(True)
         name_label.set_mnemonic_widget(entry)
 
+        cache_entry = self.create_option_entry("general","cache_dir")
+        cache_entry.set_tooltip_text(_("Restart program to use new directory"))
+        cache_entry.set_hexpand(True)
+        cache_label = Gtk.Label(label=_("Cache directory :"))
+
         table.attach(name_label,0,0,1,1)
         table.attach(entry,1,0,1,1)
 
         table.attach(self.create_save_compress_widget(),0,1,2,1)
+
+        table.attach(cache_label,0,2,1,1)
+        table.attach(cache_entry,1,2,1,1)
 
     def create_directory_list(self, section_name):
         self.path_list = Gtk.ListStore(

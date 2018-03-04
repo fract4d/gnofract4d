@@ -10,7 +10,7 @@ import pickle
 
 import testbase
 
-from fract4d import cache
+from fract4d import cache, fractconfig
 
 
 class Test(testbase.TestBase):
@@ -24,7 +24,7 @@ class Test(testbase.TestBase):
             os.rmdir("experiment")
 
     def testCacheCreation(self):
-        c = cache.T()
+        c = cache.T(fractconfig.T("").get("general","cache_dir"))
         self.assertEqual(
             os.path.expandvars("${HOME}/.gnofract4d-cache"), c.dir)
         self.assertEqual({},c.files)

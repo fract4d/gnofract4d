@@ -51,6 +51,7 @@ class T(configparser.ConfigParser):
                          ("threads", "1"),
                          ("compress_fct", "1"),
                          ("data_dir", os.path.expandvars("${HOME}/gnofract4d")),
+                         ("cache_dir", os.path.expandvars("${HOME}/.gnofract4d-cache")),
                          ))
              ),
             ("user_info",
