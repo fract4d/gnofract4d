@@ -15,10 +15,10 @@ kid.enable_import()
 import frm_docbook
 
 # PLY
-import lex
+from fract4d import lex
 
 # my code
-from . import fractlexer
+from fract4d import fractlexer
 
 def output_frm(toks,outbase, nfrms):
     if toks != []:

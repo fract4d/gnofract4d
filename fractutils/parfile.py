@@ -9,7 +9,7 @@
 
 import math
 
-from . import preprocessor
+from fract4d import preprocessor
 
 def parse(file,f):
     # reset the fractal to have defaults closer to Fractint

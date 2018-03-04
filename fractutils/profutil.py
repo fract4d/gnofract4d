@@ -6,8 +6,7 @@
 import sys
 import subprocess
 
-from . import fc
-from . import fractal
+from fract4d import fc, fractal
 
 class PC(fc.Compiler):
     def __init__(self):
