@@ -641,6 +641,7 @@ class MainWindow:
         self.main_actiongroup = main_actiongroup
 
         main_actiongroup.add_toggle_actions(self.get_toggle_actions())
+        self.explorer_menu_item = main_actiongroup.get_action('ToolsExplorerAction')
 
         main_actiongroup.add_actions(self.get_main_actions())
 
@@ -698,7 +699,7 @@ class MainWindow:
         
     def toggle_explorer(self, action):
         """Enter (or leave) Explorer mode."""
-        self.set_explorer_state(action.get_active())
+        self.explorer_toolbar_button.set_active(action.get_active())
 
     def full_screen(self, *args):
         """Show main window full-screen."""
@@ -847,7 +848,7 @@ class MainWindow:
         # explorer mode widgets
         self.toolbar.add_space()
 
-        self.toolbar.add_toggle(
+        self.explorer_toolbar_button = self.toolbar.add_toggle(
             icons.explorer.stock_name,
             icons.explorer.title,
             _("Toggle Explorer Mode"),
@@ -941,8 +942,7 @@ class MainWindow:
         self.set_explorer_state(widget.get_active())
 
     def set_explorer_state(self,active):
-        #self.explore_menu.set_active(active)
-        #self.explorer_toggle.set_active(active)
+        self.explorer_menu_item.set_active(active)
         self.update_subfract_visibility(active)
 
     def create_angle_widget(self,name,tip,axis, is4dsensitive):

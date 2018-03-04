@@ -45,3 +45,4 @@ class T(Gtk.Toolbar):
         toolitem.connect('toggled', cb)
         toolitem.set_tooltip_text(tip_text)
         self.insert(toolitem,-1)
+        return toolitem
