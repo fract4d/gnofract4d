@@ -31,6 +31,7 @@ class BrowserDialog(dialog.T):
         self.formula_list = Gtk.ListStore(str)
         
         self.file_selection_changed_spec = None
+        self.formula_selection_changed_spec = None
 
         self.f = f
         self.compiler = f.compiler
@@ -148,6 +149,10 @@ class BrowserDialog(dialog.T):
         self.file_selection_changed_spec = sel.connect('changed', self.file_selection_changed)
 
     def populate_formula_list(self,fname):
+        sel = self.treeview.get_selection()
+        if self.formula_selection_changed_spec:
+            sel.disconnect(self.formula_selection_changed_spec)
+            self.formula_selection_changed_spec = None
         self.formula_list.clear()
 
         form_names = self.model.current.formulas
@@ -161,7 +166,9 @@ class BrowserDialog(dialog.T):
                 self.treeview.scroll_to_cell(i)
                 self.set_formula(formula_name)
             i += 1
-            
+
+        self.formula_selection_changed_spec = sel.connect('changed', self.formula_selection_changed)
+
     def create_formula_list(self):
         sw = Gtk.ScrolledWindow ()
         sw.set_shadow_type (Gtk.ShadowType.ETCHED_IN)
@@ -179,8 +186,6 @@ class BrowserDialog(dialog.T):
         column = Gtk.TreeViewColumn (_('F_ormula'), renderer, text=0)
         self.treeview.append_column (column)
 
-        selection = self.treeview.get_selection()
-        selection.connect('changed',self.formula_selection_changed)
         return sw
 
     def create_scrolled_textview(self,tip):
