@@ -3,27 +3,13 @@
 import unittest
 import copy
 import math
-import os
-import sys
+import os.path
 
-import gettext
-os.environ.setdefault('LANG', 'en')
-gettext.install('gnofract4d')
+import testgui
 
-import gi
-gi.require_version('Gdk', '3.0')
-gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, Gtk
 
-if sys.path[1] != "..": sys.path.insert(1, "..")
-
-from fract4d import fc, fractconfig
 from fract4dgui import gtkfractal
-
-# centralized to speed up tests
-g_comp = fc.Compiler(fractconfig.T(""))
-g_comp.add_func_path("../fract4d")
-g_comp.add_func_path("../formulas")
 
 class FakeEvent:
     def __init__(self,**kwds):
@@ -45,11 +31,7 @@ class Recurser:
         nv = f.params[f.MAGNITUDE]
         f.set_param(f.MAGNITUDE, nv * 2.0)
 
-class TestHidden(unittest.TestCase):
-    def setUp(self):
-        global g_comp
-        self.compiler = g_comp
-
+class TestHidden(testgui.TestCase):
     def wait(self):
         Gtk.main()
         
@@ -59,13 +41,13 @@ class TestHidden(unittest.TestCase):
 
     def testCreate(self):
         # draw a default fractal
-        f = gtkfractal.Hidden(self.compiler,64,40)
+        f = gtkfractal.Hidden(TestHidden.g_comp,64,40)
         f.connect('status-changed', self.quitloop)
         f.draw_image(0,1)
         self.wait()
 
     def testCopy(self):
-        f = gtkfractal.Hidden(self.compiler,64,40)
+        f = gtkfractal.Hidden(TestHidden.g_comp,64,40)
         copy = f.copy_f()
         mag = f.get_param(f.MAGNITUDE)
         copy.set_param(copy.MAGNITUDE,176.3)
@@ -73,7 +55,7 @@ class TestHidden(unittest.TestCase):
         self.assertNotEqual(mag,copy.get_param(copy.MAGNITUDE))
 
     def testSignals(self):
-        f = gtkfractal.Hidden(self.compiler,64,40)
+        f = gtkfractal.Hidden(TestHidden.g_comp,64,40)
         cc = CallCounter()
         f.connect('parameters-changed', cc.cb)
         self.assertEqual(cc.count,0)
@@ -97,7 +79,7 @@ class TestHidden(unittest.TestCase):
             Gtk.main_iteration()
 
     def testLoad(self):
-        f = gtkfractal.Hidden(self.compiler,64,40)
+        f = gtkfractal.Hidden(TestHidden.g_comp,64,40)
         with open("../testdata/test_bail.fct") as fh:
             f.loadFctFile(fh)
         self.assertEqual(f.saved, True)
@@ -106,18 +88,17 @@ class TestHidden(unittest.TestCase):
         self.wait()
 
     def testBigImage(self):
-        f = gtkfractal.HighResolution(self.compiler,640,400)
+        f = gtkfractal.HighResolution(TestHidden.g_comp,640,400)
         f.connect('status-changed', self.quitloop)
-        f.draw_image("hires.png")
+        hires_image = os.path.join(TestHidden.tmpdir.name, "hires.png")
+        f.draw_image(hires_image)
         self.wait()
-        os.remove("hires.png")
+        self.assertEqual(True,os.path.exists(hires_image))
 
-class Test(unittest.TestCase):
+class Test(testgui.TestCase):
     def setUp(self):
-        global g_comp
-        self.compiler = g_comp
         self.window = Gtk.Window()
-        self.f = gtkfractal.T(self.compiler)
+        self.f = gtkfractal.T(Test.g_comp)
         self.window.add(self.f.widget)
         self.f.widget.realize()
                 

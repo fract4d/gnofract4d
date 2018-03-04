@@ -1,34 +1,24 @@
 #!/usr/bin/env python3
 
-#unit tests for browser window
+# unit tests for browser window
 
 import unittest
-import os
-import sys
 
-import gi
-gi.require_version('Gtk', '3.0')
+import testgui
+
 from gi.repository import Gtk
 
-import gettext
-os.environ.setdefault('LANG', 'en')
-gettext.install('gnofract4d')
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
-
-from fract4d import fc, fractal, fractconfig
+from fract4d import fractal
 from fract4dgui import browser
 
 class MockMainWindow:
-    def __init__(self):
+    def __init__(self, compiler):
         self.window = None
-        self.compiler = fc.Compiler(fractconfig.T(""))
-        self.compiler.add_func_path("../formulas")
-        self.compiler.add_func_path("../fract4d")
+        self.compiler = compiler
 
-class Test(unittest.TestCase):
+class Test(testgui.TestCase):
     def setUp(self):
-        self.mainWindow = MockMainWindow()
+        self.mainWindow = MockMainWindow(Test.g_comp)
         self.f = fractal.T(self.mainWindow.compiler,self)
     
     def tearDown(self):

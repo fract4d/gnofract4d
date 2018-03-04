@@ -4,38 +4,28 @@
 
 import unittest
 import os
-import sys
 
-import gi
-gi.require_version('Gtk', '3.0')
+import testgui
+
 from gi.repository import Gtk
 
-import gettext
-os.environ.setdefault('LANG', 'en')
-gettext.install('gnofract4d')
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
-
-from fract4d import fractal, fractconfig
+from fract4d import fractal
 from fract4dgui import main_window
 
 class WrapMainWindow(main_window.MainWindow):
-    def __init__(self):
+    def __init__(self, config):
         self.errors = []
-        main_window.MainWindow.__init__(self, fractconfig.T(""), ['../formulas'])
+        main_window.MainWindow.__init__(self, config, ['../formulas'])
 
     def show_error_message(self,message,exception):
         self.errors.append((message,exception))
         
-class Test(unittest.TestCase):
-    def __init__(self,*args):
-        unittest.TestCase.__init__(self,*args)
-        self.mw = WrapMainWindow()
+class Test(testgui.TestCase):
+    def setUp(self):
+        self.mw = WrapMainWindow(Test.userConfig)
         self.assertEqual(self.mw.filename, None, "shouldn't have a filename")
         
     def tearDown(self):
-        if os.path.exists('mytest.fct'):
-            os.remove('mytest.fct')
         os.system("killall realyelp > /dev/null 2>&1")
         os.system("killall yelp > /dev/null 2>&1")
         
@@ -78,14 +68,15 @@ class Test(unittest.TestCase):
         self.assertTrue(result, "load failed")
 
         # save again
-        result = self.mw.save_file("mytest.fct")
+        mytest_file = os.path.join(Test.tmpdir.name, "mytest.fct")
+        result = self.mw.save_file(mytest_file)
         self.assertEqual(result, True, "save file failed")
-        self.assertEqual(self.mw.filename, "mytest.fct")
+        self.assertEqual(self.mw.filename, mytest_file)
 
         # fail to save to bad location
         result = self.mw.save_file("/no_such_dir/mytest.fct")
         self.assertEqual(result, False, "save file to bad location succeeded")
-        self.assertEqual(self.mw.filename, "mytest.fct")
+        self.assertEqual(self.mw.filename, mytest_file)
         self.assertEqual(
             self.mw.errors[0][0],
             "Error saving to file /no_such_dir/mytest.fct")
@@ -109,13 +100,10 @@ class Test(unittest.TestCase):
                          "Error saving image to file mybad.gif")
 
         # save successfully
-        try:
-            result = self.mw.save_image_file("mygood.png")
-            self.assertEqual(True, result)
-            self.assertEqual(True, os.path.isfile("mygood.png"))
-        finally:
-            if os.path.exists("mygood.png"):
-                os.remove("mygood.png")
+        myimage_file = os.path.join(Test.tmpdir.name, "mygood.png")
+        result = self.mw.save_image_file(myimage_file)
+        self.assertEqual(True, result)
+        self.assertEqual(True, os.path.isfile(myimage_file))
 
     def testPreview(self):
         'Check for problem where preview differs from main image'
@@ -143,21 +131,19 @@ class Test(unittest.TestCase):
         self.mw.load("../testdata/nexus.fct")
         self.mw.set_explorer_state(True)
         self.mw.update_subfracts()
-        fh = open("sub3.fct","w")
-        self.mw.subfracts[3].save(fh,False)
-        fh.close()
+        sub3_file = os.path.join(Test.tmpdir.name, "sub3.fct")
+        with open(sub3_file, "w") as fh:
+                self.mw.subfracts[3].save(fh,False)
         
         self.mw.subfracts[3].onButtonRelease(None,None)
-        fh = open("main.fct","w")
-        self.mw.f.save(fh,False)
-        fh.close()
+        main_file = os.path.join(Test.tmpdir.name, "main.fct")
+        with open(main_file, "w") as fh:
+                self.mw.f.save(fh,False)
         
         self.assertEqual(self.mw.subfracts[3].serialize(),
                          self.mw.f.serialize())
             
         self.mw.set_explorer_state(False)
-        os.remove("main.fct")
-        os.remove("sub3.fct")
 
     def testPlanes(self):
         self.mw.set_xz_plane(None,None)
@@ -180,7 +166,7 @@ class Test(unittest.TestCase):
         old_default = fractal.T.DEFAULT_FORMULA_FILE
         fractal.T.DEFAULT_FORMULA_FILE = "no_such_file.frm"
         try:
-            self.assertRaises(IOError, WrapMainWindow)
+            self.assertRaises(IOError, WrapMainWindow, Test.userConfig)
         finally:
             fractal.T.DEFAULT_FORMULA_FILE = old_default
 

@@ -20,8 +20,8 @@ class CallCounter:
 
 class Test(unittest.TestCase):
     def setUp(self):
-        self.baseconfig = fractconfig.T("test.config")
-        self.config = preferences.Preferences(self.baseconfig)
+        baseconfig = fractconfig.T("test.config")
+        self.config = preferences.Preferences(baseconfig)
     
     def tearDown(self):
         pass

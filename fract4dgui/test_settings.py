@@ -3,29 +3,16 @@
 # unit tests for settings window
 
 import unittest
-import os
-import sys
 
-import gi
-gi.require_version('Gtk', '3.0')
+import testgui
+
 from gi.repository import Gtk
 
-import gettext
-os.environ.setdefault('LANG', 'en')
-gettext.install('gnofract4d')
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
-
-from fract4d import fc, fractconfig
 from fract4dgui import gtkfractal, settings
 
-class Test(unittest.TestCase):
+class Test(testgui.TestCase):
     def setUp(self):
-        self.compiler = fc.Compiler(fractconfig.T(""))
-        self.compiler.add_func_path("../formulas")
-        self.compiler.add_func_path("../fract4d")
-        
-        self.f = gtkfractal.T(self.compiler)
+        self.f = gtkfractal.T(Test.g_comp)
         self.settings = settings.SettingsPane(None,self.f)
         
     def tearDown(self):
