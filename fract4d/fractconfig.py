@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import configparser
 import os
 import sys
@@ -11,62 +12,85 @@ class T(configparser.ConfigParser):
         _shared_map_dir = T.get_data_path("maps")
         comp = 'gcc'
 
-        _defaults = {
-            "compiler" : {
-              "name" : comp,
-              "options" : T.get_default_compiler_options()
-            },
-            "optimize" : {
-              "peephole" : "1"
-            },
-            "main_window" : {
-              "width" : "933",
-              "height" : "594",
-            },
-            "display" : {
-              "width" : "640",
-              "height" : "480",
-              "antialias" : "1",
-              "autodeepen" : "1",
-              "autotolerance" : "1"
-            },
-            "helpers" : {
-              "editor" : T.get_default_editor(),
-              "mailer" : T.get_default_mailer(),
-              "browser" : T.get_default_browser()
-            },
-            "general" : {
-              "threads" : "1",
-              "compress_fct" : "1",
-              "data_dir" : os.path.expandvars("${HOME}/gnofract4d")
-            },
-            "user_info" : {
-              "name" : "",
-              "nsid" : ""
-            },
-            "blogs" : {
-            },
-            "formula_path" : {
-              "0" : "formulas",
-              "1" : _shared_formula_dir,
-              "2" : os.path.expandvars("${HOME}/gnofract4d/formulas")
-            },
-            "map_path" : {
-              "0" : "maps",
-              "1" : _shared_map_dir,
-              "2" : os.path.expandvars("${HOME}/gnofract4d/maps"),
-              "3" : "/usr/share/gimp/2.0/gradients"
-            },
-            "recent_files" : {
-            },
-            "ignored" : {
-            },
-            "director" : {
-              "fct_enabled": "0",
-              "fct_dir" : "/tmp",
-              "png_dir" : "/tmp"
-            }
-        }
+        _defaults = OrderedDict((
+            ("compiler",
+             OrderedDict((
+                         ("name", comp),
+                         ("options", T.get_default_compiler_options()),
+                         ))
+             ),
+            ("optimize",
+             OrderedDict((
+                         ("peephole", "1"),
+                         ))
+             ),
+            ("main_window",
+             OrderedDict((
+                         ("width", "933"),
+                         ("height", "594"),
+                         ))
+             ),
+            ("display",
+             OrderedDict((
+                         ("width", "640"),
+                         ("height", "480"),
+                         ("antialias", "1"),
+                         ("autodeepen", "1"),
+                         ("autotolerance", "1"),
+                         ))
+             ),
+            ("helpers",
+             OrderedDict((
+                         ("editor", T.get_default_editor()),
+                         ("mailer", T.get_default_mailer()),
+                         ("browser", T.get_default_browser()),
+                         ))
+             ),
+            ("general",
+             OrderedDict((
+                         ("threads", "1"),
+                         ("compress_fct", "1"),
+                         ("data_dir", os.path.expandvars("${HOME}/gnofract4d")),
+                         ))
+             ),
+            ("user_info",
+             OrderedDict((
+                         ("name", ""),
+                         ("nsid", ""),
+                         ))
+             ),
+            ("blogs",
+             OrderedDict()
+             ),
+            ("formula_path",
+             OrderedDict((
+                         ("0", "formulas"),
+                         ("1", _shared_formula_dir),
+                         ("2", os.path.expandvars("${HOME}/gnofract4d/formulas")),
+                         ))
+             ),
+            ("map_path",
+             OrderedDict((
+                         ("0", "maps"),
+                         ("1", _shared_map_dir),
+                         ("2", os.path.expandvars("${HOME}/gnofract4d/maps")),
+                         ("3", "/usr/share/gimp/2.0/gradients"),
+                         ))
+             ),
+            ("recent_files",
+             OrderedDict()
+             ),
+            ("ignored",
+             OrderedDict()
+             ),
+            ("director",
+             OrderedDict((
+                         ("fct_enabled", "0"),
+                         ("fct_dir", "/tmp"),
+                         ("png_dir", "/tmp"),
+                         ))
+             ),
+        ))
 
         self.image_changed_sections = {
             "display" : True,
@@ -74,19 +98,9 @@ class T(configparser.ConfigParser):
             }
 
         configparser.ConfigParser.__init__(self,interpolation=None)
-
+        self.read_dict(_defaults)
         self.file = os.path.expanduser(file)
         self.read(self.file)
-
-        # we don't use the normal ConfigParser default stuff because
-        # we want sectionized defaults
-
-        for (section,entries) in list(_defaults.items()):
-            if not self.has_section(section):
-                self.add_section(section)
-            for (key,val) in list(entries.items()):
-                if not self.has_option(section,key):
-                    self.set(section,key,val)
 
         self.ensure_contains("formula_path", _shared_formula_dir)
         self.ensure_contains("map_path", _shared_map_dir)
