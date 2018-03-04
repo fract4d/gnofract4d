@@ -4,6 +4,7 @@
 import os
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 import re
 import getopt
@@ -49,14 +50,11 @@ class Test(unittest.TestCase):
         self.assertEqual(options.VERSION,m.group(1), "Version mismatch")
 
     def testGenerateMandelbrot(self):
-        if os.path.exists("test.png"):
-            os.remove("test.png")
-        try:
-            gnofract4d.main(["-s", "test.png", "--width", "24", "-j", "12", "-q"])
-            self.assertTrue(os.path.exists("test.png"))
-        finally:
-            if os.path.exists("test.png"):
-                os.remove("test.png")
+        with tempfile.TemporaryDirectory(prefix="fract4d_") as tmpdir:
+            test_file = os.path.join(tmpdir, "test.png")
+            gnofract4d.main(["--nogui", "-s", test_file,
+                             "--width", "24", "-j", "12", "-q"])
+            self.assertTrue(os.path.exists(test_file))
 
 
 def suite():
