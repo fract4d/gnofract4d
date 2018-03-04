@@ -27,6 +27,7 @@ class T(Gtk.Dialog):
 
         self.set_default_response(Gtk.ResponseType.CLOSE)
         self.connect('response',self.onResponse)
+        self.connect('delete-event', self.quit)
 
     def onResponse(self,widget,id):
         if id == Gtk.ResponseType.CLOSE or \
@@ -35,3 +36,7 @@ class T(Gtk.Dialog):
             self.hide()
         else:
             print("unexpected response %d" % id)
+
+    def quit(self, widget, event):
+        self.hide()
+        return True
