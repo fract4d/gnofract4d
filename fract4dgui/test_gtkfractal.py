@@ -28,7 +28,7 @@ class FakeEvent:
     def __init__(self,**kwds):
         self.__dict__.update(kwds)
     def get_state(self):
-        return 0
+        return self.state
 
 class CallCounter:
     def __init__(self):
