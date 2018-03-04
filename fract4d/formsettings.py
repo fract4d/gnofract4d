@@ -7,7 +7,7 @@ import re
 import io
 import weakref
 
-from . import fracttypes, gradient, image
+from . import fracttypes, function, gradient, image
 
 # matches a complex number
 cmplx_re = re.compile(r'\((.*?),(.*?)\)')
@@ -177,7 +177,7 @@ class T:
 
     def set_named_item(self,name,val):
         sym = self.formula.symbols[name].first()
-        if isinstance(sym, fracttypes.Func):
+        if isinstance(sym, function.Func):
             self.set_named_func(name,val)
         else:
             self.set_named_param(name,val)

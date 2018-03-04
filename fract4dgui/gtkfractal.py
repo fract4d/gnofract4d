@@ -10,7 +10,7 @@ import copy
 import cairo
 from gi.repository import Gtk, Gdk, GObject, GdkPixbuf, GLib
 
-from fract4d import fractal,fract4dc,fracttypes, image, messages
+from fract4d import fractal, fract4dc, fracttypes, function, image, messages
 
 from . import utils, fourway
 from .gtkio import gtkio
@@ -815,7 +815,7 @@ class T(Hidden):
         keys = sorted(params.keys())
         for name in keys:
             param = params[name]
-            if isinstance(param,fracttypes.Func):
+            if isinstance(param,function.Func):
                 self.add_formula_function(table,row,name,param,form)
             else:
                 if param.type == fracttypes.Complex:

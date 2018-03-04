@@ -1,7 +1,7 @@
 # The fractal standard library, including operators
 import math
 
-from .codegen import ComplexArg, ConstFloatArg, ConstIntArg, TempArg, HyperArg, ColorArg
+from .instructions import ComplexArg, ConstFloatArg, ConstIntArg, TempArg, HyperArg, ColorArg
 from .fracttypes import *
 
 class Constants:

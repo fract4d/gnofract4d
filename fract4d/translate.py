@@ -5,7 +5,7 @@
 import sys
 
 from fract4d.absyn import *
-from . import fsymbol, fractparser, ir, canon
+from . import fsymbol, fractparser, ir, canon, function
 from .fracttypes import *
     
 allowed_param_names = [
@@ -317,7 +317,7 @@ class TBase:
                 argtype = [Complex]
                 fname = "ident"
                 
-            f = Func(argtype,node.datatype,fname)
+            f = function.Func(argtype,node.datatype,fname)
             set_f = True
         else:
             # check only declared once
@@ -657,7 +657,7 @@ class TBase:
         # return a 'pseudo-functions' associated with an image or
         # gradient param
         if var.type == fracttypes.Image:
-            f = Func([Image,Complex], Color, "image")
+            f = function.Func([Image,Complex], Color, "image")
             f.set_implicit_arg(name)
             f.set_override_name("_image")
             return f
@@ -674,7 +674,7 @@ class TBase:
                 # an attempt to call an undeclared parameter function,
                 # create it now. Point to ident by default
                 overloadList = self.symbols[func] = fsymbol.OverloadList([
-                    Func([Complex],Complex,"ident")])
+                    function.Func([Complex],Complex,"ident")])
             else:
                 raise
 

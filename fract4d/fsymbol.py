@@ -7,6 +7,7 @@ from collections import UserDict, UserList
 import re
 import math
 
+from .function import Func
 from .fracttypes import *
 from . import ir
 
