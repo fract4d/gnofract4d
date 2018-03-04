@@ -722,6 +722,8 @@ class MainWindow:
             self.swindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
             self.window.move(0, 0)
 
+            self.normal_width = self.userPrefs.getint("display","width")
+            self.normal_height = self.userPrefs.getint("display","height")
             screen = self.window.get_display().get_monitor_at_window(self.window.get_window()).get_geometry()
             self.userPrefs.set_size(screen.width, screen.height)
 
@@ -729,6 +731,7 @@ class MainWindow:
             #self.set_type_hint(Gdk.WindowTypeHint.DESKTOP)
             #self.window.set_keep_below(True)
         else:
+            self.userPrefs.set_size(self.normal_width, self.normal_height)
             self.window.set_decorated(True)
             self.swindow.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
             self.menubar.show()
