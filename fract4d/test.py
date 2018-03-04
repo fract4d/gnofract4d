@@ -32,37 +32,38 @@ import test_event
 
 def suite():
     return unittest.TestSuite((
-    test_fractlexer.suite(),
-    test_fractparser.suite(),
-    test_fracttypes.suite(),
-    test_symbol.suite(),
-    test_translate.suite(),
-    test_canon.suite(),
-    test_codegen.suite(),
-    test_fc.suite(),
-    test_fract4d.suite(),
-    test_fctutils.suite(),
-    test_fractal.suite(),
-    test_3d.suite(),
-    test_gradient.suite(),
-    test_preprocessor.suite(),
-    test_graph.suite(),
-    test_optimize.suite(),
-    test_image.suite(),
-    test_colorizer.suite(),
-    test_animation.suite(),
-    test_fractconfig.suite(),
-    test_options.suite(),
-    test_cache.suite(),
-    test_browser_model.suite(),
-    test_formsettings.suite(),
-    test_ffloat.suite(),
-    test_absyn.suite(),
-    test_event.suite()
+        test_fractlexer.suite(),
+        test_fractparser.suite(),
+        test_fracttypes.suite(),
+        test_symbol.suite(),
+        test_translate.suite(),
+        test_canon.suite(),
+        test_codegen.suite(),
+        test_fc.suite(),
+        test_fract4d.suite(),
+        test_fctutils.suite(),
+        test_fractal.suite(),
+        test_3d.suite(),
+        test_gradient.suite(),
+        test_preprocessor.suite(),
+        test_graph.suite(),
+        test_optimize.suite(),
+        test_image.suite(),
+        test_colorizer.suite(),
+        test_animation.suite(),
+        test_fractconfig.suite(),
+        test_options.suite(),
+        test_cache.suite(),
+        test_browser_model.suite(),
+        test_formsettings.suite(),
+        test_ffloat.suite(),
+        test_absyn.suite(),
+        test_event.suite()
     ))
 
 def main():
     unittest.main(defaultTest='suite')
+
 
 if __name__ == '__main__':
     main()

@@ -7,13 +7,12 @@ import sys
 import tempfile
 import unittest
 import re
-import getopt
 
 from fract4d import options
 
 try:
     # a hack, but seems easy enough
-    os.system("cp gnofract4d gnofract4d.py")    
+    os.system("cp gnofract4d gnofract4d.py")
     import gnofract4d
 finally:
     os.remove("gnofract4d.py")
@@ -29,7 +28,7 @@ class Test(unittest.TestCase):
         self.assertTrue(m,"setup.py doesn't specify version")
         self.assertEqual(options.VERSION, m.group(1))
 
-    def testDocVersionMatches(self):        
+    def testDocVersionMatches(self):
         # check the docs
         doc = Path("doc/gnofract4d-manual/C/gnofract4d-manual.xml").read_text()
         doc_re = re.compile(r'\<\!ENTITY version "(\S+)"\>')
@@ -60,7 +59,7 @@ class Test(unittest.TestCase):
 def suite():
     return unittest.makeSuite(Test,'test')
 
-def main():        
+def main():
     os.chdir('fract4d')
     os.system('./test.py')
     os.chdir('../fract4dgui')
@@ -69,11 +68,10 @@ def main():
 
     unittest.main(defaultTest='suite')
 
-    
+
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == "--thisonly":
         sys.argv.remove("--thisonly")
         unittest.main(defaultTest='suite')
     else:
         main()
-
