@@ -3,19 +3,13 @@
 # run all the tests
 import os
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
 import re
 
 from fract4d import options
-
-try:
-    # a hack, but seems easy enough
-    os.system("cp gnofract4d gnofract4d.py")
-    import gnofract4d
-finally:
-    os.remove("gnofract4d.py")
 
 print("Running all unit tests. This may take several minutes.")
 
@@ -51,8 +45,8 @@ class Test(unittest.TestCase):
     def testGenerateMandelbrot(self):
         with tempfile.TemporaryDirectory(prefix="fract4d_") as tmpdir:
             test_file = os.path.join(tmpdir, "test.png")
-            gnofract4d.main(["--nogui", "-s", test_file,
-                             "--width", "24", "-j", "12", "-q"])
+            subprocess.run(["./gnofract4d", "--nogui", "-s", test_file,
+                            "--width", "24", "-j", "12", "-q"], check=True)
             self.assertTrue(os.path.exists(test_file))
 
 
