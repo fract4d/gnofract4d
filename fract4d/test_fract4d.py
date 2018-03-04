@@ -560,7 +560,7 @@ class Test(testbase.ClassSetup):
                 render_type=0,
                 image=im._img,
                 site=site,
-                async=True)
+                asynchronous=True)
 
             nrecved = 0
             while True:

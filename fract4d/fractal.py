@@ -805,7 +805,7 @@ class T(fctutils.T):
             self.auto_tolerance = auto_tolerance
             self.changed(True)
             
-    def calc(self,image,colormap,nthreads,site,async):
+    def calc(self,image,colormap,nthreads,site,asynchronous):
         fract4dc.calc(
             params=self.params,
             antialias=self.antialias,
@@ -823,7 +823,7 @@ class T(fctutils.T):
             image=image._img,
             site=site,
             dirty=self.clear_image,
-            async=async)
+            asynchronous=asynchronous)
         
     def drawpoint(self):
         self.init_pfunc()

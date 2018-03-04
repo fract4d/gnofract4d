@@ -1154,7 +1154,7 @@ the GTK main loop.
 <para>
 The way out of this is that the additional threads live only in the
 C++ code, where they are invisible to the Python code and GTK. When
-<function>pycalc</function> is called with async=True, it spawns a
+<function>pycalc</function> is called with asynchronous=True, it spawns a
 thread to do the calculation, which may in turn spawn more workers if
 we want multiple threads. These all write to the image buffer and
 report back what they're doing by writing messages into a pipe. This

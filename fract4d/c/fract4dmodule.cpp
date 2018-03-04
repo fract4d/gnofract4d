@@ -5,8 +5,8 @@
 
    Results are reported back through a site object. There are 2 kinds,
    a synchronous site which calls back into python (used by
-   command-line fractal.py script) and an async site which wraps a
-   file descriptor into which we write simple messages. The GTK+ main
+   command-line fractal.py script) and an asynchronous site which wraps
+   a file descriptor into which we write simple messages. The GTK+ main
    loop then listens to the FD and performs operations in response to
    messages written to the file descriptor.
 */
@@ -1176,7 +1176,7 @@ struct calc_args
     int auto_deepen, yflip, periodicity, dirty;
     int auto_tolerance;
     double tolerance;
-    int async, warp_param;
+    int asynchronous, warp_param;
     render_type_t render_type;
     pf_obj *pfo;
     ColorMap *cmap;
@@ -1203,7 +1203,7 @@ struct calc_args
 	    maxiter = 1024;
 	    nThreads = 1;
 	    render_type = RENDER_TWO_D;
-	    async = false;
+	    asynchronous = false;
 	    warp_param = -1;
 	}
 
@@ -1754,7 +1754,7 @@ parse_calc_args(PyObject *args, PyObject *kwds)
 	"periodicity",
 	"render_type",
 	"dirty", 
-	"async",
+	"asynchronous",
 	"warp_param",
 	"tolerance",
 	"auto_tolerance",
@@ -1777,7 +1777,7 @@ parse_calc_args(PyObject *args, PyObject *kwds)
 	   &cargs->periodicity,
 	   &cargs->render_type,
 	   &cargs->dirty,
-	   &cargs->async,
+	   &cargs->asynchronous,
 	   &cargs->warp_param,
 	   &cargs->tolerance,
 	   &cargs->auto_tolerance
@@ -1838,7 +1838,7 @@ pycalc(PyObject *self, PyObject *args, PyObject *kwds)
 	return NULL;
     }
 
-    if(cargs->async)
+    if(cargs->asynchronous)
     {
 	cargs->site->interrupt();
 	cargs->site->wait();
@@ -2789,7 +2789,7 @@ static PyMethodDef PfMethods[] = {
       "Calculate a fractal image"},
 
     { "interrupt", pystop_calc, METH_VARARGS,
-      "Stop an async calculation" },
+      "Stop an asynchronous calculation" },
 
     { "rot_matrix", rot_matrix, METH_VARARGS,
       "Return a rotated and scaled identity matrix based on params"},

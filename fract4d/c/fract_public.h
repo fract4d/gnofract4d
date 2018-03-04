@@ -99,12 +99,12 @@ class IFractalSite
 	double dist, int fate, int nIters,
 	int r, int g, int b, int a) {};
  
-    // async support
+    // asynchronous support
 
     // return true if we've been interrupted and are supposed to stop
     virtual bool is_interrupted() { return false; };
 
-    // tell an async fractal to stop calculating
+    // tell an asynchronous fractal to stop calculating
     virtual void interrupt() { };
 
     // set things up before starting a new calc thread
