@@ -156,18 +156,18 @@ class SettingsPane(Gtk.Box):
         grad = self.f.get_gradient()
         self.left_color_button = utils.ColorButton(
             grad.segments[0].left_color, self.color_changed, True)
-        self.left_color_button.widget.set_tooltip_text(
+        self.left_color_button.set_tooltip_text(
             _("Color of segment's left end"))
         
         self.right_color_button = utils.ColorButton(
             grad.segments[0].right_color, self.color_changed, False)
-        self.right_color_button.widget.set_tooltip_text(
+        self.right_color_button.set_tooltip_text(
             _("Color of segment's right end"))
 
         table.attach(Gtk.Label(label="Left Color:"),0,0,1,1)
-        table.attach(self.left_color_button.widget,1,0,1,1)
+        table.attach(self.left_color_button,1,0,1,1)
         table.attach(Gtk.Label(label="Right Color:"),2,0,1,1)
-        table.attach(self.right_color_button.widget,3,0,1,1)
+        table.attach(self.right_color_button,3,0,1,1)
 
         self.split_button = Gtk.Button(label=_("Split"))
         self.split_button.connect('clicked', self.split)
@@ -194,9 +194,9 @@ class SettingsPane(Gtk.Box):
             self.solid_color_changed, 0)
 
         table.attach(Gtk.Label(label="Inner Color:"),0,2,1,1)
-        table.attach(self.inner_solid_button.widget,1,2,1,1)
+        table.attach(self.inner_solid_button,1,2,1,1)
         table.attach(Gtk.Label(label="Outer Color:"),2,2,1,1)
-        table.attach(self.outer_solid_button.widget,3,2,1,1)
+        table.attach(self.outer_solid_button,3,2,1,1)
 
         gradbox.add(table)
 

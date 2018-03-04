@@ -593,7 +593,6 @@ class T(Hidden):
         for j in range(4):
             rgba.append(form.params[order+j])
 
-        # do we need to keep this ref?
         color_button = utils.ColorButton(rgba, set_fractal, False)
 
         def set_selected_value(*args):
@@ -604,9 +603,9 @@ class T(Hidden):
             
         set_selected_value()
         
-        color_button.widget.update_function = set_selected_value
+        color_button.update_function = set_selected_value
 
-        return color_button.widget
+        return color_button
 
     def make_enumerated_widget(
         self, table, i, form, name, part, param, order):
