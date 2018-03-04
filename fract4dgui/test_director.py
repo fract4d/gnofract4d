@@ -18,7 +18,7 @@ if sys.path[1] != "..": sys.path.insert(1, "..")
 from fract4dgui import director, PNGGen, hig
 from fract4d import fractconfig, fractal, fc, animation
 
-g_comp = fc.Compiler()
+g_comp = fc.Compiler(fractconfig.T(""))
 g_comp.add_func_path("../fract4d")
 g_comp.add_func_path("../formulas")
 

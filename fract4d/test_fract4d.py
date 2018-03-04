@@ -10,11 +10,7 @@ import types
 
 import testbase
 
-from fract4d import fc
-from fract4d import fract4dc
-from fract4d import gradient
-from fract4d import image
-from fract4d import messages
+from fract4d import fractconfig, fc, fract4dc, gradient, image, messages
 
 from test_fractalsite import FractalSite
 
@@ -73,7 +69,7 @@ class Test(testbase.TestBase):
         return outputfile
     
     def setUp(self):
-        compiler = fc.Compiler()
+        compiler = fc.Compiler(fractconfig.T(""))
         self.compiler = compiler
         self.gradient = gradient.Gradient()
         

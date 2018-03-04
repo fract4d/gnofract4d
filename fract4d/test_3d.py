@@ -5,15 +5,11 @@ import math
 
 import testbase
 
-from fract4d import fc
-from fract4d import fractal
-from fract4d import fract4dc
-from fract4d import image
-
+from fract4d import fractconfig, fc, fractal, fract4dc, image
 from fract4d.test_fractalsite import FractalSite
 
 # centralized to speed up tests
-g_comp = fc.Compiler()
+g_comp = fc.Compiler(fractconfig.T(""))
 g_comp.add_func_path("../formulas")
 g_comp.load_formula_file("gf4d.frm")
 g_comp.load_formula_file("gf4d.cfrm")

@@ -12,11 +12,11 @@ from gi.repository import Gtk
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import fc
+from fract4d import fc, fractconfig
 from fract4dgui import model, gtkfractal
 
 # do compiler setup once
-g_comp = fc.Compiler()
+g_comp = fc.Compiler(fractconfig.T(""))
 g_comp.add_func_path("../formulas")
 g_comp.add_func_path("formulas")
 g_comp.load_formula_file("gf4d.frm")

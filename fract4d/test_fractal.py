@@ -13,14 +13,10 @@ import filecmp
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import fc
-from fract4d import fractal
-from fract4d import fracttypes
-from fract4d import image
-from fract4d import formsettings
+from fract4d import fractconfig, fc, fractal, fracttypes, image, formsettings
 
 # centralized to speed up tests
-g_comp = fc.Compiler()
+g_comp = fc.Compiler(fractconfig.T(""))
 g_comp.add_func_path("../formulas")
 g_comp.add_path("../maps", fc.FormulaTypes.GRADIENT)
 

@@ -10,10 +10,10 @@ import sys
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import testbase, fractal, fc, preprocessor, gradient
+from fract4d import testbase, fractal, fractconfig, fc, preprocessor, gradient
 from fractutils import parfile
 
-g_comp = fc.Compiler()
+g_comp = fc.Compiler(fractconfig.T(""))
 g_comp.add_func_path("../formulas")
 g_comp.add_func_path("../fract4d")
 g_comp.load_formula_file("gf4d.frm")

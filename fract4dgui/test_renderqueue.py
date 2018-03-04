@@ -19,7 +19,7 @@ if sys.path[1] != "..": sys.path.insert(1, "..")
 from fract4d import fractal, fc, fractconfig
 from fract4dgui import preferences, renderqueue
 
-g_comp = fc.Compiler()
+g_comp = fc.Compiler(fractconfig.T(""))
 g_comp.add_func_path("../fract4d")
 g_comp.add_func_path("../formulas")
 

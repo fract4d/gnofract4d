@@ -61,8 +61,7 @@ class MainWindow:
 
         # create fractal compiler and load standard formula and
         # coloring algorithm files
-        self.compiler = fc.Compiler()
-        self.compiler.update_from_prefs(userConfig)
+        self.compiler = fc.Compiler(userConfig)
 
         for path in extra_paths:
             self.compiler.add_func_path(path)

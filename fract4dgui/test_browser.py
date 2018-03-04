@@ -16,13 +16,13 @@ gettext.install('gnofract4d')
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import fc, fractal
+from fract4d import fc, fractal, fractconfig
 from fract4dgui import browser
 
 class MockMainWindow:
     def __init__(self):
         self.window = None
-        self.compiler = fc.Compiler()
+        self.compiler = fc.Compiler(fractconfig.T(""))
         self.compiler.add_func_path("../formulas")
         self.compiler.add_func_path("../fract4d")
 

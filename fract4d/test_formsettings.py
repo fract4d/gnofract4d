@@ -8,14 +8,10 @@ import sys
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import formsettings
-from fract4d import fc
-from fract4d import gradient
-from fract4d import fracttypes
-from fract4d import fctutils
+from fract4d import fractconfig, formsettings, fc, gradient, fracttypes, fctutils
 
 # centralized to speed up tests
-g_comp = fc.Compiler()
+g_comp = fc.Compiler(fractconfig.T(""))
 g_comp.add_func_path("../formulas")
 g_comp.load_formula_file("gf4d.frm")
 g_comp.load_formula_file("test.frm")

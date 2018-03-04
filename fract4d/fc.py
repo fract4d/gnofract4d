@@ -132,7 +132,7 @@ class FormulaFile:
         return names
     
 class Compiler:
-    def __init__(self):
+    def __init__(self, userConfig):
         self.parser = fractparser.parser
         self.lexer = fractlexer.lexer
         self.c_code = ""
@@ -149,6 +149,7 @@ class Compiler:
             self.flags = "/EHsc /Gd /nologo /W3 /LD /MT /TP /DWIN32 /DWINDOWS /D_USE_MATH_DEFINES"
             self.output_flag = "/Fe"
             self.libs = "/link /LIBPATH:\"%s/fract4d\" fract4d_stdlib.lib" % sys.path[0] # /DELAYLOAD:fract4d_stdlib.pyd DelayImp.lib
+        self.update_from_prefs(userConfig)
         self.tree_cache = {}
         self.leave_dirty = False
         self.next_inline_number = 0

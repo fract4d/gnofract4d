@@ -12,7 +12,7 @@ import testbase
 from fract4d import fc, fractconfig, translate
 
 # centralized to speed up tests
-g_comp = fc.Compiler()
+g_comp = fc.Compiler(fractconfig.T(""))
 g_comp.add_func_path("../formulas")
 g_comp.add_path("../maps", fc.FormulaTypes.GRADIENT)
 
@@ -87,7 +87,7 @@ class Test(testbase.TestBase):
     def testFileTimeChecking(self):
         'Check we notice when a file changes'
         try:
-            f2 = fc.Compiler()
+            f2 = fc.Compiler(fractconfig.T(""))
             
             formulas = '''
 test_circle {
@@ -231,7 +231,7 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
         self.assertNotEqual(func,func2)
 
     def testPrefs(self):
-        compiler = fc.Compiler()
+        compiler = fc.Compiler(fractconfig.T(""))
         prefs = fractconfig.T("testprefs")
         prefs.set("compiler","name","x")
         prefs.set("compiler","options","foo")
@@ -246,8 +246,7 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
         self.assertEqual(["wibble"], compiler.path_lists[3])
         
     def testInstance(self):
-        compiler = fc.Compiler()
-        compiler.update_from_prefs(fractconfig.T(""))
+        compiler = fc.Compiler(fractconfig.T(""))
         self.assertNotEqual(None, compiler)
         self.assertEqual(
             compiler.flags, fractconfig.T("").get("compiler", "options"))

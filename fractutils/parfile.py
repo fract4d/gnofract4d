@@ -9,7 +9,7 @@
 
 import math
 
-from fract4d import preprocessor
+from fract4d import fractconfig, preprocessor
 
 def parse(file,f):
     # reset the fractal to have defaults closer to Fractint
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     import fc
     import fractal
     
-    g_comp = fc.Compiler()
+    g_comp = fc.Compiler(fractconfig.userConfig())
     g_comp.add_func_path("../formulas")
     g_comp.load_formula_file("gf4d.frm")
     g_comp.load_formula_file("test.frm")

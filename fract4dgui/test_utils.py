@@ -11,11 +11,11 @@ from gi.repository import Gtk
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import fc
+from fract4d import fc, fractconfig
 from fract4dgui import utils
 
 # centralized to speed up tests
-g_comp = fc.Compiler()
+g_comp = fc.Compiler(fractconfig.T(""))
 g_comp.add_func_path("../fract4d")
 g_comp.add_func_path("../formulas")
 

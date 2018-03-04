@@ -10,9 +10,9 @@ import pickle
 
 import testbase
 
-from fract4d import browser_model, fc
+from fract4d import fractconfig, browser_model, fc
 
-g_comp = fc.Compiler()
+g_comp = fc.Compiler(fractconfig.T(""))
 g_comp.add_func_path("../formulas")
 g_comp.add_path("../maps", fc.FormulaTypes.GRADIENT)
 

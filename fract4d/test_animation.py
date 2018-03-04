@@ -11,7 +11,7 @@ if sys.path[1] != "..": sys.path.insert(1, "..")
 from fract4d import animation, fractconfig, fractal, fc
 
 # centralized to speed up tests
-g_comp = fc.Compiler()
+g_comp = fc.Compiler(fractconfig.T(""))
 g_comp.add_func_path("../formulas")
 g_comp.load_formula_file("gf4d.frm")
 g_comp.load_formula_file("test.frm")

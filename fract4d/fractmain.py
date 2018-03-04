@@ -8,13 +8,9 @@ from . import fractal, fc, image
 class T:
     def __init__(self, userConfig):
         self.userConfig = userConfig
-        self.compiler = fc.Compiler()
-        self.update_compiler_prefs(userConfig)
+        self.compiler = fc.Compiler(userConfig)
         self.f = fractal.T(self.compiler)
-        
-    def update_compiler_prefs(self, prefs):
-        self.compiler.update_from_prefs(prefs)
-        
+
     def run(self,options):
         for path in options.extra_paths:
             self.compiler.add_func_path(path)
