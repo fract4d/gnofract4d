@@ -120,7 +120,6 @@ class SettingsPane(Gtk.Box):
         gradbox = Gtk.VBox()
 
         browse_button = Gtk.Button(label=_("Browse..."))
-
         browse_button.connect(
             "clicked", self.show_browser, browser_model.GRADIENT)
             
@@ -495,7 +494,8 @@ class SettingsPane(Gtk.Box):
         hbox.pack_start(button, True, True, 0)
 
         typelabel = Gtk.Label(label=typename)
-        typelabel.set_alignment(1.0,0.0)
+        typelabel.set_halign(Gtk.Align.END)
+        typelabel.set_valign(Gtk.Align.START)
         table.add(typelabel,0, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,2,2)
         table.add(hbox, 1, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,2,2)
 

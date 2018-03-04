@@ -21,7 +21,7 @@ class T(Gtk.Toolbar):
 
     def add_button(self, title, tip_text, image, cb):
         try:
-            toolitem = Gtk.ToolButton(image,title)
+            toolitem = Gtk.ToolButton.new(image,title)
             self.insert(toolitem,-1)
         except:
             self.append_element(
@@ -35,13 +35,13 @@ class T(Gtk.Toolbar):
                 None)
 
     def add_stock(self, stock_id, tip_text, cb):
-        toolitem = Gtk.ToolButton(stock_id)
+        toolitem = Gtk.ToolButton.new_from_stock(stock_id)
         toolitem.connect('clicked', cb)
         toolitem.set_tooltip_text(tip_text)
         self.insert(toolitem,-1)
 
     def add_toggle(self, stock_id, title, tip_text, cb):
-        toolitem = Gtk.ToggleToolButton(stock_id)
+        toolitem = Gtk.ToggleToolButton.new_from_stock(stock_id)
         toolitem.connect('toggled', cb)
         toolitem.set_tooltip_text(tip_text)
         self.insert(toolitem,-1)

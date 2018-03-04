@@ -19,7 +19,7 @@ class StockThing:
                     'pixmaps',
                     '../pixmaps/gnofract4d'))
             
-            self.iconset = Gtk.IconSet(self.pixbuf)
+            self.iconset = Gtk.IconSet.new_from_pixbuf(self.pixbuf)
             _iconfactory.add(stock_name, self.iconset)
 
             stockitem = Gtk.StockItem()

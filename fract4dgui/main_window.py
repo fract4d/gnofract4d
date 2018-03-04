@@ -167,7 +167,7 @@ class MainWindow:
     def get_file_save_chooser(self, title, parent, patterns=[]):
         chooser = Gtk.FileChooserDialog(
             title=title,
-            parent=parent,
+            transient_for=parent,
             action=Gtk.FileChooserAction.SAVE)
 
         chooser.add_buttons(
@@ -369,7 +369,7 @@ class MainWindow:
         self.attach_subfract(10,2,3)
         self.attach_subfract(11,3,3)
 
-        self.swindow.add_with_viewport(self.fixed)
+        self.swindow.add(self.fixed)
         self.swindow.get_child().set_shadow_type(Gtk.ShadowType.NONE)
                 
         f.connect('progress_changed', self.progress_changed)
@@ -499,7 +499,7 @@ class MainWindow:
         fn = self.keymap.get(event.keyval)
         if fn:
             fn(event.get_state())
-        elif not self.menubar.get_property("visible"):
+        elif not self.menubar.get_visible():
             self.menubar.emit("key-release-event",event)
             
     def progress_changed(self,f,progress):
@@ -663,7 +663,7 @@ class MainWindow:
         accelgroup = self.manager.get_accel_group()
         self.window.add_accel_group(accelgroup)
 
-        main_actiongroup = Gtk.ActionGroup('Gnofract4D')
+        main_actiongroup = Gtk.ActionGroup.new('Gnofract4D')
         self.main_actiongroup = main_actiongroup
 
         main_actiongroup.add_toggle_actions(self.get_toggle_actions())
@@ -673,7 +673,7 @@ class MainWindow:
         self.manager.insert_action_group(main_actiongroup, 0)
 
         # actions which are only available if we're in 4D mode
-        self.fourd_actiongroup = Gtk.ActionGroup('4D-sensitive widgets')
+        self.fourd_actiongroup = Gtk.ActionGroup.new('4D-sensitive widgets')
 
         self.fourd_actiongroup.add_actions(self.get_fourd_actions())
 
@@ -748,11 +748,9 @@ class MainWindow:
             self.swindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
             self.window.move(0, 0)
 
-            screen = self.window.get_screen()
-            preferences.userPrefs.set_size(
-                screen.get_width(),
-                screen.get_height())
-            
+            screen = self.window.get_display().get_monitor_at_window(self.window.get_window()).get_geometry()
+            preferences.userPrefs.set_size(screen.width, screen.height)
+
             # TODO: may be useful for 'desktop mode' one day
             #self.set_type_hint(Gdk.WindowTypeHint.DESKTOP)
             #self.window.set_keep_below(True)
@@ -879,7 +877,7 @@ class MainWindow:
             _("Toggle Explorer Mode"),
             self.toolbar_toggle_explorer)
         
-        self.weirdness_adjustment = Gtk.Adjustment(
+        self.weirdness_adjustment = Gtk.Adjustment.new(
             20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
 
         self.weirdness = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.weirdness_adjustment)
@@ -899,7 +897,7 @@ class MainWindow:
             _("Weirdness"),
             _("How different to make the random mutant fractals"))
 
-        self.color_weirdness_adjustment = Gtk.Adjustment(
+        self.color_weirdness_adjustment = Gtk.Adjustment.new(
             20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
 
         self.color_weirdness = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.color_weirdness_adjustment)
