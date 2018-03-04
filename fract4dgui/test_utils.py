@@ -4,9 +4,6 @@
 
 import unittest
 import sys
-import os
-import subprocess
-import warnings
 
 import gi
 gi.require_version('Gtk','3.0')
@@ -62,9 +59,9 @@ class Test(unittest.TestCase):
         try:
             preview.loadFctFile(open(filename))
             preview.draw_image(False, False)
-            active=True
+            active = True
         except Exception as err:
-            active=False
+            active = False
         chooser.set_preview_widget_active(active)
         
     def wait(self):
@@ -73,17 +70,6 @@ class Test(unittest.TestCase):
     def quitloop(self,f,status):
         if status == 0:
             Gtk.main_quit()
-
-    def runAndDismiss(self,d, time=1):
-        def dismiss():
-            d.response(Gtk.ResponseType.ACCEPT)
-            d.hide()
-            return False
-
-        # increase timeout to see what dialogs look like
-        utils.timeout_add(10 * time,dismiss)
-        r = d.run()
-        d.destroy()
 
 
 def suite():
