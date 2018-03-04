@@ -10,7 +10,7 @@ class Alert(Gtk.MessageDialog):
         secondary_text = kwds.get("secondary", "")
         buttontype = kwds.get("buttontype", Gtk.ButtonsType.NONE)
         buttons = kwds.get("buttons", ())
-        parent = kwds.get("parent")
+        transient_for = kwds.get("transient_for")
         title = kwds.get("title","")
 
         if not isinstance(image,Gtk.Image):
@@ -18,7 +18,7 @@ class Alert(Gtk.MessageDialog):
 
         Gtk.MessageDialog.__init__(
             self,
-            transient_for=parent,
+            transient_for=transient_for,
             modal=True,
             destroy_with_parent=True,
             title=title,
@@ -117,7 +117,7 @@ class MessagePopper:
 
     def show_error(self, msg, extra_message=""):
         d = ErrorAlert(
-            parent=self,
+            transient_for=self,
             primary=msg,
             secondary=extra_message)
 
@@ -125,7 +125,7 @@ class MessagePopper:
 
     def show_info(self, msg, extra_message=""):
         d = InformationAlert(
-            parent=self,
+            transient_for=self,
             primary=msg,
             secondary=extra_message)
 
@@ -133,7 +133,7 @@ class MessagePopper:
         
     def ask_question(self, msg, secondary):
         d = ConfirmationAlert(
-            parent=self,
+            transient_for=self,
             primary=msg,
             secondary=secondary,
             image=Gtk.STOCK_DIALOG_QUESTION,

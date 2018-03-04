@@ -109,7 +109,7 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
         self.error=True
         Gdk.threads_enter()
         error_dlg = hig.ErrorAlert(
-            parent=self,
+            transient_for=self,
             primary=message,
             secondary=secondary)
         error_dlg.run()

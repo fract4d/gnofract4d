@@ -525,7 +525,7 @@ class SettingsPane(Gtk.Box):
         d = hig.ErrorAlert(
             primary=message,
             secondary=secondary_message,
-            parent=self.main_window.window)
+            transient_for=self.main_window.window)
         d.run()
         d.destroy()
 

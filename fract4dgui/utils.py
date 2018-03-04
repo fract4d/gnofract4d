@@ -144,7 +144,7 @@ def launch_browser(prefs, url, window):
             primary=_("Error launching browser"),
             secondary=_("Try modifying your preferences or copy the URL manually to a browser window.\n") +
             str(err),
-            parent=window)
+            transient_for=window)
         d.run()
         d.destroy()
 

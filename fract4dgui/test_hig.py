@@ -38,13 +38,13 @@ class Test(unittest.TestCase):
             Gtk.main_quit()
 
     def testCreate(self):
-        d = hig.Alert(parent=toplevel,image=Gtk.STOCK_DIALOG_INFO,primary="Hello!")
+        d = hig.Alert(transient_for=toplevel,image=Gtk.STOCK_DIALOG_INFO,primary="Hello!")
         self.assertNotEqual(d,None)
 
         self.runAndDismiss(d)
 
         d = hig.Alert(
-            parent=toplevel,
+            transient_for=toplevel,
             image=Gtk.Image.new_from_icon_name(Gtk.STOCK_DIALOG_ERROR, Gtk.IconSize.DIALOG),
             primary="Oh no!",
             secondary="A terrible thing has happened")
@@ -53,7 +53,7 @@ class Test(unittest.TestCase):
         
     def testInformation(self):
         d = hig.InformationAlert(
-            parent=toplevel,
+            transient_for=toplevel,
             primary="Your zipper is undone",
             secondary="This might be considered unsightly.")
 
@@ -61,14 +61,14 @@ class Test(unittest.TestCase):
         
     def testError(self):
         d = hig.ErrorAlert(
-            parent=toplevel,
+            transient_for=toplevel,
             primary="You don't want to do it like that",
             secondary="Chaos will ensue.")
 
         self.runAndDismiss(d)
         
         d = hig.ErrorAlert(
-            parent=toplevel,
+            transient_for=toplevel,
             primary="Could not destroy universe",
             secondary="Destructor ray malfunctioned.",
             fix_button="Try again")
@@ -77,14 +77,14 @@ class Test(unittest.TestCase):
         
     def testConfirm(self):
         d = hig.ConfirmationAlert(
-            parent=toplevel,
+            transient_for=toplevel,
             primary="Do you really want to hurt me?",
             secondary="Do you really want to make me cry?")
 
         self.runAndDismiss(d)
 
         d = hig.ConfirmationAlert(
-            parent=toplevel,
+            transient_for=toplevel,
             primary="Convert sub-meson structure?",
             secondary="The process is agonizingly painful and could result in permanent damage to the space-time continuum",
             proceed_button="Convert",
@@ -111,13 +111,13 @@ class Test(unittest.TestCase):
         
     def testSaveConfirm(self):
         d = hig.SaveConfirmationAlert(
-            parent=toplevel,
+            transient_for=toplevel,
             document_name="Wombat.doc")
 
         self.runAndDismiss(d)
 
         d = hig.SaveConfirmationAlert(
-            parent=toplevel,
+            transient_for=toplevel,
             document_name="Wombat.doc",
             period=791)
 

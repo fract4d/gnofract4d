@@ -1140,7 +1140,7 @@ class MainWindow:
         d = hig.ErrorAlert(
             primary=message,
             secondary=secondary_message,
-            parent=self.window)
+            transient_for=self.window)
         d.run()
         d.destroy()
 
@@ -1345,7 +1345,7 @@ class MainWindow:
         while not self.f.is_saved():
             d = hig.SaveConfirmationAlert(
                 document_name=self.display_filename(),
-                parent=self.window)
+                transient_for=self.window)
 
             response = d.run()
             d.destroy()
@@ -1360,7 +1360,8 @@ class MainWindow:
             d = hig.ConfirmationAlert(
                 primary=_("Render queue still processing."),
                 secondary=_("If you proceed, queued images will not be saved"),
-                proceed_button=_("Close anyway"))
+                proceed_button=_("Close anyway"),
+                transient_for=self.window)
                 
             response = d.run()
             d.destroy()
