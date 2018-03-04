@@ -31,3 +31,11 @@ notebook grid {
     padding: 4px;
     font-family: monospace;
 }
+
+#weirdbox {
+    margin-top: 4px;
+}
+
+#weirdbox scale {
+    padding: 2px;
+}

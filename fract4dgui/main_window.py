@@ -758,6 +758,8 @@ class MainWindow:
 
     def create_toolbar(self):
         self.toolbar = toolbar.T()
+        # request enough space for toolbar items
+        self.toolbar.set_show_arrow(False)
         self.vbox.pack_start(self.toolbar, expand=False, fill=False, padding=0)
         
         # preview
@@ -846,43 +848,43 @@ class MainWindow:
             icons.explorer.title,
             _("Toggle Explorer Mode"),
             self.toolbar_toggle_explorer)
-        
+
+        # explorer weirdness
+        self.weirdbox = Gtk.Grid()
+        self.weirdbox.set_column_homogeneous(False)
+        self.weirdbox.set_row_spacing(5)
+        self.weirdbox.set_name("weirdbox")
+        # shape
         self.weirdness_adjustment = Gtk.Adjustment.new(
             20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
-
         self.weirdness = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.weirdness_adjustment)
-        self.weirdness.set_size_request(100, 20)
-        self.weirdness.set_property("value-pos",Gtk.PositionType.RIGHT)
-
-        self.weirdbox = Gtk.VBox()
-        shapebox = Gtk.HBox(homogeneous=False, spacing=2)
+        self.weirdness.set_size_request(120, -1)
+        self.weirdness.set_value_pos(Gtk.PositionType.RIGHT)
         shape_label = Gtk.Label(label=_("Shape:"))
-        shapebox.pack_start(shape_label, True, True, 0)
-        shapebox.pack_start(self.weirdness, True, True, 0)
+        shape_label.set_halign(Gtk.Align.START)
 
-        self.weirdbox.pack_start(shapebox, True, True, 0)
-        
+        self.weirdbox.attach(shape_label, 0, 0, 1, 1)
+        self.weirdbox.attach(self.weirdness, 1, 0, 1, 1)
+        # color
+        self.color_weirdness_adjustment = Gtk.Adjustment.new(
+            20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
+        self.color_weirdness = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.color_weirdness_adjustment)
+        self.color_weirdness.set_value_pos(Gtk.PositionType.RIGHT)
+        color_label = Gtk.Label(label=_("Color:"))
+        color_label.set_halign(Gtk.Align.START)
+
+        self.weirdbox.attach(color_label, 0, 1, 1, 1)
+        self.weirdbox.attach(self.color_weirdness, 1, 1, 1, 1)
+
         self.toolbar.add_widget(
             self.weirdbox,
             _("Weirdness"),
-            _("How different to make the random mutant fractals"))
-
-        self.color_weirdness_adjustment = Gtk.Adjustment.new(
-            20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
-
-        self.color_weirdness = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.color_weirdness_adjustment)
-        self.color_weirdness.set_size_request(100, 20)
-        self.color_weirdness.set_property("value-pos",Gtk.PositionType.RIGHT)
-
-        colorbox = Gtk.HBox(homogeneous=False, spacing=2)
-        color_label = Gtk.Label(label=_("Color:"))
-        colorbox.pack_start(color_label, True, True, 0)
-        colorbox.pack_start(self.color_weirdness, True, True, 0)
-        self.weirdbox.pack_start(colorbox, True, True, 0)
+            _("How different to make the random mutant fractals"),
+            expand=True)
 
         def on_weirdness_changed(adjustment):
             self.update_subfracts()
-            
+        
         self.weirdness_adjustment.connect(
             'value-changed',on_weirdness_changed)
         self.color_weirdness_adjustment.connect(

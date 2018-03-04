@@ -11,10 +11,10 @@ class T(Gtk.Toolbar):
     def add_space(self):
         self.insert(Gtk.SeparatorToolItem(), -1)
 
-    def add_widget(self, widget, tip_text, private_text):
+    def add_widget(self, widget, tip_text, private_text, expand=False):
         toolitem = Gtk.ToolItem()
         toolitem.add(widget)
-        toolitem.set_expand(False)
+        toolitem.set_expand(expand)
         toolitem.set_homogeneous(False)
         toolitem.set_tooltip_text(tip_text)
         self.insert(toolitem,-1)
