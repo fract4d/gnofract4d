@@ -23,7 +23,7 @@ g_comp = fc.Compiler()
 g_comp.add_func_path("../fract4d")
 g_comp.add_func_path("../formulas")
 
-userPrefs = preferences.Preferences(fractconfig.instance)
+userPrefs = preferences.Preferences(fractconfig.T(""))
 
 class Test(unittest.TestCase):
     def setUp(self):

@@ -31,7 +31,6 @@ import hashlib
 import re
 import copy
 
-from . import fractconfig
 from . import fractparser
 from . import fractlexer
 from . import translate

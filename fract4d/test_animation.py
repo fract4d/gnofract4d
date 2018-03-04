@@ -8,7 +8,7 @@ import os
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import animation, fractal, fc
+from fract4d import animation, fractconfig, fractal, fc
 
 # centralized to speed up tests
 g_comp = fc.Compiler()
@@ -19,7 +19,7 @@ g_comp.load_formula_file("gf4d.cfrm")
 
 class Test(unittest.TestCase):
     def setUp(self):
-        self.anim = animation.T(g_comp)
+        self.anim = animation.T(g_comp, fractconfig.T(""))
 
     def tearDown(self):
         pass
@@ -116,7 +116,7 @@ class Test(unittest.TestCase):
         self.anim.load_animation("../testdata/animation.fcta")
         self.checkExpectedLoadedValues(self.anim)
         self.anim.save_animation("test.fcta")
-        anim2 = animation.T(g_comp)
+        anim2 = animation.T(g_comp, fractconfig.T(""))
         anim2.load_animation("test.fcta")
         self.checkExpectedLoadedValues(anim2)
         os.remove("test.fcta")

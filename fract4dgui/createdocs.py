@@ -15,6 +15,7 @@ import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 
+from fract4d import fractconfig
 from . import main_window
 
 sort_re = re.compile(r'(?P<mod1><.*?>)?(?P<mod2><.*?>)?(?P<key>[^<>]*)')
@@ -91,7 +92,7 @@ def main(outfile):
     out = open(outfile,"w")
     printer = CommandPrinter(out)
 
-    mw = main_window.MainWindow(["../formulas"])
+    mw = main_window.MainWindow(fractconfig.T(""), ["../formulas"])
 
     menu_items = mw.get_all_actions()
     for item in menu_items:

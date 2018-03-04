@@ -56,7 +56,7 @@ class FCTGeneration:
             self.compiler.add_func_path("formulas")
             self.compiler.add_func_path("../formulas")
             self.compiler.add_func_path(
-                fractconfig.instance.get_data_path("formulas"))
+                fractconfig.T.get_data_path("formulas"))
         except:
             self.show_error("Gnofract4d libs could not be found")
             yield False

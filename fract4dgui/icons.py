@@ -14,7 +14,7 @@ class StockThing:
         self.title = title
         try:
             self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(
-                fractconfig.instance.find_resource(
+                fractconfig.T.find_resource(
                     file,
                     'pixmaps',
                     '../pixmaps/gnofract4d'))

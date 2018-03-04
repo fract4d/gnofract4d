@@ -1,12 +1,13 @@
 # This is called by the main gnofract4d script
 
 import shutil, os
-from . import fractal, fc, fract4dc, image, fracttypes, fractconfig
+from . import fractal, fc, fract4dc, image, fracttypes
 
 class T:
-    def __init__(self):
+    def __init__(self, userConfig):
+        self.userConfig = userConfig
         self.compiler = fc.Compiler()
-        self.update_compiler_prefs(fractconfig.instance)
+        self.update_compiler_prefs(userConfig)
         self.f = fractal.T(self.compiler)
         
     def update_compiler_prefs(self, prefs):
@@ -19,9 +20,9 @@ class T:
         if options.flags != None:
             self.compiler.set_flags(options.flags)
 
-        width = options.width or fractconfig.instance.getint("display","width")
-        height = options.height or fractconfig.instance.getint("display","height")        
-        threads = options.threads or fractconfig.instance.getint(
+        width = options.width or self.userConfig.getint("display","width")
+        height = options.height or self.userConfig.getint("display","height")
+        threads = options.threads or self.userConfig.getint(
             "general","threads")
 
         if len(options.args) > 0:
@@ -29,7 +30,7 @@ class T:
 
         self.f.apply_options(options)
         self.f.antialias = options.antialias or \
-            fractconfig.instance.getint("display","antialias")
+            self.userConfig.getint("display","antialias")
 
         outfile = self.compile(options)
 

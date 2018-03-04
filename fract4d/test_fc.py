@@ -248,10 +248,10 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
         
     def testInstance(self):
         compiler = fc.Compiler()
-        compiler.update_from_prefs(fractconfig.instance)
+        compiler.update_from_prefs(fractconfig.T(""))
         self.assertNotEqual(None, compiler)
         self.assertEqual(
-            compiler.flags, fractconfig.instance.get("compiler", "options"))
+            compiler.flags, fractconfig.T("").get("compiler", "options"))
             
     def testAllFormulasCompile(self):
         'Go through every formula and check for errors'

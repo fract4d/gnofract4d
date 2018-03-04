@@ -16,14 +16,15 @@ re_ends_with_num = re.compile(r'\d+\Z')
 re_cleanup = re.compile(r'[\s\(\)]+')
 
 class MainWindow:
-    def __init__(self, extra_paths=[]):
+    def __init__(self, userConfig, extra_paths=[]):
         self.quit_when_done = False
         self.save_filename = None
         self.compress_saves = True
         self.f = None
         self.use_preview = True
 
-        self.userPrefs = preferences.Preferences(fractconfig.instance)
+        self.userConfig = userConfig
+        self.userPrefs = preferences.Preferences(userConfig)
 
         self.four_d_sensitives = []
 
@@ -40,7 +41,7 @@ class MainWindow:
         this_path = os.path.dirname(sys.modules[__name__].__file__)
         css_filepath = os.path.join(this_path, "..", css_file)
         if not os.path.exists(css_filepath):
-            css_filepath = fractconfig.instance.get_data_path(css_file)
+            css_filepath = fractconfig.T.get_data_path(css_file)
         theme_provider.load_from_path(css_filepath)
         Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),
             theme_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
@@ -61,7 +62,7 @@ class MainWindow:
         # create fractal compiler and load standard formula and
         # coloring algorithm files
         self.compiler = fc.Compiler()
-        self.compiler.update_from_prefs(fractconfig.instance)
+        self.compiler.update_from_prefs(userConfig)
 
         for path in extra_paths:
             self.compiler.add_func_path(path)
@@ -79,7 +80,7 @@ class MainWindow:
         
         try:
             # try to make default image more interesting
-            self.f.set_cmap(fractconfig.instance.find_resource(
+            self.f.set_cmap(fractconfig.T.find_resource(
                 "basic.map",
                 "maps",
                 "maps"))
@@ -674,7 +675,7 @@ class MainWindow:
 
     def director(self,*args):
         """Display the Director (animation) window."""
-        dialog = director.DirectorDialog(self.window, self.f)
+        dialog = director.DirectorDialog(self.window, self.f, self.userConfig)
         dialog.run()
         dialog.destroy()
         
@@ -1272,7 +1273,7 @@ class MainWindow:
         local_dir = "doc/gnofract4d-manual/%s/" % loc
         install_dir = "../../share/gnome/help/gnofract4d/%s/" % loc
 
-        helpfile = fractconfig.instance.find_resource(
+        helpfile = fractconfig.T.find_resource(
             base_help_file, local_dir, install_dir)
         abs_file = os.path.abspath(helpfile)
         

@@ -428,7 +428,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         dlg.show()
 
     # creating window...
-    def __init__(self, main_window, f, conf_file=""):
+    def __init__(self, main_window, f, userConfig, conf_file=""):
         dialog.T.__init__(
             self,
             _("Director"),
@@ -438,8 +438,8 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         )
 
         hig.MessagePopper.__init__(self)
-        self.animation=animation.T(f.compiler)
-        self.f=f
+        self.animation = animation.T(f.compiler, userConfig)
+        self.f = f
         self.compiler = f.compiler
 
         # main VBox
@@ -667,7 +667,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.box_main.pack_start(self.frm_output,False,False,0)
 
         # check if video converter can be found
-        self.converterpath = fractconfig.instance.find_on_path("ffmpeg")
+        self.converterpath = fractconfig.T.find_on_path("ffmpeg")
         if not self.converterpath:
             # put a message at the bottom to warn user
             warning_box = Gtk.HBox()

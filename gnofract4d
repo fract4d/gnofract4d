@@ -16,7 +16,7 @@ else:
 
 try:
     # nogui modules
-    from fract4d import fractal, fractmain, options
+    from fract4d import fractconfig, fractal, fractmain, options
 
 except ImportError as err:
     print((_('''
@@ -36,6 +36,10 @@ def get_version_info():
 GTK %s""" % (options.version, gtk_version)
                
 def main(args):    
+    # saved options
+    userConfig = fractconfig.userConfig()
+
+    # command line options
     opts = options.T()
     try:
         opts.parse(args)
@@ -61,14 +65,14 @@ def main(args):
 
     try:
         if opts.nogui:
-            plainmain(opts)
+            plainmain(userConfig, opts)
         else:
-            gtkmain(opts)
+            gtkmain(userConfig, opts)
     except Exception as err:
         print("A fatal error occurred:\n\t%s\n\n" % str(err))
         raise
 
-def gtkmain(options):
+def gtkmain(userConfig, options):
     # gtk
     import gi
     gi.require_version('Gtk', '3.0')
@@ -89,7 +93,7 @@ def gtkmain(options):
     Error was: '%s' ''') % err)
         sys.exit(1)
     
-    mainWindow = main_window.MainWindow()
+    mainWindow = main_window.MainWindow(userConfig)
 
     mainWindow.apply_options(options)
     
@@ -100,8 +104,8 @@ def gtkmain(options):
 
     Gtk.main()
 
-def plainmain(options):
-    t = fractmain.T()
+def plainmain(userConfig, options):
+    t = fractmain.T(userConfig)
     t.run(options)
 
 def main_n(n):

@@ -2,17 +2,19 @@ import configparser
 import os
 import sys
 
-class T(configparser.ConfigParser):    
+CONFIG_FILE = "~/.gnofract4d"
+
+class T(configparser.ConfigParser):
     "Holds preference data"
     def __init__(self, file):
-        _shared_formula_dir = self.get_data_path("formulas")
-        _shared_map_dir = self.get_data_path("maps")
+        _shared_formula_dir = T.get_data_path("formulas")
+        _shared_map_dir = T.get_data_path("maps")
         comp = 'gcc'
 
         _defaults = {
             "compiler" : {
               "name" : comp,
-              "options" : self.get_default_compiler_options()
+              "options" : T.get_default_compiler_options()
             },
             "optimize" : {
               "peephole" : "1"
@@ -29,9 +31,9 @@ class T(configparser.ConfigParser):
               "autotolerance" : "1"
             },
             "helpers" : {
-              "editor" : self.get_default_editor(),
-              "mailer" : self.get_default_mailer(),
-              "browser" : self.get_default_browser()
+              "editor" : T.get_default_editor(),
+              "mailer" : T.get_default_mailer(),
+              "browser" : T.get_default_browser()
             },
             "general" : {
               "threads" : "1",
@@ -94,8 +96,9 @@ class T(configparser.ConfigParser):
         if not l.count(required_item):
             l.append(required_item)
             self.set_list(section,l)
-    
-    def get_data_path(self,subpath=""):
+
+    @staticmethod
+    def get_data_path(subpath=""):
         # find where data files are present. 
         # use share path one level up from gnofract4d script location
         # e.g., if invoked as /usr/bin/gnofract4d, use /usr/share/gnofract4d
@@ -103,14 +106,16 @@ class T(configparser.ConfigParser):
             sys.path[0], "../share/gnofract4d", subpath))
         return path
 
-    def find_on_path(self, executable):
+    @staticmethod
+    def find_on_path(executable):
         for path in os.environ["PATH"].split(":"):
             fullname = os.path.join(path,executable)
             if os.path.exists(fullname):
                 return fullname
         return None
 
-    def find_resource(self, name, local_dir, installed_dir):
+    @staticmethod
+    def find_resource(name, local_dir, installed_dir):
         'try and find a file either locally or installed'
         if os.path.exists(name):
             return name
@@ -119,23 +124,27 @@ class T(configparser.ConfigParser):
         if os.path.exists(local_name):
             return local_name
 
-        full_name = os.path.join(self.get_data_path(installed_dir), name)
+        full_name = os.path.join(T.get_data_path(installed_dir), name)
         if os.path.exists(full_name):
             return full_name
 
         #print "missing resource %s" % full_name
         return full_name
 
-    def get_default_editor(self):
+    @staticmethod
+    def get_default_editor():
         return "emacs"
 
-    def get_default_mailer(self):
+    @staticmethod
+    def get_default_mailer():
         return "evolution %s"
 
-    def get_default_browser(self):
+    @staticmethod
+    def get_default_browser():
         return "firefox %s"
 
-    def get_default_compiler_options(self):
+    @staticmethod
+    def get_default_compiler_options():
         # appears to work for most unixes
         return "-fPIC -DPIC -D_REENTRANT -O2 -shared -ffast-math"
 
@@ -218,22 +227,27 @@ class DarwinConfig(T):
     def __init__(self,file):
         T.__init__(self,file)
 
-    def get_default_editor(self):
+    @staticmethod
+    def get_default_editor():
         # edit file in TextPad
         return "open -e"
 
-    def get_default_mailer(self):
+    @staticmethod
+    def get_default_mailer():
         # create message in default mail app
         return "open %s"
 
-    def get_default_browser(self):
+    @staticmethod
+    def get_default_browser():
         return "open %s"
 
-    def get_default_compiler_options(self):
+    @staticmethod
+    def get_default_compiler_options():
         return "-fPIC -DPIC -D_REENTRANT -O2 -dynamiclib -flat_namespace -undefined suppress -ffast-math"
-        
-config_file = "~/.gnofract4d"
-if sys.platform[:6] == "darwin":
-    instance = DarwinConfig(config_file)
-else:
-    instance = T(config_file)
+
+def userConfig():
+    if sys.platform[:6] == "darwin":
+        userConfig = DarwinConfig(CONFIG_FILE)
+    else:
+        userConfig = T(CONFIG_FILE)
+    return userConfig

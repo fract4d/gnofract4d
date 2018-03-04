@@ -50,8 +50,8 @@ class Test(unittest.TestCase):
         self.assertEqual("-foo",config2.get("compiler","options"))
         os.remove("testprefs")
 
-    def testInstance(self):
-        dummy = fractconfig.instance
+    def testInit(self):
+        dummy = fractconfig.T(".gnofract4d")
         self.assertEqual(".gnofract4d",os.path.basename(dummy.file))
 
     def testDataDir(self):

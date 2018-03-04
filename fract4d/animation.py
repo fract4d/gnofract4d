@@ -6,8 +6,6 @@ import math
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
 
-from . import fractconfig
-
 # interpolation type constants
 INT_LINEAR = 0
 INT_LOG    = 1
@@ -58,8 +56,9 @@ class KeyFrame:
         return kf
         
 class T:
-    def __init__(self, compiler):
+    def __init__(self, compiler, userConfig):
         self.compiler = compiler
+        self.userConfig = userConfig
         self.reset()
 
     def reset(self):
@@ -72,25 +71,25 @@ class T:
         self.keyframes = []
 
     def get_fct_enabled(self):
-        return fractconfig.instance.getboolean("director","fct_enabled")
+        return self.userConfig.getboolean("director","fct_enabled")
     
     def set_fct_enabled(self,fct_enabled):
         if fct_enabled:
-            fractconfig.instance.set("director","fct_enabled","1")
+            self.userConfig.set("director","fct_enabled","1")
         else:
-            fractconfig.instance.set("director","fct_enabled","0")
+            self.userConfig.set("director","fct_enabled","0")
     
     def get_fct_dir(self):
-        return fractconfig.instance.get("director","fct_dir")
+        return self.userConfig.get("director","fct_dir")
     
     def set_fct_dir(self,dir):
-        fractconfig.instance.set("director","fct_dir",dir)
+        self.userConfig.set("director","fct_dir",dir)
     
     def get_png_dir(self):
-        return fractconfig.instance.get("director","png_dir")
+        return self.userConfig.get("director","png_dir")
     
     def set_png_dir(self,dir):
-        fractconfig.instance.set("director","png_dir",dir)
+        self.userConfig.set("director","png_dir",dir)
 
     def get_avi_file(self):
         return self.avi_file

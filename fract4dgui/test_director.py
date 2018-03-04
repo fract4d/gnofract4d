@@ -16,11 +16,13 @@ gettext.install('gnofract4d')
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 from fract4dgui import director, PNGGen, hig
-from fract4d import fractal, fc, animation
+from fract4d import fractconfig, fractal, fc, animation
 
 g_comp = fc.Compiler()
 g_comp.add_func_path("../fract4d")
 g_comp.add_func_path("../formulas")
+
+userConfig = fractconfig.T("")
 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -44,7 +46,7 @@ class Test(unittest.TestCase):
         self.removeIfExists("video.avi")
 
         f = fractal.T(g_comp)
-        dd=director.DirectorDialog(None,f,"")
+        dd = director.DirectorDialog(None,f,userConfig)
         dd.show()
         dd.animation.set_png_dir("./")
         dd.animation.set_fct_enabled(False)
@@ -82,7 +84,7 @@ class Test(unittest.TestCase):
     def testOwnSanity(self):
         # exercise each of the checks in the check_sanity function
         f = fractal.T(g_comp)
-        dd=director.DirectorDialog(None,f,"")
+        dd = director.DirectorDialog(None,f,userConfig)
         
         dd.animation.add_keyframe("/foo/director1.fct",1,10,animation.INT_LOG)
         self.assertRaisesMessage(
@@ -121,7 +123,7 @@ class Test(unittest.TestCase):
         
     def testKeyframeClash(self):
         f = fractal.T(g_comp)
-        dd= director.DirectorDialog(None,f,"")
+        dd = director.DirectorDialog(None,f,userConfig)
 
         dd.check_for_keyframe_clash("/a","/b")
         
@@ -134,7 +136,7 @@ class Test(unittest.TestCase):
 
     def testPNGGen(self):
         f = fractal.T(g_comp)
-        dd= director.DirectorDialog(None,f,"")
+        dd = director.DirectorDialog(None,f,userConfig)
         pg = PNGGen.PNGGeneration(dd.animation,g_comp,dd)
         pg.generate_png()
         
