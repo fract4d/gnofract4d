@@ -202,23 +202,25 @@ class PrefsDialog(dialog.T):
         return widget
 
     def create_general_page(self):
-        table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
+        table = Gtk.Grid()
+        table.set_column_spacing(5)
+        table.set_row_spacing(5)
+        table.set_column_homogeneous(False)
         label = Gtk.Label(label=_("_General"))
         label.set_use_underline(True)
         self.notebook.append_page(table,label)
 
         entry = self.create_option_entry("general","threads")
         entry.set_tooltip_text(_("How many threads to use for calculations"))
-        table.attach(entry,1,2,0,1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
-
         name_label = Gtk.Label(label=_("_Number of threads :"))
         name_label.set_use_underline(True)
         name_label.set_mnemonic_widget(entry)
-        table.attach(name_label,0,1,0,1,0,0,2,2)
 
-        save_compress = self.create_save_compress_widget()
-        table.attach(save_compress,0,2,1,2,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,2,2)
-                
+        table.attach(name_label,0,0,1,1)
+        table.attach(entry,1,0,1,1)
+
+        table.attach(self.create_save_compress_widget(),0,1,2,1)
+
     def create_directory_list(self, section_name):
         self.path_list = Gtk.ListStore(
             GObject.TYPE_STRING)
@@ -270,88 +272,91 @@ class PrefsDialog(dialog.T):
             self.update_prefs(name, model)
             
     def create_compiler_options_page(self):
-        table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
+        table = Gtk.Grid()
+        table.set_column_homogeneous(False)
+        table.set_column_spacing(5)
+        table.set_row_spacing(5)
         label = Gtk.Label(label=_("_Compiler"))
         label.set_use_underline(True)
         self.notebook.append_page(table,label)
                         
         entry = self.create_compiler_entry("name")
         entry.set_tooltip_text(_("The C compiler to use"))
-        table.attach(entry,1,2,0,1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(entry,1,0,1,1)
 
         name_label = Gtk.Label(label=_("Compi_ler :"))
         name_label.set_use_underline(True)
         name_label.set_mnemonic_widget(entry)
-        table.attach(name_label,0,1,0,1,0,0,2,2)
+        name_label.set_hexpand(True)
+        table.attach(name_label,0,0,1,1)
         
         entry = self.create_compiler_entry("options")
         entry.set_tooltip_text(_("Options to pass to the C compiler"))
-        table.attach(entry,1,2,1,2,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(entry,1,1,1,1)
 
         flags_label = Gtk.Label(label=_("Compiler _Flags :"))
         flags_label.set_use_underline(True)
-        table.attach(flags_label,0,1,1,2,0,0,2,2)
+        table.attach(flags_label,0,1,1,1)
         flags_label.set_mnemonic_widget(entry)
 
         sw = Gtk.ScrolledWindow()
         sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy(Gtk.PolicyType.NEVER,
-                      Gtk.PolicyType.AUTOMATIC)
-
+        sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         form_path_section = "formula_path"
-
         pathlist = self.create_directory_list(form_path_section)
         pathlist.set_tooltip_text(_("Directories to search for formulas"))
-
         sw.add(pathlist)
-
-        table.attach(sw,1,2,2,5,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(sw,1,2,1,3)
 
         pathlist_label = Gtk.Label(label=_("Formula Search _Path :"))
         pathlist_label.set_use_underline(True)
-        table.attach(pathlist_label,0,1,2,3,0,0,2,2)
+        table.attach(pathlist_label,0,2,1,1)
         pathlist_label.set_mnemonic_widget(pathlist)
 
         add_button = Gtk.Button.new_from_stock(Gtk.STOCK_ADD)
         add_button.connect('clicked', self.browse_for_dir, form_path_section, pathlist)
-        table.attach(add_button,0,1,3,4,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(add_button,0,3,1,1)
         
         remove_button = Gtk.Button.new_from_stock(Gtk.STOCK_REMOVE)
         remove_button.connect('clicked', self.remove_dir, form_path_section, pathlist)
-        table.attach(remove_button,0,1,4,5,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(remove_button,0,4,1,1)
 
     def create_helper_options_page(self):
-        table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
+        table = Gtk.Grid()
+        table.set_column_homogeneous(False)
+        table.set_column_spacing(5)
+        table.set_row_spacing(5)
         label = Gtk.Label(label=_("_Helpers"))
         label.set_use_underline(True)
         self.notebook.append_page(table,label)
                         
         entry = self.create_option_entry("helpers","editor")
         entry.set_tooltip_text(_("The text editor to use for changing formulas"))
-        table.attach(entry,1,2,0,1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        entry.set_hexpand(True)
+        table.attach(entry,1,0,1,1)
 
         name_label = Gtk.Label(label="_Editor :")
         name_label.set_use_underline(True)
         name_label.set_mnemonic_widget(entry)
-        table.attach(name_label,0,1,0,1,0,0,2,2)
+        table.attach(name_label,0,0,1,1)
 
         entry = self.create_option_entry("helpers","mailer")
         entry.set_tooltip_text(_("The command to launch an email editor"))
-        table.attach(entry,1,2,1,2,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(entry,1,1,1,1)
 
         name_label = Gtk.Label(label="E_mail :")
         name_label.set_use_underline(True)
         name_label.set_mnemonic_widget(entry)
-        table.attach(name_label,0,1,1,2,0,0,2,2)
+        table.attach(name_label,0,1,1,1,)
 
         entry = self.create_option_entry("helpers","browser")
         entry.set_tooltip_text(_("The command to launch a web browser"))
-        table.attach(entry,1,2,2,3,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(entry,1,2,1,1)
 
         name_label = Gtk.Label(label="_Browser :")
         name_label.set_use_underline(True)
         name_label.set_mnemonic_widget(entry)
-        table.attach(name_label,0,1,2,3,0,0,2,2)
+        table.attach(name_label,0,2,1,1)
 
     def create_auto_deepen_widget(self):
         widget = Gtk.CheckButton(label="Auto _Deepen")
@@ -404,46 +409,48 @@ class PrefsDialog(dialog.T):
         return optMenu
     
     def create_image_options_page(self):
-        table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
+        table = Gtk.Grid()
+        table.set_column_spacing(5)
+        table.set_row_spacing(5)
         label = Gtk.Label(label="_Image")
         label.set_use_underline(True)
         self.notebook.append_page(table,label)
 
         wentry = self.create_width_entry()
-        table.attach(wentry,1,2,0,1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(wentry,1,0,1,1)
 
         wlabel = Gtk.Label(label="_Width :")
         wlabel.set_mnemonic_widget(wentry)
         wlabel.set_use_underline(True)
-        table.attach(wlabel,0,1,0,1,0,0,2,2)
+        table.attach(wlabel,0,0,1,1)
 
         hentry = self.create_height_entry()
-        table.attach(hentry,1,2,1,2,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(hentry,1,1,1,1)
 
         hlabel = Gtk.Label(label="_Height :")
         hlabel.set_mnemonic_widget(hentry)
         hlabel.set_use_underline(True)
-        table.attach(hlabel,0,1,1,2,0,0,2,2)
+        table.attach(hlabel,0,1,1,1)
 
         self.fix_ratio = Gtk.CheckButton(label="Maintain Aspect _Ratio")
         self.fix_ratio.set_tooltip_text("Keep the image rectangle the same shape when changing its size")
         self.fix_ratio.set_use_underline(True)
-        table.attach(self.fix_ratio,0,2,2,3,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(self.fix_ratio,0,2,2,1)
         self.fix_ratio.set_active(True)
 
         # auto deepening
         self.auto_deepen = self.create_auto_deepen_widget()
-        table.attach(self.auto_deepen,0,2,3,4,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(self.auto_deepen,0,3,2,1)
         
         # auto tolerance
         self.auto_tolerance = self.create_auto_tolerance_widget()
-        table.attach(self.auto_tolerance,0,2,4,5,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(self.auto_tolerance,0,4,2,1)
 
         # antialiasing
         optMenu = self.create_antialias_menu()
-        table.attach(optMenu,1,2,5,6,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(optMenu,1,5,1,1)
 
         aalabel = Gtk.Label(label="_Antialiasing : ")
         aalabel.set_use_underline(True)
         aalabel.set_mnemonic_widget(optMenu)
-        table.attach(aalabel,0,1,5,6,0,0,2,2)
+        table.attach(aalabel,0,5,1,1)

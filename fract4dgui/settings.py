@@ -148,8 +148,11 @@ class SettingsPane(Gtk.Box):
         self.f.connect('parameters-changed', self.redraw)
         gradbox.pack_start(self.gradarea, False, False, 1)
 
-        table = Gtk.Table(n_rows=4,n_columns=4, homogeneous=True)
-        table.set_property("column-spacing",2)
+        table = Gtk.Grid()
+        table.set_column_homogeneous(True)
+        table.set_row_spacing(50)
+        table.set_column_spacing(10)
+        table.set_margin_top(30)
 
         grad = self.f.get_gradient()
         self.left_color_button = utils.ColorButton(
@@ -162,34 +165,26 @@ class SettingsPane(Gtk.Box):
         self.right_color_button.widget.set_tooltip_text(
             _("Color of segment's right end"))
 
-        table.attach(Gtk.Label(label="Left Color:"),
-                     0,1,0,1)
-        table.attach(self.left_color_button.widget,
-                     1,2,0,1, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
-        table.attach(Gtk.Label(label="Right Color:"),
-                     2,3,0,1)
-        table.attach(self.right_color_button.widget,
-                     3,4,0,1, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
+        table.attach(Gtk.Label(label="Left Color:"),0,0,1,1)
+        table.attach(self.left_color_button.widget,1,0,1,1)
+        table.attach(Gtk.Label(label="Right Color:"),2,0,1,1)
+        table.attach(self.right_color_button.widget,3,0,1,1)
 
         self.split_button = Gtk.Button(label=_("Split"))
         self.split_button.connect('clicked', self.split)
-        table.attach(self.split_button,
-                     0,1,1,2, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
+        table.attach(self.split_button,0,1,1,1)
 
         self.remove_button = Gtk.Button(label=_("Remove"))
         self.remove_button.connect('clicked', self.remove)
-        table.attach(self.remove_button,
-                     1,2,1,2, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
+        table.attach(self.remove_button,1,1,1,1)
 
         self.copy_left_button = Gtk.Button(label=_("<Copy"))
         self.copy_left_button.connect('clicked', self.copy_left)
-        table.attach(self.copy_left_button,
-                     2,3,1,2, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
+        table.attach(self.copy_left_button,2,1,1,1)
         
         self.copy_right_button = Gtk.Button(label=_("Copy>"))
         self.copy_right_button.connect('clicked', self.copy_right)
-        table.attach(self.copy_right_button,
-                     3,4,1,2, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
+        table.attach(self.copy_right_button,3,1,1,1)
 
         self.inner_solid_button = utils.ColorButton(
             utils.floatColorFrom256(self.f.solids[1]),
@@ -199,14 +194,10 @@ class SettingsPane(Gtk.Box):
             utils.floatColorFrom256(self.f.solids[0]),
             self.solid_color_changed, 0)
 
-        table.attach(Gtk.Label(label="Inner Color:"),
-                     0,1,2,3)
-        table.attach(self.inner_solid_button.widget,
-                     1,2,2,3, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
-        table.attach(Gtk.Label(label="Outer Color:"),
-                     2,3,2,3)
-        table.attach(self.outer_solid_button.widget,
-                     3,4,2,3, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, Gtk.AttachOptions.EXPAND)
+        table.attach(Gtk.Label(label="Inner Color:"),0,2,1,1)
+        table.attach(self.inner_solid_button.widget,1,2,1,1)
+        table.attach(Gtk.Label(label="Outer Color:"),2,2,1,1)
+        table.attach(self.outer_solid_button.widget,3,2,1,1)
 
         gradbox.add(table)
 
@@ -293,7 +284,8 @@ class SettingsPane(Gtk.Box):
         self.notebook.append_page(table,label)
         
     def create_location_table(self):
-        table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
+        table = Gtk.Grid()
+        table.set_row_spacing(5)
         self.create_param_entry(table,0,_("_X :"), self.f.XCENTER)
         self.create_param_entry(table,1,_("_Y :"), self.f.YCENTER)
         self.create_param_entry(table,2,_("_Z :"), self.f.ZCENTER)
@@ -309,30 +301,25 @@ class SettingsPane(Gtk.Box):
         return table
     
     def create_general_page(self):
-        table = Gtk.Table(n_rows=5,n_columns=2,homogeneous=False)
+        table = Gtk.Grid()
+        table.set_column_spacing(5)
+        table.set_row_spacing(5)
         label = Gtk.Label(label=_("_General"))
         label.set_use_underline(True)
         self.notebook.append_page(table,label)
-        yflip_widget = self.create_yflip_widget()
-        table.attach(yflip_widget,0,2,0,1, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
-
-        periodicity_widget = self.create_periodicity_widget()
-        table.attach(periodicity_widget,0,2,1,2,
-                     Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
-
+        table.attach(self.create_yflip_widget(),0,0,2,1)
+        table.attach(self.create_periodicity_widget(),0,1,2,1)
         self.create_tolerance_entry(table, 2, _("_Tolerance"))
 
     def create_tolerance_entry(self, table, row, text):
         label = Gtk.Label(label=text)
         label.set_use_underline(True)
-        
-        label.set_justify(Gtk.Justification.RIGHT)
-        table.attach(label,0,1,row,row+1,0,0,2,2)
+        table.attach(label,0,row,1,1)
         
         entry = Gtk.Entry()
         entry.set_activates_default(True)
-        table.attach(entry,1,2,row,row+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
         label.set_mnemonic_widget(entry)
+        table.attach(entry,1,row,1,1)
         
         def set_entry(f,*args):
             try:
@@ -695,11 +682,12 @@ class SettingsPane(Gtk.Box):
         label.set_use_underline(True)
         
         label.set_justify(Gtk.Justification.RIGHT)
-        table.attach(label,0,1,row,row+1,0,0,2,2)
+        table.attach(label,0,row,1,1)
         
         entry = Gtk.Entry()
         entry.set_activates_default(True)
-        table.attach(entry,1,2,row,row+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        entry.set_hexpand(True)
+        table.attach(entry,1,row,1,1)
         label.set_mnemonic_widget(entry)
         
         def set_entry(f):

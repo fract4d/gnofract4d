@@ -131,37 +131,19 @@ class MainWindow:
         self.renderqueueDialog = renderqueue.QueueDialog(self.window, self.f, self.renderQueue)
 
     def create_rtd_widgets(self):
-        table = Gtk.Table(n_rows=2,n_columns=3,homogeneous=False)
+        table = Gtk.Grid()
+        table.set_row_spacing(1)
+        table.set_column_spacing(1)
         table.width = width = Gtk.Entry()
         table.height = height = Gtk.Entry()
         width.set_text("2048")
         height.set_text("1536")
         wlabel = Gtk.Label(label=_("Width:"))
         hlabel = Gtk.Label(label=_("Height:"))
-        table.attach(
-            wlabel,
-            0, 1, 0, 1,
-            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            1,1)
-        table.attach(
-            hlabel,
-            0, 1, 1, 2,
-            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            1,1)
-        table.attach(
-            width,
-            1, 2, 0, 1,
-            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            1,1)
-        table.attach(
-            height,
-            1, 2, 1, 2,
-            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            1,1)
+        table.attach(wlabel, 0, 0, 1, 1)
+        table.attach(hlabel, 0, 1, 1, 1)
+        table.attach(width, 1, 0, 1, 1)
+        table.attach(height, 1, 1, 1, 1)
         return table
     
     def get_file_save_chooser(self, title, parent, patterns=[]):
@@ -322,12 +304,7 @@ class MainWindow:
             self.subfracts[i].set_master(f)
             
     def attach_subfract(self,i,x,y):
-        self.ftable.attach(
-            self.subfracts[i].widget,
-            x, x+1, y, y+1,
-            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            1,1)
+        self.ftable.attach(self.subfracts[i].widget, x, y, 1, 1)
 
     def on_formula_change(self, f):
         is4d = f.is4D()
@@ -342,17 +319,10 @@ class MainWindow:
         f.connect('parameters-changed', self.on_fractal_change)
         f.connect('formula-changed', self.on_formula_change)
         
-        #self.swindow.set_size_request(640+8,400+8)
-
         self.fixed = Gtk.Fixed()
-        self.ftable = Gtk.Table(n_rows=4,n_columns=4,homogeneous=False)
+        self.ftable = Gtk.Grid()
         self.fixed.put(self.ftable,0,0)
-        self.ftable.attach(
-            f.widget,
-            1,3,1,3,
-            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
-            0,0) #1,1)
+        self.ftable.attach(f.widget, 1,1,2,2)
 
         self.attach_subfract(0,0,0)
         self.attach_subfract(1,1,0)
