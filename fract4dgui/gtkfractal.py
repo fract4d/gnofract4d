@@ -953,7 +953,7 @@ class T(Hidden):
         return False
     
     def onButtonRelease(self,widget,event):
-        self.widget.queue_draw_area(0, 0, self.width,self.height)
+        self.widget.queue_draw()
         self.button = 0
         self.notice_mouse = False
         self.selection_rect.clear()
