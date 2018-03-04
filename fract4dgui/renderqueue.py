@@ -94,6 +94,7 @@ class QueueDialog(dialog.T):
 
         self.q.connect('changed', self.onQueueChanged)
         self.q.connect('progress-changed', self.onProgressChanged)
+        self.q.connect('done', self.onQueueDone)
         
         self.store = Gtk.ListStore(
             str, # name
@@ -113,7 +114,6 @@ class QueueDialog(dialog.T):
         self.view.append_column(column)
         
         self.vbox.add(self.view)
-        self.vbox.show_all()
 
     def onQueueChanged(self,q):
         self.store.clear()
@@ -124,3 +124,10 @@ class QueueDialog(dialog.T):
         iter = self.store.get_iter_first()
         if iter:
             self.store.set_value(iter,2,progress)
+
+    def onQueueDone(self,q):
+        self.hide()
+
+    def show(self):
+        Gtk.Dialog.show(self)
+        self.vbox.show_all()
