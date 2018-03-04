@@ -1030,19 +1030,3 @@ The image may not display correctly. Please upgrade to version %s or higher.'''
         self.fix_bailout()
         #self.fix_gradients(old_gradient)
         self.saved = True
-        
-if __name__ == '__main__':
-    g_comp = fc.Compiler()
-    g_comp.add_func_path("formulas")
-    g_comp.add_func_path("../formulas")
-    g_comp.add_func_path(
-            os.path.join(sys.exec_prefix, "share/gnofract4d/formulas"))
-
-    f = T(g_comp)
-    for arg in sys.argv[1:]:
-        file = open(arg)
-        f.loadFctFile(file)
-        f.compile()
-        im = image.T(64,48)
-        f.draw(im)
-        im.save(os.path.basename(arg) + ".png")
