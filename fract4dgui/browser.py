@@ -8,16 +8,13 @@ from fract4d import browser_model
 from . import dialog, utils, gtkfractal
 
 class BrowserDialog(dialog.T):
-    RESPONSE_EDIT = 1
     RESPONSE_REFRESH = 2
-    RESPONSE_COMPILE = 3
     def __init__(self,main_window,f,type=browser_model.FRACTAL):
         dialog.T.__init__(
             self,
             _("Formula Browser"),
             None,
-            (#_("Co_mpile"), BrowserDialog.RESPONSE_COMPILE,
-             Gtk.STOCK_REFRESH, BrowserDialog.RESPONSE_REFRESH,
+            (Gtk.STOCK_REFRESH, BrowserDialog.RESPONSE_REFRESH,
              Gtk.STOCK_APPLY, Gtk.ResponseType.APPLY,
              Gtk.STOCK_OK, Gtk.ResponseType.OK,
                 Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
@@ -114,10 +111,6 @@ class BrowserDialog(dialog.T):
         
         self.filetreeview.append_column (column)
 
-        #renderer = gradientCellRenderer.GradientCellRenderer(self.model, self.compiler)
-        #column = Gtk.TreeViewColumn (_('_Preview'), renderer)
-        #self.filetreeview.append_column (column)
-
         return sw
 
     def populate_file_list(self):
@@ -185,10 +178,6 @@ class BrowserDialog(dialog.T):
         renderer = Gtk.CellRendererText ()
         column = Gtk.TreeViewColumn (_('F_ormula'), renderer, text=0)
         self.treeview.append_column (column)
-        #renderer = gradientCellRenderer.GradientCellRenderer(self.model, self.compiler)
-        #column = Gtk.TreeViewColumn (_('_Preview'), renderer)
-        #column.add_attribute(renderer, "formname", 0)
-        #self.treeview.append_column (column)
 
         selection = self.treeview.get_selection()
         selection.connect('changed',self.formula_selection_changed)
