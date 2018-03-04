@@ -2,17 +2,13 @@
 
 import copy
 
-from gi.repository import GObject, Gdk, Gtk
-
-from . import hig
-from . import dialog
-from . import browser
-from . import utils
-
-from .table import Table
+from gi.repository import Gdk, Gtk
 
 from fract4d import browser_model
 from fract4d.fc import FormulaTypes
+
+from . import hig, dialog, browser, utils
+from .table import Table
 
 class SettingsPane(Gtk.Box):
     def __init__(self, main_window, f):
@@ -245,7 +241,7 @@ class SettingsPane(Gtk.Box):
     def remove(self, widget):
         i = self.selected_segment
         grad = self.f.get_gradient()
-        if i == -1 or len(grad.segments)==1:
+        if i == -1 or len(grad.segments) == 1:
             return
         grad.remove(i, True)
         if self.selected_segment > 0:
@@ -277,8 +273,8 @@ class SettingsPane(Gtk.Box):
             self.left_color_button.set_color(grad.segments[i].left_color)
             self.right_color_button.set_color(grad.segments[i].right_color)
         # buttons should be sensitive if selection is good
-        self.left_color_button.set_sensitive(i!= -1)
-        self.right_color_button.set_sensitive(i!= -1)
+        self.left_color_button.set_sensitive(i != -1)
+        self.right_color_button.set_sensitive(i != -1)
         self.split_button.set_sensitive(i != -1)
         self.remove_button.set_sensitive(i != -1)
         self.copy_right_button.set_sensitive(i != -1)
@@ -416,7 +412,8 @@ class SettingsPane(Gtk.Box):
         table = Table(5,2,False)
         vbox.pack_start(table, True, True, 0)
 
-        self.transform_store = Gtk.ListStore(GObject.TYPE_STRING, object)
+        self.transform_store = Gtk.ListStore(str, object)
+
         def set_store(*args):
             self.transform_store.clear()
             for transform in self.f.transforms:
@@ -429,10 +426,10 @@ class SettingsPane(Gtk.Box):
         self.transform_view = Gtk.TreeView(model=self.transform_store)
         self.transform_view.set_headers_visible(False)
         self.transform_view.set_size_request(150,250)
-        renderer = Gtk.CellRendererText ()
-        column = Gtk.TreeViewColumn ('_Transforms', renderer, text=0)
+        renderer = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn('_Transforms', renderer, text=0)
         
-        self.transform_view.append_column (column)
+        self.transform_view.append_column(column)
 
         sw = Gtk.ScrolledWindow()
         sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
@@ -482,6 +479,7 @@ class SettingsPane(Gtk.Box):
 
     def create_browsable_name(self, table, param_type, typename, tip):
         label = Gtk.Label(label=self.f.forms[param_type].funcName)
+
         def set_label(*args):
             label.set_text(self.f.forms[param_type].funcName)
             
@@ -498,8 +496,8 @@ class SettingsPane(Gtk.Box):
 
         typelabel = Gtk.Label(label=typename)
         typelabel.set_alignment(1.0,0.0)
-        table.add(typelabel,0, Gtk.AttachOptions.EXPAND|Gtk.AttachOptions.FILL,0,2,2)
-        table.add(hbox, 1, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL ,0,2,2)
+        table.add(typelabel,0, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,2,2)
+        table.add(hbox, 1, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,2,2)
 
     def update_formula_text(self, f, textview,formindex):
         text = f.forms[formindex].text()
@@ -546,9 +544,9 @@ class SettingsPane(Gtk.Box):
         d.destroy()
 
     def create_formula_text_area(self,parent,formindex,formtype):
-        sw = Gtk.ScrolledWindow ()
-        sw.set_shadow_type (Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        sw = Gtk.ScrolledWindow()
+        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
         textview = Gtk.TextView()
 
@@ -685,7 +683,7 @@ class SettingsPane(Gtk.Box):
             except AttributeError:
                 pass
             if isinstance(widget, Gtk.Container):
-                self.update_all_widgets(fractal,widget) # recurse
+                self.update_all_widgets(fractal,widget)  # recurse
 
     def show_browser(self,button,type):
         dialog = browser.BrowserDialog(self.main_window, self.f, type)

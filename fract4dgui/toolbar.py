@@ -1,4 +1,4 @@
-# toolbar code. 
+# toolbar code
 
 from gi.repository import Gtk
 

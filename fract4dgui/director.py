@@ -10,10 +10,8 @@ import tempfile
 
 from gi.repository import Gdk, Gtk, GObject
 
-from . import dialog, hig
 from fract4d import animation, fractconfig
-
-from . import PNGGen,AVIGen,DlgAdvOpt,director_prefs
+from . import dialog, hig, PNGGen, AVIGen, DlgAdvOpt, director_prefs
 
 class UserCancelledError(Exception):
     pass
@@ -700,7 +698,6 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         # --------------showing all-------------------------------
         self.vbox.add(self.box_main)
         self.vbox.show_all()
-        self.controls = self.vbox
 
     def onResponse(self,widget,id):
         if id == Gtk.ResponseType.CLOSE or \

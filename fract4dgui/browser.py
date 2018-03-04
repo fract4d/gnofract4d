@@ -5,7 +5,6 @@
 from gi.repository import Gtk, GObject
 
 from fract4d import browser_model
-
 from . import dialog, utils, gtkfractal
 
 class BrowserDialog(dialog.T):

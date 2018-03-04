@@ -1,7 +1,6 @@
 # whimsical feature to zoom in search of interesting items
 
 import random
-import operator
 
 from gi.repository import Gtk
 
@@ -101,5 +100,3 @@ class AutozoomDialog(dialog.T):
                     self.select_quadrant_and_zoom()
                 else:
                     self.zoombutton.set_active(False)
-                
-    

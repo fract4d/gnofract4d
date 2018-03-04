@@ -7,14 +7,10 @@ import re
 
 from gi.repository import Gdk, Gtk
 
-# If we haven't been installed (we're running from the dir we
-# were unpacked in) this is where fract4d is.
-
 from fract4d import fractal, fc, image, fracttypes, fractconfig
 
-from . import gtkfractal, model, preferences, autozoom, settings, toolbar
-from . import browser, fourway, angle, utils, hig, painter
-from . import icons, renderqueue, director
+from . import (gtkfractal, model, preferences, autozoom, settings, toolbar,
+    browser, fourway, angle, utils, hig, painter, icons, renderqueue, director)
 
 re_ends_with_num = re.compile(r'\d+\Z')
 re_cleanup = re.compile(r'[\s\(\)]+')

@@ -1,9 +1,6 @@
 # our 'quasi-stock' icons
 
-from gi.repository import GObject
-from gi.repository import Gdk
-from gi.repository import Gtk
-from gi.repository import GdkPixbuf
+from gi.repository import GObject, Gdk, Gtk, GdkPixbuf
 
 from fract4d import fractconfig
 
@@ -54,5 +51,3 @@ autozoom = StockThing('autozoom.png', 'autozoom', _('_Autozoom'), ord('a'))
 randomize = StockThing('randomize_colors.png', 'randomize-colors', _('_Randomize Colors'), ord('r'))
 
 #logo = StockThing('gnofract4d-logo.png', 'logo', _('Logo'), 0)
-
-

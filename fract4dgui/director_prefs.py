@@ -22,12 +22,12 @@ class DirectorPrefs:
 
     def temp_fct_clicked(self,widget, data=None):
         fold = self.get_folder()
-        if fold != "":
+        if fold:
             self.txt_temp_fct.set_text(fold)
 
     def temp_png_clicked(self,widget, data=None):
         fold = self.get_folder()
-        if fold != "":
+        if fold:
             self.txt_temp_png.set_text(fold)
 
     def __init__(self,animation,parent):

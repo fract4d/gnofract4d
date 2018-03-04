@@ -94,7 +94,6 @@ class QueueDialog(dialog.T):
         self.q.connect('changed', self.onQueueChanged)
         self.q.connect('progress-changed', self.onProgressChanged)
         
-        self.controls = Gtk.VBox()
         self.store = Gtk.ListStore(
             str, # name
             str, # size
@@ -112,8 +111,7 @@ class QueueDialog(dialog.T):
             _('_Progress'),CellRendererProgress(),value=2)
         self.view.append_column(column)
         
-        self.controls.add(self.view)
-        self.vbox.add(self.controls)
+        self.vbox.add(self.view)
         self.vbox.show_all()
 
     def onQueueChanged(self,q):
