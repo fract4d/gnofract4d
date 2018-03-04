@@ -537,8 +537,8 @@ class T(Hidden):
         self, table, i, form, name, part, param, order):
     
         label = Gtk.Label.new(self.param_display_name(name,param)+part)
-        label.set_xalign(1.0)
-        label.set_yalign(0.0)
+        label.set_halign(Gtk.Align.END)
+        label.set_valign(Gtk.Align.CENTER)
         table.attach(label, 0, i, 1, 1)
 
         widget = self.make_numeric_entry(form, param, order)
@@ -577,9 +577,9 @@ class T(Hidden):
         self, table, i, form, name, param, order):
 
         label = Gtk.Label.new(self.param_display_name(name,param))
-        label.set_xalign(1.0)
-        label.set_yalign(0.0)
-        table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
+        label.set_halign(Gtk.Align.END)
+        label.set_valign(Gtk.Align.CENTER)
+        table.attach(label, 0, i, 1, 1)
 
         def set_fractal(r, g, b, is_left):
             self.freeze()
@@ -612,9 +612,9 @@ class T(Hidden):
         self, table, i, form, name, part, param, order):
 
         label = Gtk.Label.new(self.param_display_name(name,param))
-        label.set_xalign(1.0)
-        label.set_yalign(0.0)
-        table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
+        label.set_halign(Gtk.Align.END)
+        label.set_valign(Gtk.Align.CENTER)
+        table.attach(label, 0, i, 1, 1)
 
         widget = utils.create_option_menu(param.enum.value)
 
@@ -727,9 +727,9 @@ class T(Hidden):
 
     def add_formula_function(self,table,i,name,param,form):
         label = Gtk.Label.new(self.param_display_name(name,param))
-        label.set_xalign(1.0)
-        label.set_yalign(0.0)
-        table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
+        label.set_halign(Gtk.Align.END)
+        label.set_valign(Gtk.Align.CENTER)
+        table.attach(label, 0, i, 1, 1)
 
         funclist = self.construct_function_menu(param,form)
         widget = utils.create_option_menu(funclist)
@@ -764,14 +764,14 @@ class T(Hidden):
 
         widget.connect('changed',set_fractal_function,self,param,formula)
         
-        table.attach(widget,1,2,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
+        table.attach(widget, 1, i, 1, 1)
 
     def create_maxiter_widget(self,table,i):
         label = Gtk.Label(label="_Max Iterations")
-        label.set_xalign(1.0)
-        label.set_yalign(0.0)
+        label.set_halign(Gtk.Align.END)
+        label.set_valign(Gtk.Align.CENTER)
         label.set_use_underline(True)
-        table.attach(label,0,1,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
+        table.attach(label, 0, i, 1, 1)
 
         widget = Gtk.Entry()
         widget.set_activates_default(True)
@@ -799,7 +799,7 @@ class T(Hidden):
         widget.connect('focus-out-event',set_fractal)
 
         label.set_mnemonic_widget(widget)
-        table.attach(widget,1,2,i,i+1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,0,0)
+        table.attach(widget, 1, i, 1, 1)
         return i+1
 
     def populate_formula_settings(self, table, param_type, row=0):

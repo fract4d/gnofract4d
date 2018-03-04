@@ -8,7 +8,6 @@ from fract4d import browser_model
 from fract4d.fc import FormulaTypes
 
 from . import hig, dialog, browser, utils
-from .table import Table
 
 class SettingsPane(Gtk.Box):
     def __init__(self, main_window, f):
@@ -466,26 +465,25 @@ class SettingsPane(Gtk.Box):
 
     def create_browsable_name(self, table, param_type, typename, tip):
         label = Gtk.Label(label=self.f.forms[param_type].funcName)
+        label.set_hexpand(True)
 
         def set_label(*args):
             label.set_text(self.f.forms[param_type].funcName)
             
         self.f.connect('parameters-changed',set_label)
 
-        hbox = Gtk.HBox(homogeneous=False, spacing=1)
-        hbox.pack_start(label, True, True, 0)
-
         button = Gtk.Button(label=_("_Browse..."))
         button.set_use_underline(True)
         button.set_tooltip_text(tip)
         button.connect('clicked', self.show_browser, param_type)
-        hbox.pack_start(button, True, True, 0)
 
         typelabel = Gtk.Label(label=typename)
         typelabel.set_halign(Gtk.Align.END)
-        typelabel.set_valign(Gtk.Align.START)
-        table.add(typelabel,0, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,2,2)
-        table.add(hbox, 1, Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,0,2,2)
+        typelabel.set_valign(Gtk.Align.CENTER)
+
+        table.attach(typelabel, 0, 0, 1, 1)
+        table.attach(label, 1, 0, 1, 1)
+        table.attach(button, 2, 0, 1, 1)
 
     def update_formula_text(self, f, textview,formindex):
         text = f.forms[formindex].text()
@@ -634,6 +632,8 @@ class SettingsPane(Gtk.Box):
                     pass
 
             table = Gtk.Grid()
+            table.set_row_spacing(5)
+            table.set_column_spacing(10)
             self.create_browsable_name(table, param_type, typename, tip)
             
             self.f.populate_formula_settings(
