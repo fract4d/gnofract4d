@@ -6,6 +6,7 @@ import os
 import subprocess
 import math
 import cmath
+from pathlib import Path
 import sys
 import re
 
@@ -26,7 +27,7 @@ from fract4d import instructions
 g_exp = None
 g_x = None
 
-class Test(testbase.TestBase):
+class Test(testbase.ClassSetup):
     def setUp(self):
         self.fakeNode = absyn.Empty(0)
         self.codegen = codegen.T(fsymbol.T())
@@ -235,20 +236,36 @@ int main()
                             user_preamble,str_output,"\n",
                             user_postamble,postamble])
 
-    def compileAndRun(self,c_code):
-        cFileName = self.codegen.writeToTempFile(c_code,".cpp")
-        oFileName = self.codegen.writeToTempFile("")
-        #print c_code
-        cmd = "g++ -g -Wall %s -o %s -Ic -lm" % (cFileName, oFileName)
-        #print cmd
-        (status,output) = subprocess.getstatusoutput(cmd)
+    def compileSharedLib(self,c_code):
+        cFile = tempfile.NamedTemporaryFile(mode="w",
+            prefix="gf4d", suffix=".c", dir=Test.tmpdir.name)
+        cFile.write(c_code)
+        cFile.flush()
+
+        oFileName = str(Path(cFile.name).with_suffix(".so"))
+        cmd = "gcc -Wall -fPIC -DPIC -shared %s -o %s -lm" % (cFile.name, oFileName)
+        status, output = subprocess.getstatusoutput(cmd)
         self.assertEqual(status,0,"C error:\n%s\nProgram:\n%s\n" % \
                          ( output,c_code))
-        #print "status: %s\noutput:\n%s" % (status, output)
+        cFile.close()
+
+    def compileAndRun(self,c_code):
+        cFile = tempfile.NamedTemporaryFile(mode="w",
+            prefix="gf4d", suffix=".cpp", dir=Test.tmpdir.name)
+        cFile.write(c_code)
+        cFile.flush()
+        oFileName = str(Path(cFile.name).with_suffix(""))
+
+        cmd = "g++ -g -Wall %s -o %s -Ic -lm" % (cFile.name, oFileName)
+        status, output = subprocess.getstatusoutput(cmd)
+        self.assertEqual(status,0,"C error:\n%s\nProgram:\n%s\n" % \
+                         ( output,c_code))
+
         cmd = oFileName
-        (status,output) = subprocess.getstatusoutput(cmd)
+        status, output = subprocess.getstatusoutput(cmd)
         self.assertEqual(status,0, "Runtime error:\n" + output)
-        #print "status: %s\noutput:\n%s" % (status, output)
+
+        cFile.close()
         return output
 
     # test methods
@@ -2172,15 +2189,7 @@ Newton4(XYAXIS) {; Mark Peterson
         self.codegen.output_all(t)
         self.codegen.output_decls(t)
         c_code = self.codegen.output_c(t)
-
-        cFileName = self.codegen.writeToTempFile(c_code,".c")
-        oFileName = self.codegen.writeToTempFile(None,".so")
-        #print c_code
-        cmd = "gcc -Wall -fPIC -DPIC -shared %s -o %s -lm" % (cFileName, oFileName)
-        (status,output) = subprocess.getstatusoutput(cmd)
-        
-        self.assertEqual(status,0,"C error:\n%s\nProgram:\n%s\n" % \
-                         ( output,c_code))
+        self.compileSharedLib(c_code)
 
     def testReservedWords(self):
         '''Check that user vars don\'t clash with C reserved words''' 

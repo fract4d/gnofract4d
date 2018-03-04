@@ -2,8 +2,6 @@
 
 # Generate C code from a linearized IR trace
 
-import tempfile
-import os
 import re
 
 from . import absyn, fracttypes, ir, optimize
@@ -748,15 +746,6 @@ extern "C" {
         if output_template is None:
             output_template = self.output_template
         return output_template % f
-
-    def writeToTempFile(self,data=None, suffix=""):
-        (fileno,cFileName) = tempfile.mkstemp(suffix,"gf4d")
-        cFile = os.fdopen(fileno,"w")
-
-        if data is not None:
-            cFile.write(data)
-        cFile.close()
-        return cFileName
 
     def findOp(self,t):
         ' find the most appropriate overload for this op'
