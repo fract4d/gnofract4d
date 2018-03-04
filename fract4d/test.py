@@ -28,7 +28,7 @@ import test_formsettings
 import test_ffloat
 import test_absyn
 import test_event
-#import test_stdlib
+
 
 def suite():
     return unittest.TestSuite((
@@ -58,8 +58,7 @@ def suite():
     test_formsettings.suite(),
     test_ffloat.suite(),
     test_absyn.suite(),
-    test_event.suite(),
-    #test_stdlib.suite()
+    test_event.suite()
     ))
 
 def main():
@@ -67,4 +66,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
