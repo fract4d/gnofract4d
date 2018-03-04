@@ -1,32 +1,17 @@
 #!/usr/bin/env python3
 
 import unittest
-import string
-import subprocess
-import re
-import os
-import time
-import pickle
 
 import testbase
 
-from fract4d import fractconfig, browser_model, fc
-
-g_comp = fc.Compiler(fractconfig.T(""))
-g_comp.add_func_path("../formulas")
-g_comp.add_path("../maps", fc.FormulaTypes.GRADIENT)
-
-g_comp.load_formula_file("gf4d.frm")
-g_comp.load_formula_file("test.frm")
-g_comp.load_formula_file("gf4d.cfrm")
-g_comp.load_formula_file("gf4d.uxf")
+from fract4d import browser_model, fc
 
 class Wrapper(browser_model.T):
     def __init__(self):
         self.type_changelist = []
         self.file_changelist = []
         self.formula_changelist = []
-        browser_model.T.__init__(self,g_comp)
+        browser_model.T.__init__(self,Test.g_comp)
         self.type_changed += self._type_changed
         self.file_changed += self._file_changed
         self.formula_changed += self._formula_changed
@@ -40,15 +25,24 @@ class Wrapper(browser_model.T):
     def _formula_changed(self):
         self.formula_changelist.append(self.current.formula)
         
-class Test(testbase.TestBase):
+class Test(testbase.ClassSetup):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.g_comp.add_path("../maps", fc.FormulaTypes.GRADIENT)
+        cls.g_comp.load_formula_file("gf4d.frm")
+        cls.g_comp.load_formula_file("gf4d.cfrm")
+        cls.g_comp.load_formula_file("gf4d.cfrm")
+        cls.g_comp.load_formula_file("gf4d.uxf")
+
     def setUp(self):
         pass
         
     def testCreation(self):
-        bm = browser_model.T(g_comp)
+        bm = browser_model.T(Test.g_comp)
 
     def testFuncMapping(self):
-        bm = browser_model.T(g_comp)        
+        bm = browser_model.T(Test.g_comp)
         ti = bm.get_type_info(browser_model.FRACTAL)
         
         self.assertEqual(
@@ -78,7 +72,7 @@ class Test(testbase.TestBase):
             bm.type_changelist)
 
     def testFileList(self):
-        bm = browser_model.T(g_comp)
+        bm = browser_model.T(Test.g_comp)
         bm.set_type(browser_model.FRACTAL)
         self.assertNotEqual(bm.current.files, [])
         self.assertListSorted(bm.current.files)
@@ -92,7 +86,7 @@ class Test(testbase.TestBase):
             bm.type_changelist)
 
     def testSetTypeUpdatesFnames(self):
-        bm = browser_model.T(g_comp)
+        bm = browser_model.T(Test.g_comp)
         bm.set_type(browser_model.FRACTAL)
 
         bm.current.fname = "fish"
@@ -119,7 +113,7 @@ class Test(testbase.TestBase):
         self.assertNotEqual(0, bm.current.formulas.count("Mandelbrot"))
 
     def testSetBadFile(self):
-        bm = browser_model.T(g_comp)
+        bm = browser_model.T(Test.g_comp)
         bm.set_type(browser_model.FRACTAL)
         self.assertRaises(IOError,bm.set_file,"nonexistent.frm")
 
@@ -130,13 +124,13 @@ class Test(testbase.TestBase):
             last = f.lower()
         
     def testFormulasSorted(self):
-        bm = browser_model.T(g_comp)
+        bm = browser_model.T(Test.g_comp)
         bm.set_type(browser_model.FRACTAL)
         bm.set_file("gf4d.frm")
         self.assertListSorted(bm.current.formulas)
         
     def testExcludeList(self):
-        bm = browser_model.T(g_comp)
+        bm = browser_model.T(Test.g_comp)
         bm.set_type(browser_model.INNER)
         bm.set_file("gf4d.cfrm")
         self.assertEqual(0, bm.current.formulas.count("default"))
@@ -181,7 +175,7 @@ class Test(testbase.TestBase):
         self.assertEqual(None, bm.current.formula)
 
     def testApplyStatus(self):
-        bm = browser_model.T(g_comp)
+        bm = browser_model.T(Test.g_comp)
         bm.set_type(browser_model.FRACTAL)
         self.assertEqual(False, bm.current.can_apply)
 
@@ -204,7 +198,7 @@ class Test(testbase.TestBase):
         self.assertEqual(False, bm.current.can_apply)
 
     def testUgrPresent(self):
-        bm = browser_model.T(g_comp)
+        bm = browser_model.T(Test.g_comp)
         bm.set_type(browser_model.GRADIENT)
         files = bm.current.files
         self.assertEqual(1,files.count("blatte1.ugr"))

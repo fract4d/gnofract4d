@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
 import unittest
+import sys
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 

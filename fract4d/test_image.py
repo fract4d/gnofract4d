@@ -1,21 +1,15 @@
 #!/usr/bin/env python3
 
 import unittest
-import string
-import sys
 import os.path
-import struct
-import math
-import types
 import filecmp
 import subprocess
 
 import testbase
 
-from fract4d import fc
 from fract4d import image
 
-class Test(testbase.TestBase):
+class Test(testbase.ClassSetup):
     def testColossalImage(self):
         # aborts with 'std::bad_array_new_length'
         return
@@ -153,14 +147,9 @@ class Test(testbase.TestBase):
         im.save(filename)
         
     def testLoadPNG(self):
-        try:
-            f = "test.png"
-            self.saveTestImage(f)
-            self.doTestLoad(f)
-        finally:
-            if os.path.exists(f): os.remove(f)
-            
-    def testLoadBadType(self):
+        f = os.path.join(Test.tmpdir.name, "test.png")
+        self.saveTestImage(f)
+        self.doTestLoad(f)
         self.assertRaises(ValueError,self.doTestLoad,"foo.xxx")
 
     def testLoadMissing(self):
@@ -174,31 +163,24 @@ class Test(testbase.TestBase):
         self.assertImagesEqual(im, cmp_image)
         
     def doTestSave(self,ext,format):
-        f1 = "save1.%s" % ext
-        f2 = "save2.%s" % ext
-        try:
-            im = image.T(640,400)
-            im.save(f1)
-            self.assertTrue(os.path.exists(f1))
-            self.assertImageFileFormat(f1,format)
-            
-            im = image.T(640,40,640,400)
-            im.start_save(f2)
-            for (xoff,yoff,w,h) in im.get_tile_list():
-                im.resize_tile(w,h)
-                im.set_offset(xoff,yoff)
-                im.save_tile()
-            im.finish_save()
-            self.assertTrue(os.path.exists(f2))
-            self.assertImageFileFormat(f2,format)
-            
-            self.assertEqual(True, filecmp.cmp(f1,f2,False))
-                        
-        finally:
-            if os.path.exists(f1):
-                os.remove(f1)
-            if os.path.exists(f2):
-                os.remove(f2)
+        f1 = os.path.join(Test.tmpdir.name, "save1.%s" % ext)
+        f2 = os.path.join(Test.tmpdir.name, "save2.%s" % ext)
+        im = image.T(640,400)
+        im.save(f1)
+        self.assertTrue(os.path.exists(f1))
+        self.assertImageFileFormat(f1,format)
+
+        im = image.T(640,40,640,400)
+        im.start_save(f2)
+        for (xoff,yoff,w,h) in im.get_tile_list():
+            im.resize_tile(w,h)
+            im.set_offset(xoff,yoff)
+            im.save_tile()
+        im.finish_save()
+        self.assertTrue(os.path.exists(f2))
+        self.assertImageFileFormat(f2,format)
+
+        self.assertEqual(True, filecmp.cmp(f1,f2,False))
 
     def saveAndCheck(self,name,format):
         im = image.T(640,400)

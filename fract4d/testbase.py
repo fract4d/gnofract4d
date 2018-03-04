@@ -2,12 +2,14 @@
 
 # a base class other test classes inherit from - some shared functionality
 
+import os.path
 import sys
+import tempfile
 import unittest
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import ir, fracttypes
+from fract4d import fc, ir, fracttypes, fractconfig
 
 class TestBase(unittest.TestCase):
     def assertNearlyEqual(self,a,b,epsilon=1.0e-12):
@@ -222,3 +224,36 @@ class TestBase(unittest.TestCase):
                 else:
                     self.assertTrue(dt in fracttypes.typeList,
                                     "bad type %s for %s" % (dt, ob))
+
+class ClassSetup(TestBase):
+    @classmethod
+    def setUpClass(cls):
+        cls.tmpdir = tempfile.TemporaryDirectory(prefix="fract4d_")
+        cls.userConfig = fractconfig.T("")
+        cls.userConfig.set("general","cache_dir",
+                           os.path.join(cls.tmpdir.name,"gnofract4d-cache"))
+        cls.userConfig["formula_path"].clear()
+        cls.userConfig["map_path"].clear()
+        cls.g_comp = fc.Compiler(cls.userConfig)
+        cls.g_comp.add_func_path("../fract4d")
+        cls.g_comp.add_func_path("../formulas")
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmpdir.cleanup()
+
+class TestSetup(TestBase):
+    def setUp(self):
+        self.tmpdir = tempfile.TemporaryDirectory(prefix="fract4d_")
+        self.userConfig = fractconfig.T("")
+        self.userConfig.set("general","cache_dir",
+                            os.path.join(self.tmpdir.name, "gnofract4d-cache"))
+        self.userConfig["formula_path"].clear()
+        self.userConfig["map_path"].clear()
+        self.g_comp = fc.Compiler(self.userConfig)
+        self.g_comp.add_func_path("../fract4d")
+        self.g_comp.add_func_path("../formulas")
+
+    def tearDown(self):
+        del self.g_comp
+        self.tmpdir.cleanup()
