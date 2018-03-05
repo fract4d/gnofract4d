@@ -55,8 +55,6 @@ class MainWindow:
             Gdk.KEY_Escape : self.on_key_escape
             }
 
-        self.accelgroup = Gtk.AccelGroup()
-        self.window.add_accel_group(self.accelgroup)
         self.window.connect('key-release-event', self.on_key_release)
 
         # create fractal compiler and load standard formula and
