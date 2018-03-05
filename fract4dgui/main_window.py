@@ -1043,7 +1043,8 @@ class MainWindow:
             self.four_d_sensitives.append(my_fourway)
 
     def update_recent_files(self, file):
-        self.recent_files = self.userPrefs.update_list("recent_files",file,4)
+        self.recent_files = self.userPrefs.update_list("recent_files",
+                                                       os.path.abspath(file), 4)
         self.update_recent_file_menu()
         
     def update_recent_file_menu(self):
