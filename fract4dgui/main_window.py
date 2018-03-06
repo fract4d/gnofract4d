@@ -321,10 +321,8 @@ class MainWindow:
         
         f.connect('parameters-changed', self.on_fractal_change)
         f.connect('formula-changed', self.on_formula_change)
-        
-        self.fixed = Gtk.Fixed()
+
         self.ftable = Gtk.Grid()
-        self.fixed.put(self.ftable,0,0)
         self.ftable.attach(f.widget, 1,1,2,2)
 
         self.attach_subfract(0,0,0)
@@ -342,7 +340,7 @@ class MainWindow:
         self.attach_subfract(10,2,3)
         self.attach_subfract(11,3,3)
 
-        self.swindow.add(self.fixed)
+        self.swindow.add(self.ftable)
         self.swindow.get_child().set_shadow_type(Gtk.ShadowType.NONE)
                 
         f.connect('progress_changed', self.progress_changed)
