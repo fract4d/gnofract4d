@@ -22,6 +22,8 @@ class MainWindow:
         self.compress_saves = True
         self.f = None
         self.use_preview = True
+        self.normal_display_size = None
+        self.normal_window_size = None
 
         self.userConfig = userConfig
         self.userPrefs = preferences.Preferences(userConfig)
@@ -34,6 +36,7 @@ class MainWindow:
             self.userPrefs.getint("main_window","width"),
             self.userPrefs.getint("main_window","height"))
         self.window.connect('delete-event', self.quit)
+        self.window.connect('window-state-event', self.on_window_state_event)
         self.window.set_name('main_window')
 
         theme_provider = Gtk.CssProvider()
@@ -424,7 +427,13 @@ class MainWindow:
     def image_save_filename(self,fctname,extension=".png"):
         (base,ext) = os.path.splitext(fctname)
         return base + extension
-    
+
+    def on_window_state_event(self, widget, event):
+        if not event.new_window_state & Gdk.WindowState.FULLSCREEN and \
+                self.normal_window_size:
+            self.window.resize(*self.normal_window_size)
+            self.normal_window_size = None
+
     def set_window_title(self):
         title = self.display_filename()
         if not self.f.get_saved():
@@ -470,9 +479,7 @@ class MainWindow:
         fn = self.keymap.get(event.keyval)
         if fn:
             fn(event.get_state())
-        elif not self.menubar.get_visible():
-            self.menubar.emit("key-release-event",event)
-            
+
     def progress_changed(self,f,progress):
         self.bar.set_fraction(progress/100.0)
 
@@ -710,16 +717,18 @@ class MainWindow:
             return
         
         if is_full:
+            if not self.normal_window_size:
+                self.normal_window_size = self.window.get_size()
             self.window.fullscreen()
-            self.window.set_decorated(False)
             self.menubar.hide()
             self.toolbar.hide()
             self.bar.hide()
             self.swindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
-            self.window.move(0, 0)
 
-            self.normal_width = self.userPrefs.getint("display","width")
-            self.normal_height = self.userPrefs.getint("display","height")
+            if not self.normal_display_size:
+                self.normal_display_size = (
+                    self.userPrefs.getint("display","width"),
+                    self.userPrefs.getint("display","height"))
             screen = self.window.get_display().get_monitor_at_window(self.window.get_window()).get_geometry()
             self.userPrefs.set_size(screen.width, screen.height)
 
@@ -727,8 +736,9 @@ class MainWindow:
             #self.set_type_hint(Gdk.WindowTypeHint.DESKTOP)
             #self.window.set_keep_below(True)
         else:
-            self.userPrefs.set_size(self.normal_width, self.normal_height)
-            self.window.set_decorated(True)
+            if self.normal_display_size:
+                self.userPrefs.set_size(*self.normal_display_size)
+                self.normal_display_size = None
             self.swindow.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
             self.menubar.show()
             self.toolbar.show()
