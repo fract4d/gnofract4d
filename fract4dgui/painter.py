@@ -16,14 +16,20 @@ class PainterDialog(dialog.T):
 
         self.f = f
         self.paint_toggle = Gtk.ToggleButton.new_with_label(_("Painting"))
-        self.paint_toggle.set_active(True)
         self.paint_toggle.connect('toggled',self.onChangePaintMode)
         self.csel = Gtk.ColorSelection()
         self.vbox.add(self.csel)
         self.vbox.add(self.paint_toggle)
         self.vbox.show_all()
-        self.onChangePaintMode()
-        
+
+    def show(self):
+        super().show()
+        self.paint_toggle.set_active(True)
+
+    def hide(self):
+        super().hide()
+        self.paint_toggle.set_active(False)
+
     def onChangePaintMode(self,*args):
         self.f.set_paint_mode(self.paint_toggle.get_active(), self.csel)
         
@@ -32,4 +38,3 @@ class PainterDialog(dialog.T):
                id == Gtk.ResponseType.NONE or \
                id == Gtk.ResponseType.DELETE_EVENT:
             self.hide()
-            self.f.set_paint_mode(False,None)
