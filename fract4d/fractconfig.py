@@ -202,6 +202,16 @@ class T(configparser.ConfigParser):
             except configparser.NoOptionError:
                 return list
 
+    def remove_section_item(self, section, number):
+        # section is an OrderedDict therefore reuse removed item and delete last
+        self[section][str(number)] = ""
+        i = 0
+        for key in self[section]:
+            if self[section][key]:
+                self[section][str(i)] = self[section][key]
+                i += 1
+        del self[section][key]
+
     def remove_all_in_list_section(self,name):
         i = 0
         items_left = True

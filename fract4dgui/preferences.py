@@ -53,6 +53,9 @@ class Preferences(GObject.GObject):
     def update_list(self,name,new_entry,maxsize):
         return self.config.update_list(name,new_entry,maxsize)
 
+    def remove_section_item(self, section, number):
+        self.config.remove_section_item(section, number)
+
     def remove_all_in_list_section(self,name):
         self.config.remove_all_in_list_section(name)
 

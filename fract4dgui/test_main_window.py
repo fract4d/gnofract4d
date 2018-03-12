@@ -170,6 +170,18 @@ class Test(testgui.TestCase):
         finally:
             fractal.T.DEFAULT_FORMULA_FILE = old_default
 
+    def testRecentFiles(self):
+        self.mw.update_recent_files(os.path.join(Test.tmpdir.name, "file1"))
+        self.mw.update_recent_files(os.path.join(Test.tmpdir.name, "file2"))
+        self.mw.update_recent_files(os.path.join(Test.tmpdir.name, "file3"))
+        self.mw.update_recent_files(os.path.join(Test.tmpdir.name, "file4"))
+        self.assertEqual([x.get_child().get_label()
+                         for x in self.mw.recent_menuitems if x.get_visible()],
+                         ['_1 file4', '_2 file3', '_3 file2', '_4 file1'])
+        self.mw.load_recent_file(2)
+        self.assertEqual([x.get_child().get_label()
+                         for x in self.mw.recent_menuitems if x.get_visible()],
+                         ['_1 file4', '_2 file2', '_3 file1'])
 
 def suite():
     return unittest.makeSuite(Test,'test')

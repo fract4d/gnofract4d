@@ -1068,7 +1068,10 @@ class MainWindow:
             i += 1
 
     def load_recent_file(self, file_num, *args):
-        self.load(self.recent_files[file_num-1])
+        if not self.load(self.recent_files[file_num - 1]):
+            self.userPrefs.remove_section_item("recent_files", file_num - 1)
+            self.recent_files = self.userPrefs.get_list("recent_files")
+            self.update_recent_file_menu()
         
     def save_file(self,file):
         fileHandle = None
