@@ -533,6 +533,7 @@ class SettingsPane(Gtk.Box):
         sw = Gtk.ScrolledWindow()
         sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
         sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        sw.set_min_content_height(400)
 
         textview = Gtk.TextView()
 
@@ -564,7 +565,10 @@ class SettingsPane(Gtk.Box):
         
         vbox.pack_start(formbox, False, False, 0)
         self.create_formula_text_area(vbox,0,FormulaTypes.FRACTAL)
-        self.add_notebook_page(vbox, _("Formula"))
+        sw = Gtk.ScrolledWindow.new(None, None)
+        sw.set_overlay_scrolling(False)
+        sw.add(vbox)
+        self.add_notebook_page(sw, _("Formula"))
 
     def create_outer_page(self):
         vbox = Gtk.VBox()
@@ -577,7 +581,10 @@ class SettingsPane(Gtk.Box):
 
         vbox.pack_start(formbox, False, False, 0)
         self.create_formula_text_area(vbox,1,FormulaTypes.COLORFUNC)
-        self.add_notebook_page(vbox,_("Outer"))
+        sw = Gtk.ScrolledWindow.new(None, None)
+        sw.set_overlay_scrolling(False)
+        sw.add(vbox)
+        self.add_notebook_page(sw, _("Outer"))
         
     def create_inner_page(self):
         vbox = Gtk.VBox()
@@ -590,7 +597,10 @@ class SettingsPane(Gtk.Box):
 
         vbox.pack_start(formbox, False, False, 0)
         self.create_formula_text_area(vbox,2,FormulaTypes.COLORFUNC)
-        self.add_notebook_page(vbox, _("Inner"))
+        sw = Gtk.ScrolledWindow.new(None, None)
+        sw.set_overlay_scrolling(False)
+        sw.add(vbox)
+        self.add_notebook_page(sw, _("Inner"))
 
     def update_transform_parameters(self, parent, *args):
         widget = self.tables[3]
