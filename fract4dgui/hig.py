@@ -33,7 +33,7 @@ class Alert(Gtk.MessageDialog):
         
 class InformationAlert(Alert):
     def __init__(self,**kwds):
-        kwds.setdefault("image", Gtk.STOCK_DIALOG_INFO)
+        kwds.setdefault("image", "dialog-information")
         kwds.setdefault("buttons", (Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
         Alert.__init__(self, **kwds)
 
@@ -50,7 +50,7 @@ class ErrorAlert(Alert):
         buttons += [Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT]
 
         kwds["buttons"] = tuple(buttons)
-        kwds.setdefault("image", Gtk.STOCK_DIALOG_ERROR)
+        kwds.setdefault("image", "dialog-error")
         Alert.__init__(self, **kwds)
         self.set_default_response(Gtk.ResponseType.ACCEPT)
 
@@ -70,7 +70,7 @@ class ConfirmationAlert(Alert):
                     proceed_button, Gtk.ResponseType.ACCEPT]
 
         kwds["buttons"] = tuple(buttons)
-        kwds.setdefault("image", Gtk.STOCK_DIALOG_WARNING)
+        kwds.setdefault("image", "dialog-warning")
 
         Alert.__init__(self, **kwds)
         
@@ -136,7 +136,7 @@ class MessagePopper:
             transient_for=self,
             primary=msg,
             secondary=secondary,
-            image=Gtk.STOCK_DIALOG_QUESTION,
+            image="dialog-question",
             proceed_button=Gtk.STOCK_YES,
             cancel_button=Gtk.STOCK_NO)
         

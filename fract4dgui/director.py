@@ -694,8 +694,8 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         if not self.converterpath:
             # put a message at the bottom to warn user
             warning_box = Gtk.HBox()
-            image = Gtk.Image.new_from_stock(
-                Gtk.STOCK_DIALOG_WARNING, Gtk.IconSize.BUTTON)
+            image = Gtk.Image.new_from_icon_name(
+                "dialog-warning", Gtk.IconSize.BUTTON)
 
             warning_box.pack_start(image, True, True, 0)
             
