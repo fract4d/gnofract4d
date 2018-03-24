@@ -58,6 +58,7 @@ class MainWindow:
             Gdk.KEY_Escape : self.on_key_escape
             }
 
+        self.window.connect('key-press-event', self.on_key_press)
         self.window.connect('key-release-event', self.on_key_release)
 
         # create fractal compiler and load standard formula and
@@ -470,11 +471,31 @@ class MainWindow:
 
     def on_key_down(self,state):
         self.nudge(0, 1,state)
-        
+
+    def on_key_press(self, widget, event):
+        # don't allow cursor keys to navigate toolbar
+        if widget.get_focus() is None and self.keymap.get(event.keyval):
+            return True
+        # don't do EditResetAction or EditResetZoomAction if a widget is focussed
+        if widget.get_focus() is not None and event.keyval == Gdk.KEY_Home and \
+                not event.get_state() & Gdk.ModifierType.SHIFT_MASK:
+            return True
+
     def on_key_release(self, widget, event):
         current_widget = self.window.get_focus()
-        if isinstance(current_widget, Gtk.Entry) or isinstance(current_widget,Gtk.TextView):
+        if current_widget is not None:
             # otherwise we steal cursor motion through entry
+            if event.keyval == Gdk.KEY_Home and \
+                not event.get_state() & Gdk.ModifierType.SHIFT_MASK and (
+                    isinstance(current_widget, Gtk.Entry) or
+                    isinstance(current_widget, Gtk.TextView)):
+                # do Ctrl+Home/Home cursor action
+                current_widget.emit("move-cursor",
+                    Gtk.MovementStep.BUFFER_ENDS
+                        if event.get_state() & Gdk.ModifierType.CONTROL_MASK
+                        else Gtk.MovementStep.DISPLAY_LINE_ENDS,
+                    -1, False)
+                return True
             return
         fn = self.keymap.get(event.keyval)
         if fn:
@@ -937,7 +958,9 @@ class MainWindow:
                 (w,h) = self.resolutions[index]
                 self.userPrefs.set_size(w,h)
                 self.update_subfracts()
-                
+            # prevent cursor keys navigating toolbar
+            self.window.set_focus()
+
         set_selected_resolution(self.userPrefs)
         res_menu.connect('changed', set_resolution)
 
