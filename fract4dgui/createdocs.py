@@ -6,7 +6,7 @@
 from xml.sax.saxutils import escape
 import os
 import re
-import tempfile
+from unittest.mock import patch
 
 import gettext
 os.environ.setdefault('LANG', 'en')
@@ -16,7 +16,6 @@ import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 
-from fract4d import fractconfig
 from . import main_window
 
 sort_re = re.compile(r'(?P<mod1><.*?>)?(?P<mod2><.*?>)?(?P<key>[^<>]*)')
@@ -88,16 +87,14 @@ class CommandPrinter:
         print('</para>', file=self.f)
 
         print('</sect2>', file=self.f)
-        
-def main(outfile):
+
+@patch('fract4dgui.main_window.MainWindow.__init__')
+def main(outfile, mw_init):
     out = open(outfile,"w")
     printer = CommandPrinter(out)
 
-    tmpdir = tempfile.TemporaryDirectory(prefix="fract4d_")
-    config = fractconfig.T("")
-    config.set("general","cache_dir",
-               os.path.join(tmpdir.name, "gnofract4d-cache"))
-    mw = main_window.MainWindow(config, ["../formulas"])
+    mw_init.return_value = None
+    mw = main_window.MainWindow()
 
     menu_items = mw.get_all_actions()
     for item in menu_items:
@@ -125,7 +122,6 @@ def main(outfile):
     
     printer.output_all()
     out.close()
-    tmpdir.cleanup()
     
 if __name__ == '__main__':
     main('../doc/gnofract4d-manual/C/commands.xml')
