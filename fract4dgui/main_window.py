@@ -698,6 +698,14 @@ class MainWindow:
             self.manager.get_widget("/MenuBar/FileMenu/Recent3"),
             self.manager.get_widget("/MenuBar/FileMenu/Recent4")]
 
+        # command reference
+        builder = Gtk.Builder.new_from_file(os.path.join(this_path,
+                                            "shortcuts-gnofract4d.ui"))
+        self.shortcuts_window = builder.get_object("shortcuts-gnofract4d")
+        self.shortcuts_window.set_transient_for(self.window)
+        self.shortcuts_window.connect("delete-event",
+            lambda widget, event: Gtk.Window.hide_on_delete(widget))
+
     def director(self,*args):
         """Display the Director (animation) window."""
         self.directorDialog.show()
@@ -1281,7 +1289,7 @@ class MainWindow:
         self.display_help()
 
     def command_reference(self, *args):
-        self.display_help("cmdref")
+        self.shortcuts_window.show_all()
 
     def formula_reference(self, *args):
         self.display_help("formref")
