@@ -631,9 +631,6 @@ class MainWindow:
              'F1', _('Display manual'), self.contents),
             ('HelpCommandReferenceAction', None, _('Command _Reference'),
              None, _('A list of keyboard and mouse shortcuts'), self.command_reference),
-            ('HelpFormulaReferenceAction', None, _('_Formula Reference'),
-             None, _('Reference for functions and objects in the formula compiler'),
-             self.formula_reference),
             ('HelpReportBugAction', icons.face_sad.stock_name, _('_Report a Bug'),
              '', _('Report a bug you\'ve found'), self.report_bug),
             ('HelpAboutAction', Gtk.STOCK_ABOUT, _('_About'),
@@ -1290,9 +1287,6 @@ class MainWindow:
 
     def command_reference(self, *args):
         self.shortcuts_window.show_all()
-
-    def formula_reference(self, *args):
-        self.display_help("formref")
 
     def report_bug(self, *args):
         url = "https://github.com/edyoung/gnofract4d/issues"

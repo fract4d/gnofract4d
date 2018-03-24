@@ -46,7 +46,6 @@
     <menu name="HelpMenu" action="HelpMenuAction">
       <menuitem name="HelpContents" action="HelpContentsAction"/>
       <menuitem name="HelpCommandRef" action="HelpCommandReferenceAction"/>
-      <menuitem name="HelpFormulaRef" action="HelpFormulaReferenceAction"/>
       <menuitem name="HelpReportBug" action="HelpReportBugAction"/>
       <menuitem name="HelpAbout" action="HelpAboutAction"/>
     </menu>
