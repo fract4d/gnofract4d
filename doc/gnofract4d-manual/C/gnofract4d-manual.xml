@@ -1181,13 +1181,9 @@ will happen. </para> </warning>
 <title>Reporting Bugs</title> 
 
 <para>
-<emphasis>Please</emphasis> report any bugs you encounter, either by
-mailing <ulink
-url="mailto:dx-mon@users.sourceforge.net">
-dx-mon@users.sourceforge.net</ulink> or by
-using the <ulink
-url="http://sourceforge.net/tracker/?func=add&amp;group_id=785&amp;atid=100785">
-bug form</ulink> at SourceForge. I'll do my best to fix them.  </para>
+<emphasis>Please</emphasis> report any bugs you encounter by using the <ulink
+url="https://github.com/edyoung/gnofract4d/issues">
+issue tracker</ulink> at GitHub. I'll do my best to fix them.</para>
 
 </sect2>
 
@@ -1224,8 +1220,8 @@ one). Inner colormaps are ignored. </para> </listitem>
 <para>
 
 This is &gf4d; version &version;. You can find the most recent version of
-&gf4d; from <ulink url="http://gnofract4d.sourceforge.net">
-http://gnofract4d.sourceforge.net/</ulink>. 
+&gf4d; from <ulink url="https://github.com/edyoung/gnofract4d/">
+https://github.com/edyoung/gnofract4d/</ulink>.
 </para>
 <sect2 id="credits">
 <title>Credits and copyright</title>
@@ -1265,7 +1261,7 @@ implementation does not share any code with those programs.
 <para>
 The &gf4d; distribution contains palette (.map) files by a number of
 authors which were originally distributed with <ulink
-url="http://spanky.triumf.ca/">&fractint;</ulink> under somewhat murky
+url="https://fractint.org/">&fractint;</ulink> under somewhat murky
 licensing conditions. It also contains a copy of "standard.ucl",
 originally distributed with <ulink
 url="http://www.ultrafractal.com/">&ultrafractal;</ulink>, by kind
@@ -1284,7 +1280,7 @@ LGPL license.  </para>
 
 <para>
 <filename>lex.py</filename> and <filename>yacc.py</filename> come from
-the PLY package, and are distributed under the LGPL license. </para>
+the PLY package, and are distributed under the BSD license.</para>
 
 <para>
 Some of the menu icons are taken or adapted from
