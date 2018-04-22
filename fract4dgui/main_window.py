@@ -743,31 +743,28 @@ class MainWindow:
         self.set_full_screen(False)
         
     def set_full_screen(self, is_full):
-        if not hasattr(self.window, "fullscreen"):
-            self.show_warning(
-                _("Sorry, your version of PyGTK does not support full screen display"))
-            return
-        
         if is_full:
             if not self.normal_window_size:
                 self.normal_window_size = self.window.get_size()
+
+            if not self.normal_display_size:
+                self.normal_display_size = (
+                    self.userPrefs.getint("display","width"),
+                    self.userPrefs.getint("display","height"))
+
             self.window.fullscreen()
             self.menubar.hide()
             self.toolbar.hide()
             self.bar.hide()
             self.swindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
 
-            if not self.normal_display_size:
-                self.normal_display_size = (
-                    self.userPrefs.getint("display","width"),
-                    self.userPrefs.getint("display","height"))
-            screen = self.window.get_display().get_monitor_at_window(self.window.get_window()).get_geometry()
-            self.userPrefs.set_size(screen.width, screen.height)
+            screen = self.window.get_screen()
+            monitor_id = screen.get_monitor_at_window(screen.get_active_window())
+            geometry = screen.get_monitor_geometry(monitor_id)
+            self.userPrefs.set_size(geometry.width, geometry.height)
 
-            # TODO: may be useful for 'desktop mode' one day
-            #self.set_type_hint(Gdk.WindowTypeHint.DESKTOP)
-            #self.window.set_keep_below(True)
         else:
+            print("shrinking")
             if self.normal_display_size:
                 self.userPrefs.set_size(*self.normal_display_size)
                 self.normal_display_size = None
@@ -942,7 +939,7 @@ class MainWindow:
             (1280, 800), (1280, 960), (1280,1024),
             (1400, 1050), (1440, 900),
             (1600,1200), (1680, 1050),
-            (1920, 1200), (2560, 1600)]
+            (1920, 1200), (2560, 1600),(3840,2160)]
 
         res_names= ["%dx%d" % (w,h) for (w,h) in self.resolutions]
         
