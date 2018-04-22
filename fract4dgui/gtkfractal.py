@@ -925,9 +925,12 @@ class T(Hidden):
         # update colormap
         grad = self.f.get_gradient()
 
-        (is_solid, color) = fate
+        (is_solid, color_type) = fate
+        if color_type == 0x20:
+            print("update fate")
+            color_type = 1 # FATE_UNKNOWN is treated as INSIDE
         if is_solid:
-            self.f.solids[color] = (int(r*255.0),int(g*255.0),int(b*255.0),255)
+            self.f.solids[color_type] = (int(r*255.0),int(g*255.0),int(b*255.0),255)
         else:
             i = grad.get_index_at(index)
             if index > grad.segments[i].mid:
