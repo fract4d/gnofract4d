@@ -38,14 +38,14 @@ class Test(unittest.TestCase):
             Gtk.main_quit()
 
     def testCreate(self):
-        d = hig.Alert(transient_for=toplevel,image="dialog-information",primary="Hello!")
+        d = hig.Alert(transient_for=toplevel,type=Gtk.MessageType.INFO,primary="Hello!")
         self.assertNotEqual(d,None)
 
         self.runAndDismiss(d)
 
         d = hig.Alert(
             transient_for=toplevel,
-            image=Gtk.Image.new_from_icon_name("dialog-error", Gtk.IconSize.DIALOG),
+            type=Gtk.MessageType.ERROR,
             primary="Oh no!",
             secondary="A terrible thing has happened")
 

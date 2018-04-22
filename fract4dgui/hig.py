@@ -5,7 +5,7 @@ from gi.repository import Gtk, GLib
 
 class Alert(Gtk.MessageDialog):
     def __init__(self, **kwds):
-        image = kwds.get("image")
+        type = kwds.get("type")
         primary_text = kwds.get("primary")
         secondary_text = kwds.get("secondary", "")
         buttontype = kwds.get("buttontype", Gtk.ButtonsType.NONE)
@@ -13,27 +13,24 @@ class Alert(Gtk.MessageDialog):
         transient_for = kwds.get("transient_for")
         title = kwds.get("title","")
 
-        if not isinstance(image,Gtk.Image):
-            image = Gtk.Image.new_from_icon_name(image, Gtk.IconSize.DIALOG)
-
         Gtk.MessageDialog.__init__(
             self,
             transient_for=transient_for,
             modal=True,
             destroy_with_parent=True,
+            type=type,
             title=title,
             text=primary_text,
             buttons=buttontype)
         
         self.add_buttons(*buttons)
-        self.set_image(image)
         self.format_secondary_text(secondary_text)
         
         self.show_all()
         
 class InformationAlert(Alert):
     def __init__(self,**kwds):
-        kwds.setdefault("image", "dialog-information")
+        kwds.setdefault("type", Gtk.MessageType.INFO)
         kwds.setdefault("buttons", (Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
         Alert.__init__(self, **kwds)
 
@@ -50,7 +47,7 @@ class ErrorAlert(Alert):
         buttons += [Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT]
 
         kwds["buttons"] = tuple(buttons)
-        kwds.setdefault("image", "dialog-error")
+        kwds.setdefault("type", Gtk.MessageType.ERROR)
         Alert.__init__(self, **kwds)
         self.set_default_response(Gtk.ResponseType.ACCEPT)
 
@@ -70,7 +67,7 @@ class ConfirmationAlert(Alert):
                     proceed_button, Gtk.ResponseType.ACCEPT]
 
         kwds["buttons"] = tuple(buttons)
-        kwds.setdefault("image", "dialog-warning")
+        kwds.setdefault("type", Gtk.MessageType.WARNING)
 
         Alert.__init__(self, **kwds)
         
@@ -136,7 +133,7 @@ class MessagePopper:
             transient_for=self,
             primary=msg,
             secondary=secondary,
-            image="dialog-question",
+            type=Gtk.MessageType.QUESTION,
             proceed_button=Gtk.STOCK_YES,
             cancel_button=Gtk.STOCK_NO)
         

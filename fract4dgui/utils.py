@@ -31,7 +31,7 @@ def idle_wrapper(callable, *args):
 def idle_add(callable, *args):
     """A wrapper around GObject.idle_add which wraps the callback in
     threads_enter/threads_leave if required"""
-    GObject.idle_add(idle_wrapper, callable, *args)
+    GLib.idle_add(idle_wrapper, callable, *args)
 
 def input_add(fd,cb):
     return GLib.io_add_watch(fd, GLib.PRIORITY_DEFAULT, GLib.IO_IN | GLib.IO_HUP | GLib.IO_PRI, cb)
