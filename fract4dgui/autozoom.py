@@ -1,44 +1,40 @@
 # whimsical feature to zoom in search of interesting items
 
 import random
-import operator
 
 from gi.repository import Gtk
 
 from . import dialog
 
-def show_autozoom(parent,f):
-    AutozoomDialog.show(parent,f)
-    
 class AutozoomDialog(dialog.T):
     def __init__(self,main_window,f):
         dialog.T.__init__(
             self,
             _("Autozoom"),
             main_window,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
-            destroy_with_parent=True
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         )
 
         self.f = f
         
-        self.table = Gtk.Table(n_rows=2,n_columns=2)
-        self.vbox.add(self.table)
+        table = Gtk.Grid()
+        table.set_column_spacing(5)
+        table.set_row_spacing(5)
+        self.vbox.add(table)
         
         self.zoombutton = Gtk.ToggleButton(label=_("Start _Zooming"))
         self.zoombutton.set_tooltip_text(_("Zoom into interesting areas automatically"))
         self.zoombutton.set_use_underline(True)
         self.zoombutton.connect('toggled',self.onZoomToggle)
         f.connect('status-changed',self.onStatusChanged)
-
-        self.table.attach(self.zoombutton,0,2,0,1,Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
+        table.attach(self.zoombutton,0,0,2,1)
 
         self.minsize = 1.0E-13 # FIXME, should calculate this better
 
         self.minsize_entry = Gtk.Entry()
         self.minsize_entry.set_tooltip_text(_("Stop zooming when size of fractal is this small"))
         minlabel = Gtk.Label(label=_("_Min Size"))
-        self.table.attach(minlabel,0,1,1,2,0,0,2,2)
+        table.attach(minlabel,0,1,1,1)
         minlabel.set_use_underline(True)
         minlabel.set_mnemonic_widget(self.minsize_entry)
 
@@ -55,14 +51,9 @@ class AutozoomDialog(dialog.T):
         self.connect('focus-out-event',change_entry)
         set_entry()
 
-        self.table.attach(self.minsize_entry,
-                          1,2,1,2,
-                          Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL, 0, 2, 2)
-
-    def show(parent, f):
-        dialog.T.reveal(AutozoomDialog, True, parent, None, f)
-
-    show = staticmethod(show)
+        table.attach(self.minsize_entry,1,1,1,1)
+        
+        self.vbox.show_all()
 
     def onResponse(self,widget,id):
         self.zoombutton.set_active(False)
@@ -108,5 +99,3 @@ class AutozoomDialog(dialog.T):
                     self.select_quadrant_and_zoom()
                 else:
                     self.zoombutton.set_active(False)
-                
-    

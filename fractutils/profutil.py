@@ -6,23 +6,22 @@
 import sys
 import subprocess
 
-from . import fc
-from . import fractal
+from fract4d import fc, fractal
 
 class PC(fc.Compiler):
     def __init__(self):
         fc.Compiler.__init__(self)
         
         self.cfiles = [
-        "profharness.cpp",
-        "c/cmap.cpp",
-        "c/image.cpp",
-        "c/fractFunc.cpp",
-        "c/fract_stdlib.cpp",
-        "c/MTFractWorker.cpp",
-        "c/pointFunc.cpp",
-        "c/STFractWorker.cpp",
-        "c/imageWriter.cpp"
+            "profharness.cpp",
+            "c/cmap.cpp",
+            "c/image.cpp",
+            "c/fractFunc.cpp",
+            "c/fract_stdlib.cpp",
+            "c/MTFractWorker.cpp",
+            "c/pointFunc.cpp",
+            "c/STFractWorker.cpp",
+            "c/imageWriter.cpp"
         ]
 
 def main(args):

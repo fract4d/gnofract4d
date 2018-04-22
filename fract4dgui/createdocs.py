@@ -6,6 +6,7 @@
 from xml.sax.saxutils import escape
 import os
 import re
+from unittest.mock import patch
 
 import gettext
 os.environ.setdefault('LANG', 'en')
@@ -86,12 +87,14 @@ class CommandPrinter:
         print('</para>', file=self.f)
 
         print('</sect2>', file=self.f)
-        
-def main(outfile):
+
+@patch('fract4dgui.main_window.MainWindow.__init__')
+def main(outfile, mw_init):
     out = open(outfile,"w")
     printer = CommandPrinter(out)
 
-    mw = main_window.MainWindow(["../formulas"])
+    mw_init.return_value = None
+    mw = main_window.MainWindow()
 
     menu_items = mw.get_all_actions()
     for item in menu_items:
@@ -118,6 +121,7 @@ def main(outfile):
     printer.add_mouse("Control-Right-click", "Zoom out more quickly.")
     
     printer.output_all()
+    out.close()
     
 if __name__ == '__main__':
     main('../doc/gnofract4d-manual/C/commands.xml')

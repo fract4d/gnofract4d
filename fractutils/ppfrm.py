@@ -4,23 +4,21 @@
 
 # std modules
 import sys
-import os
 import re
 
 # kid
 import elementtree.ElementTree
-from elementtree.ElementTree import Element
 import kid
 kid.enable_import()
 
-#kid templates
-import frm_docbook 
+# kid templates
+import frm_docbook
 
 # PLY
-import lex
+from fract4d import lex
 
 # my code
-from . import fractlexer
+from fract4d import fractlexer
 
 def output_frm(toks,outbase, nfrms):
     if toks != []:
@@ -99,4 +97,3 @@ if __name__ == '__main__':
         main(sys.argv[1], sys.argv[2])
     else:
         main(sys.argv[1])
-

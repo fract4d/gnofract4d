@@ -1,20 +1,13 @@
 #!/usr/bin/env python3
 
 import unittest
-import string
-import sys
 import os.path
 import struct
 import math
-import types
 
 import testbase
 
-from fract4d import fc
-from fract4d import fract4dc
-from fract4d import gradient
-from fract4d import image
-from fract4d import messages
+from fract4d import fract4dc, gradient, image, messages
 
 from test_fractalsite import FractalSite
 
@@ -23,18 +16,13 @@ pos_params = [
     4.0,
     0.0, 0.0, 0.0, 0.0,0.0, 0.0
     ]
-class Test(testbase.TestBase):
+class Test(testbase.ClassSetup):
     def compileMandel(self):
-        self.compiler.add_func_path('../formulas')
-        self.compiler.load_formula_file("gf4d.frm")
         f = self.compiler.get_formula("gf4d.frm","Mandelbrot")
         cg = self.compiler.compile(f)
-        self.compiler.generate_code(f,cg,"test-pf.so")
+        self.compiler.generate_code(f,cg,Test.pf_name)
 
     def compileColorMandel(self):
-        self.compiler.add_func_path('../formulas')
-        self.compiler.load_formula_file("gf4d.frm")
-        self.compiler.load_formula_file("gf4d.cfrm")
         cf1 = self.compiler.get_formula("gf4d.cfrm","default","cf0")
         self.assertEqual(len(cf1.errors),0)
         self.compiler.compile(cf1)
@@ -52,13 +40,9 @@ class Test(testbase.TestBase):
         return self.compiler.compile_all(f,cf1,cf2,[])
 
     def compileColorDiagonal(self):
-        self.compiler.add_func_path('../formulas')
-        self.compiler.load_formula_file("test.frm")
-        self.compiler.load_formula_file("gf4d.cfrm")
         cf1 = self.compiler.get_formula("gf4d.cfrm","default","cf0")
         self.assertEqual(len(cf1.errors),0)
 
-        
         cf2 = self.compiler.get_formula("gf4d.cfrm","zero","cf1")
         self.assertEqual(len(cf2.errors),0)
         self.compiler.compile(cf2)
@@ -72,9 +56,15 @@ class Test(testbase.TestBase):
 
         return outputfile
     
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.pf_name = os.path.join(cls.tmpdir.name, "test-pf.so")
+
     def setUp(self):
-        compiler = fc.Compiler()
-        self.compiler = compiler
+        self.compiler = Test.g_comp
+        self.compiler.load_formula_file("gf4d.frm")
+        self.compiler.load_formula_file("gf4d.cfrm")
         self.gradient = gradient.Gradient()
         
     def tearDown(self):
@@ -82,7 +72,7 @@ class Test(testbase.TestBase):
 
     def disabled_testGetDefaults(self):
         self.compileMandel()
-        handle = fract4dc.pf_load("./test-pf.so")
+        handle = fract4dc.pf_load(Test.pf_name)
         pfunc = fract4dc.pf_create(handle)
 
         ret = fract4dc.pf_defaults(
@@ -93,7 +83,7 @@ class Test(testbase.TestBase):
 
     def testBasic(self):
         self.compileMandel()
-        handle = fract4dc.pf_load("./test-pf.so")
+        handle = fract4dc.pf_load(Test.pf_name)
         pfunc = fract4dc.pf_create(handle)
 
         fract4dc.pf_init(pfunc,pos_params, [self.gradient, 4.0, 0.5])
@@ -363,10 +353,10 @@ class Test(testbase.TestBase):
         self.assertTrue(siteobj.status_list[0]== 1 and \
                          siteobj.status_list[-1]== 0)
 
-        self.assertTrue(not os.path.exists("test.tga"))
-        im.save("test.tga")
-        self.assertTrue(os.path.exists("test.tga"))
-        os.remove('test.tga')
+        test1_tga = os.path.join(Test.tmpdir.name, "test1.tga")
+        self.assertTrue(not os.path.exists(test1_tga))
+        im.save(test1_tga)
+        self.assertTrue(os.path.exists(test1_tga))
 
         # fate of all non-aa pixels should be known, aa-pixels unknown
         fate_buf = im.fate_buffer()
@@ -438,10 +428,10 @@ class Test(testbase.TestBase):
         self.assertTrue(siteobj.status_list[0]== 1 and \
                          siteobj.status_list[-1]== 0)
 
-        self.assertTrue(not os.path.exists("test.tga"))
-        im.save("test.tga")
-        self.assertTrue(os.path.exists("test.tga"))
-        os.remove('test.tga')
+        test2_tga = os.path.join(Test.tmpdir.name, "test2.tga")
+        self.assertTrue(not os.path.exists(test2_tga))
+        im.save(test2_tga)
+        self.assertTrue(os.path.exists(test2_tga))
 
         # fate of all non-aa pixels should be known, aa-pixels unknown
         fate_buf = im.fate_buffer()
@@ -570,7 +560,7 @@ class Test(testbase.TestBase):
                 render_type=0,
                 image=im._img,
                 site=site,
-                async=True)
+                asynchronous=True)
 
             nrecved = 0
             while True:
@@ -692,13 +682,13 @@ class Test(testbase.TestBase):
 
         #print "2nd pass %s" % is_dirty
         #self.print_fates(image,xsize,ysize)
-        im.save("/tmp/pass2%d.tga" % is_dirty)
+        im.save(os.path.join(Test.tmpdir.name, "pass2%d.tga" % is_dirty))
         
         return [] # fract4dc.image_buffer(image)
         
     def testMiniTextRender(self):
         self.compileMandel()
-        handle = fract4dc.pf_load("./test-pf.so")
+        handle = fract4dc.pf_load(Test.pf_name)
         pfunc = fract4dc.pf_create(handle)
         fract4dc.pf_init(pfunc,pos_params,[0,4.0])
         image = []
@@ -729,7 +719,7 @@ class Test(testbase.TestBase):
 
     def testBadInit(self):
         self.compileMandel()
-        handle = fract4dc.pf_load("./test-pf.so")
+        handle = fract4dc.pf_load(Test.pf_name)
         pfunc = fract4dc.pf_create(handle)
         self.assertRaises(TypeError,fract4dc.pf_init,pfunc,pos_params,72)
         self.assertRaises(ValueError,fract4dc.pf_init,7,pos_params, [0.4])
@@ -741,13 +731,13 @@ class Test(testbase.TestBase):
 
     def testIntInit(self):
         self.compileMandel()
-        handle = fract4dc.pf_load("./test-pf.so")
+        handle = fract4dc.pf_load(Test.pf_name)
         pfunc = fract4dc.pf_create(handle)
         fract4dc.pf_init(pfunc, pos_params, [1,2,3,4])
         
     def testBadCalc(self):
         self.compileMandel()
-        handle = fract4dc.pf_load("./test-pf.so")
+        handle = fract4dc.pf_load(Test.pf_name)
         pfunc = fract4dc.pf_create(handle)
         fract4dc.pf_init(pfunc, pos_params, [])
         self.assertRaises(ValueError,fract4dc.pf_calc,0,[1.0,2.0,3.0,4.0],100)
@@ -756,7 +746,7 @@ class Test(testbase.TestBase):
 
     def testShutdownOrder(self):
         self.compileMandel()
-        handle = fract4dc.pf_load("./test-pf.so")
+        handle = fract4dc.pf_load(Test.pf_name)
         pfunc = fract4dc.pf_create(handle)
         pfunc2 = fract4dc.pf_create(handle)
         handle = None
@@ -1036,11 +1026,9 @@ class Test(testbase.TestBase):
                 
                 i += 1
 
-        
+
 def suite():
     return unittest.makeSuite(Test,'test')
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')
-
-

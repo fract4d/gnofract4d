@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
+
 import re
 import base64
-import zlib
 
 ifdef_re = re.compile(r'\s*\$ifdef(\s+(?P<var>[a-z][a-z0-9_]*))?',
                       re.IGNORECASE)
@@ -88,7 +88,7 @@ class T:
         continuations = 0
         
         self.currently_true = True
-        for line in lines:                
+        for line in lines:
             pass_through = False
 
             if last_was_continue:
@@ -154,7 +154,7 @@ class T:
             i += 1
             
         if self.ifdef_stack != []:
-            raise Error("%d: $IFDEF without $ENDIF" % \
+            raise Error("%d: $IFDEF without $ENDIF" %
                         self.ifdef_stack[-1].line_num)
 
         self._out = "".join(out_lines)

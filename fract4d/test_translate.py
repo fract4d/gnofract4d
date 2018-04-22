@@ -2,21 +2,13 @@
 
 # test harness for translate module
 
-import string
 import unittest
-import types
 import pickle
-import sys
 
 import testbase
 
-from fract4d import absyn
-from fract4d import translate
-from fract4d import fractparser
-from fract4d import fractlexer
-from fract4d import fracttypes
-from fract4d import ir
-from fract4d import stdlib
+from fract4d import (absyn, translate, fractparser, fractlexer, fracttypes, ir,
+                     stdlib)
 
 class Test(testbase.TestBase):
     def setUp(self):

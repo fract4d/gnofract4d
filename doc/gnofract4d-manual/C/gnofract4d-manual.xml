@@ -344,17 +344,16 @@ keyframe will stay in video (<guilabel>stopped for</guilabel>) and
 interpolation type between several possibilities. When you hit
 <guibutton>Render</guibutton> button, Director will render all frames
 and put them in directory you selected and then it will try to create
-video using <ulink
-url="http://www.transcoding.org/"><emphasis>transcode</emphasis></ulink>
-tool.  </para>
+a video using <ulink url="https://www.ffmpeg.org/">
+<emphasis>FFmpeg</emphasis></ulink>.</para>
 
 <para>
 Tips:
 <itemizedlist>
 
 <listitem><para>
-In order to end up with video file, not just a bunch of images, you need to have
-<emphasis>transcode</emphasis> tool compiled with support for ImageMagick.
+In order to end up with a video file, not just a bunch of images, you need to have
+<emphasis>ffmpeg</emphasis> compiled with support for zlib and libvpx.
 </para></listitem>
 
 <listitem><para>
@@ -1154,7 +1153,7 @@ the GTK main loop.
 <para>
 The way out of this is that the additional threads live only in the
 C++ code, where they are invisible to the Python code and GTK. When
-<function>pycalc</function> is called with async=True, it spawns a
+<function>pycalc</function> is called with asynchronous=True, it spawns a
 thread to do the calculation, which may in turn spawn more workers if
 we want multiple threads. These all write to the image buffer and
 report back what they're doing by writing messages into a pipe. This
@@ -1181,7 +1180,8 @@ will happen. </para> </warning>
 <title>Reporting Bugs</title> 
 
 <para>
-<emphasis>Please</emphasis> report any bugs you encounter, via <ulink>https://github.com/edyoung/gnofract4d/issues</ulink>  </para>
+  Please report any bugs you encounter, via <ulink>https://github.com/edyoung/gnofract4d/issues</ulink>
+</para>
 
 </sect2>
 
@@ -1199,7 +1199,7 @@ https://github.com/edyoung/gnofract4d</ulink>.
 <title>Credits and copyright</title>
 
 <para>
-&gf4d; is Copyright 1999-2017 Edwin Young <ulink
+&gf4d; is Copyright 1999-2018 Edwin Young <ulink
 url="mailto:edwin@bathysphere.org">(edwin@bathysphere.org)
 </ulink>
 , and is distributed under the <emphasis>BSD
@@ -1235,7 +1235,7 @@ implementation does not share any code with those programs.
 <para>
 The &gf4d; distribution contains palette (.map) files by a number of
 authors which were originally distributed with <ulink
-url="http://spanky.triumf.ca/">&fractint;</ulink> under somewhat murky
+url="https://fractint.org/">&fractint;</ulink> under somewhat murky
 licensing conditions. It also contains a copy of "standard.ucl",
 originally distributed with <ulink
 url="http://www.ultrafractal.com/">&ultrafractal;</ulink>, by kind
@@ -1254,7 +1254,7 @@ LGPL license.  </para>
 
 <para>
 <filename>lex.py</filename> and <filename>yacc.py</filename> come from
-the PLY package, and are distributed under the LGPL license. </para>
+the PLY package, and are distributed under the BSD license.</para>
 
 <para>
 Some of the menu icons are taken or adapted from

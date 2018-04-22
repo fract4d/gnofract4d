@@ -7,7 +7,7 @@ import unittest
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import fracttypes
+from fract4d import fracttypes, function
 
 class Test(unittest.TestCase):
     def testTypeCtor(self):
@@ -203,7 +203,7 @@ class Test(unittest.TestCase):
             v.init_val())
 
     def testFunc(self):
-        f = fracttypes.Func(
+        f = function.Func(
             [fracttypes.Int,fracttypes.Int], fracttypes.Int, "wibble", pos = 7)
         self.assertEqual([fracttypes.Int,fracttypes.Int], f.args)
         self.assertEqual(fracttypes.Int,f.ret)

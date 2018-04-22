@@ -6,7 +6,6 @@
 # ------------------------------------------------------------
 import sys
 import re
-import string
 
 from . import lex
 
@@ -26,13 +25,13 @@ tokens = (
    
    'TIMES',
    'DIVIDE',
-   'MOD', 
+   'MOD',
    
-   'LPAREN', 
-   'RPAREN', 
+   'LPAREN',
+   'RPAREN',
    'LARRAY',
    'RARRAY',
-   'MAG', 
+   'MAG',
    'POWER',
 
    'BOOL_NEG',
@@ -82,20 +81,20 @@ tokens = (
 )
 
 # lookup table to convert IDs into keywords
-keywords = [ "else",
-             "elseif",
-             "endfunc",
-             "endheading",
-             "endif",
-             "endparam",
-             "endwhile",
-             "func",
-             "heading",
-             "if",
-             "param",
-             "repeat",
-             "until",
-             "while"]
+keywords = ["else",
+            "elseif",
+            "endfunc",
+            "endheading",
+            "endif",
+            "endparam",
+            "endwhile",
+            "func",
+            "heading",
+            "if",
+            "param",
+            "repeat",
+            "until",
+            "while"]
 
 types = ["bool",
          "color",
@@ -136,7 +135,7 @@ t_GT      = r'>'
 t_GTE     = r'>='
 t_ASSIGN  = r'='
 t_COMMA   = r','
-t_FORM_END= r'\}' 
+t_FORM_END= r'\}'
 
 # handle stupid "comment" formula blocks specially
 # match ; and Comment because some uf repository files do this
@@ -144,7 +143,7 @@ def t_COMMENT_FORMULA(t):
     r';?[Cc]omment\s*{[^}]*}'
     newlines = re.findall(r'\n',t.value)
     t.lexer.lineno += len(newlines)
-    pass 
+    pass
 
 # may seem weird, but this includes the starting {
 # this is to ensure that the generous pattern match doesn't
@@ -154,14 +153,14 @@ def t_FORM_ID(t):
     r'[^\r\n;"\{]+{'
     # remove trailing whitespace and {
     if not keep_all:
-        t.value = re.sub("\s*{$", "", t.value)    
+        t.value = re.sub("\s*{$", "", t.value)
     return t
 
 def t_NUMBER(t):
     r'(?=\d|\.\d)\d*(\.\d*)?([Ee]([+-]?\d+))?i?'
-    if t.value[-1]=="i": # a complex constant
+    if t.value[-1] == "i":  # a complex constant
         t.value = t.value[0:-1]
-        t.type = "COMPLEX" 
+        t.type = "COMPLEX"
 
     return t
 
@@ -194,7 +193,7 @@ def t_SECT_STM(t):
 def t_ID(t):
     r'[@#]?[a-zA-Z_][a-zA-Z0-9_]*'
     global lookup
-    lookfor = t.value.lower() # case insensitive lookup
+    lookfor = t.value.lower()  # case insensitive lookup
     if lookfor in lookup:
         t.type = lookup[lookfor]
     return t
@@ -211,20 +210,20 @@ def t_COMMENT(t):
     
 def t_NEWLINE(t):
     r'\r*\n'
-    t.lexer.lineno += 1 # track line numbers
+    t.lexer.lineno += 1  # track line numbers
     return t
 
 def t_STRING(t):
-    r'"[^"]*"' # embedded quotes not supported in UF?
+    r'"[^"]*"'  # embedded quotes not supported in UF?
     if not keep_all:
-        t.value = re.sub(r'(^")|("$)',"",t.value) # remove trailing and leading "
+        t.value = re.sub(r'(^")|("$)',"",t.value)  # remove trailing and leading "
         newlines = re.findall(r'\n',t.value)
         t.lexer.lineno += len(newlines)
-        t.value = re.sub(r'\\\r?\n[ \t\v]*',"",t.value) # hide \-split lines
+        t.value = re.sub(r'\\\r?\n[ \t\v]*',"",t.value)  # hide \-split lines
     return t
     
 # A string containing ignored characters (spaces and tabs)
-t_ignore  = ' \t\r'
+t_ignore = ' \t\r'
 
 # Error handling rule
 def t_error(t):

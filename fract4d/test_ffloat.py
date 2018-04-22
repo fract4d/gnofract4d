@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
 import unittest
-import types
 
 import testbase
 
 from fract4d import ffloat
-
 from fract4d.ffloat import Float, PrecisionError
 
 if ffloat.has_bigmath:

@@ -1,25 +1,12 @@
 #!/usr/bin/env python3
 
-import string
 import io
 import unittest
 import copy
-import sys
 
-if sys.path[1] != "..": sys.path.insert(1, "..")
+import testbase
 
-from fract4d import formsettings
-from fract4d import fc
-from fract4d import gradient
-from fract4d import fracttypes
-from fract4d import fctutils
-
-# centralized to speed up tests
-g_comp = fc.Compiler()
-g_comp.add_func_path("../formulas")
-g_comp.load_formula_file("gf4d.frm")
-g_comp.load_formula_file("test.frm")
-g_comp.load_formula_file("gf4d.cfrm")
+from fract4d import formsettings, gradient, fracttypes, fctutils
 
 g_grad = gradient.Gradient()
 
@@ -31,9 +18,16 @@ class Parent:
         self.dirty = True
         self.changes += 1
     
-class Test(unittest.TestCase):
+class Test(testbase.ClassSetup):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.g_comp.load_formula_file("gf4d.frm")
+        cls.g_comp.load_formula_file("test.cfrm")
+        cls.g_comp.load_formula_file("gf4d.cfrm")
+
     def testCreate(self):
-        fs = formsettings.T(g_comp)
+        fs = formsettings.T(Test.g_comp)
 
         self.assertEqual(None,fs.formula)
         self.assertEqual(None,fs.funcName)
@@ -42,7 +36,7 @@ class Test(unittest.TestCase):
         self.assertEqual(False,fs.dirty)
 
         p = Parent()
-        fs2 = formsettings.T(g_comp,p)
+        fs2 = formsettings.T(Test.g_comp,p)
 
         fs2.changed()
         self.assertEqual(1,p.changes)
@@ -50,7 +44,7 @@ class Test(unittest.TestCase):
         self.assertEqual(True, p.dirty)
         
     def testSetFormula(self):
-        fs = formsettings.T(g_comp)
+        fs = formsettings.T(Test.g_comp)
         fs.set_formula("gf4d.frm","Mandelbrot",g_grad)
         
         self.assertEqual("gf4d.frm",fs.funcFile)
@@ -59,7 +53,7 @@ class Test(unittest.TestCase):
         self.assertNotEqual([], fs.params)
         
     def testNames(self):
-        fs = formsettings.T(g_comp)
+        fs = formsettings.T(Test.g_comp)
         fs.set_formula("gf4d.frm","Mandelbrot",g_grad)
 
         names = fs.func_names()
@@ -71,7 +65,7 @@ class Test(unittest.TestCase):
         self.assertEqual(["@_gradient", "@bailout"],names)
 
     def testParamsOfType(self):
-        fs = formsettings.T(g_comp)
+        fs = formsettings.T(Test.g_comp)
         fs.set_formula("test.frm","test_all_types",g_grad)
 
         params = fs.params_of_type(fracttypes.Complex)
@@ -81,25 +75,25 @@ class Test(unittest.TestCase):
         self.assertEqual(params, ['t__a_im'])
         
     def testFuncValue(self):
-        fs = formsettings.T(g_comp)
+        fs = formsettings.T(Test.g_comp)
         fs.set_formula("gf4d.frm","Mandelbrot",g_grad)
 
         self.assertEqual("cmag",fs.get_func_value("@bailfunc"))
         
     def testNoSuchFormula(self):
-        fs = formsettings.T(g_comp)
+        fs = formsettings.T(Test.g_comp)
         self.assertRaises(ValueError, fs.set_formula,"gf4d.frm","no_such_formula", g_grad)
 
     def testNoSuchFile(self):
-        fs = formsettings.T(g_comp)
+        fs = formsettings.T(Test.g_comp)
         self.assertRaises(IOError, fs.set_formula,"no_such_file.frm","Mandelbrot", g_grad)
 
     def testErroneousFormula(self):
-        fs = formsettings.T(g_comp)
+        fs = formsettings.T(Test.g_comp)
         self.assertRaises(ValueError, fs.set_formula,"test.frm","test_error", g_grad)
 
     def testCopy(self):
-        fs1 = formsettings.T(g_comp)
+        fs1 = formsettings.T(Test.g_comp)
         fs1.set_formula("gf4d.frm","Mandelbrot",g_grad)
 
         fs2 = copy.copy(fs1)
@@ -112,7 +106,7 @@ class Test(unittest.TestCase):
         self.assertEqual(fs2.paramtypes, [fracttypes.Gradient, fracttypes.Float])
 
     def testSetFuncs(self):
-        fs1 = formsettings.T(g_comp)
+        fs1 = formsettings.T(Test.g_comp)
         fs1.set_formula("gf4d.frm","Mandelbrot",g_grad)
 
         # should return true if it actually changed
@@ -120,7 +114,7 @@ class Test(unittest.TestCase):
         self.assertEqual(False,fs1.set_named_func("@bailfunc", "manhattanish"))
 
     def testSetParams(self):
-        fs1 = formsettings.T(g_comp)
+        fs1 = formsettings.T(Test.g_comp)
         fs1.set_formula("gf4d.frm","Mandelbrot",g_grad)
 
         self.assertEqual(True, fs1.set_param(1,"5.0"))
@@ -129,19 +123,19 @@ class Test(unittest.TestCase):
         # fixme, should be more extensive testing
 
     def testGetNamedParamValue(self):
-        fs1 = formsettings.T(g_comp)
+        fs1 = formsettings.T(Test.g_comp)
         fs1.set_formula("gf4d.frm","Mandelbrot",g_grad)
 
         self.assertEqual(4.0,fs1.get_named_param_value("@bailout"))
 
     def testMutate(self):
-        fs1 = formsettings.T(g_comp)
+        fs1 = formsettings.T(Test.g_comp)
         fs1.set_formula("gf4d.frm","Mandelbrot",g_grad)
 
         fs1.mutate(0.0,1.0)
 
     def testNudge(self):
-        fs1 = formsettings.T(g_comp)
+        fs1 = formsettings.T(Test.g_comp)
         fs1.set_formula("test.frm","test_defaults",g_grad)
 
         (a,b) = (fs1.params[1],fs1.params[2])
@@ -155,11 +149,11 @@ class Test(unittest.TestCase):
         self.assertEqual(b + 2 * 0.025, fs1.params[2])
 
     def testAllTypesBasic(self):
-        fs1 = formsettings.T(g_comp)
+        fs1 = formsettings.T(Test.g_comp)
         fs1.set_formula("test.frm","test_all_types",g_grad)
         
     def testInitValue(self):
-        fs1 = formsettings.T(g_comp)
+        fs1 = formsettings.T(Test.g_comp)
         fs1.set_formula("test.frm","test_all_types",g_grad)
 
         self.assertEqual("1",fs1.initvalue("@b"))
@@ -174,7 +168,7 @@ class Test(unittest.TestCase):
 
         
     def testSetNamedParam(self):
-        fs1 = formsettings.T(g_comp)
+        fs1 = formsettings.T(Test.g_comp)
         fs1.set_formula("test.frm","test_all_types",g_grad)
 
         fs1.set_named_param("@b","True")
@@ -202,14 +196,14 @@ Name: burning_coals
 """)
         
     def testSetNamedItem(self):
-        fs1 = formsettings.T(g_comp)
+        fs1 = formsettings.T(Test.g_comp)
         fs1.set_formula("gf4d.frm","Mandelbrot",g_grad)
 
         fs1.set_named_item("@bailfunc","manhattan")
         fs1.set_named_item("@bailout","7.0")
 
     def testSetParamBag(self):
-        fs1 = formsettings.T(g_comp,None,"cf0")
+        fs1 = formsettings.T(Test.g_comp,None,"cf0")
         fs1.set_formula("standard.ucl","DirectOrbitTraps",g_grad)
         
         bag = fctutils.ParamBag()

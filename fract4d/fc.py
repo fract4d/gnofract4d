@@ -31,16 +31,8 @@ import hashlib
 import re
 import copy
 
-from . import fractconfig
-from . import fractparser
-from . import fractlexer
-from . import translate
-from . import codegen
-from . import fracttypes
-from . import absyn
-from . import preprocessor
-from . import cache
-from . import gradient
+from . import (fractparser, fractlexer, translate, codegen, fracttypes, absyn,
+               preprocessor, cache, gradient)
 
 class FormulaTypes:
     FRACTAL = 0
@@ -49,10 +41,10 @@ class FormulaTypes:
     GRADIENT = 3
     NTYPES = 4
 
-    GRAD_UGR=0
-    GRAD_MAP=1
-    GRAD_GGR=2
-    GRAD_CS=3
+    GRAD_UGR = 0
+    GRAD_MAP = 1
+    GRAD_GGR = 2
+    GRAD_CS = 3
     matches = [
         re.compile(r'(\.frm\Z)|(\.ufm\Z)', re.IGNORECASE),
         re.compile(r'(\.cfrm\Z)|(\.ucl\Z)', re.IGNORECASE),
@@ -61,7 +53,7 @@ class FormulaTypes:
         ]
     
     # indexed by FormulaTypes above
-    extensions = [ "frm", "cfrm", "uxf", "ggr", "pal"]
+    extensions = ["frm", "cfrm", "uxf", "ggr", "pal"]
 
     @staticmethod
     def extension_from_type(t):
@@ -72,7 +64,7 @@ class FormulaTypes:
         if FormulaTypes.matches[FormulaTypes.FRACTAL].search(filename):
             return translate.T
         elif FormulaTypes.matches[FormulaTypes.COLORFUNC].search(filename):
-            return translate.ColorFunc        
+            return translate.ColorFunc
         elif FormulaTypes.matches[FormulaTypes.TRANSFORM].search(filename):
             return translate.Transform
         elif FormulaTypes.matches[FormulaTypes.GRADIENT].search(filename):
@@ -140,13 +132,11 @@ class FormulaFile:
         return names
     
 class Compiler:
-    def __init__(self):
+    def __init__(self, userConfig):
         self.parser = fractparser.parser
         self.lexer = fractlexer.lexer
         self.c_code = ""
         self.path_lists = [ [], [], [], [] ]
-        self.cache = cache.T()
-        self.init_cache()
         if 'win' != sys.platform[:3]:
             self.compiler_name = "gcc"
             self.flags = "-fPIC -DPIC -g -O3 -shared"
@@ -157,6 +147,9 @@ class Compiler:
             self.flags = "/EHsc /Gd /nologo /W3 /LD /MT /TP /DWIN32 /DWINDOWS /D_USE_MATH_DEFINES"
             self.output_flag = "/Fe"
             self.libs = "/link /LIBPATH:\"%s/fract4d\" fract4d_stdlib.lib" % sys.path[0] # /DELAYLOAD:fract4d_stdlib.pyd DelayImp.lib
+        self.update_from_prefs(userConfig)
+        self.cache = cache.T(userConfig.get("general","cache_dir"))
+        self.init_cache()
         self.tree_cache = {}
         self.leave_dirty = False
         self.next_inline_number = 0
@@ -255,10 +248,10 @@ class Compiler:
         t = translate.T(absyn.Formula("",[],-1))
         cg = self.compile(t)
         t.merge(formula,"")
-        outputfile = os.path.abspath(self.generate_code(t, cg))        
+        outputfile = os.path.abspath(self.generate_code(t, cg))
         return outputfile
         
-    def compile_all(self,formula,cf0,cf1,transforms,options={}):        
+    def compile_all(self,formula,cf0,cf1,transforms,options={}):
         self.compile(formula,options)
         self.compile(cf0,options)
         self.compile(cf1,options)
@@ -270,7 +263,7 @@ class Compiler:
         t = translate.T(absyn.Formula("",[],-1))
         cg = self.compile(t,options)
         t.merge(formula,"")
-        t.merge(cf0,"cf0_")        
+        t.merge(cf0,"cf0_")
         t.merge(cf1,"cf1_")
 
         for transform in transforms:
@@ -285,7 +278,7 @@ class Compiler:
             dir = os.path.dirname(filename)
             if self.path_lists[type].count(dir) == 0:
                 # add directory to search path
-                self.path_lists[type].append(dir)            
+                self.path_lists[type].append(dir)
             return filename
 
         filename = os.path.basename(filename)
@@ -294,7 +287,7 @@ class Compiler:
             if os.path.exists(f):
                 return f
 
-        return self.last_chance(filename)        
+        return self.last_chance(filename)
 
     def add_endlines(self,result,final_line):
         "Add info on which is the final source line of each formula"
@@ -331,12 +324,12 @@ class Compiler:
     
     def load_formula_file(self, filename):
         try:
-            type = FormulaTypes.guess_formula_type_from_filename(filename)            
+            type = FormulaTypes.guess_formula_type_from_filename(filename)
             filename = self.find_file(filename,type)
-            mode= "r"
-            if FormulaTypes.is_binary_filetype(filename): mode = "rb"                
+            mode = "r"
+            if FormulaTypes.is_binary_filetype(filename): mode = "rb"
             f = open(filename, mode)
-            s = f.read() # read in a whole file
+            s = f.read()  # read in a whole file
             f.close()
             basefile = os.path.basename(filename)
             mtime = os.stat(filename)[stat.ST_MTIME]
@@ -352,7 +345,7 @@ class Compiler:
                 formulas = self.parse_file(s)
 
             ff = FormulaFile(formulas,s,mtime,filename)
-            self.files[basefile] = ff 
+            self.files[basefile] = ff
 
             return ff
         except Exception as err:
@@ -362,7 +355,7 @@ class Compiler:
     def out_of_date(self,filename):
         basefile = os.path.basename(filename)
         ff = self.files.get(basefile)
-        if not ff:            
+        if not ff:
             self.load_formula_file(filename)
             ff = self.files.get(basefile)
         return ff.out_of_date()
@@ -375,7 +368,7 @@ class Compiler:
             ff = self.files.get(basefile)
         elif ff.out_of_date():
             self.load_formula_file(filename)
-            ff = self.files.get(basefile)            
+            ff = self.files.get(basefile)
         return ff
 
     def get_formula_text(self,filename,formname):
@@ -492,9 +485,6 @@ class Compiler:
     def __del__(self):
         if not self.leave_dirty:
             self.clear_cache()
-
-instance = Compiler()
-instance.update_from_prefs(fractconfig.instance)
 
 def usage():
     print("FC : a compiler from Fractint .frm files to C code")

@@ -3,23 +3,22 @@
 # test director bean class implementation
 
 import unittest
-import sys
-import os
+import os.path
 
-if sys.path[1] != "..": sys.path.insert(1, "..")
+import testbase
 
-from fract4d import animation, fractal, fc
+from fract4d import animation
 
-# centralized to speed up tests
-g_comp = fc.Compiler()
-g_comp.add_func_path("../formulas")
-g_comp.load_formula_file("gf4d.frm")
-g_comp.load_formula_file("test.frm")
-g_comp.load_formula_file("gf4d.cfrm")
+class Test(testbase.ClassSetup):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.g_comp.load_formula_file("gf4d.frm")
+        cls.g_comp.load_formula_file("gf4d.cfrm")
+        cls.g_comp.load_formula_file("test.frm")
 
-class Test(unittest.TestCase):
     def setUp(self):
-        self.anim = animation.T(g_comp)
+        self.anim = animation.T(Test.g_comp, Test.userConfig)
 
     def tearDown(self):
         pass
@@ -29,7 +28,7 @@ class Test(unittest.TestCase):
         self.assertEqual(self.anim.get_width(),640)
         self.assertEqual(self.anim.get_height(),480)
         self.assertEqual(self.anim.get_framerate(),25)
-        self.assertEqual(self.anim.get_redblue(),True)
+        self.assertEqual(self.anim.get_redblue(),False)
         self.assertEqual(self.anim.keyframes_count(),0)
 
     def testChangeOptions(self):
@@ -115,11 +114,11 @@ class Test(unittest.TestCase):
     def testLoading(self):
         self.anim.load_animation("../testdata/animation.fcta")
         self.checkExpectedLoadedValues(self.anim)
-        self.anim.save_animation("test.fcta")
-        anim2 = animation.T(g_comp)
-        anim2.load_animation("test.fcta")
+        test_name = os.path.join(Test.tmpdir.name, "test.fcta")
+        self.anim.save_animation(test_name)
+        anim2 = animation.T(Test.g_comp, Test.userConfig)
+        anim2.load_animation(test_name)
         self.checkExpectedLoadedValues(anim2)
-        os.remove("test.fcta")
 
     def testCreateList(self):
         self.anim.add_keyframe("f1.fct", 10, 4, animation.INT_LOG)

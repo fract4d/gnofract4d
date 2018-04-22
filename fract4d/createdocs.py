@@ -3,10 +3,9 @@
 # create a DocBook XML document documenting the standard library
 
 import sys
-from xml.sax.saxutils import escape, quoteattr
+from xml.sax.saxutils import escape
 
-from . import fracttypes
-from . import fsymbol
+from . import fracttypes, fsymbol
 
 def strOfType(t):
     return fracttypes.strOfType(t).capitalize()
@@ -46,14 +45,12 @@ class SymbolPrinter:
         print('%s</entry>' % strOfType(func.ret), file=self.f)
 
     def output_function(self,val):
-        nrows = len(val)
-
         self.output_overload(val[0])
         
         for func in val[1:]:
-             print('</row>', file=self.f)
-             print('<row>', file=self.f)
-             self.output_overload(func)
+            print('</row>', file=self.f)
+            print('<row>', file=self.f)
+            self.output_overload(func)
         
     def output_refentry_footer(self):
         print('</row>', file=self.f)
@@ -70,7 +67,7 @@ class SymbolPrinter:
             nrows = len(val)
             self.output_refentry_header(key,val,type,nrows)
             self.output_refentry_body(val,nrows)
-            self.output_function(val)            
+            self.output_function(val)
         else:
             self.output_refentry_header(key,val,type)
             self.output_refentry_body(val)
@@ -83,7 +80,6 @@ class SymbolPrinter:
         self.output_table(self.funcs,"Functions", "function")
         self.output_table(self.vars, "Symbols", "(symbol)")
 
-        
     def output_table(self,table,name,type):
         print('<sect2 id="%s">' % name, file=self.f)
         print('<title>%s</title>' % name, file=self.f)
@@ -110,15 +106,14 @@ class SymbolPrinter:
         print('</sect2>', file=self.f)
         
 def main(outfile):
-    out = open(outfile,"w")
-    d = fsymbol.T()
-    printer = SymbolPrinter(out)
+    with open(outfile,"w") as out:
+        d = fsymbol.T()
+        printer = SymbolPrinter(out)
 
-    for k in list(d.default_dict.keys()):
-        printer.add_symbol(d.demangle(k),d[k])
+        for k in list(d.default_dict.keys()):
+            printer.add_symbol(d.demangle(k),d[k])
 
-    printer.output_all()
-    
+        printer.output_all()
+
 if __name__ == '__main__':
     main(sys.argv[1])
-    

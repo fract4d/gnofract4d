@@ -5,19 +5,8 @@ import math
 
 import testbase
 
-from fract4d import fc
-from fract4d import fractal
-from fract4d import fract4dc
-from fract4d import image
-
+from fract4d import fractal, fract4dc, image
 from fract4d.test_fractalsite import FractalSite
-
-# centralized to speed up tests
-g_comp = fc.Compiler()
-g_comp.add_func_path("../formulas")
-g_comp.load_formula_file("gf4d.frm")
-g_comp.load_formula_file("gf4d.cfrm")
-g_comp.load_formula_file("test.frm")
 
 def sum(l):
     x = 0
@@ -25,12 +14,16 @@ def sum(l):
         x += a
     return x
 
-class Test(testbase.TestBase):
-    def setUp(self):
-        global g_comp
-        self.compiler = g_comp
+class Test(testbase.ClassSetup):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.g_comp.load_formula_file("gf4d.frm")
+        cls.g_comp.load_formula_file("gf4d.cfrm")
+        cls.g_comp.load_formula_file("test.frm")
 
-        self.f = fractal.T(self.compiler)
+    def setUp(self):
+        self.f = fractal.T(Test.g_comp)
         self.f.render_type = 2
         self.f.set_formula("test.frm", "test_hypersphere")
         self.f.compile()
@@ -179,4 +172,3 @@ def suite():
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')
-

@@ -2,7 +2,6 @@
 
 import re
 
-from . import gtkfractal
 from . import undo
 
 # We eavesdrop on parameter-changed notifications from the gtkfractal
@@ -61,14 +60,14 @@ class Model:
         return "eek"
     
     def dump_history(self):
-        i=0
+        i = 0
         print("(redo,undo)")
         for he in self.seq.history:
             if i == self.seq.pos:
                 print("-->", end=' ')
             else:
                 print("   ", end=' ')
-            print("(%s,%s)" % \
+            print("(%s,%s)" %
                   (self.extract_x_from_dump(he.redo_data),
                    self.extract_x_from_dump(he.undo_data)))
             i += 1

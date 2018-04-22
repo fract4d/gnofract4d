@@ -2,43 +2,27 @@
 
 # a browser to examine fractal functions
 
-from gi.repository import Gtk
+from gi.repository import Gtk, GObject
 
 from fract4d import browser_model
-
 from . import dialog, utils, gtkfractal
 
-def show(parent, f, type=browser_model.FRACTAL):
-    BrowserDialog.show(parent,f,type)
-
-def update(file=None, formula=None):
-    browser_model.instance.update(file,formula)
-
-def set_type(type):
-    browser_model.instance.set_type(type)
-
-def guess_type(file):
-    return browser_model.instance.guess_type(file)
-
 class BrowserDialog(dialog.T):
-    RESPONSE_EDIT = 1
     RESPONSE_REFRESH = 2
-    RESPONSE_COMPILE = 3
-    def __init__(self,main_window,f):
+    def __init__(self,main_window,f,type=browser_model.FRACTAL):
         dialog.T.__init__(
             self,
             _("Formula Browser"),
-            main_window,
-            (#_("Co_mpile"), BrowserDialog.RESPONSE_COMPILE,
-             Gtk.STOCK_REFRESH, BrowserDialog.RESPONSE_REFRESH,
+            None,
+            (Gtk.STOCK_REFRESH, BrowserDialog.RESPONSE_REFRESH,
              Gtk.STOCK_APPLY, Gtk.ResponseType.APPLY,
              Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
-             destroy_with_parent=True)
+                Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        )
 
         self.set_default_response(Gtk.ResponseType.OK)
 
-        self.model = browser_model.instance
+        self.model = browser_model.T(main_window.compiler)
         self.model.type_changed += self.on_type_changed
         self.model.file_changed += self.on_file_changed
         self.model.formula_changed += self.on_formula_changed
@@ -47,25 +31,20 @@ class BrowserDialog(dialog.T):
         self.formula_list = Gtk.ListStore(str)
         
         self.file_selection_changed_spec = None
+        self.formula_selection_changed_spec = None
 
         self.f = f
         self.compiler = f.compiler
 
         self.ir = None
-        self.main_window = main_window
         self.set_size_request(600,500)
         self.preview = gtkfractal.Preview(self.compiler)
         self.preview.f.auto_tolerance = False
 
         self.create_panes()
-        self.on_file_changed()
+        self.vbox.show_all()
         
-    def show(parent, f, type):
-        _browser = dialog.T.reveal(BrowserDialog,True, parent, None, f)
-        _browser.set_type(type)
-        _browser.populate_file_list()
-
-    show = staticmethod(show)
+        self.set_type(type)
 
     def onResponse(self,widget,id):
         if id == Gtk.ResponseType.CLOSE or \
@@ -74,6 +53,8 @@ class BrowserDialog(dialog.T):
             self.hide()
         elif id == Gtk.ResponseType.APPLY:
             self.onApply()
+            # prevent dialog closing if being run
+            GObject.signal_stop_emission_by_name(self, "response")
         elif id == Gtk.ResponseType.OK:
             self.onApply()
             self.hide()
@@ -100,6 +81,14 @@ class BrowserDialog(dialog.T):
 
     def on_type_changed(self):
         utils.set_selected(self.funcTypeMenu, self.model.current_type)
+        try:
+            self.set_file(self.f.forms[self.model.current_type].funcFile)
+        except IndexError:
+            pass
+        try:
+            self.set_formula(self.f.forms[self.model.current_type].funcName)
+        except IndexError:
+            pass
         self.populate_file_list()
         
     def set_type(self,type):
@@ -122,10 +111,6 @@ class BrowserDialog(dialog.T):
         column = Gtk.TreeViewColumn ('_File', renderer, text=0)
         
         self.filetreeview.append_column (column)
-
-        #renderer = gradientCellRenderer.GradientCellRenderer(self.model, self.compiler)
-        #column = Gtk.TreeViewColumn (_('_Preview'), renderer)
-        #self.filetreeview.append_column (column)
 
         return sw
 
@@ -154,10 +139,9 @@ class BrowserDialog(dialog.T):
         # re-select current file, if any
         if current_iter:
             self.filetreeview.scroll_to_cell(index)
-            if sel:
-                sel.unselect_all()
-                sel.select_iter(current_iter)
-                self.populate_formula_list(self.model.current.fname)
+            sel.unselect_all()
+            sel.select_iter(current_iter)
+            self.populate_formula_list(self.model.current.fname)
         else:
             self.formula_list.clear()
             self.formula_selection_changed(None)
@@ -165,6 +149,10 @@ class BrowserDialog(dialog.T):
         self.file_selection_changed_spec = sel.connect('changed', self.file_selection_changed)
 
     def populate_formula_list(self,fname):
+        sel = self.treeview.get_selection()
+        if self.formula_selection_changed_spec:
+            sel.disconnect(self.formula_selection_changed_spec)
+            self.formula_selection_changed_spec = None
         self.formula_list.clear()
 
         form_names = self.model.current.formulas
@@ -178,7 +166,9 @@ class BrowserDialog(dialog.T):
                 self.treeview.scroll_to_cell(i)
                 self.set_formula(formula_name)
             i += 1
-            
+
+        self.formula_selection_changed_spec = sel.connect('changed', self.formula_selection_changed)
+
     def create_formula_list(self):
         sw = Gtk.ScrolledWindow ()
         sw.set_shadow_type (Gtk.ShadowType.ETCHED_IN)
@@ -195,13 +185,7 @@ class BrowserDialog(dialog.T):
         renderer = Gtk.CellRendererText ()
         column = Gtk.TreeViewColumn (_('F_ormula'), renderer, text=0)
         self.treeview.append_column (column)
-        #renderer = gradientCellRenderer.GradientCellRenderer(self.model, self.compiler)
-        #column = Gtk.TreeViewColumn (_('_Preview'), renderer)
-        #column.add_attribute(renderer, "formname", 0)
-        #self.treeview.append_column (column)
 
-        selection = self.treeview.get_selection()
-        selection.connect('changed',self.formula_selection_changed)
         return sw
 
     def create_scrolled_textview(self,tip):
@@ -283,6 +267,12 @@ class BrowserDialog(dialog.T):
         notebook.append_page(sw, label)
 
         panes1.add2(notebook)
+
+    def load_file(self, fname):
+        type = self.model.guess_type(fname)
+        self.set_type(type)
+        self.set_file(fname)
+        self.populate_file_list()
 
     def file_selection_changed(self,selection):
         self.model.current.formula = None

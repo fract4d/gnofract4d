@@ -16,8 +16,8 @@ else:
 
 try:
     # nogui modules
-    from fract4d import fractal, fractmain, options
-
+    from fract4d import fractconfig, fractmain
+    from fract4d.options import Arguments
 except ImportError as err:
     print((_('''
 Can't import a required module.
@@ -25,51 +25,24 @@ If you haven't set up Gnofract 4D yet, run './setup.py build'
 Error was: '%s' ''') % err))
     sys.exit(1)
 
-def get_version_info():
-    try:
-        from gi.repository import Gtk
-        gtk_version = "%d.%d.%d" % (Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version())
-    except:
-        gtk_version = "unknown"
+def main(args):
+    # saved options
+    userConfig = fractconfig.userConfig()
 
-    return """Gnofract 4D %s
-GTK %s""" % (options.version, gtk_version)
-               
-def main(args):    
-    opts = options.T()
-    try:
-        opts.parse(args)
-    except options.OptionError as err:
-        print(get_version_info())
-        print(opts.help())
-
-        print("Error parsing arguments: %s" % err)
-        return 1
-
-    # having parsed them, apply them. The reason for this 2-pass
-    # approach is that it matters what order these operations are
-    # done in, but it shouldn't matter what order params are
-    # presented on the command-line
-    if len(opts.output) > 0:
-        print(opts.output)
-
-    if opts.print_version:
-        print(get_version_info())
-        
-    if opts.quit_now:
-        sys.exit(0)
+    # command line options
+    opts = Arguments().parse_args(args)
 
     try:
         if opts.nogui:
-            plainmain(opts)
+            plainmain(userConfig, opts)
         else:
-            gtkmain(opts)
+            gtkmain(userConfig, opts)
     except Exception as err:
         print("A fatal error occurred:\n\t%s\n\n" % str(err))
         raise
 
-def gtkmain(options):
-    # gtk
+def gtkmain(userConfig, options):
+    # GTK+
     import gi
     gi.require_version('Gtk', '3.0')
     try:
@@ -79,9 +52,8 @@ def gtkmain(options):
         sys.exit(1)
 
     try:
-        # gui modules
-        from fract4dgui import main_window, preferences, utils
-
+        # GUI module
+        from fract4dgui import main_window
     except ImportError as err:
         print(_('''
     Can't import a required module.
@@ -89,8 +61,7 @@ def gtkmain(options):
     Error was: '%s' ''') % err)
         sys.exit(1)
     
-    mainWindow = main_window.MainWindow()
-
+    mainWindow = main_window.MainWindow(userConfig)
     mainWindow.apply_options(options)
     
     if mainWindow.f.thaw():
@@ -100,8 +71,8 @@ def gtkmain(options):
 
     Gtk.main()
 
-def plainmain(options):
-    t = fractmain.T()
+def plainmain(userConfig, options):
+    t = fractmain.T(userConfig)
     t.run(options)
 
 def main_n(n):
@@ -110,9 +81,13 @@ def main_n(n):
 
 if __name__ == '__main__':
     if os.environ.get("DO_GF4D_PROFILE"):
-        import hotshot
-        prof = hotshot.Profile("gf4d.prof")
+        import cProfile
+        import pstats
+        prof = cProfile.Profile()
         prof.runcall(main_n, 5)
-        prof.close()
+        stats = pstats.Stats(prof)
+        stats.sort_stats("cumulative")
+        stats.dump_stats("gf4d.prof")
+        stats.print_stats()
     else:
         main(sys.argv[1:])

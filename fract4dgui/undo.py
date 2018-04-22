@@ -1,5 +1,4 @@
 
-from gi.repository import Gtk
 from gi.repository import GObject
 
 class HistoryEntry:
@@ -25,7 +24,7 @@ class Sequence(GObject.GObject):
     
     def __init__(self):
         GObject.GObject.__init__(self)
-        self.pos = 0 # the position after the current item
+        self.pos = 0  # the position after the current item
         self.history = []
 
     def can_undo(self):
@@ -34,15 +33,15 @@ class Sequence(GObject.GObject):
     def can_redo(self):
         return self.pos < len(self.history)
 
-    def send_signals(self):        
+    def send_signals(self):
         self.emit('can-undo', self.can_undo())
         self.emit('can-redo', self.can_redo())
         
     def do(self,redo_action,redo_data,undo_action,undo_data):
         # replace everything from here on with the new item
         if self.pos < len(self.history):
-            undo_action = self.history[self.pos].undo_action 
-            undo_data = self.history[self.pos].undo_data 
+            undo_action = self.history[self.pos].undo_action
+            undo_data = self.history[self.pos].undo_data
 
         del self.history[self.pos:]
         self.history.append(
@@ -83,5 +82,6 @@ class Sequence(GObject.GObject):
         
         self.connect('can-redo',set_sensitivity)
         self.emit('can-redo', self.can_redo())
+
 
 GObject.type_register(Sequence)

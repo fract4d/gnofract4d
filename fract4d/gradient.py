@@ -5,27 +5,25 @@ import re
 import io
 import copy
 import random
-import types
 import struct
 import colorsys
 
+# Class definition for Gradients
+# These use the format defined by the GIMP
 
-#Class definition for Gradients
-#These use the format defined by the GIMP
+# The file format is:
+#  GIMP Gradient ; literal identifier
+#  Name: <utf8-name> ; optional, else get from filename
+#  3 ; number of points N
+#  ; N  lines like this
+#  0.000000 0.166667 0.333333 0.000000 0.000000 1.000000 1.000000 0.000000 0.000000 1.000000 1.000000 0 0
+#  The format is
+#  start middle end [range 0...1]
+#  R G B A left endpoint
+#  R G B A right endpoint
+#  segment_type coloring_type
 
-#The file format is:
-# GIMP Gradient ; literal identifier
-# Name: <utf8-name> ; optional, else get from filename
-# 3 ; number of points N
-# ; N  lines like this
-# 0.000000 0.166667 0.333333 0.000000 0.000000 1.000000 1.000000 0.000000 0.000000 1.000000 1.000000 0 0
-# The format is
-# start middle end [range 0...1]
-# R G B A left endpoint
-# R G B A right endpoint
-# segment_type coloring_type
-
-# segment-type is 
+# segment-type is
 #   GIMP_GRADIENT_SEGMENT_LINEAR,
 #   GIMP_GRADIENT_SEGMENT_CURVED,
 #   GIMP_GRADIENT_SEGMENT_SINE,
@@ -44,6 +42,8 @@ rgb_re = re.compile(r'\s*(\d+)\s+(\d+)\s+(\d+)')
 
 class FileType:
     MAP, GGR, CS, UGR = list(range(4))
+
+    @staticmethod
     def guess(s):
         s = s.lower()
         if s.endswith(".map"):
@@ -55,9 +55,7 @@ class FileType:
         else:
             # assume a GIMP gradient, those sometimes don't have extensions
             return FileType.GGR
-        
-    guess = staticmethod(guess)
-    
+
 class Blend:
     LINEAR, CURVED, SINE, SPHERE_INCREASING, SPHERE_DECREASING = list(range(5))
 
@@ -73,18 +71,18 @@ class HsvError(Exception):
         Exception.__init__(self, msg)
 
 class Segment:
-    EPSILON=1.0E-7
+    EPSILON = 1.0E-7
+
     def __init__(self, left, left_color, right, right_color, mid=None,
                  blend_mode=Blend.LINEAR,
                  color_mode=ColorMode.RGB):
-        
         self.cmode = color_mode
         self.bmode = blend_mode
         self.left = left
         self.left_color = left_color
         self.right = right
         self.right_color = right_color
-        if mid == None:
+        if mid is None:
             self.center()
         else:
             self.mid = mid
@@ -96,7 +94,7 @@ class Segment:
             self.blend_mode, self.color_mode)
     
     def __eq__(self,other):
-        if other == None: return False
+        if other is None: return False
         if not isinstance(other, Segment): return False
         return self.cmode == other.cmode and \
                self.bmode == other.bmode and \
@@ -145,7 +143,7 @@ class Segment:
             else:
                 return 0.5 * pos / middle
         else:
-            pos -= middle;
+            pos -= middle
             middle = 1.0 - middle
             if middle < Segment.EPSILON:
                 return 1.0
@@ -164,10 +162,12 @@ class Segment:
         
     def get_sine_factor(self, pos, middle):
         pos = self.get_linear_factor(pos, middle)
-        return (math.sin ((-math.pi / 2.0) + math.pi * pos) + 1.0) / 2.0
+        return (math.sin((-math.pi / 2.0) + math.pi * pos) + 1.0) / 2.0
+
     def get_sphere_increasing_factor(self, pos, middle):
         pos = self.get_linear_factor(pos, middle) - 1.0
         return math.sqrt (1.0 - pos * pos)
+
     def get_sphere_decreasing_factor(self, pos, middle):
         pos = self.get_linear_factor(pos, middle)
         return 1.0 - math.sqrt (1.0 - pos * pos)
@@ -184,8 +184,7 @@ class Segment:
             if lcol[0] >= rcol[0]: rcol[0] += 1.0
         if self.cmode == ColorMode.HSV_CW:
             if lcol[0] <= rcol[0]: lcol[0] += 1.0
-            
-            
+        
         len = self.right-self.left
         if len < Segment.EPSILON:
             # avoid division by zero
@@ -193,7 +192,7 @@ class Segment:
             pos = 0.5
         else:
             mpos = (self.mid - self.left) / len
-            pos  = (pos- self.left) / len
+            pos = (pos - self.left) / len
         
         if self.bmode == Blend.LINEAR:
             factor = self.get_linear_factor(pos, mpos)
@@ -206,7 +205,7 @@ class Segment:
         elif self.bmode == Blend.SPHERE_DECREASING:
             factor = self.get_sphere_decreasing_factor(pos, mpos)
         
-        #Assume RGB mode, for the moment
+        # Assume RGB mode, for the moment
         RH = lcol[0] + (rcol[0] - lcol[0]) * factor
         GS = lcol[1] + (rcol[1] - lcol[1]) * factor
         BV = lcol[2] + (rcol[2] - lcol[2]) * factor
@@ -233,13 +232,13 @@ class Segment:
             
 class Gradient:
     def __init__(self):
-        self.segments=[
+        self.segments = [
             Segment(0,[0,0,0,1.0], 1.0, [1.0,1.0,1.0,1.0])]
 
-        self.name=None
-        self.alternate=0
-        self.offset=0
-        self.cobject=None
+        self.name = None
+        self.alternate = 0
+        self.offset = 0
+        self.cobject = None
 
     def __copy__(self):
         c = Gradient()
@@ -250,7 +249,7 @@ class Gradient:
         return c
 
     def __eq__(self, other):
-        if other == None: return False
+        if other is None: return False
         if not isinstance(other, Gradient): return False
         if self.name != other.name: return False
         if self.segments != other.segments: return False
@@ -271,7 +270,7 @@ class Gradient:
         print(len(self.segments), file=f)
         last = None
         for seg in self.segments:
-            compress_seg = compress and last != None and seg.right_of(last)
+            compress_seg = compress and last is not None and seg.right_of(last)
             seg.save(f, compress_seg)
             last = seg
 
@@ -397,7 +396,7 @@ class Gradient:
         solid = (0,0,0,255)
         for line in mapfile:
             m = rgb_re.match(line)
-            if m != None:
+            if m is not None:
                 (r,g,b) = (min(255, int(m.group(1))),
                            min(255, int(m.group(2))),
                            min(255, int(m.group(3))))
@@ -424,7 +423,7 @@ class Gradient:
         new_segments = []
         last_index = 0.0
         last_color = [0.0,0.0,0.0,1.0]
-        before_last_color = [-1000.0, -1000.0 , -1000.0, -1000.0] # meaningless color
+        before_last_color = [-1000.0, -1000.0, -1000.0, -1000.0] # meaningless color
         before_last_index = -1.0
         
         for (index,r,g,b,a) in l:
@@ -509,7 +508,7 @@ class Gradient:
             [h3, s, v, a],
             [h3, s, vlight, a]]
 
-        colors = [ HSVtoRGB(x) for x in colors]
+        colors = [HSVtoRGB(x) for x in colors]
         return colors
 
     def randomize(self, length):
@@ -534,7 +533,7 @@ class Gradient:
             prev_index = index
         
         self.segments.append(
-            Segment(prev_index, prev_color, 1.0, first_color)) # make it wrap
+            Segment(prev_index, prev_color, 1.0, first_color))  # make it wrap
 
     def random_bright_color(self):
         return HSVtoRGB(
@@ -550,7 +549,7 @@ class Gradient:
         first_color = prev_color
         for i in range(length-1):
             index = float(i+1)/length
-            if i % 2 == 1:                
+            if i % 2 == 1:
                 color = self.random_bright_color()
                 blend = Blend.SPHERE_INCREASING
             else:
@@ -562,15 +561,15 @@ class Gradient:
             prev_index = index
         
         self.segments.append(
-            Segment(prev_index, prev_color, 1.0, first_color)) # make it wrap
+            Segment(prev_index, prev_color, 1.0, first_color))  # make it wrap
 
     def get_color_at(self, pos):
-        # returns the color at position x (0 <= x <= 1.0) 
+        # returns the color at position x (0 <= x <= 1.0)
         seg = self.get_segment_at(pos)
         return seg.get_color_at(pos)
         
     def get_segment_at(self, pos):
-        #Returns the segment in which pos resides.
+        # returns the segment in which pos resides.
         if pos < 0.0:
             raise IndexError("Must be between 0 and 1, is %s" % pos)
         for seg in self.segments:
@@ -608,7 +607,7 @@ class Gradient:
         
         s_len = (seg.right-seg.left)
         s_mid = seg.left + s_len*0.5
-        newcol= self.get_color_at(s_mid)
+        newcol = self.get_color_at(s_mid)
 
         # update existing segment to occupy left half
         seg.right = s_mid
@@ -620,7 +619,7 @@ class Gradient:
             segindex+1,
             Segment(s_mid, newcol,
                     right_index, right_color,
-                    None, 
+                    None,
                     seg.bmode, seg.cmode))
 
     def remove(self, segindex, smooth=False):
@@ -635,8 +634,8 @@ class Gradient:
             # we have a previous segment
             if segindex+1 < len(self.segments):
                 # and we have a next. Move them both to touch in the middle
-                self.segments[segindex-1].right=seg.mid                
-                self.segments[segindex+1].left=seg.mid
+                self.segments[segindex-1].right = seg.mid
+                self.segments[segindex+1].left = seg.mid
                 self.segments[segindex-1].center()
                 self.segments[segindex+1].center()
                 if smooth:
@@ -653,7 +652,7 @@ class Gradient:
                 self.segments[segindex-1].center()
         else:
             # we must have a later segment
-            self.segments[segindex+1].left=0.0
+            self.segments[segindex+1].left = 0.0
             if smooth:
                 self.segments[segindex+1].left_color = \
                     copy.copy(self.segments[segindex].left_color)
@@ -719,43 +718,43 @@ class Gradient:
         
         if (segindex > 0 or side == 'right') and (segindex < len(self.segments)-1 or side == 'left'):
             if side == 'left':
-                self.segments[segindex-1].right.pos+=move
+                self.segments[segindex-1].right.pos += move
                 if self.segments[segindex-1].right.pos > 1:
                     self.segments[segindex-1].right.pos = 1
                 elif self.segments[segindex-1].right.pos < 0:
                     self.segments[segindex-1].right.pos = 0
                         
-                seg.left.pos+=move
+                seg.left.pos += move
                 if seg.left.pos > 1:
-                    seg.left.pos =1
+                    seg.left.pos = 1
                 elif seg.left.pos < 0:
-                    seg.left.pos =0
+                    seg.left.pos = 0
                     
                 if seg.left.pos > seg.right.pos:
                     seg.left.pos = seg.right.pos
-                    self.segments[segindex-1].right.pos=seg.right.pos
+                    self.segments[segindex-1].right.pos = seg.right.pos
                 elif self.segments[segindex-1].right.pos < self.segments[segindex-1].left.pos:
-                    self.segments[segindex-1].right.pos=self.segments[segindex-1].left.pos
-                    seg.left.pos=self.segments[segindex-1].left.pos
+                    self.segments[segindex-1].right.pos = self.segments[segindex-1].left.pos
+                    seg.left.pos = self.segments[segindex-1].left.pos
             else:
-                self.segments[segindex+1].left.pos+=move
+                self.segments[segindex+1].left.pos += move
                 if self.segments[segindex+1].left.pos > 1:
                     self.segments[segindex+1].left.pos = 1
                 elif self.segments[segindex+1].left.pos < 0:
                     self.segments[segindex+1].left.pos = 0
                     
-                seg.right.pos+=move
+                seg.right.pos += move
                 if seg.right.pos > 1:
-                    seg.right.pos =1
+                    seg.right.pos = 1
                 elif seg.right.pos < 0:
-                    seg.right.pos =0
+                    seg.right.pos = 0
                     
                 if seg.left.pos > seg.right.pos:
-                    seg.right.pos=seg.left.pos
-                    self.segments[segindex+1].left.pos=seg.left.pos
+                    seg.right.pos = seg.left.pos
+                    self.segments[segindex+1].left.pos = seg.left.pos
                 elif self.segments[segindex+1].right.pos < self.segments[segindex+1].left.pos:
-                    self.segments[segindex+1].left.pos=self.segments[segindex+1].right.pos
-                    seg.right.pos=self.segments[segindex+1].right.pos
+                    self.segments[segindex+1].left.pos = self.segments[segindex+1].right.pos
+                    seg.right.pos = self.segments[segindex+1].right.pos
 
 # These two are adapted from the algorithms at
 # http://www.cs.rit.edu/~ncs/color/t_convert.html
@@ -775,31 +774,31 @@ def RGBtoHSV(rgb):
         hsv[1] = 0
         hsv[0] = -1
     else:
-        hsv[1]=delta / max
+        hsv[1] = delta / max
         
         if rgb[0] == max:
             hsv[0] = (rgb[1] - rgb[2]) / delta        # between yellow & magenta
         elif rgb[1] == max:
-            hsv[0] = 2 + (rgb[2] - rgb[0] ) / delta    # between cyan & yellow
+            hsv[0] = 2 + (rgb[2] - rgb[0]) / delta    # between cyan & yellow
         else:
-            hsv[0] = 4 + (rgb[0] - rgb[1] ) / delta    # between magenta & cyan
+            hsv[0] = 4 + (rgb[0] - rgb[1]) / delta    # between magenta & cyan
 
-    hsv[0] *= 60                # degrees
+    hsv[0] *= 60          # degrees
     if hsv[0] < 0:
         hsv[0] += 360
         
     return hsv
 
 def HSVtoRGB(hsv):
-    rgb=[0,0,0,hsv[3]] # pass through alpha channel
+    rgb = [0,0,0,hsv[3]]  # pass through alpha channel
     
-    hsv[0]/=60
+    hsv[0] /= 60
     
     if hsv[1] == 0:
         return [hsv[2],hsv[2],hsv[2]]
     
     i = int(hsv[0])
-    f = hsv[0] - i                            #Decimal bit of hue
+    f = hsv[0] - i        # decimal bit of hue
     p = hsv[2] * (1 - hsv[1])
     q = hsv[2] * (1 - hsv[1] * f)
     t = hsv[2] * (1 - hsv[1] * (1 - f))
@@ -829,4 +828,4 @@ def HSVtoRGB(hsv):
         rgb[1] = p
         rgb[2] = q
     
-    return rgb        
+    return rgb

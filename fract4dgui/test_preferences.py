@@ -4,7 +4,9 @@
 
 import unittest
 import sys
-import os
+
+import gi
+gi.require_version('Gtk', '3.0')
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 from fract4dgui import preferences
@@ -18,8 +20,8 @@ class CallCounter:
 
 class Test(unittest.TestCase):
     def setUp(self):
-        self.baseconfig = fractconfig.T("test.config")
-        self.config = preferences.Preferences(self.baseconfig)
+        baseconfig = fractconfig.T("test.config")
+        self.config = preferences.Preferences(baseconfig)
     
     def tearDown(self):
         pass
@@ -42,7 +44,7 @@ class Test(unittest.TestCase):
         self.assertEqual(counter.count,2)
 
     def testInstance(self):
-        dummy = preferences.userPrefs
+        dummy = preferences.Preferences(fractconfig.T(""))
         self.assertNotEqual(None,dummy)
         
 def suite():

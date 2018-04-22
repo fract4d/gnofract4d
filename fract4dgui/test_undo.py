@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-#unit tests for undo code
+# unit tests for undo code
 
 import unittest
-import copy
-import math
 
 import gi
-gi.require_version('Gtk', '3.0') 
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 import undo
@@ -39,7 +37,7 @@ class UndoTest(unittest.TestCase):
         self.assertEqual(self.undo_cb_status.count, undoer.can_undo())
         self.assertEqual(self.redo_cb_status.count, undoer.can_redo())
         
-    def testCreateUndoRedo(self):        
+    def testCreateUndoRedo(self):
         status = Status()
         self.undo_cb_status = Status()
         self.redo_cb_status = Status()
@@ -79,7 +77,7 @@ class UndoTest(unittest.TestCase):
         undoer.do(inc_status,1,dec_status,1)
         
         self.assertEqual(status.count,1)
-        self.assertUndoStatus(undoer,True,False)        
+        self.assertUndoStatus(undoer,True,False)
         self.assertEqual(len(undoer.history),1)
         self.assertEqual(undoer.pos,1)
 

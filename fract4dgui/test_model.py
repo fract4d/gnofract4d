@@ -3,32 +3,13 @@
 # unit tests for model
 
 import unittest
-import copy
-import sys
 import io
 
-import gi
-gi.require_version('Gtk', '3.0') 
+import testgui
+
 from gi.repository import Gtk
 
-if sys.path[1] != "..": sys.path.insert(1, "..")
-
-from fract4dgui import model
-
-from fract4d import fractal,fc,fract4dc
-
-from fract4dgui import gtkfractal
-from fract4dgui import settings
-from fract4dgui import preferences
-from fract4dgui import autozoom
-from fract4dgui import undo
-
-# do compiler setup once
-g_comp = fc.Compiler()
-g_comp.add_func_path("../formulas")
-g_comp.add_func_path("formulas")
-g_comp.load_formula_file("gf4d.frm")
-g_comp.load_formula_file("gf4d.cfrm")
+from fract4dgui import model, gtkfractal
 
 class EmitCounter:
     def __init__(self):
@@ -36,11 +17,12 @@ class EmitCounter:
     def onCallback(self,*args):
         self.count += 1
         
-class Test(unittest.TestCase):
+class Test(testgui.TestCase):
     def setUp(self):
-        global g_comp
-        self.compiler = g_comp
-        self.f = gtkfractal.T(self.compiler)        
+        Test.g_comp.add_func_path("formulas")
+        Test.g_comp.load_formula_file("gf4d.frm")
+        Test.g_comp.load_formula_file("gf4d.cfrm")
+        self.f = gtkfractal.T(Test.g_comp)
         self.m = model.Model(self.f)
     
     def tearDown(self):
@@ -66,7 +48,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(f.yflip,True)
         
-        mag = f.get_param(f.MAGNITUDE)
+        f.get_param(f.MAGNITUDE)
         f.set_param(f.MAGNITUDE,9.0)
 
         self.assertEqual(f.yflip,True)
@@ -75,7 +57,6 @@ class Test(unittest.TestCase):
         self.m.redo()
         self.assertEqual(f.yflip,True)
 
-        
     def testUndoChangeParameter(self):
         counter = EmitCounter()
         f = self.m.f
@@ -104,7 +85,7 @@ class Test(unittest.TestCase):
         
     def testUndoFunctionChange(self):
         counter = EmitCounter()
-        f = self.m.f        
+        f = self.m.f
         f.connect('parameters-changed',counter.onCallback)
 
         bailfunc = f.forms[0].get_func_value("@bailfunc")

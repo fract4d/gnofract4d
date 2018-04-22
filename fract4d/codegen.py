@@ -2,18 +2,9 @@
 
 # Generate C code from a linearized IR trace
 
-import string
-import tempfile
-import copy
-import os
 import re
-import types
 
-from . import absyn
-from . import fracttypes
-from . import ir
-from . import optimize
-
+from . import absyn, fracttypes, ir, optimize
 from .fracttypes import Bool, Int, Float, Complex, Hyper, Color, IntArray, FloatArray, ComplexArray, VoidArray
 from .instructions import *
     
@@ -23,6 +14,7 @@ class Formatter:
         self.codegen = codegen
         self.lookup = lookup
         self.tree = tree
+
     def __getitem__(self,key):
         try:
             out = self.tree.output_sections[key]
@@ -43,16 +35,16 @@ class T:
         # this must be ordered with largest, most efficient templates first
         # thus performing a crude 'maximal munch' instruction generation
         self.templates = self.expand_templates([
-            [ "Binop" , T.binop],
-            [ "Unop", T.unop],
-            [ "Call", T.call],
-            [ "Var" , T.var],
-            [ "Const", T.const],
-            [ "Label", T.label],
-            [ "Move", T.move],
-            [ "Jump", T.jump],
-            [ "CJump", T.cjump],
-            [ "Cast", T.cast],
+            ["Binop", T.binop],
+            ["Unop", T.unop],
+            ["Call", T.call],
+            ["Var", T.var],
+            ["Const", T.const],
+            ["Label", T.label],
+            ["Move", T.move],
+            ["Jump", T.jump],
+            ["CJump", T.cjump],
+            ["Cast", T.cast],
             ])
         
         self.generate_trace = False
@@ -100,7 +92,7 @@ static void pf_init(
     for(i = 0; i < N_PARAMS; ++i)
     {
         pfo->pos_params[i] = pos_params[i];
-    }    
+    }
 }
 
 static void pf_get_defaults(
@@ -125,7 +117,7 @@ static void pf_calc(
     // "object" pointer
     struct s_pf_data *t__p_stub,
     // in params
-    const double *t__params, int maxiter, int t__warp_param, 
+    const double *t__params, int maxiter, int t__warp_param,
     // periodicity params
     int min_period_iter, double period_tolerance,
     // only used for debugging
@@ -227,7 +219,7 @@ static void pf_kill(
     free(p_stub);
 }
 
-static struct s_pf_vtable vtbl = 
+static struct s_pf_vtable vtbl =
 {
     pf_get_defaults,
     pf_init,
@@ -249,7 +241,7 @@ pf_obj *pf_new()
 
         # we insert pf.h so C compiler doesn't have to find it
         # this needs to be updated each time pf.h changes
-        self.pf_header= '''
+        self.pf_header = '''
 #ifndef PF_H_
 #define PF_H_
 
@@ -444,12 +436,11 @@ extern "C" {
 
 #endif
 '''
-        
 
     def emit_binop(self,op,srcs,type):
         dst = self.newTemp(type)
 
-        self.out.append(Binop(op, srcs ,[ dst ], self.generate_trace))
+        self.out.append(Binop(op, srcs, [dst], self.generate_trace))
         return dst
 
     def emit_func(self,op,srcs,type):
@@ -542,7 +533,7 @@ extern "C" {
         decls = [None] * len(parts)
         for i in range(len(parts)):
             decls[i] = Decl(
-                "%s %s%s = %s;"% (sym.ctype,sym.cname,parts[i],vals[i]))
+                "%s %s%s = %s;" % (sym.ctype,sym.cname,parts[i],vals[i]))
 
         return decls
 
@@ -550,7 +541,7 @@ extern "C" {
         """Declare a variable for sym"""
         parts = sym.part_names
         decls = [
-            Decl("%s %s%s;" % (sym.ctype,sym.cname,part)) \
+            Decl("%s %s%s;" % (sym.ctype,sym.cname,part))
             for part in parts]
         return decls
 
@@ -561,19 +552,18 @@ extern "C" {
         returns = [None] * len(parts)
         for i in range(len(parts)):
             returns[i] = Move(
-                [ Literal( sym.cname + parts[i])], [Literal(initvals[i]) ],
+                [Literal(sym.cname + parts[i])], [Literal(initvals[i])],
                 self.generate_trace)
 
         return returns
-            
-            
+
     def output_symbol(self,key,sym,out,overrides):
         if not isinstance(sym,fracttypes.Var):
             return
 
         override = overrides.get(key)
         
-        if override == None:
+        if override is None:
             out += self.decl_with_init_from_sym(sym)
         else:
             #print "override %s for %s" % (override, key)
@@ -584,13 +574,13 @@ extern "C" {
             return
         
         override = overrides.get(key)
-        if override == None:
+        if override is None:
             out += self.decl_from_sym(sym)
         else:
             #print "override %s for %s" % (override, key)
             out.append(Decl(override))
 
-    def output_struct_members(self,ir,user_overrides):            
+    def output_struct_members(self,ir,user_overrides):
         overrides = {
             "t__h_zwpixel" : "",
             "pixel" : "",
@@ -601,7 +591,7 @@ extern "C" {
             "t__h_solid" : "",
             "t__h_color" : "",
             "t__h_fate" : "",
-            "t__h_inside" : ""            
+            "t__h_inside" : ""
             }
         
         for (k,v) in list(user_overrides.items()):
@@ -629,9 +619,9 @@ extern "C" {
             "t__h_color" : "",
             "t__h_fate" : "",
             "t__h_inside" : "",
-            "t__h_magn" : \
+            "t__h_magn" :
                 "double t__h_magn = log(4.0/t__pfo->pos_params[4])/log(2.0) + 1.0;",
-            "t__h_center" : \
+            "t__h_center" :
                 """double t__h_center_re = t__pfo->pos_params[0];
                 double t__h_center_im = t__pfo->pos_params[1];"""
             }
@@ -738,7 +728,7 @@ extern "C" {
                            &&(fabs(z_im - old_z_im) < period_tolerance))
                         {
                             period_iters = t__h_numiter;
-                            //t__h_numiter = maxiter; 
+                            //t__h_numiter = maxiter;
                             t__h_inside = 1;
                             *t__p_pFate = 1;
 
@@ -748,23 +738,14 @@ extern "C" {
                 }
                 '''
         else:
-            inserts["decl_period"]=""
-            inserts["init_period"]=""
-            inserts["check_period"]=""
+            inserts["decl_period"] = ""
+            inserts["init_period"] = ""
+            inserts["check_period"] = ""
             
-        f = Formatter(self,t,inserts)
-        if output_template == None:
+        f = Formatter(self, t, inserts)
+        if output_template is None:
             output_template = self.output_template
         return output_template % f
-
-    def writeToTempFile(self,data=None,suffix=""):
-        (fileno,cFileName) = tempfile.mkstemp(suffix,"gf4d")
-        cFile = os.fdopen(fileno,"w")
-
-        if data != None:
-            cFile.write(data)
-        cFile.close()
-        return cFileName
 
     def findOp(self,t):
         ' find the most appropriate overload for this op'
@@ -779,7 +760,7 @@ extern "C" {
             print(err)
             
         raise fracttypes.TranslationError(
-            "Internal Compiler Error: Invalid argument types %s for %s" % \
+            "Internal Compiler Error: Invalid argument types %s for %s" %
             (typelist, t.op))
 
     def newTemp(self,type):
@@ -790,7 +771,7 @@ extern "C" {
     
     # action routines
     def cast(self,t):
-        'Generate code to cast child of type child.datatype to t.datatype' 
+        'Generate code to cast child of type child.datatype to t.datatype'
         child = t.children[0]
         src = self.generate_code(child)
 
@@ -811,7 +792,7 @@ extern "C" {
         elif t.datatype == Float:
             if child.datatype == Int or child.datatype == Bool:
                 dst = self.newTemp(Float)
-                assem = "%(d0)s = ((double)%(s0)s);" 
+                assem = "%(d0)s = ((double)%(s0)s);"
                 self.out.append(Oper(assem,[src], [dst]))
         elif t.datatype == Int:
             if child.datatype == Bool:
@@ -861,7 +842,7 @@ extern "C" {
                 dst = self.newTemp(t.datatype)
                 self.out.append(Oper(assem, [src], [dst]))
                 
-        if dst == None:
+        if dst is None:
             msg = "%d: Invalid Cast from %s to %s" % \
                   (t.node.pos,fracttypes.strOfType(child.datatype),
                    fracttypes.strOfType(t.datatype))
@@ -990,8 +971,6 @@ extern "C" {
             if self.match_template(tree,template):
                 return action
         
-        # every possible tree ought to be matched by *something* 
+        # every possible tree ought to be matched by *something*
         msg = "Internal Compiler Error:%d:unmatched tree %s" % (tree.node.pos,tree)
         raise fracttypes.TranslationError(msg)
-
-        

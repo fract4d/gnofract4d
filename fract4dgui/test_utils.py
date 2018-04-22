@@ -3,35 +3,14 @@
 # unit tests for utils module
 
 import unittest
-import sys
-import os
-import subprocess
-import warnings
 
 import gi
-gi.require_version('Gtk','3.0')
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-if sys.path[1] != "..": sys.path.insert(1, "..")
-
-from fract4dgui import utils
-from fract4dgui import gtkfractal
-
-from fract4d import fc
-
-# centralized to speed up tests
-g_comp = fc.Compiler()
-g_comp.add_func_path("../fract4d")
-g_comp.add_func_path("../formulas")
-
+import utils
 
 class Test(unittest.TestCase):
-    def setUp(self):
-        pass
-    
-    def tearDown(self):
-        pass
-
     def testOptionMenu(self):
         om = utils.create_option_menu(["foo","bar","Bazniculate Geometry"])
         utils.add_menu_item(om,"fishy")
@@ -56,34 +35,6 @@ class Test(unittest.TestCase):
         self.assertEqual(cyan.red,0)
         self.assertEqual(cyan.green,65535)
         self.assertEqual(cyan.blue,65535)
-
-    def on_update_preview(self, chooser, preview):
-        filename = chooser.get_preview_filename()
-        try:
-            preview.loadFctFile(open(filename))
-            preview.draw_image(False, False)
-            active=True
-        except Exception as err:
-            active=False
-        chooser.set_preview_widget_active(active)
-        
-    def wait(self):
-        Gtk.main()
-        
-    def quitloop(self,f,status):
-        if status == 0:
-            Gtk.main_quit()
-
-    def runAndDismiss(self,d, time=1):
-        def dismiss():
-            d.response(Gtk.ResponseType.ACCEPT)
-            d.hide()
-            return False
-
-        # increase timeout to see what dialogs look like
-        utils.timeout_add(10 * time,dismiss)
-        r = d.run()
-        d.destroy()
 
 
 def suite():

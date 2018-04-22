@@ -1,4 +1,4 @@
-import os
+import os.path
 
 from . import fc, event, gradient
 
@@ -12,7 +12,7 @@ class TypeInfo:
     def __init__(self, parent, compiler, t, exclude=None):
         self.parent = parent
         self.formula_type = t
-        self.exclude= exclude
+        self.exclude = exclude
         self.fname = None
         self.formula = None
         self.formulas = []
@@ -99,12 +99,12 @@ class T:
             TypeInfo(self, compiler, fc.FormulaTypes.TRANSFORM),
             TypeInfo(self, compiler, fc.FormulaTypes.GRADIENT)
             ]
+        self.current = None
         self.current_type = -1
         self.type_changed = event.T()
         self.file_changed = event.T()
         self.formula_changed = event.T()
-        self.set_type(FRACTAL)
-        
+
     def formula_type_to_browser_type(self,t):
         if t == fc.FormulaTypes.FRACTAL:
             return FRACTAL
@@ -157,5 +157,3 @@ class T:
 
         r = self.compiler.get_text(fname)
         return r
-        
-instance = T(fc.instance)

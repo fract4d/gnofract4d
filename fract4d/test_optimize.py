@@ -3,15 +3,12 @@
 # test graph
 
 import unittest
-import copy
-import types
 import sys
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d.instructions import *
 from fract4d import optimize
-from fract4d import stdlib
 
 class Test(unittest.TestCase):
     def setUp(self):

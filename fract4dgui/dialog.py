@@ -2,64 +2,32 @@
 
 from gi.repository import Gtk
 
-_dialogs = {}
-
-def make_container(title):
+def make_label_box(parent, title):
     label_box = Gtk.HBox()
-    label = Gtk.Label(label='<span weight="bold">%s</span>' % title)
-    label.set_use_markup(True)
+    label_box.set_name('dialog_label_box')
+    label = Gtk.Label(label=title)
     label_box.pack_start(label, False, False, 0)
     close = Gtk.Button.new_from_stock(Gtk.STOCK_CLOSE)
     label_box.pack_end(close, False, False, 0)
-    frame = Gtk.VBox()
-    frame.pack_start(label_box, False, False, 1)
+    label_box.show_all()
 
-    close.connect('clicked', lambda x : frame.hide())
-    return frame
+    close.connect('clicked', lambda x : parent.hide())
+    return label_box
 
 class T(Gtk.Dialog):
-    def __init__(self, title=None, parent=None, buttons=None,**kwds):
-        Gtk.Dialog.__init__(self, title=title, transient_for=parent, **kwds)
+    def __init__(self, title=None, parent=None, buttons=None, modal=True):
+        Gtk.Dialog.__init__(self,
+            title=title,
+            transient_for=parent,
+            modal=modal,
+            destroy_with_parent=True)
 
         if buttons:
                 self.add_buttons(*buttons)
 
         self.set_default_response(Gtk.ResponseType.CLOSE)
         self.connect('response',self.onResponse)
-
-        self.connect('destroy-event', self.clear_global)
-        self.connect('delete-event', self.clear_global)
-
-    def clear_global(self,*args):
-        global _dialogs
-        _dialogs[self.__class__] = None
-    
-    def reveal(type, dialog_mode, parent, alt_parent, *args):
-        global _dialogs
-        if not _dialogs.get(type):
-            _dialogs[type] = type(parent, *args)
-        if dialog_mode:
-            _dialogs[type].show_all()
-            _dialogs[type].present()
-        else:
-            if not hasattr(alt_parent, "dialogs"):
-                alt_parent.dialogs = {}
-            container = alt_parent.dialogs.get(type)
-            if not container:                
-                dialog = _dialogs[type]
-                box = dialog.controls
-                title = dialog.get_title()
-                container = make_container(title)
-                box.reparent(container)
-                alt_parent.pack_start(container,True,True,0)
-                alt_parent.dialogs[type] = container
-
-            container.show_all()
-            _dialogs[type].hide()
-        
-        return _dialogs[type]
-    
-    reveal = staticmethod(reveal)
+        self.connect('delete-event', self.quit)
 
     def onResponse(self,widget,id):
         if id == Gtk.ResponseType.CLOSE or \
@@ -69,6 +37,6 @@ class T(Gtk.Dialog):
         else:
             print("unexpected response %d" % id)
 
-def get(type):
-    global _dialogs
-    return _dialogs.get(type)
+    def quit(self, widget, event):
+        self.hide()
+        return True

@@ -1,8 +1,5 @@
 # Abstract Syntax Tree produced by parser
 
-#from __future__ import generators
-import types
-import string
 import re
 
 from . import fracttypes
@@ -10,36 +7,36 @@ from .ffloat import Float
 
 class Node:
     def __init__(self,type,pos,children=None,leaf=None,datatype=None):
-         self.type = type
-         if children:
-              self.children = children
-         else:
-              self.children = [ ]
-         self.leaf = leaf
-         self.datatype = datatype
-         self.pos = pos
-         
+        self.type = type
+        if children:
+            self.children = children
+        else:
+            self.children = []
+        self.leaf = leaf
+        self.datatype = datatype
+        self.pos = pos
+
     def __str__(self):
-        return "[%s : %s]" % (self.type , self.leaf)
-    
-    def pretty(self,depth=0,pos=False):
-        str = " " * depth + "[%s : %s" % (self.type , self.leaf)
+        return "[%s : %s]" % (self.type, self.leaf)
+
+    def pretty(self, depth=0, pos=False):
+        str = " " * depth + "[%s : %s" % (self.type, self.leaf)
         if pos:
             str += "<%s>" % self.pos
-        if self.datatype != None:
+        if self.datatype is not None:
             str += "(%s)" % fracttypes.strOfType(self.datatype)
         if self.children:
             str += "\n"
             for child in self.children:
                 assert(isinstance(child,Node))
                 str += child.pretty(depth+1,pos) + "\n"
-            str += " " * depth + "]" 
+            str += " " * depth + "]"
         else:
             str += "]"
         return str
 
     def _ordLeaf(self):
-        if self.leaf == None: return 0
+        if self.leaf is None: return 0
         return self.leaf
     
     def __iter__(self):
@@ -100,19 +97,19 @@ class NodeIter:
 
         (node,child) = self.nodestack.pop()
         ret = self.getNode(node,child)
-        child+= 1
+        child += 1
         while len(node.children) <= child:
-            if self.nodestack == []:
+            if not self.nodestack:
                 return ret
             (node,child) = self.nodestack.pop()
             
         self.nodestack.append((node,child+1))
-        self.nodestack.append((node.children[child],-1))                
+        self.nodestack.append((node.children[child],-1))
         
         return ret
     
 def CheckTree(tree, nullOK=0):
-    if nullOK and tree == None:
+    if nullOK and tree is None:
         return 1
     if not isinstance(tree,Node):
         raise Exception("bad node type %s" % tree)
@@ -130,12 +127,12 @@ def Formlist(list, pos):
 def Set(id, s, pos):
     return Node("set", pos, [id,s], None)
 
-def SetType(id,t,pos):
+def SetType(id, t, pos):
     type = fracttypes.typeOfStr(t)
-    return Node("set", pos, [id, Empty(pos)], None, type) 
+    return Node("set", pos, [id, Empty(pos)], None, type)
 
 def Number(n,pos):
-    if re.search('[.eE]',n):
+    if re.search('[.eE]', n):
         t = fracttypes.Float
         n = Float(n)
     else:
@@ -147,7 +144,7 @@ def Number(n,pos):
 def Const(n,pos):
     if isinstance(n,str):
         n = n.lower()
-    return Node("const", pos, None, n=="true" or n=="yes", fracttypes.Bool)
+    return Node("const", pos, None, n == "true" or n == "yes", fracttypes.Bool)
 
 def Binop(op, left, right,pos):
     return Node("binop", pos, [left, right], op)
@@ -174,11 +171,11 @@ def Assign(id,exp,pos):
     return Node("assign", pos, [id, exp], None)
 
 def Decl(type, id, pos, exp=None):
-    if exp == None:
+    if exp is None:
         l = None
     else:
         l = [exp]
-    return Node("decl", pos, l , id, fracttypes.typeOfStr(type))
+    return Node("decl", pos, l, id, fracttypes.typeOfStr(type))
 
 def DeclArray(type, id, indexes, pos):
     return Node("declarray", pos, indexes, id, fracttypes.typeOfStr(type))
@@ -187,7 +184,7 @@ def ArrayLookup(id, indexes, pos):
     return Node("arraylookup", pos, indexes, id)
 
 def Stmlist(id, list,pos):
-    return Node("stmlist", pos,list, id.lower())
+    return Node("stmlist", pos, list, id.lower())
 
 def Setlist(id, list,pos):
     return Node("setlist", pos, list, id.lower())
@@ -210,7 +207,7 @@ def Formula(id, stmlist, pos):
     
     return n
 
-def Param(id,settinglist,type,pos):    
+def Param(id,settinglist,type,pos):
     return Node("param", pos, settinglist, id, fracttypes.typeOfStr(type))
 
 def Func(id,settinglist,type, pos):
@@ -232,7 +229,7 @@ def If(test, left, right, pos):
 def Error2(str, pos):
     if str == "$":
         return Node(
-            "error", pos, None, 
+            "error", pos, None,
             "%d: Error: unexpected preprocessor directive" % pos)
     return Node("error", pos, None,
                 "%d: Syntax error: unexpected '%s' " % (pos,str))

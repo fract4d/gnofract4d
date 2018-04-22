@@ -7,10 +7,9 @@
 # use gf4d.cfrm#default - continuous potential doesn't work?
 # rotation == -xyangle in degrees, needs convert to radians
 
-import string
 import math
 
-from . import preprocessor
+from fract4d import fractconfig, preprocessor
 
 def parse(file,f):
     # reset the fractal to have defaults closer to Fractint
@@ -64,7 +63,7 @@ def parse_colors(val,f):
     f.get_gradient().load_fractint(colors)
 
 def parse_center_mag(val,f):
-    "x/y/mag(/xmag/rot/skew)" 
+    "x/y/mag(/xmag/rot/skew)"
     vals = val.split("/")
     x = float(vals[0])
     y = -float(vals[1])
@@ -86,7 +85,7 @@ def setup_log_table(log_flag, maxltsize, colors, save_release):
     # try to match convoluted Fractint log_table logic
     (lf,mlf) = get_log_table_limits(log_flag, maxltsize, colors, save_release)
     table = [
-        calc_log_table_entry(x,log_flag,lf,mlf, save_release) \
+        calc_log_table_entry(x,log_flag,lf,mlf, save_release)
         for x in range(maxltsize)
         ]
     return table
@@ -120,17 +119,17 @@ def get_log_table_limits(log_flag, maxltsize, colors, save_release):
             if log_flag < 1:
                 lf = 0
         if lf >= maxltsize:
-            lf = maxltsize -1
+            lf = maxltsize - 1
         if lf != 0:
             delta = 2
         else:
             delta = 1
-        mlf = (colors - delta ) /math.log(maxltsize - lf)
+        mlf = (colors - delta) / math.log(maxltsize - lf)
     return (lf,mlf)
 
 def decode_val(c):
     if c >= '0' and c <= '9':
-        return 4 *(ord(c) - ord('0'))
+        return 4 * (ord(c) - ord('0'))
     elif c >= 'A' and c <= 'Z':
         return 4 * (ord(c) - ord('A') + 10)
     elif c == '_':
@@ -204,7 +203,7 @@ if __name__ == "__main__":
     import fc
     import fractal
     
-    g_comp = fc.Compiler()
+    g_comp = fc.Compiler(fractconfig.userConfig())
     g_comp.add_func_path("../formulas")
     g_comp.load_formula_file("gf4d.frm")
     g_comp.load_formula_file("test.frm")

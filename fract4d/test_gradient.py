@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import unittest
-import sys
 import math
 import io
 import copy
@@ -9,12 +8,7 @@ import re
 
 import testbase
 
-from fract4d import gradient
-from fract4d import fract4dc
-from fract4d import fractal
-from fract4d import translate
-from fract4d import fractparser
-
+from fract4d import gradient, fract4dc, translate, fractparser
 from fract4d.gradient import Blend, ColorMode
 
 wood='''GIMP Gradient

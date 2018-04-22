@@ -13,13 +13,12 @@ class TimeStampedObject:
         self.cache_file = file
         
 class T:
-    def __init__(self,dir="~/.gnofract4d-cache"):
+    def __init__(self, dir):
         self.dir = os.path.expanduser(dir)
         self.files = {}
         
     def init(self):
-        if not os.path.exists(self.dir):
-            os.makedirs(self.dir)
+        os.makedirs(self.dir, mode=0o770, exist_ok=True)
         self._loadHash()
 
     def _indexName(self):
@@ -33,7 +32,6 @@ class T:
         self.createPickledFile(self._indexName(), self.files)
     
     def clear(self):
-        if not os: return # get 'NoneType not callable' sometimes otherwise, which seems weird
         for f in os.listdir(self.dir):
             try:
                 os.remove(os.path.join(self.dir,f))
@@ -51,7 +49,7 @@ class T:
         return hash.hexdigest()
 
     def makePickleName(self,s,*extras):
-        name = self.hashcode(s,*extras) +".pkl"
+        name = self.hashcode(s,*extras) + ".pkl"
         fullname = os.path.join(self.dir, name)
         return fullname
     
@@ -75,7 +73,7 @@ class T:
         mtime = os.stat(file)[stat.ST_MTIME]
 
         tso = self.files.get(file,None)
-        if tso:            
+        if tso:
             if tso.time == mtime:
                 return tso.obj
 
@@ -88,4 +86,3 @@ class T:
         self.files[file] = TimeStampedObject(val,mtime,hashname)
         
         return val
-    

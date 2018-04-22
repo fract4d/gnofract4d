@@ -4,9 +4,7 @@
 
 import copy
 
-from . import ir
-#from . import fsymbol
-from . import fracttypes
+from . import ir, fracttypes
 
 class T:
     def __init__(self,symbols,dump=None):
@@ -24,9 +22,9 @@ class T:
         self.dumpBlocks = 0
         self.dumpTrace = 0
 
-        if dump != None:
+        if dump is not None:
             for k in list(dump.keys()):
-                self.__dict__[k]=1
+                self.__dict__[k] = 1
             
     def stms(self, eseq):
         return eseq.children[:-1]
@@ -84,7 +82,7 @@ class T:
                 newtree = self.linearize(newtree)
             else:
                 t = ir.Var(self.symbols.newTemp(e1.datatype), e1.node, e1.datatype)
-                move = ir.Move(t ,e1, e1.node,e1.datatype)
+                move = ir.Move(t, e1, e1.node, e1.datatype)
                 binop = ir.Binop(tree.op, [t,e2], tree.node, tree.datatype)
                 eseq = ir.ESeq(stms, binop, eseq.node, eseq.datatype)
                 newtree = ir.ESeq([move],eseq, tree.node, tree.datatype)
@@ -104,7 +102,7 @@ class T:
             newtree = ir.Seq(
                 stms + [ir.CJump(tree.op,e1,e2,
                                  tree.trueDest, tree.falseDest,
-                                 tree.node)], 
+                                 tree.node)],
                 eseq.node)
             newtree = self.linearize(newtree)
         elif isinstance(children[1],ir.ESeq):
@@ -117,7 +115,7 @@ class T:
             stms = self.stms(eseq)
             if commutes(e1,stms):
                 newtree = ir.Seq(
-                    stms + \
+                    stms +
                     [ir.CJump(tree.op,e1,e2,
                               tree.trueDest, tree.falseDest,
                               tree.node)],
@@ -126,10 +124,10 @@ class T:
             else:
                 t = ir.Var(
                     self.symbols.newTemp(e1.datatype), e1.node, e1.datatype)
-                move = ir.Move(t ,e1, e1.node,e1.datatype)
+                move = ir.Move(t, e1, e1.node, e1.datatype)
                 cjump = ir.CJump(tree.op, t,e2,
                                  tree.trueDest, tree.falseDest, tree.node)
-                newtree = ir.Seq([move]+ stms + [cjump], tree.node)
+                newtree = ir.Seq([move] + stms + [cjump], tree.node)
                 newtree = self.linearize(newtree)
         else:
             newtree = copy.copy(tree)
@@ -150,7 +148,7 @@ class T:
         return newtree
 
     def linearize_cast(self, tree, children):
-        if isinstance(children[0],ir.ESeq):                
+        if isinstance(children[0], ir.ESeq):
             # cast(eseq(stms,e)) => eseq(stms,cast(e))
             eseq = children[0]
             stms = self.stms(eseq)
@@ -178,7 +176,7 @@ class T:
         return newtree
 
     def linearize_call(self, tree, children):
-        eseq_in_children=False
+        eseq_in_children = False
             
         for child in children:
             if(isinstance(child,ir.ESeq)):
@@ -206,26 +204,26 @@ class T:
     
     def linearize(self,tree):
         ''' remove all ESeq nodes and move Calls to top-level'''
-        if tree == None:
+        if tree is None:
             return None
         
-        if tree.children == None:
+        if tree.children is None:
             children = None
         else:
             children = self.linearize_list(tree.children)
             
         if isinstance(tree, ir.Binop):
-            newtree = self.linearize_binop(tree, children)            
+            newtree = self.linearize_binop(tree, children)
         elif isinstance(tree, ir.CJump):
-            newtree = self.linearize_cjump(tree, children)                
+            newtree = self.linearize_cjump(tree, children)
         elif isinstance(tree, ir.ESeq) or isinstance(tree, ir.Seq):
             newtree = self.linearize_seq(tree, children)
         elif isinstance(tree, ir.Cast):
-            newtree = self.linearize_cast(tree, children)            
+            newtree = self.linearize_cast(tree, children)
         elif isinstance(tree, ir.Move):
             newtree = self.linearize_move(tree, children)
         elif isinstance(tree, ir.Call) or isinstance(tree,ir.Unop):
-            newtree = self.linearize_call(tree, children)                    
+            newtree = self.linearize_call(tree, children)
         else:
             newtree = copy.copy(tree)
             newtree.children = children
@@ -255,11 +253,10 @@ class T:
         
         blocks = []
         label = startLabel
-        inBlock = 0
         block = []
         for stm in tree.children:
             if isinstance(stm, ir.Label):
-                if block == []:                    
+                if not block:
                     block.append(stm)
                 else:
                     # close existing block, create a new one
@@ -267,9 +264,9 @@ class T:
                         # append a jump to current label
                         block.append(ir.Jump(stm.name, stm.node))
                     blocks.append(block)
-                    block = [ stm ]
+                    block = [stm]
             else:
-                if block == []:
+                if not block:
                     # manufacture a label if first stm is not a label
                     block.append(ir.Label(label,tree.node))
                     label = self.symbols.newLabel()
@@ -298,7 +295,7 @@ class T:
         # add block to trace. As a side-effect, tidy up last jump to
         # enforce condition that each cjump must be followed by its
         # false label
-        block = copy.copy(in_block) # avoid modifying block used by caller
+        block = copy.copy(in_block)  # avoid modifying block used by caller
         target = block[0].name
         if trace != []:
             lastjump = trace[-1]
@@ -333,9 +330,9 @@ class T:
 
     def hash_of_blocks(self,blocks, endLabel):
         hash = {}
-        hash[endLabel] = [1,None] # so we don't complain about jumps there
+        hash[endLabel] = [1, None]  # so we don't complain about jumps there
         for b in blocks:
-            hash[b[0].name] = [0,b]
+            hash[b[0].name] = [0, b]
         return hash
     
     def schedule_trace(self,blocks, endLabel):
@@ -365,4 +362,3 @@ def commutes(t1,t2):
         # constants always commute
         return 1
     return 0
-

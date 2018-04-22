@@ -9,7 +9,7 @@ import sys
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import fsymbol
+from fract4d import fsymbol, function
 from fract4d.fracttypes import *
 
 class SymbolTest(unittest.TestCase):
@@ -62,7 +62,7 @@ class SymbolTest(unittest.TestCase):
         self.assertEqual(7,t.nextParamSlot)
 
         # functions shouldn't affect this
-        f = fsymbol.OverloadList([Func([Int],Int,"ident")])
+        f = fsymbol.OverloadList([function.Func([Int],Int,"ident")])
         t["@myfunc"] = f
         self.assertNotEqual(True,hasattr(f,"param_slot"))
         self.assertEqual(7,t.nextParamSlot)
@@ -123,8 +123,8 @@ class SymbolTest(unittest.TestCase):
         t2["d"] = Var(Int,200)
         t2["@a"] = Var(Int, 3)
         t2["@b"] = Var(Float, 2)        
-        t1["@myfunc"] = fsymbol.OverloadList([Func([Int],Int,"ident")])
-        t2["@myotherfunc"] = fsymbol.OverloadList([Func([Int],Int,"ident")])
+        t1["@myfunc"] = fsymbol.OverloadList([function.Func([Int],Int,"ident")])
+        t2["@myotherfunc"] = fsymbol.OverloadList([function.Func([Int],Int,"ident")])
         t1.merge(t2)
 
         op = t1.order_of_params()
@@ -155,8 +155,8 @@ class SymbolTest(unittest.TestCase):
     def testSqr(self):
         sqr_c = self.t[("sqr")][2];
         sqr_i = self.t[("sqR")][0];
-        self.assertTrue(isinstance(sqr_c, Func) and sqr_c.ret == Complex)
-        self.assertTrue(isinstance(sqr_i, Func) and sqr_i.args == [Int])
+        self.assertTrue(isinstance(sqr_c, function.Func) and sqr_c.ret == Complex)
+        self.assertTrue(isinstance(sqr_i, function.Func) and sqr_i.args == [Int])
 
     def testNoOverride(self):
         self.assertRaises(KeyError,self.t.__setitem__,("sqr"),1)
@@ -225,11 +225,11 @@ class SymbolTest(unittest.TestCase):
         self.assertEqual(self.t["@fn1"][0].ret, Complex)
 
         params = self.t.parameters()
-        self.assertTrue(isinstance(params["t__a_fn1"],Func))
+        self.assertTrue(isinstance(params["t__a_fn1"],function.Func))
 
     def testFirst(self):
         self.assertEqual(self.t["z"].first(),self.t["z"])
-        self.assertTrue(isinstance(self.t["@fn1"].first(), Func))
+        self.assertTrue(isinstance(self.t["@fn1"].first(), function.Func))
         
     def testReset(self):
         self.t["fish"] = Var(Int, 1, 1)

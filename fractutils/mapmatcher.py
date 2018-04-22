@@ -9,10 +9,9 @@ rgb_re = re.compile(r'\s*(\d+)\s+(\d+)\s+(\d+)')
 
 def build_list(mapfile):
     colorlist = []
-    solid = (0,0,0,255)
     for line in mapfile:
         m = rgb_re.match(line)
-        if m != None:
+        if m is not None:
             (r,g,b) = (min(255, int(m.group(1))),
                        min(255, int(m.group(2))),
                        min(255, int(m.group(3))))
@@ -45,4 +44,3 @@ for (k,v) in list(sets.items()):
         # some dups
         print("These files contain the same map:")
         print("\n".join(v))
-

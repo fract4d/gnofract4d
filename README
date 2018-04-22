@@ -36,12 +36,15 @@ Requirements
 
 Gnofract 4D requires these packages to run:
 
-o Python version 2.6 or higher
-o PyGTK version 2.12 or higher
-o GTK+ version 2.0 or higher
+o Python version 3.5 or higher
+o PyGObject
+o Pycairo
+o GTK+ version 3.22 or higher
+o libjpeg
+o libpng
 o A C++ compiler
 
 If you're not sure if you have these or not, just try running
 "./setup.py build" and see if it complains.
 
-
+If FFmpeg is installed it will be possible to create videos.

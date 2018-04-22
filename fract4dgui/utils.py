@@ -8,12 +8,9 @@
 #    fall back to the 'old way'
 
 import os
-import sys
 import inspect
 
-from gi.repository import Gtk, Gdk, GObject, GLib
-
-from fract4d import fract4dc
+from gi.repository import Gtk, Gdk, GLib, GObject
 
 threads_enabled = False
 break_new_things = False
@@ -32,12 +29,9 @@ def idle_wrapper(callable, *args):
     threads_leave()
 
 def idle_add(callable, *args):
-    """A wrapper around Gtk.idle_add which wraps the callback in
+    """A wrapper around GObject.idle_add which wraps the callback in
     threads_enter/threads_leave if required"""
     GObject.idle_add(idle_wrapper, callable, *args)
-
-def timeout_add(time,callable):
-    GObject.timeout_add(time,callable)
 
 def input_add(fd,cb):
     return GLib.io_add_watch(fd, GLib.PRIORITY_DEFAULT, GLib.IO_IN | GLib.IO_HUP | GLib.IO_PRI, cb)
@@ -45,7 +39,7 @@ def input_add(fd,cb):
 def find_in_path(exe):
     # find an executable along PATH env var
     pathstring = os.environ["PATH"]
-    if pathstring == None or pathstring == "":
+    if not pathstring:
         return None
     paths = pathstring.split(":")
     for path in paths:
@@ -97,7 +91,7 @@ def create_option_menu(items):
     return widget
 
 def set_menu_from_list(menu, items):
-    model = Gtk.ListStore(GObject.TYPE_STRING)
+    model = Gtk.ListStore(str)
     for item in items:
         model.append((item,))
     menu.set_model(model)
@@ -122,7 +116,7 @@ def set_selected_value(menu,val):
     model = menu.get_model()
     i = 0
     iter = model.get_iter_first()
-    while iter != None:
+    while iter is not None:
         item = model.get_value(iter,0)
         if item == val:
             menu.set_active(i)
@@ -135,7 +129,7 @@ def create_color(r,g,b):
     return Gdk.Color(int(r*65535),int(g*65535),int(b*65535))
 
 def floatColorFrom256(rgba):
-    return [ rgba[0]/255.0, rgba[1]/255.0, rgba[2]/255.0, rgba[3]/255.0]
+    return [rgba[0]/255.0, rgba[1]/255.0, rgba[2]/255.0, rgba[3]/255.0]
 
 def color256FromFloat(r,g,b,color):
     return (int(r*255), int(g*255), int(b*255), color[3])
@@ -148,58 +142,30 @@ def launch_browser(prefs, url, window):
     except Exception as err:
         d = hig.ErrorAlert(
             primary=_("Error launching browser"),
-            secondary=_("Try modifying your preferences or copy the URL manually to a browser window.\n") + \
+            secondary=_("Try modifying your preferences or copy the URL manually to a browser window.\n") +
             str(err),
-            parent=window) 
+            transient_for=window)
         d.run()
         d.destroy()
 
-class ColorButton:
+class ColorButton(Gtk.ColorButton):
     def __init__(self, rgb, changed_cb, is_left):
-        self.color = create_color(rgb[0], rgb[1], rgb[2])
+        Gtk.ColorButton.__init__(self)
+        self.set_color(rgb)
         self.changed_cb = changed_cb
         self.is_left = is_left
-        
-        self.area = None
-        
-        self.widget = Gtk.ColorButton.new_with_color(self.color)
-        self.widget.connect('color-set', self.on_color_set)
+
+        self.connect('color-set', self.on_color_set)
 
     def on_color_set(self, widget):
-        self.color_changed(widget.get_color())
+        self.color_changed(self.get_color())
 
     def set_color(self, rgb):
         self.color = create_color(rgb[0], rgb[1], rgb[2])
-    
-        self.widget.set_color(self.color)
+        Gtk.ColorButton.set_color(self, self.color)
 
-    def on_expose_event(self, widget, event):
-        r = event.area
-        self.area_expose(widget, r.x, r.y, r.width, r.height)
-        
-    def area_expose(self, widget, x, y, w, h):
-        if not widget.window:
-            return
-        gc = widget.window.new_gc(fill=Gdk.SOLID)
-        self.color = widget.get_colormap().alloc_color(
-            self.color.red, self.color.green, self.color.blue)
-        gc.set_foreground(self.color)
-        widget.window.draw_rectangle(gc, True, x, y, w, h)
-
-    def run_colorsel(self, widget):
-        dlg = self.csel_dialog
-        dlg.colorsel.set_current_color(self.color)
-        result = dlg.run()
-        if result == Gtk.ResponseType.OK:
-            self.color = dlg.colorsel.get_current_color()
-            self.color_changed(self.color)
-        self.csel_dialog.hide()
-
-    def set_sensitive(self,x):
-        self.widget.set_sensitive(x)
-        
     def color_changed(self,color):
-        self.color = color     
+        self.color = color
         self.changed_cb(
             color.red/65535.0,
             color.green/65535.0,

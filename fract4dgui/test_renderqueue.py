@@ -3,29 +3,21 @@
 # unit tests for renderqueue module
 
 import unittest
-import sys
 import os
-import subprocess
 
-import gi
-gi.require_version('Gtk', '3.0')
+import testgui
+
 from gi.repository import Gtk
 
-import gettext
-os.environ.setdefault('LANG', 'en')
-gettext.install('gnofract4d')
+from fract4d import fractal
+from fract4dgui import preferences, renderqueue
 
-if sys.path[1] != "..": sys.path.insert(1, "..")
+class Test(testgui.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        testgui.TestCase.setUpClass()
+        cls.userPrefs = preferences.Preferences(testgui.TestCase.userConfig)
 
-from fract4dgui import renderqueue
-
-from fract4d import fractal, image, fc
-
-g_comp = fc.Compiler()
-g_comp.add_func_path("../fract4d")
-g_comp.add_func_path("../formulas")
-
-class Test(unittest.TestCase):
     def setUp(self):
         pass
     
@@ -39,20 +31,21 @@ class Test(unittest.TestCase):
         Gtk.main_quit()
 
     def testRQ(self):
-        rq = renderqueue.T()
+        rq = renderqueue.T(Test.userPrefs)
         self.assertEqual(0, len(rq.queue))
 
         # should be a no-op
         rq.start()
 
         # add a fractal to generate
-        f = fractal.T(g_comp)
-        rq.add(f,"rq1.png",100,1536)
+        f = fractal.T(Test.g_comp)
+        png_file1 = os.path.join(Test.tmpdir.name, "rq1.png")
+        rq.add(f,png_file1,100,1536)
 
         # check it got added
         self.assertEqual(1, len(rq.queue))
         entry = rq.queue[0]
-        self.assertEqual("rq1.png", entry.name)
+        self.assertEqual(png_file1, entry.name)
         self.assertEqual(100, entry.w)
         self.assertEqual(1536, entry.h)
 
@@ -62,19 +55,19 @@ class Test(unittest.TestCase):
         self.wait()
 
         self.assertEqual(0, len(rq.queue))
-        os.remove("rq1.png")
 
     def testQueueDialog(self):
-        f = fractal.T(g_comp)
-        renderqueue.show(None,None,f)
-        rq = renderqueue.instance
-        rq.add(f,"foo.png",124,276)
-        rq.add(f,"foo2.png",204,153)
-        rq.add(f,"foo3.png",80,40)
+        f = fractal.T(Test.g_comp)
+        rq = renderqueue.T(Test.userPrefs)
+        png_file2 = os.path.join(Test.tmpdir.name, "foo2.png")
+        png_file3 = os.path.join(Test.tmpdir.name, "foo3.png")
+        rq.add(f,png_file2,204,153)
+        rq.add(f,png_file3,80,40)
         rq.connect('done', self.quitloop)
         rq.start()
+        d = renderqueue.QueueDialog(None, f, rq)
+        d.show()
         self.wait()
-        os.remove("foo.png"); os.remove("foo2.png"); os.remove("foo3.png")
 
 def suite():
     return unittest.makeSuite(Test,'test')

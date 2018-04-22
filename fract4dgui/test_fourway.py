@@ -7,7 +7,6 @@ import unittest
 import gi
 gi.require_version('Gtk','3.0')
 from gi.repository import Gtk
-from gi.repository import GObject
 
 import fourway
 
@@ -38,7 +37,7 @@ class Test(unittest.TestCase):
     def testAddToWindow(self):
         w = Gtk.Window()
         f = fourway.T("wibble")
-        w.add(f.widget)
+        w.add(f)
         w.show()
         Gtk.main_iteration()
 

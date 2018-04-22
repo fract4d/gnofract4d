@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 
 "Tests for fctutils"
-import string
 import io
 import unittest
-import gzip
-import base64
 import sys
 
 if sys.path[1] != "..": sys.path.insert(1, "..")

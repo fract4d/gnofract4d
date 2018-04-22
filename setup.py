@@ -199,11 +199,14 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
        maintainer_email = 'edwin@bathysphere.org',
        keywords = "edwin@bathysphere.org",
        url = 'http://github.com/edyoung/gnofract4d/',
-       packages = ['fract4d', 'fract4dgui', 'fractutils'], 
-       package_data = { 'fract4dgui' : [ 'ui.xml'] },
+       packages = ['fract4d', 'fract4dgui'],
+       package_data = { 'fract4dgui' : [ 'shortcuts-gnofract4d.ui', 'ui.xml'] },
        ext_modules = modules,
        scripts = ['gnofract4d'],
        data_files = [
+           # style CSS
+           ('share/gnofract4d',
+            ['gnofract4d.css']),
            # color maps
            ('share/gnofract4d/maps',
             get_files("maps",".map") +
