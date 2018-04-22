@@ -126,7 +126,7 @@ def set_selected_value(menu,val):
 
 
 def create_color(r,g,b):
-    return Gdk.Color(int(r*65535),int(g*65535),int(b*65535))
+    return Gdk.RGBA(int(r*65535),int(g*65535),int(b*65535))
 
 def floatColorFrom256(rgba):
     return [rgba[0]/255.0, rgba[1]/255.0, rgba[2]/255.0, rgba[3]/255.0]
@@ -161,7 +161,7 @@ class ColorButton(Gtk.ColorButton):
 
     def set_color(self, rgb):
         self.color = create_color(rgb[0], rgb[1], rgb[2])
-        Gtk.ColorButton.set_color(self, self.color)
+        Gtk.ColorButton.set_rgba(self, self.color)
 
     def color_changed(self,color):
         self.color = color
