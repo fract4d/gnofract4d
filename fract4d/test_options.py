@@ -2,6 +2,7 @@
 
 import unittest
 import sys
+import io
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
@@ -29,7 +30,13 @@ class Test(unittest.TestCase):
 
     def testBadOption(self):
         o = Arguments()
-        self.assertRaises(SystemExit, o.parse_args, ["--fish"])
+        realSysErr = sys.stderr
+        try:
+            sys.stderr = io.StringIO()
+            with self.assertRaises(SystemExit) as cm:
+                o.parse_args("--fish")
+        finally:
+            sys.stderr = realSysErr
 
     def testHelp(self):
         o = Arguments()
@@ -44,8 +51,14 @@ class Test(unittest.TestCase):
         self.assertEqual("wibble",ns.formula.func)
 
     def testBadSplit(self):
-        o = Arguments()
-        self.assertRaises(SystemExit, o.parse_args, ["-f", "bar"])
+        realSysErr = sys.stderr
+        try:
+            sys.stderr = io.StringIO()
+            o = Arguments()
+            with self.assertRaises(SystemExit) as cm:
+                o.parse_args(["-f", "bar"])
+        finally:
+            sys.stderr = realSysErr
         
     def testHeightWidth(self):
         o = Arguments()

@@ -571,7 +571,7 @@ class Test(testbase.ClassSetup):
                 nb = 2*4
                 bytes = os.read(rfd,nb)
                 if len(bytes) < nb:
-                    self.fail("bad message")
+                    self.fail("bad message with length %s" % len(bytes))
                     break
 
                 (t,size) = struct.unpack("2i",bytes)
