@@ -18,7 +18,7 @@ class Alert(Gtk.MessageDialog):
             transient_for=transient_for,
             modal=True,
             destroy_with_parent=True,
-            type=type,
+            message_type=type,
             title=title,
             text=primary_text,
             buttons=buttontype)
