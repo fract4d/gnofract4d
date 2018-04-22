@@ -696,13 +696,19 @@ class MainWindow:
             self.manager.get_widget("/MenuBar/FileMenu/Recent4")]
 
         # command reference
-        builder = Gtk.Builder.new_from_file(os.path.join(this_path,
-                                            "shortcuts-gnofract4d.ui"))
-        self.shortcuts_window = builder.get_object("shortcuts-gnofract4d")
-        self.shortcuts_window.set_transient_for(self.window)
-        self.shortcuts_window.connect("delete-event",
-            lambda widget, event: Gtk.Window.hide_on_delete(widget))
-
+        if (not Gtk.check_version(3,19,0)):
+            # this version of Gtk *is* new enough to support shortcuts widget
+            builder = Gtk.Builder.new_from_file(
+                os.path.join(this_path, "shortcuts-gnofract4d.ui"))
+            self.shortcuts_window = builder.get_object("shortcuts-gnofract4d")
+            self.shortcuts_window.set_transient_for(self.window)
+            self.shortcuts_window.connect(
+                "delete-event",
+                lambda widget, event: Gtk.Window.hide_on_delete(widget))
+        else:
+            # older GTK builds don't understand shortcuts ui and rudely crash
+            self.shortcuts_window = None
+            
     def director(self,*args):
         """Display the Director (animation) window."""
         self.directorDialog.show()
@@ -1286,8 +1292,11 @@ class MainWindow:
         self.display_help()
 
     def command_reference(self, *args):
-        self.shortcuts_window.show_all()
-
+        if self.shortcuts_window:
+            self.shortcuts_window.show_all()
+        else:
+            self.display_help("cmdref")
+            
     def report_bug(self, *args):
         url = "https://github.com/edyoung/gnofract4d/issues"
         utils.launch_browser(
@@ -1296,12 +1305,7 @@ class MainWindow:
             self.window)
         
     def display_help(self,section=None):
-        # if yelp is available use docbook XML; otherwise fall back to HTML
-        yelp_path = utils.find_in_path("yelp")
-        if yelp_path:
-            base_help_file = "gnofract4d-manual.xml"
-        else:
-            base_help_file = "gnofract4d-manual.html"
+        base_help_file = "gnofract4d-manual.html"
             
         loc = "C" # FIXME
 
@@ -1324,14 +1328,11 @@ class MainWindow:
         else:
             anchor = "#" + section
         
-        if yelp_path:
-            os.system("yelp ghelp://%s%s >/dev/null 2>&1 &" % (abs_file, anchor))
-        else:
-            url = "file://%s%s" % (abs_file, anchor)
-            utils.launch_browser(
-                self.userPrefs,
-                url,
-                self.window)
+        url = "file://%s%s" % (abs_file, anchor)
+        utils.launch_browser(
+            self.userPrefs,
+            url,
+            self.window)
 
     def open(self,action):
         """Open a parameter or formula file."""

@@ -28,7 +28,8 @@ class Test(testgui.TestCase):
 
     def testDirectorDialog(self):
         f = fractal.T(Test.g_comp)
-        dd = director.DirectorDialog(None,f,Test.userConfig)
+        parent = Gtk.Window()
+        dd = director.DirectorDialog(parent,f,Test.userConfig)
         dd.show()
         dd.animation.set_png_dir(Test.tmpdir.name)
         dd.animation.set_fct_enabled(False)

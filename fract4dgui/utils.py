@@ -135,8 +135,7 @@ def color256FromFloat(r,g,b,color):
     return (int(r*255), int(g*255), int(b*255), color[3])
 
 def launch_browser(prefs, url, window):
-    browser = prefs.get("helpers","browser")
-    cmd = browser % ('"' + url + '" &')
+    cmd = 'xdg-open "%s" &' % url
     try:
         os.system(cmd)
     except Exception as err:

@@ -4,6 +4,7 @@
 
 import unittest
 import os
+import warnings
 
 import testgui
 
@@ -65,7 +66,8 @@ class Test(testgui.TestCase):
         rq.add(f,png_file3,80,40)
         rq.connect('done', self.quitloop)
         rq.start()
-        d = renderqueue.QueueDialog(None, f, rq)
+        parent = Gtk.Window()
+        d = renderqueue.QueueDialog(parent, f, rq)
         d.show()
         self.wait()
 

@@ -350,24 +350,6 @@ class PrefsDialog(dialog.T):
         name_label.set_mnemonic_widget(entry)
         table.attach(name_label,0,0,1,1)
 
-        entry = self.create_option_entry("helpers","mailer")
-        entry.set_tooltip_text(_("The command to launch an email editor"))
-        table.attach(entry,1,1,1,1)
-
-        name_label = Gtk.Label(label="E_mail :")
-        name_label.set_use_underline(True)
-        name_label.set_mnemonic_widget(entry)
-        table.attach(name_label,0,1,1,1,)
-
-        entry = self.create_option_entry("helpers","browser")
-        entry.set_tooltip_text(_("The command to launch a web browser"))
-        table.attach(entry,1,2,1,1)
-
-        name_label = Gtk.Label(label="_Browser :")
-        name_label.set_use_underline(True)
-        name_label.set_mnemonic_widget(entry)
-        table.attach(name_label,0,2,1,1)
-
     def create_auto_deepen_widget(self):
         widget = Gtk.CheckButton(label="Auto _Deepen")
         widget.set_tooltip_text("Adjust number of iterations automatically")
