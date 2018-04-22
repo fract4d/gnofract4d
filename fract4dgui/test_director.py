@@ -40,7 +40,7 @@ class Test(testgui.TestCase):
         dd.animation.set_avi_file(video_file)
         dd.animation.set_width(320)
         dd.animation.set_height(240)
-        dd.generate(True)
+        dd.generate(dd.converterpath!=None)
             
         self.assertEqual(True,os.path.exists(os.path.join(Test.tmpdir.name, "image_0000000.png")))
         self.assertEqual(True,os.path.exists(os.path.join(Test.tmpdir.name, "image_0000001.png")))

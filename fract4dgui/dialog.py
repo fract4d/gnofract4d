@@ -7,7 +7,7 @@ def make_label_box(parent, title):
     label_box.set_name('dialog_label_box')
     label = Gtk.Label(label=title)
     label_box.pack_start(label, False, False, 0)
-    close = Gtk.Button.new_from_stock(Gtk.STOCK_CLOSE)
+    close = Gtk.Button.new_with_label("Close")
     label_box.pack_end(close, False, False, 0)
     label_box.show_all()
 

@@ -49,6 +49,20 @@ class AVIGeneration:
             error_dlg.run()
             error_dlg.destroy()
             return
+
+        if not self.converterpath:
+            error_dlg = Gtk.MessageDialog(
+                transient_for=self.dialog,
+                title="Cannot continue",
+                modal=True,
+                destroy_with_parent=True,
+                message_type=Gtk.MessageType.ERROR,
+                buttons=Gtk.ButtonsType.OK,
+                text="Cannot find ffmpeg video conversion utility" 
+            )
+            error_dlg.run()
+            error_dlg.destroy()
+            return
         
         self.spinner.start()
         
