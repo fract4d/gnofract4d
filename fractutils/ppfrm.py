@@ -1,32 +1,30 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # pretty-print a formula in docbook or HTML format
 
 # std modules
 import sys
-import os
 import re
 
 # kid
 import elementtree.ElementTree
-from elementtree.ElementTree import Element
 import kid
 kid.enable_import()
 
-#kid templates
-import frm_docbook 
+# kid templates
+import frm_docbook
 
 # PLY
-import lex
+from fract4d import lex
 
 # my code
-import fractlexer
+from fract4d import fractlexer
 
 def output_frm(toks,outbase, nfrms):
     if toks != []:
         outfile = open("%s%03d.xml" % (outbase, nfrms),"w")
         k = frm_docbook.Template(tokens=toks)
-        print >>outfile, k.serialize()
+        print(k.serialize(), file=outfile)
 
 # map from token types -> docbook element types
 element_types = {
@@ -92,11 +90,10 @@ def main(infile,outbase):
         
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print "Usage: ppfrm.py foo.frm outbase"
+        print("Usage: ppfrm.py foo.frm outbase")
         sys.exit(1)
         
     if(len(sys.argv) > 2):
         main(sys.argv[1], sys.argv[2])
     else:
         main(sys.argv[1])
-

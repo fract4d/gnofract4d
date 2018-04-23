@@ -1,11 +1,7 @@
 # Intermediate representation. The Translate module converts an Absyn tree
 # into an IR tree.
 
-import types
-import string
-import fracttypes
-import re
-import absyn
+from . import absyn, fracttypes
 
 def d(depth,s=""):
     return " " * depth + s
@@ -13,28 +9,30 @@ def d(depth,s=""):
 class T:
     def __init__(self, node, datatype, children=None):
         self.datatype = datatype
-        self.node = node # the absyn node we were constructed from
+        self.node = node  # the absyn node we were constructed from
         self.children = []
         
     def pretty_children(self,depth):
         r = []
         for child in self.children:
-            if child == None:
+            if child is None:
                 r.append(d(depth+1,"<<None>>"))
             else:
                 try:
                     r.append(child.pretty(depth+1))
-                except Exception, exn:
-                    print "self",self
-                    print len(child)
+                except Exception as exn:
+                    print("self",self)
+                    print(len(child))
                     for c in child:
-                        print c
-                    print "<Error printing child '%s'>" % child
+                        print(c)
+                    print("<Error printing child '%s'>" % child)
                     raise
                 
-        return string.join(r,"")    
+        return "".join(r)
+
     def __iter__(self):
         return absyn.NodeIter(self)
+
     def pretty(self,depth=0):
         child_str = self.pretty_children(depth)
         if child_str != "":
@@ -43,6 +41,7 @@ class T:
             end = ")\n"
             
         return d(depth,self.__str__()) + child_str + end
+
     def __str__(self):
         return self.__class__.__name__ + "(\n"
     
@@ -57,7 +56,7 @@ class Exp(T):
 class Const(Exp):
     def __init__(self, value, node, datatype):
         Exp.__init__(self, node, datatype)
-        if value == None:
+        if value is None:
             self.value = fracttypes.default_value(datatype)
         else:
             self.value = value
@@ -106,7 +105,7 @@ class Cast(Exp):
     def __str__(self):
         return "Cast<%s,%s>(\n" % \
                    (fracttypes.strOfType(self.children[0].datatype),
-                    fracttypes.strOfType(self.datatype))  
+                    fracttypes.strOfType(self.datatype))
     
 class Call(Exp):
     def __init__(self, func, args, node, datatype):
@@ -119,7 +118,7 @@ class Call(Exp):
 class ESeq(Exp):
     def __init__(self, stms, exp, node, datatype):
         Exp.__init__(self, node, datatype)
-        self.children = stms + [ exp ]
+        self.children = stms + [exp]
 
 class Move(Exp):
     def __init__(self, dest, exp, node, datatype):
@@ -130,7 +129,7 @@ class Move(Exp):
 # side effects + flow control
 
 class Stm(T):
-    def __init__(self, node, datatype): 
+    def __init__(self, node, datatype):
         T.__init__(self, node, datatype)
     
 class Jump(Stm):
@@ -144,7 +143,7 @@ class CJump(Stm):
     def __init__(self,op,exp1,exp2,trueDest, falseDest, node):
         Stm.__init__(self, node, None)
         self.op = op
-        self.children = [ exp1, exp2]
+        self.children = [exp1, exp2]
         self.trueDest = trueDest
         self.falseDest = falseDest
         

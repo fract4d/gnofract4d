@@ -16,8 +16,8 @@ class my_install_lib(install_lib):
                 if os.name == 'posix':
                     # Set the executable bits (owner, group, and world) on
                     # the script we just installed.
-                    mode = ((os.stat(f)[stat.ST_MODE]) | 0555) & 07777
-                    print "changing mode of %s to %o" % (f, mode)
+                    mode = ((os.stat(f)[stat.ST_MODE]) | 0o555) & 0o7777
+                    print("changing mode of %s to %o" % (f, mode))
                     os.chmod(f, mode)
 
         return outfiles

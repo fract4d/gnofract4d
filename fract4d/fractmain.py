@@ -1,41 +1,40 @@
 # This is called by the main gnofract4d script
 
-import shutil, os
-import fractal,fc,fract4dc,image, fracttypes, fractconfig
+import os
+import shutil
+
+from . import fractal, fc, image
 
 class T:
-    def __init__(self):
-        self.compiler = fc.Compiler()
-        self.update_compiler_prefs(fractconfig.instance)
+    def __init__(self, userConfig):
+        self.userConfig = userConfig
+        self.compiler = fc.Compiler(userConfig)
         self.f = fractal.T(self.compiler)
-        
-    def update_compiler_prefs(self, prefs):
-        self.compiler.update_from_prefs(prefs)
-        
+
     def run(self,options):
-        for path in options.extra_paths:            
+        for path in options.extra_paths:
             self.compiler.add_func_path(path)
         
-        if options.flags != None:
+        if options.flags is not None:
             self.compiler.set_flags(options.flags)
 
-        width = options.width or fractconfig.instance.getint("display","width")
-        height = options.height or fractconfig.instance.getint("display","height")        
-        threads = options.threads or fractconfig.instance.getint(
+        width = options.width or self.userConfig.getint("display","width")
+        height = options.height or self.userConfig.getint("display","height")
+        threads = options.threads or self.userConfig.getint(
             "general","threads")
 
-        if len(options.args) > 0:
-            self.load(options.args[0])
+        if options.paramfile:
+            self.load(options.paramfile)
 
         self.f.apply_options(options)
         self.f.antialias = options.antialias or \
-            fractconfig.instance.getint("display","antialias")
+            self.userConfig.getint("display","antialias")
 
         outfile = self.compile(options)
 
-        if options.buildonly != None:
+        if options.buildonly is not None:
             self.buildonly(options, outfile)
-            return            
+            return
 
         if options.singlepoint:
             self.f.drawpoint()
@@ -47,11 +46,10 @@ class T:
             im.save(options.save_filename)
 
     def compile(self,options):
-        if options.usebuilt == None:
+        if options.usebuilt is None:
             return self.f.compile()
         else:
             self.f.set_output_file(options.usebuilt)
-
 
     def buildonly(self, options, outfile):
         outdirname = os.path.dirname(options.buildonly)

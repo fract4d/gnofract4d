@@ -7,11 +7,6 @@
        <menuitem name="SaveImage" action="FileSaveImageAction"/>
        <menuitem name="SaveHiResImage" action="FileSaveHighResImageAction"/>
        <separator/>
-       <menuitem name="Recent1" action="FileRecent1Action"/>
-       <menuitem name="Recent2" action="FileRecent2Action"/>
-       <menuitem name="Recent3" action="FileRecent3Action"/>
-       <menuitem name="Recent4" action="FileRecent4Action"/>
-       <separator/>
        <menuitem name="Quit" action="FileQuitAction"/>
     </menu>
     <menu name="EditMenu" action="EditMenuAction">
@@ -35,12 +30,6 @@
 	<menuitem name="PlanesWY" action="PlanesWYAction"/>
       </menu>
     </menu>
-    <menu name="ShareMenu" action="ShareMenuAction">
-      <menuitem name="ShareMail" action="ShareMailToAction"/>
-      <menuitem name="ShareUpload" action="ShareUploadAction"/>
-      <menuitem name="ShareViewMy" action="ShareViewMyFractalsAction"/>
-      <menuitem name="ShareViewGroup" action="ShareViewGroupFractalsAction"/>
-    </menu>
     <menu name="ToolsMenu" action="ToolsMenuAction">
       <menuitem name="ToolsAutozoom" action="ToolsAutozoomAction"/>
       <menuitem name="ToolsExplorer" action="ToolsExplorerAction"/>
@@ -52,7 +41,6 @@
     <menu name="HelpMenu" action="HelpMenuAction">
       <menuitem name="HelpContents" action="HelpContentsAction"/>
       <menuitem name="HelpCommandRef" action="HelpCommandReferenceAction"/>
-      <menuitem name="HelpFormulaRef" action="HelpFormulaReferenceAction"/>
       <menuitem name="HelpReportBug" action="HelpReportBugAction"/>
       <menuitem name="HelpAbout" action="HelpAboutAction"/>
     </menu>

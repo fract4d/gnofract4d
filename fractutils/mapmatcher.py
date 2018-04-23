@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Usage: python mapmatcher.py *.map
 
@@ -9,10 +9,9 @@ rgb_re = re.compile(r'\s*(\d+)\s+(\d+)\s+(\d+)')
 
 def build_list(mapfile):
     colorlist = []
-    solid = (0,0,0,255)
     for line in mapfile:
         m = rgb_re.match(line)
-        if m != None:
+        if m is not None:
             (r,g,b) = (min(255, int(m.group(1))),
                        min(255, int(m.group(2))),
                        min(255, int(m.group(3))))
@@ -27,7 +26,7 @@ sets = {}
 for f in sys.argv[1:]:
     l = build_list(open(f))
     min_list = l
-    for i in xrange(len(l)):
+    for i in range(len(l)):
         rotated_list = rotate_list_by(l,i)
         if rotated_list < min_list:
             min_list = rotated_list
@@ -40,9 +39,8 @@ for f in sys.argv[1:]:
     # add the filename to a hash indexed by the rotated list
     sets.setdefault(key, []).append(f)
 
-for (k,v) in sets.items():
+for (k,v) in list(sets.items()):
     if len(v) > 1:
         # some dups
-        print "These files contain the same map:"
-        print "\n".join(v)
-
+        print("These files contain the same map:")
+        print("\n".join(v))

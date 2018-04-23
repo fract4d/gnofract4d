@@ -1,13 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 "Tests for fctutils"
-import string
-import StringIO
+import io
 import unittest
-import gzip
-import base64
+import sys
 
-import fctutils
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import fctutils
 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -29,7 +29,7 @@ parishioner=arse
         comp.close()
         data = comp.getvalue()
         full_input = "fish=wiggle\n" + data
-        in_f = StringIO.StringIO(full_input)
+        in_f = io.StringIO(full_input)
 
         fct = fctutils.ParamBag()
         fct.load(in_f)

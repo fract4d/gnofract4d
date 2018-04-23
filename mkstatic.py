@@ -15,11 +15,11 @@ def main(args):
     opts = options.T()
     try:
         opts.parse(args)
-    except options.OptionError, err:
-        print get_version_info()
-        print opts.help()
+    except options.OptionError as err:
+        print(get_version_info())
+        print(opts.help())
 
-        print "Error parsing arguments: %s" % err
+        print("Error parsing arguments: %s" % err)
         return 1
 
     t = fractmain.T()

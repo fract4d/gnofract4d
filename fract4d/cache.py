@@ -2,7 +2,7 @@
 
 import os
 import stat
-import cPickle
+import pickle
 import hashlib
 
 class TimeStampedObject:
@@ -13,13 +13,12 @@ class TimeStampedObject:
         self.cache_file = file
         
 class T:
-    def __init__(self,dir="~/.gnofract4d-cache"):
+    def __init__(self, dir):
         self.dir = os.path.expanduser(dir)
         self.files = {}
         
     def init(self):
-        if not os.path.exists(self.dir):
-            os.makedirs(self.dir)
+        os.makedirs(self.dir, mode=0o770, exist_ok=True)
         self._loadHash()
 
     def _indexName(self):
@@ -43,21 +42,21 @@ class T:
         return os.path.join(self.dir, "fract4d_%s%s" % (name, ext))
 
     def hashcode(self,s,*extras):
-        hash = hashlib.md5(s)
+        hash = hashlib.md5(s.encode("utf-8"))
         for x in extras:
-            hash.update(x)
+            hash.update(x.encode("utf-8"))
 
         return hash.hexdigest()
 
     def makePickleName(self,s,*extras):
-        name = self.hashcode(s,*extras) +".pkl"
+        name = self.hashcode(s,*extras) + ".pkl"
         fullname = os.path.join(self.dir, name)
         return fullname
     
     def createPickledFile(self,file,contents):
         f = open(file,"wb")
         try:
-            cPickle.dump(contents,f,True)
+            pickle.dump(contents,f,True)
             #print "created %s" % file
         finally:
             f.close()
@@ -65,7 +64,7 @@ class T:
     def loadPickledFile(self,file):
         f = open(file, "rb")
         try:
-            contents = cPickle.load(f)
+            contents = pickle.load(f)
         finally:
             f.close()
         return contents
@@ -74,15 +73,16 @@ class T:
         mtime = os.stat(file)[stat.ST_MTIME]
 
         tso = self.files.get(file,None)
-        if tso:            
+        if tso:
             if tso.time == mtime:
                 return tso.obj
-        
-        val = parser(open(file))
 
+        f = open(file)
+        val = parser(f)
+        f.close()
+        
         hashname = self.makePickleName(file)
         #self.createPickledFile(hashname,val)
         self.files[file] = TimeStampedObject(val,mtime,hashname)
         
         return val
-    

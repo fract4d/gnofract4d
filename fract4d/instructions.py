@@ -1,9 +1,7 @@
 # simple types for "assembler" instructions
 
-import string
-
-from fracttypes import Bool, Int, Float, Complex, Hyper, Color, Gradient, Image
-from fracttypes import TranslationError, typeObjectList
+from .fracttypes import (Bool, Int, Float, Complex, Hyper, Color, Image,
+                         TranslationError, typeObjectList)
 
 class ComplexArg:
     ' a pair of args'
@@ -101,7 +99,7 @@ def create_arg(t):
 class Insn:
     'An instruction to be written to output stream'
     def __init__(self,assem):
-        self.assem = assem # string format of instruction
+        self.assem = assem  # string format of instruction
     def source(self):
         return []
     def dest(self):
@@ -110,21 +108,21 @@ class Insn:
         try:
             lookup = {}
             i = 0
-            if self.src != None:
+            if self.src is not None:
                 for src in self.src:
                     sname = "s%d" % i
                     lookup[sname] = src.format()
                     i = i+1
                 i = 0
                 
-            if self.dst != None:
+            if self.dst is not None:
                 for dst in self.dst:
                     dname = "d%d" % i
                     lookup[dname] = dst.format()
                     i = i+1
             return self.assem % lookup
-        except Exception, exn:
-            print exn
+        except Exception as exn:
+            print(exn)
             msg = "%s with %s" % (self, lookup)
             raise TranslationError(
                 "Internal Compiler Error: can't format " + msg)
@@ -156,13 +154,13 @@ class Oper(Insn):
     def __str__(self):
         return "OPER(%s,[%s],[%s],%s)" % \
                (self.assem,
-                string.join([x.__str__() for x in self.src],","),
-                string.join([x.__str__() for x in self.dst],","),
+                ",".join([x.__str__() for x in self.src]),
+                ",".join([x.__str__() for x in self.dst]),
                 self.jumps)
 
 class Binop(Oper):
     'A binary infix operation, like addition'
-    def __init__(self, op, src, dst, generate_trace = False):
+    def __init__(self, op, src, dst, generate_trace=False):
         Insn.__init__(self,"")
         self.op = op
         self.src = src
@@ -180,7 +178,7 @@ class Binop(Oper):
         elif self.op == "-":
             val = klass(c1.value - c2.value)
         elif self.op == "/":
-            val =  klass(c1.value / c2.value)
+            val = klass(c1.value / c2.value)
         else:
             # don't know how to const_eval
             return self
@@ -190,8 +188,8 @@ class Binop(Oper):
     def __str__(self):
         return "BINOP(%s,[%s],[%s])" % \
                (self.op,
-                string.join([x.__str__() for x in self.src],","),
-                string.join([x.__str__() for x in self.dst],","))
+                ",".join([x.__str__() for x in self.src]),
+                ",".join([x.__str__() for x in self.dst]))
         
     def format(self):
         result = "%s = %s %s %s;" % (
@@ -221,7 +219,7 @@ class Label(Insn):
     
 class Move(Insn):
     ' A move instruction'
-    def __init__(self,src,dst, generate_trace = False):
+    def __init__(self,src,dst, generate_trace=False):
         Insn.__init__(self,"%(d0)s = %(s0)s;")
         self.src = src
         self.dst = dst
@@ -231,7 +229,7 @@ class Move(Insn):
     def source(self):
         return [self.src]
     def format(self):
-        result = "%s = %s;" % (self.dst[0].format(), self.src[0].format()) 
+        result = "%s = %s;" % (self.dst[0].format(), self.src[0].format())
         if self.trace:
             result += "printf(\"%s = %s\\n\",%s);" % (
                 self.dst[0].format(),

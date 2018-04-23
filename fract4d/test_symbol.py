@@ -1,12 +1,16 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # test symbol table implementation
 
-import fsymbol
+import collections
 import unittest
 import copy
+import sys
 
-from fracttypes import *
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import fsymbol, function
+from fract4d.fracttypes import *
 
 class SymbolTest(unittest.TestCase):
     def setUp(self):
@@ -30,7 +34,7 @@ class SymbolTest(unittest.TestCase):
         
         self.assertEqual(c["foo"].value,4)
         self.assertEqual(c["@fn1"][0].cname,"sin")
-        self.failUnless(c[name].is_temp == True)
+        self.assertTrue(c[name].is_temp == True)
         
     def testParamSlots(self):
         t = fsymbol.T("boo")
@@ -58,7 +62,7 @@ class SymbolTest(unittest.TestCase):
         self.assertEqual(7,t.nextParamSlot)
 
         # functions shouldn't affect this
-        f = fsymbol.OverloadList([Func([Int],Int,"ident")])
+        f = fsymbol.OverloadList([function.Func([Int],Int,"ident")])
         t["@myfunc"] = f
         self.assertNotEqual(True,hasattr(f,"param_slot"))
         self.assertEqual(7,t.nextParamSlot)
@@ -119,8 +123,8 @@ class SymbolTest(unittest.TestCase):
         t2["d"] = Var(Int,200)
         t2["@a"] = Var(Int, 3)
         t2["@b"] = Var(Float, 2)        
-        t1["@myfunc"] = fsymbol.OverloadList([Func([Int],Int,"ident")])
-        t2["@myotherfunc"] = fsymbol.OverloadList([Func([Int],Int,"ident")])
+        t1["@myfunc"] = fsymbol.OverloadList([function.Func([Int],Int,"ident")])
+        t2["@myotherfunc"] = fsymbol.OverloadList([function.Func([Int],Int,"ident")])
         t1.merge(t2)
 
         op = t1.order_of_params()
@@ -151,24 +155,26 @@ class SymbolTest(unittest.TestCase):
     def testSqr(self):
         sqr_c = self.t[("sqr")][2];
         sqr_i = self.t[("sqR")][0];
-        self.failUnless(isinstance(sqr_c, Func) and sqr_c.ret == Complex)
-        self.failUnless(isinstance(sqr_i, Func) and sqr_i.args == [Int])
+        self.assertTrue(isinstance(sqr_c, function.Func) and sqr_c.ret == Complex)
+        self.assertTrue(isinstance(sqr_i, function.Func) and sqr_i.args == [Int])
 
     def testNoOverride(self):
         self.assertRaises(KeyError,self.t.__setitem__,("sqr"),1)
         
     def testAddCheckVar(self):
         self.t["fish"] = Var(Int,1)
-        self.failUnless(self.t.has_key("fish"))
-        self.failUnless(self.t.has_key("FisH"))
+        self.assertTrue("fish" in self.t)
+        self.assertTrue("FisH" in self.t)
         x = self.t["fish"]
-        self.failUnless(isinstance(x,Var) and x.value == 1 and x.type == Int)
+        self.assertTrue(isinstance(x,Var))
+        self.assertEqual(x.value, 1)
+        self.assertEqual(x.type, Int)
 
     def test_user(self):
         self.t["fish"] = Var(Int,1,1)
-        self.failUnless(self.t.is_user("fish"))
-        self.failUnless(not self.t.is_user("z"))
-        self.failUnless(not self.t.is_user("cmag"))
+        self.assertTrue(self.t.is_user("fish"))
+        self.assertTrue(not self.t.is_user("z"))
+        self.assertTrue(not self.t.is_user("cmag"))
         
     def test_expand(self):
         l = fsymbol.efl("foo", "[_,_] , _", [Int, Float, Complex])
@@ -179,9 +185,9 @@ class SymbolTest(unittest.TestCase):
     def test_matches(self):
         times = self.t["*"]
         times_i = times[0]
-        self.failUnless(times_i.matchesArgs([Int,Int]))
-        self.failUnless(times_i.matchesArgs([Int,Bool]))
-        self.failUnless(not times_i.matchesArgs([Int,Color]))
+        self.assertTrue(times_i.matchesArgs([Int,Int]))
+        self.assertTrue(times_i.matchesArgs([Int,Bool]))
+        self.assertTrue(not times_i.matchesArgs([Int,Color]))
 
     def test_use_hash(self):
         self.assertRaises(KeyError, self.t.__setitem__, ("#foo"), 1)
@@ -219,11 +225,11 @@ class SymbolTest(unittest.TestCase):
         self.assertEqual(self.t["@fn1"][0].ret, Complex)
 
         params = self.t.parameters()
-        self.failUnless(isinstance(params["t__a_fn1"],Func))
+        self.assertTrue(isinstance(params["t__a_fn1"],function.Func))
 
     def testFirst(self):
         self.assertEqual(self.t["z"].first(),self.t["z"])
-        self.failUnless(isinstance(self.t["@fn1"].first(), Func))
+        self.assertTrue(isinstance(self.t["@fn1"].first(), function.Func))
         
     def testReset(self):
         self.t["fish"] = Var(Int, 1, 1)
@@ -256,7 +262,7 @@ class SymbolTest(unittest.TestCase):
             self.assertEqual(cnames.count(exp),1,exp)
         
     def testAllSymbolsWork(self):
-        for (name,val) in self.t.default_dict.items():
+        for (name,val) in list(self.t.default_dict.items()):
             try:
                 for item in val:
                     self.assertIsValidFunc(item)
@@ -265,7 +271,7 @@ class SymbolTest(unittest.TestCase):
 
     def testTemps(self):
         name = self.t.newTemp(Float)
-        self.failUnless(self.t[name].is_temp == True)
+        self.assertTrue(self.t[name].is_temp == True)
 
     def assertIsValidVar(self, val):
         if isinstance(val,Var):
@@ -280,7 +286,7 @@ class SymbolTest(unittest.TestCase):
         
     def assertIsValidFunc(self,val):
         specialFuncs = [ "noteq", "eq" ]
-        self.failUnless(callable(val.genFunc) or
+        self.assertTrue(isinstance(val.genFunc, collections.Callable) or
                         val.genFunc == None or
                         specialFuncs.count(val.cname) > 0, val.cname)
 

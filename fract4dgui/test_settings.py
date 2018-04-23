@@ -1,55 +1,42 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-#unit tests for settings window
+# unit tests for settings window
 
 import unittest
-import copy
-import math
-import os
-import sys
 
-import gtk
-import gettext
-os.environ.setdefault('LANG', 'en')
-gettext.install('gnofract4d')
+import testgui
 
-sys.path.insert(1, "..")
+from gi.repository import Gtk
 
-from fract4d import fc, fractal
-import settings
-import gtkfractal
+from fract4dgui import gtkfractal, settings
 
-class Test(unittest.TestCase):
+class Test(testgui.TestCase):
     def setUp(self):
-        self.compiler = fc.Compiler()
-        self.compiler.add_func_path("../formulas")
-        self.compiler.add_func_path("../fract4d")
-        
-        self.f = gtkfractal.T(self.compiler)
-        self.settings = settings.SettingsDialog(None,self.f)
+        self.f = gtkfractal.T(Test.g_comp)
+        self.settings = settings.SettingsPane(None,self.f)
         
     def tearDown(self):
         pass
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def search_for_named_widget(self, page, label_name):
         for child in page.get_children():
-            if isinstance(child, gtk.Label):
+            if isinstance(child, Gtk.Label):
                 this_label_name = child.get_text()
                 #print this_label_name
                 if this_label_name == label_name:
                     entry = child.get_mnemonic_widget()
                     self.assertNotEqual(entry, None,
                                         "all widgets should have mnemonics")
-                    self.assertEqual(isinstance(entry,gtk.Entry),True)
+                    self.assertEqual(isinstance(entry,Gtk.Entry),True)
                     return entry
-            elif isinstance(child, gtk.Container):
+            elif isinstance(child, Gtk.Container):
                 widget = self.search_for_named_widget(child,label_name)
                 if widget:
                     return widget
@@ -59,7 +46,7 @@ class Test(unittest.TestCase):
         notebook = self.settings.notebook
         i = 0
         page = notebook.get_nth_page(0)
-        while page != None:
+        while page is not None:
             this_page_name = notebook.get_tab_label_text(page)
             if this_page_name == page_name:
                 widget = self.search_for_named_widget(page,label_name)
@@ -74,7 +61,7 @@ class Test(unittest.TestCase):
 
     def get_first_transform(self):
         iter = self.settings.transform_store.get_iter_first()
-        if iter == None:
+        if iter is None:
             return None
         val = self.settings.transform_store.get(iter,0)[0]
         return val
@@ -114,9 +101,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(exp_pagelist, pagelist)
 
-    def testColorsPage(self):
-        gradarea = self.settings.gradarea
-            
+
 def suite():
     return unittest.makeSuite(Test,'test')
 

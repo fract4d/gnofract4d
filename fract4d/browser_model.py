@@ -1,6 +1,6 @@
-import os
+import os.path
 
-import fc, event, gradient
+from . import fc, event, gradient
 
 FRACTAL = 0
 OUTER = 1
@@ -8,14 +8,11 @@ INNER = 2
 TRANSFORM = 3
 GRADIENT = 4
 
-def stricmp(a,b):
-    return cmp(a.lower(),b.lower())
-
 class TypeInfo:
     def __init__(self, parent, compiler, t, exclude=None):
         self.parent = parent
         self.formula_type = t
-        self.exclude= exclude
+        self.exclude = exclude
         self.fname = None
         self.formula = None
         self.formulas = []
@@ -24,17 +21,17 @@ class TypeInfo:
 
     def update_files(self):
         self.files = self.compiler.find_files_of_type(self.formula_type)
-        self.files.sort(stricmp)
+        self.files.sort(key=lambda s : s.lower())
         
     def set_file(self,fname):
         if self.fname == fname:
             return
-        if None == fname:
-            self.formulas = []
+        if fname is None:
+            self.formulas.clear()
         else:
             ff = self.compiler.get_file(fname)
             self.formulas = ff.get_formula_names(self.exclude)
-            self.formulas.sort(stricmp)
+            self.formulas.sort(key=lambda s : s.lower())
         self.fname = fname
         self.set_formula(None)
         self.file_changed()
@@ -53,9 +50,9 @@ class TypeInfo:
 
     def _get_apply_status(self):
         "Indicate whether current settings can be applied"
-        if None == self.fname:
+        if self.fname is None:
             return False
-        if None == self.formula:
+        if self.formula is None:
             if self.formula_type == fc.FormulaTypes.GRADIENT:
                 if gradient.FileType.guess(self.fname) != gradient.FileType.UGR:
                     # no formula is only acceptable if this is a map, cs or GGR file
@@ -64,7 +61,7 @@ class TypeInfo:
         
         # some other type of file
         ir = self.compiler.get_formula(self.fname, self.formula)
-        if ir.errors != []:
+        if ir.errors:
             # errors compiling
             return False
 
@@ -102,12 +99,12 @@ class T:
             TypeInfo(self, compiler, fc.FormulaTypes.TRANSFORM),
             TypeInfo(self, compiler, fc.FormulaTypes.GRADIENT)
             ]
+        self.current = None
         self.current_type = -1
         self.type_changed = event.T()
         self.file_changed = event.T()
         self.formula_changed = event.T()
-        self.set_type(FRACTAL)
-        
+
     def formula_type_to_browser_type(self,t):
         if t == fc.FormulaTypes.FRACTAL:
             return FRACTAL
@@ -160,5 +157,3 @@ class T:
 
         r = self.compiler.get_text(fname)
         return r
-        
-instance = T(fc.instance)

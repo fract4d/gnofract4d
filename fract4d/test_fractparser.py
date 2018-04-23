@@ -1,12 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-
-import unittest
-import fractparser
-import absyn
 import re
-import fractlexer
-import preprocessor
+import sys
+import unittest
+
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import absyn
+from fract4d import fractlexer
+from fract4d import fractparser
+from fract4d import preprocessor
 
 class ParserTest(unittest.TestCase):
     def setUp(self):
@@ -24,48 +27,48 @@ class ParserTest(unittest.TestCase):
         
     def testEmpty(self):
         tree = self.parse("\n")
-        self.failUnless(absyn.CheckTree(tree))
+        self.assertTrue(absyn.CheckTree(tree))
         #print tree.pretty()
 
     def testEmptyFormula(self):
         tree = self.parse("t1 {\n}\n")
-        self.failUnless(absyn.CheckTree(tree))
+        self.assertTrue(absyn.CheckTree(tree))
         formula = tree.children[0]
-        self.failUnless(formula.type == "formula" and formula.leaf == "t1")
+        self.assertTrue(formula.type == "formula" and formula.leaf == "t1")
         #print tree.pretty()
 
     def testErrorThenFormula(self):
         tree = self.parse("gibberish~\nt1 {\n}\n")
-        self.failUnless(absyn.CheckTree(tree))
+        self.assertTrue(absyn.CheckTree(tree))
         #print tree.pretty()
         formula = tree.children[0]
-        self.failUnless(formula.type == "formula" and formula.leaf == "t1")
+        self.assertTrue(formula.type == "formula" and formula.leaf == "t1")
 
     def testErrorInFormula(self):
         tree = self.parse("t1 {\n ~\n}\n")
-        self.failUnless(absyn.CheckTree(tree))
+        self.assertTrue(absyn.CheckTree(tree))
         #print tree.pretty()
         formula = tree.children[0]
-        self.failUnless(formula.type == "formula")
+        self.assertTrue(formula.type == "formula")
         err = formula.children[0]
-        self.failUnless(err.type == "error")
+        self.assertTrue(err.type == "error")
         self.assertNotEqual(re.search("^2:",err.leaf),None,
                             "bad error message line number") 
 
     def testErrorBeforeAndInFormula(self):
         tree = self.parse("gibberish\nt1 {\n ~\n}\n")
-        self.failUnless(absyn.CheckTree(tree))
+        self.assertTrue(absyn.CheckTree(tree))
         #print tree.pretty()
         formula = tree.children[0]
-        self.failUnless(formula.type == "formula")
+        self.assertTrue(formula.type == "formula")
         err = formula.children[0]
-        self.failUnless(err.type == "error")
+        self.assertTrue(err.type == "error")
         self.assertNotEqual(re.search("^3:",err.leaf),None,
                             "bad error message line number") 
 
     def testErrorAfterFormula(self):
         tree = self.parse("t1{\n}\ngibberish")
-        self.failUnless(absyn.CheckTree(tree))
+        self.assertTrue(absyn.CheckTree(tree))
 
     def testNoNewlineAtEnd(self):
         t1 = self.parse("t1 {\n:\n}")
@@ -824,7 +827,7 @@ gradient:
         t = self.parse('''
         t1 {
         ''')
-        self.failUnless(absyn.CheckTree(t))
+        self.assertTrue(absyn.CheckTree(t))
         
     def testHeading(self):
         t1 = self.parse('''
@@ -912,7 +915,7 @@ bailout:
   }
   ''')
         self.assertIsValidParse(t1)
-        self.failUnless(
+        self.assertTrue(
             t1.children[0].children[0].type =="stmlist" and
             t1.children[0].children[0].leaf == "nameless" and
             t1.children[0].children[1].type == "stmlist" and
@@ -1008,12 +1011,11 @@ default:
         
     def assertIsBadFormula(self,s,message,line):
         t1 = self.parse(s)
-        #print t1.pretty()
-        self.failUnless(absyn.CheckTree(t1), "invalid tree created")
+        self.assertTrue(absyn.CheckTree(t1), "invalid tree created")
         formula = t1.children[0]
-        self.failUnless(formula.type == "formula")
+        self.assertTrue(formula.type == "formula")
         err = formula.children[0]
-        self.failUnless(err.type == "error", "error not found")
+        self.assertTrue(err.type == "error", "error not found")
         #print err.leaf
         self.assertNotEqual(re.search(message,err.leaf),None,
                             ("bad error message text '%s'", err.leaf))
@@ -1021,17 +1023,19 @@ default:
                             ("bad error message line number in '%s'", err.leaf)) 
         
     def assertIsValidParse(self,t1):
-        self.failUnless(absyn.CheckTree(t1))
+        self.assertTrue(absyn.CheckTree(t1))
         errors = self.allNodesOfType(t1,"error")
         self.assertEqual(errors,[], [ str(e) for e in errors])
         
     def assertParsesEqual(self, s1, s2):
         t1 = self.parse(self.makeMinimalFormula(s1))
         t2 = self.parse(self.makeMinimalFormula(s2))
+        #print(t1.pretty())
+        #print(t2.pretty())
         self.assertTreesEqual(t1,t2)
         
     def assertTreesEqual(self, t1, t2):
-        self.failUnless(
+        self.assertTrue(
             t1.DeepCmp(t2)==0,
             ("%s, %s should be equivalent" % (t1.pretty(), t2.pretty())))
 

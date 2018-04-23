@@ -1,14 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # test graph
 
 import unittest
-import copy
-import stdlib
-import types
+import sys
 
-from instructions import *
-import optimize
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d.instructions import *
+from fract4d import optimize
 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -37,7 +37,7 @@ class Test(unittest.TestCase):
 
     def assertTreesEqual(self,t1,t2):
         self.assertEqual(t1.__class__, t2.__class__)
-        if isinstance(t1,types.ListType):
+        if isinstance(t1,list):
             for (a,b) in zip(t1,t2):
                 self.assertTreesEqual(a,b)
 
@@ -88,8 +88,8 @@ class Test(unittest.TestCase):
             out = self.o.peephole_binop(input)
             try:                
                 self.assertTreesEqual(out, expected)
-            except Exception, exn:
-                print "Error comparing trees %s, %s" % (out,expected)
+            except Exception as exn:
+                print("Error comparing trees %s, %s" % (out,expected))
                 raise
                             
 def suite():

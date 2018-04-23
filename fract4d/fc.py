@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # A compiler from UltraFractal or Fractint formula files to C code
 
@@ -22,9 +22,8 @@
 
 # Finally we invoke the C compiler to convert to a native code shared library
 
-import getopt
 import sys
-import commands
+import subprocess
 import os.path
 import stat
 import random
@@ -32,16 +31,8 @@ import hashlib
 import re
 import copy
 
-import fractconfig
-import fractparser
-import fractlexer
-import translate
-import codegen
-import fracttypes
-import absyn
-import preprocessor
-import cache
-import gradient
+from . import (fractparser, fractlexer, translate, codegen, fracttypes, absyn,
+               preprocessor, cache, gradient)
 
 class FormulaTypes:
     FRACTAL = 0
@@ -50,10 +41,10 @@ class FormulaTypes:
     GRADIENT = 3
     NTYPES = 4
 
-    GRAD_UGR=0
-    GRAD_MAP=1
-    GRAD_GGR=2
-    GRAD_CS=3
+    GRAD_UGR = 0
+    GRAD_MAP = 1
+    GRAD_GGR = 2
+    GRAD_CS = 3
     matches = [
         re.compile(r'(\.frm\Z)|(\.ufm\Z)', re.IGNORECASE),
         re.compile(r'(\.cfrm\Z)|(\.ucl\Z)', re.IGNORECASE),
@@ -62,33 +53,31 @@ class FormulaTypes:
         ]
     
     # indexed by FormulaTypes above
-    extensions = [ "frm", "cfrm", "uxf", "ggr", "pal"]
+    extensions = ["frm", "cfrm", "uxf", "ggr", "pal"]
 
+    @staticmethod
     def extension_from_type(t):
         return FormulaTypes.extensions[t]
 
-    extension_from_type = staticmethod(extension_from_type)
-
+    @staticmethod
     def guess_type_from_filename(filename):
         if FormulaTypes.matches[FormulaTypes.FRACTAL].search(filename):
             return translate.T
         elif FormulaTypes.matches[FormulaTypes.COLORFUNC].search(filename):
-            return translate.ColorFunc        
+            return translate.ColorFunc
         elif FormulaTypes.matches[FormulaTypes.TRANSFORM].search(filename):
             return translate.Transform
         elif FormulaTypes.matches[FormulaTypes.GRADIENT].search(filename):
             return translate.GradientFunc
 
-    guess_type_from_filename = staticmethod(guess_type_from_filename)
-
+    @staticmethod
     def guess_formula_type_from_filename(filename):
-        for i in xrange(FormulaTypes.NTYPES):
+        for i in range(FormulaTypes.NTYPES):
             if FormulaTypes.matches[i].search(filename):
                 return i
         raise ValueError("Unknown file type for '%s'" % filename)
 
-    guess_formula_type_from_filename = staticmethod(guess_formula_type_from_filename)
-
+    @staticmethod
     def guess_gradient_subtype_from_filename(filename):
         filename = filename.lower()
         if filename.endswith(".ugr"):
@@ -101,15 +90,20 @@ class FormulaTypes:
             return FormulaTypes.GRAD_CS
         raise ValueError("Unknown gradient type for '%s'" % filename)
 
-    guess_gradient_subtype_from_filename = staticmethod(
-        guess_gradient_subtype_from_filename)
+    @staticmethod
+    def is_binary_filetype(filename):
+        if FormulaTypes.guess_formula_type_from_filename(filename) == FormulaTypes.GRADIENT and \
+           FormulaTypes.guess_gradient_subtype_from_filename(filename) == FormulaTypes.GRAD_CS:
+            return True
+        return False
 
+    @staticmethod
     def isFormula(filename):
         for matcher in FormulaTypes.matches:
             if matcher.search(filename):
                 return True
         return False
-    isFormula = staticmethod(isFormula)
+    
     
 class FormulaFile:
     def __init__(self, formulas, contents,mtime,filename):
@@ -130,22 +124,19 @@ class FormulaFile:
         '''return all the coloring funcs except those marked as only suitable
         for the OTHER kind (inside vs outside)'''
         names = []
-        for name in self.formulas.keys():
+        for name in list(self.formulas.keys()):
             sym = self.formulas[name].symmetry
-            if sym == None  or sym == "BOTH" or sym != skip_type:
+            if sym is None or sym == "BOTH" or sym != skip_type:
                 names.append(name)
 
         return names
     
 class Compiler:
-    def __init__(self):
+    def __init__(self, userConfig):
         self.parser = fractparser.parser
         self.lexer = fractlexer.lexer
         self.c_code = ""
         self.path_lists = [ [], [], [], [] ]
-        self.cache = cache.T()
-        self.cache_dir = os.path.expanduser("~/.gnofract4d-cache/")
-        self.init_cache()
         if 'win' != sys.platform[:3]:
             self.compiler_name = "gcc"
             self.flags = "-fPIC -DPIC -g -O3 -shared"
@@ -156,6 +147,9 @@ class Compiler:
             self.flags = "/EHsc /Gd /nologo /W3 /LD /MT /TP /DWIN32 /DWINDOWS /D_USE_MATH_DEFINES"
             self.output_flag = "/Fe"
             self.libs = "/link /LIBPATH:\"%s/fract4d\" fract4d_stdlib.lib" % sys.path[0] # /DELAYLOAD:fract4d_stdlib.pyd DelayImp.lib
+        self.update_from_prefs(userConfig)
+        self.cache = cache.T(userConfig.get("general","cache_dir"))
+        self.init_cache()
         self.tree_cache = {}
         self.leave_dirty = False
         self.next_inline_number = 0
@@ -200,7 +194,7 @@ class Compiler:
             for file in os.listdir(dir):
                 if os.path.isfile(os.path.join(dir,file)):
                     files[file] = 1
-        return files.keys()
+        return list(files.keys())
 
     def find_files_of_type(self,type):
         matcher = FormulaTypes.matches[type]
@@ -245,7 +239,7 @@ class Compiler:
 
     def last_chance(self,filename):
         '''does nothing here, but can be overridden by GUI to prompt user.'''
-        raise IOError("Can't find formula file %s in formula search path" % \
+        raise IOError("Can't find formula file %s in formula search path" %
                       filename)
 
     def compile_one(self,formula):
@@ -254,10 +248,10 @@ class Compiler:
         t = translate.T(absyn.Formula("",[],-1))
         cg = self.compile(t)
         t.merge(formula,"")
-        outputfile = os.path.abspath(self.generate_code(t, cg))        
+        outputfile = os.path.abspath(self.generate_code(t, cg))
         return outputfile
         
-    def compile_all(self,formula,cf0,cf1,transforms,options={}):        
+    def compile_all(self,formula,cf0,cf1,transforms,options={}):
         self.compile(formula,options)
         self.compile(cf0,options)
         self.compile(cf1,options)
@@ -269,7 +263,7 @@ class Compiler:
         t = translate.T(absyn.Formula("",[],-1))
         cg = self.compile(t,options)
         t.merge(formula,"")
-        t.merge(cf0,"cf0_")        
+        t.merge(cf0,"cf0_")
         t.merge(cf1,"cf1_")
 
         for transform in transforms:
@@ -284,7 +278,7 @@ class Compiler:
             dir = os.path.dirname(filename)
             if self.path_lists[type].count(dir) == 0:
                 # add directory to search path
-                self.path_lists[type].append(dir)            
+                self.path_lists[type].append(dir)
             return filename
 
         filename = os.path.basename(filename)
@@ -293,15 +287,15 @@ class Compiler:
             if os.path.exists(f):
                 return f
 
-        return self.last_chance(filename)        
+        return self.last_chance(filename)
 
     def add_endlines(self,result,final_line):
         "Add info on which is the final source line of each formula"
-        if None == result:
+        if result is None:
             return
 
         l = len(result.children)
-        for i in xrange(l):
+        for i in range(l):
             if i == l - 1:
                 result.children[i].last_line = final_line
             else:
@@ -313,7 +307,7 @@ class Compiler:
         try:
             pp = preprocessor.T(s)
             result = self.parser.parse(pp.out())
-        except preprocessor.Error, err:
+        except preprocessor.Error as err:
             # create an Error formula listing the problem
             result = self.parser.parse('error {\n}\n')
 
@@ -330,9 +324,13 @@ class Compiler:
     
     def load_formula_file(self, filename):
         try:
-            type = FormulaTypes.guess_formula_type_from_filename(filename)            
+            type = FormulaTypes.guess_formula_type_from_filename(filename)
             filename = self.find_file(filename,type)
-            s = open(filename,"r").read() # read in a whole file
+            mode = "r"
+            if FormulaTypes.is_binary_filetype(filename): mode = "rb"
+            f = open(filename, mode)
+            s = f.read()  # read in a whole file
+            f.close()
             basefile = os.path.basename(filename)
             mtime = os.stat(filename)[stat.ST_MTIME]
 
@@ -347,17 +345,17 @@ class Compiler:
                 formulas = self.parse_file(s)
 
             ff = FormulaFile(formulas,s,mtime,filename)
-            self.files[basefile] = ff 
+            self.files[basefile] = ff
 
             return ff
-        except Exception, err:
+        except Exception as err:
             #print "Error parsing '%s' : %s" % (filename, err)
             raise
 
     def out_of_date(self,filename):
         basefile = os.path.basename(filename)
         ff = self.files.get(basefile)
-        if not ff:            
+        if not ff:
             self.load_formula_file(filename)
             ff = self.files.get(basefile)
         return ff.out_of_date()
@@ -370,7 +368,7 @@ class Compiler:
             ff = self.files.get(basefile)
         elif ff.out_of_date():
             self.load_formula_file(filename)
-            ff = self.files.get(basefile)            
+            ff = self.files.get(basefile)
         return ff
 
     def get_formula_text(self,filename,formname):
@@ -391,10 +389,10 @@ class Compiler:
 
     def hashcode(self,c_code):
         hash = hashlib.md5()
-        hash.update(c_code)
-        hash.update(self.compiler_name)
-        hash.update(self.flags)
-        hash.update(self.libs)
+        hash.update(c_code.encode('utf-8'))
+        hash.update(self.compiler_name.encode('utf-8'))
+        hash.update(self.flags.encode('utf-8'))
+        hash.update(self.libs.encode('utf-8'))
         return hash.hexdigest()
         
     def generate_code(self,ir, cg, outputfile=None,cfile=None):
@@ -403,19 +401,21 @@ class Compiler:
 
         hash = self.hashcode(self.c_code)
         
-        if outputfile == None:
+        if outputfile is None:
             outputfile = self.cache.makefilename(hash,".so")
             if os.path.exists(outputfile):
                 # skip compilation - we already have this code
                 return outputfile
         
-        if cfile == None:
+        if cfile is None:
             cfile = self.cache.makefilename(hash,".c")
             if 'win' in sys.platform:
                 objfile = self.cache.makefilename(hash, ".obj")
 
-        open(cfile,"w").write(self.c_code)
-
+        f = open(cfile,"w")
+        f.write(self.c_code)
+        f.close()
+        
         # -march=i686 for 10% speed gain
         cmd = "%s \"%s\" %s %s\"%s\"" % \
               (self.compiler_name, cfile, self.flags, self.output_flag, outputfile)
@@ -424,7 +424,7 @@ class Compiler:
         cmd += " %s" % self.libs
         #print "cmd: %s" % cmd
 
-        (status,output) = commands.getstatusoutput(cmd)
+        (status,output) = subprocess.getstatusoutput(cmd)
         if status != 0:
             raise fracttypes.TranslationError(
                 "Error reported by C compiler:%s" % output)
@@ -433,7 +433,7 @@ class Compiler:
 
     def get_parsetree(self,filename,formname):
         ff = self.get_file(filename)
-        if ff == None : return None
+        if ff is None: return None
         return ff.get_formula(formname)
 
     def guess_type_from_filename(self,filename):
@@ -444,14 +444,19 @@ class Compiler:
 
         f = self.get_parsetree(filename,formname)
 
-        if f != None:
+        if f is not None:
             f = type(f,prefix)
         return f
 
     def get_gradient(self, filename, formname):
         g = gradient.Gradient()
-        if formname == None:
-            g.load(open(self.find_file(filename, 3))) # FIXME
+        if formname is None:
+            if FormulaTypes.is_binary_filetype(filename):
+                mode = "rb"
+            else:
+                mode = "r"
+            with open(self.find_file(filename, FormulaTypes.GRADIENT), mode) as fh:
+                g.load(fh)
         else:
             compiled_gradient = self.get_formula(filename,formname)
             g.load_ugr(compiled_gradient)
@@ -459,7 +464,7 @@ class Compiler:
         return g
 
     def get_random_gradient(self):
-        return self.get_random_formula(3) # FIXME
+        return self.get_random_formula(FormulaTypes.GRADIENT) # FIXME
 
     def get_random_formula(self,type):
         files = self.find_files_of_type(type)
@@ -467,38 +472,36 @@ class Compiler:
         
         if gradient.FileType.guess(file) == gradient.FileType.UGR:
             ff = self.get_file(file)
-            formulas = ff.formulas.keys()
+            formulas = list(ff.formulas.keys())
             formula = random.choice(formulas)
         else:
             formula = None
         return (file,formula)
     
     def clear_cache(self):
-        self.cache.clear()
+        if self.cache:
+            self.cache.clear()
 
     def __del__(self):
         if not self.leave_dirty:
             self.clear_cache()
 
-instance = Compiler()
-instance.update_from_prefs(fractconfig.instance)
-
 def usage():
-    print "FC : a compiler from Fractint .frm files to C code"
-    print "fc.py -o [outfile] -f [formula] infile"
+    print("FC : a compiler from Fractint .frm files to C code")
+    print("fc.py -o [outfile] -f [formula] infile")
     sys.exit(1)
 
 def generate(fc,formulafile, formula, outputfile, cfile):
     # find the function we want
     ir = fc.get_formula(formulafile,formula)
-    if ir == None:
-        raise Exception("Can't find formula %s in %s" % \
+    if ir is None:
+        raise Exception("Can't find formula %s in %s" %
               (formula, formulafile))
 
-    if ir.errors != []:
-        print "Errors during translation"
+    if ir.errors:
+        print("Errors during translation")
         for e in ir.errors:
-            print e
+            print(e)
         raise Exception("Errors during translation")
 
     cg = fc.compile(ir)
@@ -510,10 +513,10 @@ def main(args):
     for arg in args:
         ff = fc.load_formula_file(arg)
         for name in ff.get_formula_names():
-            print name
+            print(name)
             form = fc.get_formula(arg,name)
-            cg = fc.compile(form)
-            
+            fc.compile(form)
+
+
 if __name__ == '__main__':
     main(sys.argv[1:])
-

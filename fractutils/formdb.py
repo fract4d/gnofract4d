@@ -1,8 +1,7 @@
 
 import re
-import httplib
 
-from fractutils import slave, fetch
+from . import slave, fetch
 
 target_base = "http://formulas.ultrafractal.com/cgi-bin/"
 

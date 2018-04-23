@@ -1,54 +1,45 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-#unit tests for settings window
+# unit tests for settings window
 
 import unittest
-import copy
-import math
-import os
-import sys
 
-import gtk
-import gettext
-os.environ.setdefault('LANG', 'en')
-gettext.install('gnofract4d')
-sys.path.insert(1, "..")
+import testgui
 
-from fract4d import fc, fractal
-import painter
-import gtkfractal
+from gi.repository import Gtk
+
+from fract4dgui import gtkfractal, painter
 
 class FakeEvent:
     def __init__(self,**kwds):
         self.__dict__.update(kwds)
 
-class Test(unittest.TestCase):
+class Test(testgui.TestCase):
     def setUp(self):
-        self.compiler = fc.Compiler()
-        self.compiler.add_func_path("../formulas")
-        self.compiler.add_func_path("../fract4d")
-        
-        self.f = gtkfractal.T(self.compiler)
-        self.settings = painter.PainterDialog(None,self.f)
+        self.f = gtkfractal.T(Test.g_comp)
+        parent = Gtk.Window()
+        self.settings = painter.PainterDialog(parent,self.f)
 
     def tearDown(self):
         pass
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testPaintOnUnknown(self):
+        self.settings.show()
         self.assertEqual(True, self.f.paint_mode)
         event = FakeEvent(x=0,y=0,button=1)
         self.f.onButtonPress(self.f.widget,event)
         self.f.onButtonRelease(self.f.widget,event)
+        self.settings.hide()
+        self.assertEqual(False, self.f.paint_mode)
 
-        
-        
+
 def suite():
     return unittest.makeSuite(Test,'test')
 

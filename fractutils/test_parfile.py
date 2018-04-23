@@ -1,23 +1,21 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # test cases for parfile.py
 
-
 import string
 import unittest
-import StringIO
+import io
 import math
+import sys
 
-import testbase
+if sys.path[1] != "..": sys.path.insert(1, "..")
 
-import parfile
-import fractal
-import fc
-import preprocessor
-import gradient
+from fract4d import testbase, fractal, fractconfig, fc, preprocessor, gradient
+from fractutils import parfile
 
-g_comp = fc.Compiler()
+g_comp = fc.Compiler(fractconfig.T(""))
 g_comp.add_func_path("../formulas")
+g_comp.add_func_path("../fract4d")
 g_comp.load_formula_file("gf4d.frm")
 g_comp.load_formula_file("test.frm")
 g_comp.load_formula_file("gf4d.cfrm")
@@ -354,7 +352,7 @@ class ParTest(testbase.TestBase):
         colors = parfile.colorRange("0000HG5JA9L6VNRlCeJC0JJRJCnJ6z`UzokzuuuzzzfbjqaxkTreHn_6i`9oaAtbCzbCz_NzVUzR`yNhwHnvCss9yrozzrpzvfzyXzzLzz6yzGwzOvzUsz`ryepxkowpntnqrlspkwniykhzifzhezdiq`laXpJUr0GbsLawO`yR_zUYzYXz`VzbUzeUzkVzqXzwYzz_zz`zzazsiw_paVrbTtbQwbLybHzbEzbOqhVdlaQpYXiUaaRhUNlLJqAz5bz2fz2iz2kz0nz0pw0rt0ts6ssCsrGrrLrrQrqTqqXqq_qlYjhXbbVXYUOTTGNR5HQ0LTANUNOXXRYeT`nUavVbzU_zTXzRUzRRzQOzOLzNHyNEyXHweLvlOstRrzUpzVox_jnaebdaQfXAiR0kN0nH5pCAr6Gs2Lk5Qb6TV9XLA`9Cb0CVCAOOAE_A5hACiOJiYQifVjp`jxejzohqxebzbNza0o_jJXzYiyishszOqvRpnUneXlX_jNaiAdh0feE`dTVadQ`oJYyCXz5TnGalRjk`rjiziqziytjYhk0jiCkfQle`niVnkQnnJnpCnr5nt0fo6_iGRbOHXV9RaTHjf9rs0yvftwzpsznpzklziizfezdazarzwozxlzxizxfzybzy`zyYzyVzzTzzQzzNzzJzzHzzGzzEzzCztAzl9ze6zYzzQzzzzzyzzqzzhzz_zzkzzvzzzzzijzelzazzzzzzzzzzzzzzzzzzzzzvzxozsizpazk0zR0zO0zL")
 
         check_grad = gradient.Gradient()
-        check_grad.load_map_file(StringIO.StringIO(map),-1)
+        check_grad.load_map_file(io.StringIO(map),-1)
 
         for(thecolor,expcolor) in zip(colors[1:],check_grad.segments):
             self.assertEqual(thecolor[0],int(255*expcolor.left_color[0]))
@@ -362,20 +360,20 @@ class ParTest(testbase.TestBase):
             self.assertEqual(thecolor[2],int(255*expcolor.left_color[2]))
             
     def testLoadFOTD1(self):
-        fotd_file = StringIO.StringIO(fotd)
+        fotd_file = io.StringIO(fotd)
         f = fractal.T(g_comp)        
         parfile.parse(fotd_file, f)
         self.assertEqual(f.maxiter, 72000)
 
     def testGetParams(self):
-        fotd_file = StringIO.StringIO(fotd)
+        fotd_file = io.StringIO(fotd)
         
         params = parfile.get_params(fotd_file)
         self.assertEqual(len(params), 18)
         self.assertEqual(params[0],"FOTD_for_04-05-06")
 
     def testGetPairs(self):
-        fotd_file = StringIO.StringIO(fotd)
+        fotd_file = io.StringIO(fotd)
         
         params = parfile.get_params(fotd_file)
         pairs = parfile.get_param_pairs(params)

@@ -1,0 +1,41 @@
+notebook grid {
+    padding: 10px;
+}
+
+#dialog_label_box {
+    margin: 2px;
+}
+
+#dialog_label_box > label {
+    font-weight: bold;
+}
+
+#main_window progressbar {
+    background-color: grey;
+}
+
+#main_window progressbar text {
+    color: white;
+    margin-top: 0.3em;
+}
+
+#main_window progressbar progress {
+    /* produces annoying warnings on ubuntu 16.04 min-height: 3.5em; */
+}
+
+#settings_notebook tab {
+    padding: 2px;
+}
+
+#settings_notebook textview {
+    padding: 4px;
+    font-family: monospace;
+}
+
+#weirdbox {
+    margin-top: 4px;
+}
+
+#weirdbox scale {
+    padding: 2px;
+}

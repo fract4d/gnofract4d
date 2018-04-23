@@ -1,5 +1,5 @@
 Stripes {
-; Jussi Härkönen, 07-01-02
+; Jussi HÃ¤rkÃ¶nen, 07-01-02
 ; See Fibers and Things by Ron Barnett for a similar coloring
 ; for convergent fractals.
 ;
@@ -316,7 +316,7 @@ default:
 
 
 CircularGrid {
-; Jussi Härkönen, Sep-2006
+; Jussi HÃ¤rkÃ¶nen, Sep-2006
 ; First public version 07-01-13
 ;
 ; Uses a grid of disks forming circles around the center to
@@ -494,7 +494,7 @@ endparam
 }
 
 SmoothIterationCount {
-; Jussi Härkönen, 07-02-03
+; Jussi HÃ¤rkÃ¶nen, 07-02-03
 ;
 ; This is the same as the smooth (Mandelbrot) coloring, supplemented
 ; with auto-power (needed for the Perforated formulas) and the

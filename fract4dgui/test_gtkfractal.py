@@ -1,29 +1,21 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import copy
 import math
-import os
-import gettext
-import sys
+import os.path
 
-sys.path.insert(1, "..")
-from fract4d import fc, fractal
+import testgui
 
-import gtkfractal
-import gtk
+from gi.repository import Gdk, Gtk
 
-os.environ.setdefault('LANG', 'en')
-gettext.install('gnofract4d')
-
-# centralized to speed up tests
-g_comp = fc.Compiler()
-g_comp.add_func_path("../fract4d")
-g_comp.add_func_path("../formulas")
+from fract4dgui import gtkfractal
 
 class FakeEvent:
     def __init__(self,**kwds):
         self.__dict__.update(kwds)
+    def get_state(self):
+        return self.state
 
 class CallCounter:
     def __init__(self):
@@ -39,27 +31,23 @@ class Recurser:
         nv = f.params[f.MAGNITUDE]
         f.set_param(f.MAGNITUDE, nv * 2.0)
 
-class TestHidden(unittest.TestCase):
-    def setUp(self):
-        global g_comp
-        self.compiler = g_comp
-
+class TestHidden(testgui.TestCase):
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testCreate(self):
         # draw a default fractal
-        f = gtkfractal.Hidden(self.compiler,64,40)
+        f = gtkfractal.Hidden(TestHidden.g_comp,64,40)
         f.connect('status-changed', self.quitloop)
         f.draw_image(0,1)
         self.wait()
 
     def testCopy(self):
-        f = gtkfractal.Hidden(self.compiler,64,40)
+        f = gtkfractal.Hidden(TestHidden.g_comp,64,40)
         copy = f.copy_f()
         mag = f.get_param(f.MAGNITUDE)
         copy.set_param(copy.MAGNITUDE,176.3)
@@ -67,7 +55,7 @@ class TestHidden(unittest.TestCase):
         self.assertNotEqual(mag,copy.get_param(copy.MAGNITUDE))
 
     def testSignals(self):
-        f = gtkfractal.Hidden(self.compiler,64,40)
+        f = gtkfractal.Hidden(TestHidden.g_comp,64,40)
         cc = CallCounter()
         f.connect('parameters-changed', cc.cb)
         self.assertEqual(cc.count,0)
@@ -88,29 +76,29 @@ class TestHidden(unittest.TestCase):
         f.set_size(57,211)
         f.set_size(57,211)
         while cc.count < 3:
-            gtk.main_iteration()
+            Gtk.main_iteration()
 
     def testLoad(self):
-        f = gtkfractal.Hidden(self.compiler,64,40)
-        f.loadFctFile(file("../testdata/test_bail.fct"))
-        self.assertEqual(f.saved, True)        
+        f = gtkfractal.Hidden(TestHidden.g_comp,64,40)
+        with open("../testdata/test_bail.fct") as fh:
+            f.loadFctFile(fh)
+        self.assertEqual(f.saved, True)
         f.connect('status-changed', self.quitloop)
         f.draw_image(0,1)
-        self.wait()        
+        self.wait()
 
     def testBigImage(self):
-        f = gtkfractal.HighResolution(self.compiler,640,400)
+        f = gtkfractal.HighResolution(TestHidden.g_comp,640,400)
         f.connect('status-changed', self.quitloop)
-        f.draw_image("hires.png")
+        hires_image = os.path.join(TestHidden.tmpdir.name, "hires.png")
+        f.draw_image(hires_image)
         self.wait()
-        os.remove("hires.png")
+        self.assertEqual(True,os.path.exists(hires_image))
 
-class Test(unittest.TestCase):
+class Test(testgui.TestCase):
     def setUp(self):
-        global g_comp
-        self.compiler = g_comp
-        self.window = gtk.Window()
-        self.f = gtkfractal.T(self.compiler)
+        self.window = Gtk.Window()
+        self.f = gtkfractal.T(Test.g_comp)
         self.window.add(self.f.widget)
         self.f.widget.realize()
                 
@@ -119,17 +107,17 @@ class Test(unittest.TestCase):
         self.f = None
         
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testCreate(self):
         # draw a default fractal
         self.f.connect('status-changed', self.quitloop)
         self.f.draw_image(0,1)
-        self.wait()        
+        self.wait()
 
     def disabled_testSignalsDontRecurse(self):
         # test no recurse, but doesn't work. Maybe I've misunderstood
@@ -144,13 +132,13 @@ class Test(unittest.TestCase):
         self.f.set_formula("test.frm","test_func")
         self.f.set_outer("test.cfrm","flat")
         
-        table = gtk.Table()
+        table = Gtk.Grid()
         self.f.populate_formula_settings(table, 0)
 
         children = table.get_children()
         list.reverse(children)
 
-        names = [x.get_text() for x in children if isinstance(x,gtk.Label)]
+        names = [x.get_text() for x in children if isinstance(x,Gtk.Label)]
 
         self.assertEqual(names[0],"Max Iterations")
         self.assertEqual(names[1],"Bailfunc")
@@ -158,13 +146,13 @@ class Test(unittest.TestCase):
         self.assertEqual(names[3],"Param with min and max")
         self.assertEqual(names[4],"Myfunc")
         
-        table = gtk.Table()
+        table = Gtk.Grid()
         self.f.populate_formula_settings(table, 1)
 
         children = table.get_children()
         list.reverse(children)
 
-        names = [x.get_text() for x in children if isinstance(x,gtk.Label)]
+        names = [x.get_text() for x in children if isinstance(x,Gtk.Label)]
 
         self.assertEqual(
             names,
@@ -175,13 +163,13 @@ class Test(unittest.TestCase):
     def testIntParamSetting(self):
         self.f.set_formula("test.frm","fn_with_intparam")
 
-        table = gtk.Table()
+        table = Gtk.Grid()
         self.f.populate_formula_settings(table, 0)
 
     def testAllSettingsTypes(self):
         self.f.set_formula("test.frm","test_all_types")
         
-        table = gtk.Table()
+        table = Gtk.Grid()
         self.f.populate_formula_settings(table, 0)
         
     def testButton1(self):
@@ -232,10 +220,9 @@ class Test(unittest.TestCase):
         tparams = copy.copy(f.params())
 
         f.onButtonRelease(f.widget,
-                          FakeEvent(button=1,state=gtk.gdk.SHIFT_MASK))
+                          FakeEvent(button=1,state=Gdk.ModifierType.SHIFT_MASK))
         self.assertEqual(f.params(),tparams)
 
-        
     def testZooms(self):
         self.doTestZooms(1)
 
@@ -317,7 +304,7 @@ class Test(unittest.TestCase):
         f = self.f
         tparams = copy.copy(f.params())
 
-        # middle click in center goes to Julia 
+        # middle click in center goes to Julia
         evt = FakeEvent(button=2,x=f.width/2,y=f.height/2)
         f.onButtonRelease(f.widget,evt)
         tparams[f.XZANGLE] = math.pi/2
@@ -358,13 +345,13 @@ class Test(unittest.TestCase):
         Disabled because if we don\'t crash wait() hangs'''
         self.f.loadFctFile(open("../testdata/tumor.fct"))
         self.f.compile()
-        print "d1"
+        print("d1")
         self.f.draw_image(0,1)
-        print "d1 done"
+        print("d1 done")
         self.f.set_formula("gf4d.frm", "Buffalo")
-        print "d2"
+        print("d2")
         self.f.draw_image(0,1)
-        print "d2 done"
+        print("d2 done")
         self.wait()
 
     def assertNearlyEqual(self,a,b):
@@ -372,7 +359,7 @@ class Test(unittest.TestCase):
         epsilon = 1.0e-12
         for (ra,rb) in zip(a,b):
             d = abs(ra-rb)
-            self.failUnless(d < epsilon,"%f != %f (by %f)" % (ra,rb,d))
+            self.assertTrue(d < epsilon,"%f != %f (by %f)" % (ra,rb,d))
 
             
 def suite():

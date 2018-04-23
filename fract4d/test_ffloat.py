@@ -1,16 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
-import types
 
 import testbase
 
-import ffloat
-
-from ffloat import Float, PrecisionError
+from fract4d import ffloat
+from fract4d.ffloat import Float, PrecisionError
 
 if ffloat.has_bigmath:
-    import gmpy
+    import gmpy2
 
 save_has_bigmath = ffloat.has_bigmath
 
@@ -23,12 +21,12 @@ class NoBigMathTest(testbase.TestBase):
         
     def testCreate(self):
         f = Float(0.0) 
-        self.assertEqual(type(f), types.FloatType)
+        self.assertEqual(type(f), float)
         self.assertEqual(0.0, f)
 
     def testCreateWithValue(self):
         f = Float(-1.0e40) 
-        self.assertEqual(type(f), types.FloatType)
+        self.assertEqual(type(f), float)
         self.assertEqual(-1.0e40, f)
 
     def testCreateWithDefaultPrecision(self):

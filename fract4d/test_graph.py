@@ -1,12 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # test graph
 
 import unittest
-import copy
-import stdlib
+import sys
 
-import graph
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import graph
 
 class Test(unittest.TestCase):
     def setUp(self):

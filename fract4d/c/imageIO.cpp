@@ -6,7 +6,9 @@
 class image_writer : public ImageWriter
 {
 public:
-    virtual ~image_writer() {};
+    virtual ~image_writer() {
+	fclose(fp);
+    };
 protected:
     image_writer(FILE *fp_, IImage *image_) {
 	fp = fp_;
@@ -20,7 +22,9 @@ protected:
 class image_reader : public ImageReader
 {
 public:
-    virtual ~image_reader() {};
+    virtual ~image_reader() {
+	fclose(fp);
+    };
 protected:
     image_reader(FILE *fp_, IImage *image_) {
 	fp = fp_;

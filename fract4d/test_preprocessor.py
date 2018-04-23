@@ -1,7 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
+import sys
 import unittest
-import preprocessor
+
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import preprocessor
 
 class Test(unittest.TestCase):
     def testEmpty(self):
@@ -74,7 +78,7 @@ class Test(unittest.TestCase):
             $UNDEF
             ''')
             self.fail("should've raised an exception")
-        except preprocessor.Error, err:
+        except preprocessor.Error as err:
             self.assertEqual(str(err), "2: $UNDEF without variable")
                     
     def testIfWithoutEndif(self):
@@ -83,7 +87,7 @@ class Test(unittest.TestCase):
             $IFDEF foople
             ''')
             self.fail("Should have raised an exception")
-        except preprocessor.Error, err:
+        except preprocessor.Error as err:
             self.assertEqual(str(err), "2: $IFDEF without $ENDIF")
 
     def testEndifWithoutIf(self):
@@ -97,7 +101,7 @@ class Test(unittest.TestCase):
             $ENDIF
             ''')
             self.fail("Should have raised an exception")
-        except preprocessor.Error, err:
+        except preprocessor.Error as err:
             self.assertEqual(str(err), "7: $ENDIF without $IFDEF")
 
     def testIfdefWithoutVar(self):
@@ -108,7 +112,7 @@ class Test(unittest.TestCase):
             $ENDIF
             ''')
             self.fail("Should have raised an exception")
-        except preprocessor.Error, err:
+        except preprocessor.Error as err:
             self.assertEqual(str(err), "2: $IFDEF without variable")
 
     def testDefine(self):
@@ -120,7 +124,7 @@ class Test(unittest.TestCase):
         try:
             pp = preprocessor.T('$define !!!\n')
             self.fail("Should have raised an exception")
-        except preprocessor.Error, err:
+        except preprocessor.Error as err:
             self.assertEqual(str(err), "1: $DEFINE without variable")
 
     def testDefineWorks(self):

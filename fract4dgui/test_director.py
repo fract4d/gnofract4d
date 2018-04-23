@@ -1,27 +1,18 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # unit tests for renderqueue module
 
+import os.path
 import unittest
-import sys
-import os
-import commands
 
-import gtk
-import gettext
-os.environ.setdefault('LANG', 'en')
-gettext.install('gnofract4d')
+import testgui
 
-sys.path.insert(1, "..")
-import director, PNGGen, hig
+from gi.repository import Gtk
 
-from fract4d import fractal, image, fc, animation
+from fract4dgui import director, PNGGen, hig
+from fract4d import fractal, animation
 
-g_comp = fc.Compiler()
-g_comp.add_func_path("../fract4d")
-g_comp.add_func_path("../formulas")
-
-class Test(unittest.TestCase):
+class Test(testgui.TestCase):
     def setUp(self):
         # ensure any dialog boxes are dismissed without human interaction
         hig.timeout = 250
@@ -30,58 +21,49 @@ class Test(unittest.TestCase):
         pass
 
     def wait(self):
-        gtk.main()
+        Gtk.main()
 
     def quitloop(self,rq):
-        gtk.main_quit()
+        Gtk.main_quit()
 
-    def removeIfExists(self,file):
-        if os.path.exists(file):
-            os.remove(file)
-            
     def testDirectorDialog(self):
-        self.removeIfExists("video.avi")
-
-        f = fractal.T(g_comp)
-        dd=director.DirectorDialog(None,f,"")
-        dd.show(None,None,f,True,"")
-        dd.animation.set_png_dir("./")
+        f = fractal.T(Test.g_comp)
+        parent = Gtk.Window()
+        dd = director.DirectorDialog(parent,f,Test.userConfig)
+        dd.show()
+        dd.animation.set_png_dir(Test.tmpdir.name)
         dd.animation.set_fct_enabled(False)
         dd.animation.add_keyframe("../testdata/director1.fct",1,10,animation.INT_LOG)
         dd.animation.add_keyframe("../testdata/director2.fct",1,10,animation.INT_LOG)
-        for f in dd.animation.create_list():
-            self.removeIfExists(f)
 
-        dd.animation.set_avi_file("./video.avi")
+        video_file = os.path.join(Test.tmpdir.name, "video.webm")
+        dd.animation.set_avi_file(video_file)
         dd.animation.set_width(320)
         dd.animation.set_height(240)
-        dd.generate(True)
+        dd.generate(dd.converterpath!=None)
             
-        self.assertEqual(True,os.path.exists("./image_0000000.png"))
-        self.assertEqual(True,os.path.exists("./image_0000001.png"))
-        if dd.transpath != None:
-            # only check for video if transcode is installed
-            self.assertEqual(True,os.path.exists("video.avi"))
+        self.assertEqual(True,os.path.exists(os.path.join(Test.tmpdir.name, "image_0000000.png")))
+        self.assertEqual(True,os.path.exists(os.path.join(Test.tmpdir.name, "image_0000001.png")))
+        if dd.converterpath:
+            # only check for video if video converter is installed
+            self.assertEqual(True,os.path.exists(video_file))
 
         dd.destroy()
-        os.remove("list")
-        os.remove("./image_0000000.png")
-        os.remove("./image_0000001.png")
 
     def assertRaisesMessage(self, excClass, msg, callable, *args, **kwargs):
         try:
             callable(*args,**kwargs)
-        except excClass, exn:
+        except excClass as exn:
             self.assertEqual(msg,str(exn))
         else:
             if hasattr(excClass,'__name__'): excName = excClass.__name__
             else: excName = str(excClass)
-            raise self.failureException, "%s not raised" % excName
+            raise self.failureException("%s not raised" % excName)
 
     def testOwnSanity(self):
         # exercise each of the checks in the check_sanity function
-        f = fractal.T(g_comp)
-        dd=director.DirectorDialog(None,f,"")
+        f = fractal.T(Test.g_comp)
+        dd = director.DirectorDialog(None,f,Test.userConfig)
         
         dd.animation.add_keyframe("/foo/director1.fct",1,10,animation.INT_LOG)
         self.assertRaisesMessage(
@@ -119,8 +101,8 @@ class Test(unittest.TestCase):
             dd.check_sanity)
         
     def testKeyframeClash(self):
-        f = fractal.T(g_comp)
-        dd= director.DirectorDialog(None,f,"")
+        f = fractal.T(Test.g_comp)
+        dd = director.DirectorDialog(None,f,Test.userConfig)
 
         dd.check_for_keyframe_clash("/a","/b")
         
@@ -132,13 +114,13 @@ class Test(unittest.TestCase):
             dd.check_for_keyframe_clash, "/tmp/foo.fct", "/tmp/")
 
     def testPNGGen(self):
-        f = fractal.T(g_comp)
-        dd= director.DirectorDialog(None,f,"")
-        pg = PNGGen.PNGGeneration(dd.animation,g_comp)
+        f = fractal.T(Test.g_comp)
+        dd = director.DirectorDialog(None,f,Test.userConfig)
+        pg = PNGGen.PNGGeneration(dd.animation,Test.g_comp,dd)
         pg.generate_png()
         
         dd.destroy()
-        
+
 def suite():
     return unittest.makeSuite(Test,'test')
 

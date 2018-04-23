@@ -1,23 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import math
 
 import testbase
 
-import fc
-import fractal
-import fract4dc
-import image
-
-from test_fractalsite import FractalSite
-
-# centralized to speed up tests
-g_comp = fc.Compiler()
-g_comp.add_func_path("../formulas")
-g_comp.load_formula_file("gf4d.frm")
-g_comp.load_formula_file("gf4d.cfrm")
-g_comp.load_formula_file("test.frm")
+from fract4d import fractal, fract4dc, image
+from fract4d.test_fractalsite import FractalSite
 
 def sum(l):
     x = 0
@@ -25,12 +14,16 @@ def sum(l):
         x += a
     return x
 
-class Test(testbase.TestBase):
-    def setUp(self):
-        global g_comp
-        self.compiler = g_comp
+class Test(testbase.ClassSetup):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.g_comp.load_formula_file("gf4d.frm")
+        cls.g_comp.load_formula_file("gf4d.cfrm")
+        cls.g_comp.load_formula_file("test.frm")
 
-        self.f = fractal.T(self.compiler)
+    def setUp(self):
+        self.f = fractal.T(Test.g_comp)
         self.f.render_type = 2
         self.f.set_formula("test.frm", "test_hypersphere")
         self.f.compile()
@@ -141,8 +134,8 @@ class Test(testbase.TestBase):
         self.assertNearlyEqual(root, lookfor, 1.0e-10)
 
         # check each pixel against closed-form results
-        for y in xrange(0,30):
-            for x in xrange(0,40):
+        for y in range(0,30):
+            for x in range(0,40):
                 look = fract4dc.ff_look_vector(self.ff,x,y)
                 (is_hit,root) = fract4dc.fw_find_root(self.fw, [0,0,-40.0,0],look)
                 (should_be_hit, real_root) = self.intersect_sphere(eye,look)
@@ -179,4 +172,3 @@ def suite():
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')
-

@@ -1,9 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # test types which are used by formula authors
 
-import fracttypes
+import sys
 import unittest
+
+if sys.path[1] != "..": sys.path.insert(1, "..")
+
+from fract4d import fracttypes, function
 
 class Test(unittest.TestCase):
     def testTypeCtor(self):
@@ -78,7 +82,7 @@ class Test(unittest.TestCase):
 
         
     def testTypeIDs(self):
-        for i in xrange(len(fracttypes.typeObjectList)):
+        for i in range(len(fracttypes.typeObjectList)):
             self.assertEqual(i,fracttypes.typeObjectList[i].typeid)
             
     def testPrintfOfType(self):
@@ -116,7 +120,7 @@ class Test(unittest.TestCase):
             fracttypes.IntArray : "int *"
             }
 
-        for (k,v) in expected.items():            
+        for (k,v) in list(expected.items()):            
             self.assertEqual(v,fracttypes.typeObjectList[k].cname)
 
     def testFloatInitVal(self):
@@ -199,7 +203,7 @@ class Test(unittest.TestCase):
             v.init_val())
 
     def testFunc(self):
-        f = fracttypes.Func(
+        f = function.Func(
             [fracttypes.Int,fracttypes.Int], fracttypes.Int, "wibble", pos = 7)
         self.assertEqual([fracttypes.Int,fracttypes.Int], f.args)
         self.assertEqual(fracttypes.Int,f.ret)

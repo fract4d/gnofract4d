@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 
 import testbase
 
-import event
+from fract4d import event
 
 
 class Foo:

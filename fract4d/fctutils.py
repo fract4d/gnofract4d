@@ -1,15 +1,13 @@
 # generally useful funcs for reading in .fct files
 
-import string
 import base64
-import StringIO
+import io
 import gzip
-import struct
 
 class T:
     def __init__(self,parent=None):
         self.endsect = "[endsection]"
-        self.tr = string.maketrans("[] ","___")
+        self.tr = str.maketrans("[] ", "___")
         self.parent = parent
         
     def warn(self,msg):
@@ -18,13 +16,13 @@ class T:
 
     def load(self,f):
         line = f.readline()
-        while line != "":
+        while line:
             (name,val) = self.nameval(line)
-            if name != None:
+            if name is not None:
                 if name == self.endsect:
                     break
 
-                if name=="compressed":
+                if name == "compressed":
                     compressed = True
                 else:
                     compressed = False
@@ -36,7 +34,7 @@ class T:
                         if compressed:
                             line = line.rstrip()
                         vals.append(line)
-                        line = f.readline()                    
+                        line = f.readline()
                     val = "".join(vals)
 
                 if name == "compressed":
@@ -56,10 +54,10 @@ class T:
         klass = self.__class__
         while True:
             meth = klass.__dict__.get(methname)
-            if meth != None:
+            if meth is not None:
                 break
             bases = klass.__bases__
-            if len(bases) > 0:                    
+            if len(bases) > 0:
                 klass = bases[0]
             else:
                 break
@@ -71,8 +69,8 @@ class T:
 
     def decompress(self,b64string):
         # decompress remaining codes
-        bytes = base64.decodestring(b64string)
-        embedded_file = gzip.GzipFile(None,"rb",9,StringIO.StringIO(bytes))
+        bytes = base64.b64decode(b64string.encode("latin_1"))
+        embedded_file = io.TextIOWrapper(gzip.GzipFile(None,"rb",9,io.BytesIO(bytes)))
         self.load(embedded_file)
 
     def nameval(self,line):
@@ -84,14 +82,17 @@ class T:
             val = x[1]
         return (x[0],val)
 
-class Compressor(gzip.GzipFile):
+class Compressor(io.TextIOWrapper):
     def __init__(self):
-        self.sio = StringIO.StringIO("")
-        gzip.GzipFile.__init__(self,None,"wb",9,self.sio)
+        self.sio = io.BytesIO()
+        self.gzipfile = gzip.GzipFile(None,"w",9,self.sio)
+        io.TextIOWrapper.__init__(self,self.gzipfile)
 
     def getvalue(self):
-        b64 = base64.encodestring(self.sio.getvalue())
-        return "compressed=[\n%s\n]" % b64 
+        zippedval = self.sio.getvalue()
+        b64 = base64.encodebytes(zippedval)
+        val = "compressed=[\n%s\n]" % b64.decode("latin_1")
+        return val
     
 class ParamBag(T):
     "A class for reading in and holding a bag of name-value pairs"
@@ -102,12 +103,8 @@ class ParamBag(T):
     def parseVal(self,name,val,f,sect=""):
         if name[0] == '[' and name[-1] == "]":
             # start of a section
-            sectname = name[1:-1]
             sub_bag = ParamBag()
             sub_bag.load(f)
             val = (val, sub_bag)
 
         self.dict[sect + name] = val
-
-        
-            

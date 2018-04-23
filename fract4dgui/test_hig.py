@@ -1,36 +1,26 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
-import copy
-import math
 import gettext
 import os
 
-import gtk
-import gobject
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GLib
+
 import hig
 
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
 
-class MockIgnoreInfo:
-    def __init__(self,ignored, suggest_ignore):
-        self.ignored = ignored
-        self.suggest_ignore = suggest_ignore
-        
-    def is_ignored(self):
-        return self.ignored
+toplevel = Gtk.Window()
 
-    def ignore(self):
-        self.ignored = True
-
-    def is_ignore_suggested(self):
-        return self.suggest_ignore
-
-class MockDialog(gtk.Dialog,hig.MessagePopper):
+class MockDialog(Gtk.MessageDialog,hig.MessagePopper):
     def __init__(self):
-        gtk.Dialog.__init__(
-            self,"Title",None, 0, ())
+        Gtk.MessageDialog.__init__(
+            self,
+            text="Title",
+            transient_for=toplevel)
         hig.MessagePopper.__init__(self)
         
 class Test(unittest.TestCase):
@@ -41,20 +31,21 @@ class Test(unittest.TestCase):
         pass
 
     def wait(self):
-        gtk.main()
+        Gtk.main()
         
     def quitloop(self,f,status):
         if status == 0:
-            gtk.main_quit()
+            Gtk.main_quit()
 
     def testCreate(self):
-        d = hig.Alert(image=gtk.STOCK_DIALOG_INFO,primary="Hello!")
+        d = hig.Alert(transient_for=toplevel,type=Gtk.MessageType.INFO,primary="Hello!")
         self.assertNotEqual(d,None)
 
         self.runAndDismiss(d)
 
         d = hig.Alert(
-            image=gtk.image_new_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DIALOG),
+            transient_for=toplevel,
+            type=Gtk.MessageType.ERROR,
             primary="Oh no!",
             secondary="A terrible thing has happened")
 
@@ -62,6 +53,7 @@ class Test(unittest.TestCase):
         
     def testInformation(self):
         d = hig.InformationAlert(
+            transient_for=toplevel,
             primary="Your zipper is undone",
             secondary="This might be considered unsightly.")
 
@@ -69,12 +61,14 @@ class Test(unittest.TestCase):
         
     def testError(self):
         d = hig.ErrorAlert(
+            transient_for=toplevel,
             primary="You don't want to do it like that",
             secondary="Chaos will ensue.")
 
         self.runAndDismiss(d)
         
         d = hig.ErrorAlert(
+            transient_for=toplevel,
             primary="Could not destroy universe",
             secondary="Destructor ray malfunctioned.",
             fix_button="Try again")
@@ -83,12 +77,14 @@ class Test(unittest.TestCase):
         
     def testConfirm(self):
         d = hig.ConfirmationAlert(
+            transient_for=toplevel,
             primary="Do you really want to hurt me?",
             secondary="Do you really want to make me cry?")
 
         self.runAndDismiss(d)
 
         d = hig.ConfirmationAlert(
+            transient_for=toplevel,
             primary="Convert sub-meson structure?",
             secondary="The process is agonizingly painful and could result in permanent damage to the space-time continuum",
             proceed_button="Convert",
@@ -98,15 +94,13 @@ class Test(unittest.TestCase):
 
     def runAndDismiss(self,d):
         def dismiss():
-            d.response(gtk.RESPONSE_ACCEPT)
+            d.response(Gtk.ResponseType.ACCEPT)
             return False
 
         # increase timeout to see what dialogs look like
-        try:
-            gobject.timeout_add(10,dismiss)
-        except AttributeError:
-            gtk.timeout_add(10,dismiss)
-        r = d.run()
+        GLib.timeout_add(10,dismiss)
+
+        d.run()
         d.destroy()
         
     def testPeriodText(self):
@@ -117,29 +111,17 @@ class Test(unittest.TestCase):
         
     def testSaveConfirm(self):
         d = hig.SaveConfirmationAlert(
+            transient_for=toplevel,
             document_name="Wombat.doc")
 
         self.runAndDismiss(d)
 
         d = hig.SaveConfirmationAlert(
+            transient_for=toplevel,
             document_name="Wombat.doc",
             period=791)
 
         self.runAndDismiss(d)
-
-    def testIgnore(self):
-        ii = MockIgnoreInfo(False,True)
-        
-        d = hig.Alert(            
-            image=gtk.STOCK_DIALOG_INFO,
-            primary="Foo",
-            secondary="Bar",
-            buttons=(gtk.STOCK_OK, gtk.RESPONSE_ACCEPT),
-            ignore=ii)
-
-        self.assertEqual(ii.is_ignored(), False)
-        self.runAndDismiss(d)
-        self.assertEqual(ii.is_ignored(), True)
 
     def testMessagePopper(self):
         dd = MockDialog()
@@ -152,6 +134,7 @@ class Test(unittest.TestCase):
         
 def suite():
     return unittest.makeSuite(Test,'test')
+
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')

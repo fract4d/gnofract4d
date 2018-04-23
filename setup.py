@@ -1,18 +1,18 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import shutil
 from distutils.core import setup, Extension
 import distutils.sysconfig
 import os
 import stat
-import commands
+import subprocess
 import sys
 
-gnofract4d_version = '3.14.1'
+gnofract4d_version = '4.0'
 
-if float(sys.version[:3]) < 2.4:
-    print "Sorry, you need Python 2.4 or higher to run Gnofract 4D."
-    print "You have version %s. Please upgrade." % sys.version
+if float(sys.version[:3]) < 3.5:
+    print("Sorry, you need Python 3.5 or higher to run Gnofract 4D.")
+    print("You have version %s. Please upgrade." % sys.version)
     sys.exit(1)
 
 # by default python uses all the args which were used to compile it. But Python is C and some
@@ -30,16 +30,16 @@ def call_package_config(package,option,optional=False):
     '''invoke pkg-config, if it exists, to find the appropriate
     arguments for a library'''
     cmd = "pkg-config %s %s" % (package, option)
-    (status,output) = commands.getstatusoutput(cmd)
+    (status,output) = subprocess.getstatusoutput(cmd)
     if status != 0:
         if optional:
-            print >>sys.stderr, "Can't find '%s'" % package
-            print >>sys.stderr, "Some functionality will be disabled"
+            print("Can't find '%s'" % package, file=sys.stderr)
+            print("Some functionality will be disabled", file=sys.stderr)
             return []
         else:
-            print >>sys.stderr, "Can't set up. Error running '%s'." % cmd
-            print >>sys.stderr, output
-            print >>sys.stderr, "Possibly you don't have one of these installed: '%s'." % package
+            print("Can't set up. Error running '%s'." % cmd, file=sys.stderr)
+            print(output, file=sys.stderr)
+            print("Possibly you don't have one of these installed: '%s'." % package, file=sys.stderr)
             sys.exit(1)
 
     return output.split()
@@ -132,19 +132,11 @@ module_fract4dgmp = Extension(
     undef_macros = [ 'NDEBUG']
     )
 
-if 'win' == sys.platform[:3]:
-    warnings = '/W3'
-    libs = [ 'pthreadVC2', 'libdl' ]
-    osdep = [ '/DWIN32', '/DWINDOWS', '/D_USE_MATH_DEFINES', '/D_CRT_SECURE_NO_WARNINGS', '/EHsc', '/Ox' ]
-    osdep += [ '/I"F:/Gamma/GTK+/Win32/include/glib-2.0/"', '/I"F:/Gamma/GTK+/Win32/lib/glib-2.0/include/"' ]
-    extra_source = [ 'fract4d/c/win32func.cpp', 'fract4d/c/fract4d_stdlib_exports.cpp' ]
-    extra_link = [ '/LIBPATH:"F:/Gamma/GTK+/Win32/lib"' ]
-else:
-    warnings = '-Wall'
-    libs = [ 'stdc++' ]
-    osdep = []
-    extra_source = []
-    extra_link = []
+warnings = '-Wall'
+libs = [ 'stdc++' ]
+osdep = []
+extra_source = []
+extra_link = []
 
 fract4d_sources += extra_source
 
@@ -156,7 +148,7 @@ module_fract4dc = Extension(
     ],
     libraries = libs + jpg_libs,
     extra_compile_args = [
-    warnings,
+    warnings, '-O0'
     ] + osdep + png_flags,
     extra_link_args = extra_link + png_libs,
     define_macros = defines + extra_macros,
@@ -186,6 +178,15 @@ if have_gmp:
 def get_files(dir,ext):
     return [ os.path.join(dir,x) for x in os.listdir(dir) if x.endswith(ext)]
 
+so_extension = distutils.sysconfig.get_config_var("SO")
+
+with open("fract4d/c/cmap_name.h", "w") as fh:
+	fh.write("""
+#ifndef CMAP_NAME
+#define CMAP_NAME "/fract4d_stdlib%s"
+#endif
+""" % so_extension)
+
 setup (name = 'gnofract4d',
        version = gnofract4d_version,
        description = 'A program to draw fractals',
@@ -196,14 +197,17 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
        author = 'Edwin Young',
        author_email = 'edwin@bathysphere.org',
        maintainer = 'Edwin Young',
-       maintainer_email = 'catenary@users.sourceforge.net',
+       maintainer_email = 'edwin@bathysphere.org',
        keywords = "edwin@bathysphere.org",
        url = 'http://github.com/edyoung/gnofract4d/',
-       packages = ['fract4d', 'fract4dgui', 'fractutils'],
-       package_data = { 'fract4dgui' : [ 'ui.xml'] },
+       packages = ['fract4d', 'fract4dgui'],
+       package_data = { 'fract4dgui' : [ 'shortcuts-gnofract4d.ui', 'ui.xml'] },
        ext_modules = modules,
        scripts = ['gnofract4d'],
        data_files = [
+           # style CSS
+           ('share/gnofract4d',
+            ['gnofract4d.css']),
            # color maps
            ('share/gnofract4d/maps',
             get_files("maps",".map") +
@@ -260,25 +264,20 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
 # way to extract the actual target directory out of distutils, hence
 # this egregious hack
 
-so_extension = distutils.sysconfig.get_config_var("SO")
-
 lib_targets = {
     "fract4dc" + so_extension : "fract4d",
     "fract4d_stdlib" + so_extension : "fract4d",
     "fract4dcgmp" + so_extension : "fract4d",
     "gmpy" + so_extension: "fract4d"
     }
-if 'win' == sys.platform[:3]:
-    lib_targets["fract4d_stdlib.lib"] = "fract4d"
 
-def copy_libs(dummy,dirpath,namelist):
-     for name in namelist:
-         target = lib_targets.get(name)
-         if target != None:
-             name = os.path.join(dirpath, name)
-             shutil.copy(name, target)
+def copy_libs(root, dirlist, namelist):
+    for name in namelist:
+        target = lib_targets.get(name)
+        if target is not None:
+            shutil.copy(os.path.join(root, name), target)
 
-os.path.walk("build",copy_libs,None)
-if 'win' == sys.platform[:3]:
-    shutil.copy("fract4d/fract4d_stdlib.pyd", "fract4d_stdlib.pyd")
+for root, dirs, files in os.walk("build"):
+    copy_libs(root, dirs, files)
+
 

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.17 -->
+  <object class="GtkShortcutsWindow" id="shortcuts-gnofract4d">
+    <property name="modal">1</property>
+    <child>
+      <object class="GtkShortcutsSection">
+        <property name="section-name">shortcuts</property>
+        <property name="visible">1</property>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">Mouse Commands</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Pointer_Button1</property>
+                <property name="title" translatable="yes">Zoom in</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Pointer_Drag1</property>
+                <property name="title" translatable="yes">Draw rectangle to zoom into</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;shift&gt;Pointer_Button1</property>
+                <property name="title" translatable="yes">Recenter image on point clicked</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Pointer_Button3</property>
+                <property name="title" translatable="yes">Flip to Julia set (or back to Mandelbrot)</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Pointer_Button2</property>
+                <property name="title" translatable="yes">Zoom out</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;Pointer_Button2</property>
+                <property name="title" translatable="yes">Zoom out more quickly</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">Keyboard Shortcuts</property>
+              <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">cursor</property>
+                <property name="title" translatable="yes">Pan image in indicated direction</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;cursor</property>
+                <property name="title" translatable="yes">Pan more quickly in indicated direction</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;shift&gt;cursor</property>
+                <property name="title" translatable="yes">Mutate image in Z or W directions</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;shift&gt;&lt;ctrl&gt;cursor</property>
+                <property name="title" translatable="yes">Mutate more quickly</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;KP_1</property>
+                <property name="title" translatable="yes">Reset rotation to show the XY (Mandelbrot) plane</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;KP_2</property>
+                <property name="title" translatable="yes">Reset rotation to show the ZW (Julia) plane</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;KP_3</property>
+                <property name="title" translatable="yes">Reset rotation to show the XZ (Oblate) plane</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;KP_4</property>
+                <property name="title" translatable="yes">Reset rotation to show the XW (Parabolic) plane</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;KP_5</property>
+                <property name="title" translatable="yes">Reset rotation to show the YZ (Elliptic) plane</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;KP_6</property>
+                <property name="title" translatable="yes">Reset rotation to show the WY (Rectangular) plane</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;A</property>
+                <property name="title" translatable="yes">Display AutoZoom dialog</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;B</property>
+                <property name="title" translatable="yes">Display formula browser</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;D</property>
+                <property name="title" translatable="yes">Display the Director (animation) window</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;E</property>
+                <property name="title" translatable="yes">Enter (or leave) Explorer mode</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;F</property>
+                <property name="title" translatable="yes">Show fractal settings controls</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">F11</property>
+                <property name="title" translatable="yes">Show main window full-screen</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Escape</property>
+                <property name="title" translatable="yes">Quit full-screen mode</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">F1</property>
+                <property name="title" translatable="yes">Show help file contents page</property>
+              </object>
+            </child>
+          </object>  
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Home</property>
+                <property name="title" translatable="yes">Reset all numeric parameters to their defaults</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;Home</property>
+                <property name="title" translatable="yes">Reset zoom to default level</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;I</property>
+                <property name="title" translatable="yes">Save the current image to a file</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;I</property>
+                <property name="title" translatable="yes">Add the current fractal to the render queue</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;R</property>
+                <property name="title" translatable="yes">Create a new random color scheme</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;S</property>
+                <property name="title" translatable="yes">Save the current parameters into a new file</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;Z</property>
+                <property name="title" translatable="yes">Undo the last operation</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;Z</property>
+                <property name="title" translatable="yes">Redo an operation after undoing it</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

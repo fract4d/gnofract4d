@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # the main program. Relies on fract4d libs to do the real work
 
@@ -14,139 +14,80 @@ if os.path.isdir('po'):
 else:
     gettext.install('gnofract4d')
 
-# Threads are optional because RedHat seem to compile pygtk
-# without thread support. Grrr.
-try:
-    #gtk.gdk.threads_init()
-    #utils.threads_enabled = True
-    pass
-except:
-    pass
-
 try:
     # nogui modules
-    from fract4d import fractal, fractmain, options
-
-except ImportError, err:
-    print _('''
+    from fract4d import fractconfig, fractmain
+    from fract4d.options import Arguments
+except ImportError as err:
+    print((_('''
 Can't import a required module.
 If you haven't set up Gnofract 4D yet, run './setup.py build'
-Error was: '%s' ''') % err
+Error was: '%s' ''') % err))
     sys.exit(1)
 
-def get_version_info():
-    try:
-        import gtk
-        gtk_version = "%d.%d.%d" % gtk.gtk_version
-    except:
-        gtk_version = "unknown"
+def main(args):
+    # saved options
+    userConfig = fractconfig.userConfig()
 
-    try:
-        pygtk_version = "%d.%d.%d" % gtk.pygtk_version
-    except:
-        pygtk_version = "unknown"
-
-    return """Gnofract 4D %s
-GTK %s
-PyGTK %s""" % (options.version, gtk_version, pygtk_version)
-               
-def main(args):    
-    opts = options.T()
-    try:
-        opts.parse(args)
-    except options.OptionError, err:
-        print get_version_info()
-        print opts.help()
-
-        print "Error parsing arguments: %s" % err
-        return 1
-
-    # having parsed them, apply them. The reason for this 2-pass
-    # approach is that it matters what order these operations are
-    # done in, but it shouldn't matter what order params are
-    # presented on the command-line
-    if len(opts.output) > 0:
-        print opts.output
-
-    if opts.print_version:
-        print get_version_info()
-        
-    if opts.quit_now:
-        sys.exit(0)
+    # command line options
+    opts = Arguments().parse_args(args)
 
     try:
         if opts.nogui:
-            plainmain(opts)
+            plainmain(userConfig, opts)
         else:
-            gtkmain(opts)
-    except Exception, err:
-        print "A fatal error occurred:\n\t%s\n\n" % str(err)
+            gtkmain(userConfig, opts)
+    except Exception as err:
+        print("A fatal error occurred:\n\t%s\n\n" % str(err))
         raise
 
-def test_version(major,minor,patch):
-    # check for pygtk >= 2.12
-    if major < 2:
-        return False
-    elif major == 2:
-        if minor < 12:
-            return False
-    return True
-
-def gtkmain(options):
-    # gtk
+def gtkmain(userConfig, options):
+    # GTK+
+    import gi
+    gi.require_version('Gtk', '3.0')
     try:
-        import gtk
-    except ImportError, err:
-        print _("Can't find PyGTK. You need to install it before you can run Gnofract 4D.")
-        sys.exit(1)
-
-    pygtk_ok = True
-    try:
-        (major,minor,patch) = gtk.pygtk_version
-        pygtk_ok = test_version(major,minor,patch)
-        import gobject
-
-    except Exception:
-        pygtk_ok = False
-
-    if not pygtk_ok:
-        print _("Sorry, your PyGTK version (%d.%d.%d) is too old. You need at least 2.6" % \
-                gtk.pygtk_version)
+        from gi.repository import Gtk
+    except ImportError as err:
+        print(_("Can't find Gtk. You need to install it before you can run Gnofract 4D."))
         sys.exit(1)
 
     try:
-        # gui modules
-        from fract4dgui import main_window, preferences, utils
-
-    except ImportError, err:
-        print _('''
+        # GUI module
+        from fract4dgui import main_window
+    except ImportError as err:
+        print(_('''
     Can't import a required module.
     If you haven't set up Gnofract 4D yet, run './setup.py build'
-    Error was: '%s' ''') % err
+    Error was: '%s' ''') % err)
         sys.exit(1)
     
-    mainWindow = main_window.MainWindow()
-
+    mainWindow = main_window.MainWindow(userConfig)
     mainWindow.apply_options(options)
     
     if mainWindow.f.thaw():
-        gobject.idle_add(mainWindow.on_fractal_change)
+        gi.require_version('GLib', '2.0')
+        from gi.repository import GLib
+        GLib.idle_add(mainWindow.on_fractal_change)
 
-    gtk.main()
+    Gtk.main()
 
-def plainmain(options):
-    t = fractmain.T()
+def plainmain(userConfig, options):
+    t = fractmain.T(userConfig)
     t.run(options)
 
 def main_n(n):
-    for i in xrange(n):
+    for i in range(n):
         main(sys.argv[1:])
 
 if __name__ == '__main__':
     if os.environ.get("DO_GF4D_PROFILE"):
-        import hotshot
-        prof = hotshot.Profile("gf4d.prof")
+        import cProfile
+        import pstats
+        prof = cProfile.Profile()
         prof.runcall(main_n, 5)
-        prof.close()
+        stats = pstats.Stats(prof)
+        stats.sort_stats("cumulative")
+        stats.dump_stats("gf4d.prof")
+        stats.print_stats()
     else:
         main(sys.argv[1:])

@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-print "A bunch of windows may appear and vanish again."
-print "Do not be alarmed, this is normal."
+print("A bunch of windows may appear and vanish again.")
+print("Do not be alarmed, this is normal.")
 
 # suppress annoying message during tests we get otherwise
 import warnings
@@ -49,6 +49,6 @@ def suite():
 def main():
     unittest.main(defaultTest='suite')
 
+
 if __name__ == '__main__':
     main()
-

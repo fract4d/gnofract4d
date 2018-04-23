@@ -4,12 +4,9 @@
 
 import copy
 
-import gobject
-import gtk
+from gi.repository import Gtk, GObject
 
-import gtkfractal
-import dialog
-import preferences
+from . import dialog, gtkfractal
 
 class QueueEntry:
     def __init__(self, f, name, w, h):
@@ -19,21 +16,22 @@ class QueueEntry:
         self.h = h
         
 # the underlying queue object
-class T(gobject.GObject):
+class T(GObject.GObject):
     __gsignals__ = {
         'done' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, ()),
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, ()),
         'changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, ()),
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, ()),
         'progress-changed' : (
-        (gobject.SIGNAL_RUN_FIRST | gobject.SIGNAL_NO_RECURSE),
-        gobject.TYPE_NONE, (gobject.TYPE_FLOAT,))
+        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+        None, (GObject.TYPE_FLOAT,))
         }
 
-    def __init__(self):
-        gobject.GObject.__init__(self)
+    def __init__(self, userPrefs):
+        GObject.GObject.__init__(self)
+        self.userPrefs = userPrefs
         self.queue = []
         self.current = None
         
@@ -43,13 +41,13 @@ class T(gobject.GObject):
         self.emit('changed')
         
     def start(self):
-        if self.current == None:
-            self.next()
+        if self.current is None:
+            next(self)
 
     def empty(self):
         return self.queue == []
     
-    def next(self):
+    def __next__(self):
         if self.empty():
             self.current = None
             self.emit('done')
@@ -63,125 +61,59 @@ class T(gobject.GObject):
         self.current.connect('status-changed', self.onImageComplete)
         self.current.connect('progress-changed', self.onProgressChanged)
 
-        self.current.set_nthreads(preferences.userPrefs.getint("general","threads"))
+        self.current.set_nthreads(self.userPrefs.getint("general","threads"))
         self.current.draw_image(entry.name)
 
     def onImageComplete(self, f, status):
         if status == 0:
             self.queue.pop(0)
             self.emit('changed')
-            self.next()
+            next(self)
 
     def onProgressChanged(self,f,progress):
         self.emit('progress-changed',progress)
         
 # explain our existence to GTK's object system
-gobject.type_register(T)
+GObject.type_register(T)
 
-def show(parent, alt_parent, f):
-    QueueDialog.show(parent, alt_parent, f)
-
-instance = T()
-
-class CellRendererProgress(gtk.GenericCellRenderer):
-
-    __gproperties__ = {
-        "progress": (gobject.TYPE_FLOAT, "Progress", 
-                    "Progress (0.0-100.0)", 0.0, 100.0, 0,
-                    gobject.PARAM_READWRITE),
-    }
-                     
+class CellRendererProgress(Gtk.CellRendererProgress):
     def __init__(self):
-        self.__gobject_init__()
-        self.progress = 0.0
-
-    def do_set_property(self, pspec, value):
-        setattr(self, pspec.name, value)
-
-    def do_get_property(self, pspec):
-        return getattr(self, pspec.name)
-
-    def on_render(self, window, widget, background_area,
-                  cell_area, expose_area, flags):
-
-        x_offset, y_offset, width, height = self.on_get_size(widget, cell_area)
-        widget.style.paint_box(window, gtk.STATE_NORMAL, gtk.SHADOW_IN,
-                               None, widget, "",
-                               cell_area.x+x_offset, cell_area.y+y_offset,
-                               width, height)
-
-        xt = widget.style.xthickness
-        xpad = self.get_property("xpad")
-        space = (width-2*xt-2*xpad)*(self.progress/100.)
-
-        widget.style.paint_box(window, gtk.STATE_PRELIGHT, gtk.SHADOW_OUT,
-                               None, widget, "bar",
-                               cell_area.x+x_offset+xt,
-                               cell_area.y+y_offset+xt,
-                               int(space), height-2*xt)
-
-    def on_get_size(self, widget, cell_area):
-        xpad = self.get_property("xpad")
-        ypad = self.get_property("ypad")
-        if cell_area:
-            width = cell_area.width
-            height = cell_area.height
-            x_offset = xpad
-            y_offset = ypad
-        else:
-            width = self.get_property("width")
-            height = self.get_property("height")
-            if width == -1: width = 100
-            if height == -1: height = 30
-            width += xpad*2
-            height += ypad*2
-            x_offset = 0
-            y_offset = 0
-        return x_offset, y_offset, width, height
-
-gobject.type_register(CellRendererProgress)
+        Gtk.CellRendererProgress.__init__(self)
+        self.set_property("text", "Progress")
 
 class QueueDialog(dialog.T):
-    def show(parent, alt_parent, f):
-        dialog.T.reveal(QueueDialog,True, parent, alt_parent, f)
-            
-    show = staticmethod(show)
-
-    def __init__(self, main_window, f):
+    def __init__(self, main_window, f, renderQueue):
         dialog.T.__init__(
             self,
             _("Render Queue"),
             main_window,
-            gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        )
 
-        self.main_window = main_window
-
-        self.q = instance
+        self.q = renderQueue
 
         self.q.connect('changed', self.onQueueChanged)
         self.q.connect('progress-changed', self.onProgressChanged)
+        self.q.connect('done', self.onQueueDone)
         
-        self.controls = gtk.VBox()
-        self.store = gtk.ListStore(
-            gobject.TYPE_STRING, # name
-            gobject.TYPE_STRING, # size
-            gobject.TYPE_FLOAT, # % complete
+        self.store = Gtk.ListStore(
+            str, # name
+            str, # size
+            float # % complete
             )
 
-        self.view = gtk.TreeView(self.store)
-        column = gtk.TreeViewColumn(
-            _('_Name'),gtk.CellRendererText(),text=0)
+        self.view = Gtk.TreeView.new_with_model(self.store)
+        column = Gtk.TreeViewColumn(
+            _('_Name'),Gtk.CellRendererText(),text=0)
         self.view.append_column(column)
-        column = gtk.TreeViewColumn(
-            _('_Size'),gtk.CellRendererText(),text=1)
+        column = Gtk.TreeViewColumn(
+            _('_Size'),Gtk.CellRendererText(),text=1)
         self.view.append_column(column)
-        column = gtk.TreeViewColumn(
-            _('_Progress'),CellRendererProgress(),progress=2)
+        column = Gtk.TreeViewColumn(
+            _('_Progress'),CellRendererProgress(),value=2)
         self.view.append_column(column)
         
-        self.controls.add(self.view)
-        self.vbox.add(self.controls)
+        self.vbox.add(self.view)
 
     def onQueueChanged(self,q):
         self.store.clear()
@@ -192,4 +124,10 @@ class QueueDialog(dialog.T):
         iter = self.store.get_iter_first()
         if iter:
             self.store.set_value(iter,2,progress)
-    
+
+    def onQueueDone(self,q):
+        self.hide()
+
+    def show(self):
+        Gtk.Dialog.show(self)
+        self.vbox.show_all()

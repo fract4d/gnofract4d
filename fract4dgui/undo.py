@@ -1,6 +1,5 @@
 
-import gtk
-import gobject
+from gi.repository import GObject
 
 class HistoryEntry:
     def __init__(self,redo,redo_data,undo,undo_data):
@@ -15,17 +14,17 @@ class HistoryEntry:
     def redo(self):
         self.redo_action(self.redo_data)
         
-class Sequence(gobject.GObject):
+class Sequence(GObject.GObject):
     __gsignals__ = {
         'can-undo' : (
-        gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,)),
+        GObject.SignalFlags.RUN_FIRST, None, (GObject.TYPE_BOOLEAN,)),
         'can-redo' : (
-        gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, (gobject.TYPE_BOOLEAN,))
+        GObject.SignalFlags.RUN_FIRST, None, (GObject.TYPE_BOOLEAN,))
         }
     
     def __init__(self):
-        gobject.GObject.__init__(self)
-        self.pos = 0 # the position after the current item
+        GObject.GObject.__init__(self)
+        self.pos = 0  # the position after the current item
         self.history = []
 
     def can_undo(self):
@@ -34,15 +33,15 @@ class Sequence(gobject.GObject):
     def can_redo(self):
         return self.pos < len(self.history)
 
-    def send_signals(self):        
+    def send_signals(self):
         self.emit('can-undo', self.can_undo())
         self.emit('can-redo', self.can_redo())
         
     def do(self,redo_action,redo_data,undo_action,undo_data):
         # replace everything from here on with the new item
         if self.pos < len(self.history):
-            undo_action = self.history[self.pos].undo_action 
-            undo_data = self.history[self.pos].undo_data 
+            undo_action = self.history[self.pos].undo_action
+            undo_data = self.history[self.pos].undo_data
 
         del self.history[self.pos:]
         self.history.append(
@@ -84,4 +83,5 @@ class Sequence(gobject.GObject):
         self.connect('can-redo',set_sensitivity)
         self.emit('can-redo', self.can_redo())
 
-gobject.type_register(Sequence)
+
+GObject.type_register(Sequence)

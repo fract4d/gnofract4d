@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
 import re
 import base64
-import zlib
 
 ifdef_re = re.compile(r'\s*\$ifdef(\s+(?P<var>[a-z][a-z0-9_]*))?',
                       re.IGNORECASE)
@@ -65,7 +65,8 @@ class T:
             if compressed:
                 if uncompressed_re.match(line):
                     compressed = False
-                    dc = base64.decodestring("".join(data))
+                    bytes = base64.b64decode("".join(data))
+                    dc = bytes.decode("latin_1")
                     #chars = [ "%x" % ord(ch) for ch in dc]
                     #out_lines.append("".join(chars))
                     out_lines.append(dc)
@@ -87,7 +88,7 @@ class T:
         continuations = 0
         
         self.currently_true = True
-        for line in lines:                
+        for line in lines:
             pass_through = False
 
             if last_was_continue:
@@ -98,7 +99,7 @@ class T:
             if m:
                 var = self.get_var(m,i, "$IFDEF")
                 if self.currently_true:
-                    self.currently_true = self.vars.has_key(var)
+                    self.currently_true = var in self.vars
                 self.ifdef_stack.append(StackEntry(i, self.currently_true))
             elif else_re.match(line):
                 self.currently_true = not self.currently_true
@@ -123,7 +124,7 @@ class T:
                             var = self.get_var(m,i,"$UNDEF")
                             try:
                                 del self.vars[var]
-                            except KeyError, err:
+                            except KeyError as err:
                                 # allow undef of undefined var
                                 pass
                         else:
@@ -153,7 +154,7 @@ class T:
             i += 1
             
         if self.ifdef_stack != []:
-            raise Error("%d: $IFDEF without $ENDIF" % \
+            raise Error("%d: $IFDEF without $ENDIF" %
                         self.ifdef_stack[-1].line_num)
 
         self._out = "".join(out_lines)
@@ -166,4 +167,4 @@ if __name__ == '__main__': #pragma: no cover
     # Test it out
     data = open(sys.argv[1],"r").read()
     pp = T(data)
-    print pp.out()
+    print(pp.out())

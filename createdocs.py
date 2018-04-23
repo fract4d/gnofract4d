@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # run this to update some tables in the documentation
 
@@ -27,10 +27,9 @@ def create_stdlib_docs():
         retval = os.system("xsltproc --output gnofract4d-manual.html --stringparam html.stylesheet docbook.css gnofract4d.xsl gnofract4d-manual.xml")
         if retval != 0:
             raise Exception("error processing xslt")
-    except Exception, err:
-        print >>sys.stderr,\
-              "Problem creating docs. Online help will be incomplete."
-        print >>sys.stderr, err
+    except Exception as err:
+        print("Problem creating docs. Online help will be incomplete.", file=sys.stderr)
+        print(err, file=sys.stderr)
         sys.exit(1)
 
 create_stdlib_docs()

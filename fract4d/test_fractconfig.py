@@ -1,29 +1,30 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # test configuration file parsing
 
 import unittest
-import sys
-import os
+import os.path
 
-import fractconfig, fc
+import testbase
 
-class Test(unittest.TestCase):
+from fract4d import fractconfig
+
+class Test(testbase.TestSetup):
     def testCreate(self):
-        c = fractconfig.T("testprefs")
+        c = self.userConfig
 
     def testGetDefaults(self):
-        c = fractconfig.T("testprefs")
+        c = self.userConfig
         self.assertEqual("gcc",c.get("compiler","name"))
 
     def testGetList(self):
-        c = fractconfig.T("testprefs")
+        c = fractconfig.T("")
         l = c.get_list("map_path")
         self.assertEqual(4, len(l))
         self.assertEqual("maps", l[0])
 
     def testSetList(self):
-        c = fractconfig.T("testprefs")
+        c = self.userConfig
         l = ["fish"]
 
         c.set_list("map_path",l)
@@ -32,28 +33,30 @@ class Test(unittest.TestCase):
         self.assertEqual(l, l2)
 
     def testSetSize(self):
-        c = fractconfig.T("testprefs")
+        c = self.userConfig
         c.set_size(871, 313)
         self.assertEqual(871, c.getint("display","width"))
         self.assertEqual(313, c.getint("display","height"))
 
     def testSave(self):
-        c = fractconfig.T("testprefs")
+        testprefs = os.path.join(self.tmpdir.name, "testprefs")
+        c = fractconfig.T(testprefs)
+        c.set("general","cache_dir", os.path.join(self.tmpdir.name,
+                           "gnofract4d-cache"))
         c.set("compiler","options","-foo")
         self.assertEqual("-foo", c.get("compiler","options"))
         c.save()
 
         c.set("compiler","options","wibble")
-        config2 = fractconfig.T("testprefs") #re-read
+        config2 = fractconfig.T(testprefs)  #re-read
         self.assertEqual("-foo",config2.get("compiler","options"))
-        os.remove("testprefs")
 
-    def testInstance(self):
-        dummy = fractconfig.instance
+    def testInit(self):
+        dummy = fractconfig.T(".gnofract4d")
         self.assertEqual(".gnofract4d",os.path.basename(dummy.file))
 
     def testDataDir(self):
-        c = fractconfig.T("testprefs")
+        c = self.userConfig
         datadir = c.get("general","data_dir")
         self.assertEqual(
             os.path.expandvars("${HOME}/gnofract4d"), datadir)

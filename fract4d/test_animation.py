@@ -1,23 +1,24 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # test director bean class implementation
 
 import unittest
-import sys
-import os
+import os.path
 
-import animation, fractal, fc
+import testbase
 
-# centralized to speed up tests
-g_comp = fc.Compiler()
-g_comp.add_func_path("../formulas")
-g_comp.load_formula_file("gf4d.frm")
-g_comp.load_formula_file("test.frm")
-g_comp.load_formula_file("gf4d.cfrm")
+from fract4d import animation
 
-class Test(unittest.TestCase):
+class Test(testbase.ClassSetup):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.g_comp.load_formula_file("gf4d.frm")
+        cls.g_comp.load_formula_file("gf4d.cfrm")
+        cls.g_comp.load_formula_file("test.frm")
+
     def setUp(self):
-        self.anim = animation.T(g_comp)
+        self.anim = animation.T(Test.g_comp, Test.userConfig)
 
     def tearDown(self):
         pass
@@ -27,7 +28,7 @@ class Test(unittest.TestCase):
         self.assertEqual(self.anim.get_width(),640)
         self.assertEqual(self.anim.get_height(),480)
         self.assertEqual(self.anim.get_framerate(),25)
-        self.assertEqual(self.anim.get_redblue(),True)
+        self.assertEqual(self.anim.get_redblue(),False)
         self.assertEqual(self.anim.keyframes_count(),0)
 
     def testChangeOptions(self):
@@ -104,7 +105,7 @@ class Test(unittest.TestCase):
         self.assertEqual(anim.get_keyframe_stop(1),20)
         self.assertEqual(anim.get_keyframe_int(1),1)
         #output stuff
-        self.assertEqual(anim.get_avi_file(),u"output.avi")
+        self.assertEqual(anim.get_avi_file(),"output.avi")
         self.assertEqual(anim.get_framerate(),28)
         self.assertEqual(anim.get_width(),320)
         self.assertEqual(anim.get_height(),240)
@@ -113,55 +114,55 @@ class Test(unittest.TestCase):
     def testLoading(self):
         self.anim.load_animation("../testdata/animation.fcta")
         self.checkExpectedLoadedValues(self.anim)
-        self.anim.save_animation("test.fcta")
-        anim2 = animation.T(g_comp)
-        anim2.load_animation("test.fcta")
+        test_name = os.path.join(Test.tmpdir.name, "test.fcta")
+        self.anim.save_animation(test_name)
+        anim2 = animation.T(Test.g_comp, Test.userConfig)
+        anim2.load_animation(test_name)
         self.checkExpectedLoadedValues(anim2)
-        os.remove("test.fcta")
 
     def testCreateList(self):
         self.anim.add_keyframe("f1.fct", 10, 4, animation.INT_LOG)
-	self.anim.add_keyframe("f2.fct", 6, 3, animation.INT_LOG)
-	list = self.anim.create_list()
+        self.anim.add_keyframe("f2.fct", 6, 3, animation.INT_LOG)
+        list = self.anim.create_list()
 
-	self.assertEqual(17, len(list))
-	# starts with 4 identical frames
-	self.assertEqual(["/tmp/image_0000000.png"] * 4, list[0:4])
-	# then a sequence of 10 changing frames
-	self.assertEqual(["/tmp/image_%07d.png" % n for n in range(1,11)], list[4:14])
-	# then 3 more unchanging frames
-	self.assertEqual(["/tmp/image_0000010.png"] * 3, list[14:17])
+        self.assertEqual(17, len(list))
+        # starts with 4 identical frames
+        self.assertEqual(["/tmp/image_0000000.png"] * 4, list[0:4])
+        # then a sequence of 10 changing frames
+        self.assertEqual(["/tmp/image_%07d.png" % n for n in range(1,11)], list[4:14])
+        # then 3 more unchanging frames
+        self.assertEqual(["/tmp/image_0000010.png"] * 3, list[14:17])
 
     def testFilenames(self):
         self.assertEqual(
-		self.anim.get_png_dir() + "/image_0000037.png",
-		self.anim.get_image_filename(37))
+            self.anim.get_png_dir() + "/image_0000037.png",
+            self.anim.get_image_filename(37))
 
-	self.assertEqual(
-		self.anim.get_fct_dir() + "/file_0000064.fct",
-		self.anim.get_fractal_filename(64))
+        self.assertEqual(
+            self.anim.get_fct_dir() + "/file_0000064.fct",
+            self.anim.get_fractal_filename(64))
 
     def testMu(self):
-        for x in xrange(animation.INT_LINEAR, animation.INT_COS+1):
-		# for all interpolation types, 0 -> 0 and 1.0 -> 1.0
-		self.assertEqual(0.0, self.anim.get_mu(x, 0.0))
-		self.assertEqual(1.0, self.anim.get_mu(x, 1.0))
+        for x in range(animation.INT_LINEAR, animation.INT_COS+1):
+           # for all interpolation types, 0 -> 0 and 1.0 -> 1.0
+            self.assertEqual(0.0, self.anim.get_mu(x, 0.0))
+            self.assertEqual(1.0, self.anim.get_mu(x, 1.0))
 
-	# different results for internal points
-	self.assertEqual(0.5, self.anim.get_mu(animation.INT_LINEAR, 0.5))
-	self.assertEqual(0.58496250072115619, self.anim.get_mu(animation.INT_LOG, 0.5))
-	self.assertEqual(0.37754066879814552, self.anim.get_mu(animation.INT_INVLOG, 0.5))
-	self.assertEqual(0.49999999999999994, self.anim.get_mu(animation.INT_COS, 0.5))
+        # different results for internal points
+        self.assertEqual(0.5, self.anim.get_mu(animation.INT_LINEAR, 0.5))
+        self.assertEqual(0.58496250072115619, self.anim.get_mu(animation.INT_LOG, 0.5))
+        self.assertEqual(0.37754066879814552, self.anim.get_mu(animation.INT_INVLOG, 0.5))
+        self.assertEqual(0.49999999999999994, self.anim.get_mu(animation.INT_COS, 0.5))
 
-	self.assertRaises(ValueError, self.anim.get_mu,83, 0.6)
+        self.assertRaises(ValueError, self.anim.get_mu,83, 0.6)
 	
     def testGetKeyframeValues(self):
         self.anim.add_keyframe("../testdata/director1.fct", 10, 0, animation.INT_LINEAR)
-	self.anim.add_keyframe("../testdata/director2.fct", 5, 0, animation.INT_LINEAR)
+        self.anim.add_keyframe("../testdata/director2.fct", 5, 0, animation.INT_LINEAR)
 
-	durations = self.anim.get_keyframe_durations()
+        durations = self.anim.get_keyframe_durations()
 
-	self.assertEqual([10,5], durations)
+        self.assertEqual([10,5], durations)
 
     def testGetTotalFrames(self):
         self.assertEqual(0, self.anim.get_total_frames())

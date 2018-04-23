@@ -1,27 +1,27 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # A utility program used to create a standalone single-threaded
 # statically-linked C program for profiling purposes
 
-import fc
-import fractal
 import sys
-import commands
+import subprocess
+
+from fract4d import fc, fractal
 
 class PC(fc.Compiler):
     def __init__(self):
         fc.Compiler.__init__(self)
         
         self.cfiles = [
-        "profharness.cpp",
-        "c/cmap.cpp",
-        "c/image.cpp",
-        "c/fractFunc.cpp",
-        "c/fract_stdlib.cpp",
-        "c/MTFractWorker.cpp",
-        "c/pointFunc.cpp",
-        "c/STFractWorker.cpp",
-        "c/imageWriter.cpp"
+            "profharness.cpp",
+            "c/cmap.cpp",
+            "c/image.cpp",
+            "c/fractFunc.cpp",
+            "c/fract_stdlib.cpp",
+            "c/MTFractWorker.cpp",
+            "c/pointFunc.cpp",
+            "c/STFractWorker.cpp",
+            "c/imageWriter.cpp"
         ]
 
 def main(args):
@@ -42,20 +42,20 @@ def main(args):
     cmd = "%s %s %s -o %s %s" % \
           (pc.compiler_name, files, "-g -pg -O3 -Ic -lpthread", "proftest", "")
 
-    print cmd
-    (status,output) = commands.getstatusoutput(cmd)
+    print(cmd)
+    (status,output) = subprocess.getstatusoutput(cmd)
     if status != 0:
         raise Exception(
             "Error reported by C compiler:%s" % output)
 
-    print output
+    print(output)
     # compiled - hurrah! run it
-    (status,output) = commands.getstatusoutput("./proftest")
+    (status,output) = subprocess.getstatusoutput("./proftest")
     if status != 0:
         raise Exception(
             "Error reported by program:%s" % output)
 
-    print output
+    print(output)
     
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -1,10 +1,5 @@
 # fract compiler datatypes
 
-import string
-import exceptions
-import types
-import copy
-
 # order is significant - we use X > Y on types
 Bool = 0
 Int = 1
@@ -24,7 +19,7 @@ ComplexArray = 12
 class Type(object):
     def __init__(self,**kwds):
         self.suffix = kwds["suffix"]
-        self.printf = kwds.get("printf") # optional
+        self.printf = kwds.get("printf")  # optional
         self.typename = kwds["typename"]
         self.default = kwds["default"]
         self.slots = kwds.get("slots",1)
@@ -53,7 +48,7 @@ class ComplexType(Type):
         if var.param_slot == -1:
             return [
                 "%.17f" % var.value[0],
-                "%.17f" % var.value[1]]     
+                "%.17f" % var.value[1]]
         else:
             return [
                 "t__pfo->p[%d].doubleval" % var.param_slot,
@@ -65,11 +60,11 @@ class QuadType(Type):
 
     def init_val(self,var):
         if var.param_slot == -1:
-            return [ "%.17f" % x for x in var.value]
+            return ["%.17f" % x for x in var.value]
         else:
             return [
-                "t__pfo->p[%d].doubleval" % \
-                x for x in xrange(var.param_slot,var.param_slot+4)]
+                "t__pfo->p[%d].doubleval" %
+                x for x in range(var.param_slot,var.param_slot+4)]
 
 class IntType(Type):
     def __init__(self,**kwds):
@@ -77,7 +72,7 @@ class IntType(Type):
 
     def init_val(self,var):
         if var.param_slot == -1:
-            return [ "%d" % var.value] 
+            return ["%d" % var.value]
         else:
             return [
                 "t__pfo->p[%d].intval" % var.param_slot]
@@ -91,7 +86,7 @@ class GradientType(Type):
             raise TranslationError(
                 "Internal Compiler Error: gradient not initialized as a param")
         else:
-            return [ "t__pfo->p[%d].gradient" % var.param_slot]
+            return ["t__pfo->p[%d].gradient" % var.param_slot]
 
         return []
 
@@ -104,7 +99,7 @@ class ImageType(Type):
             raise TranslationError(
                 "Internal Compiler Error: image not initialized as a param")
         else:
-            return [ "t__pfo->p[%d].image" % var.param_slot]
+            return ["t__pfo->p[%d].image" % var.param_slot]
 
         return []
 
@@ -255,7 +250,7 @@ def arrayTypeOf(t,node=None):
         pos = ""
     else:
         pos = "%d: " % node.pos
-    raise TranslationError(        
+    raise TranslationError(
         "%sArrays of type %s are not supported" % (pos, strOfType(t)))
 
 def elementTypeOf(t,node=None):
@@ -271,13 +266,13 @@ def elementTypeOf(t,node=None):
         pos = ""
     else:
         pos = "%d: " % node.pos
-    raise TranslationError(        
+    raise TranslationError(
         "%sArrays of type %s are not supported" % (pos, strOfType(t)))
 
 
 def typeOfStr(tname):
     if not tname: return None
-    return _typeOfStr[string.lower(tname)]
+    return _typeOfStr[tname.lower()]
 
 def strOfType(t):
     return _strOfType[t]
@@ -308,80 +303,26 @@ _canBeCast = [
 
 def canBeCast(t1,t2):
     ' can t1 be cast to t2?'
-    if t1 == None or t2 == None:
+    if t1 is None or t2 is None:
         return 0
     return _canBeCast[t1][t2]
 
 # a convenient place to put this.
-class TranslationError(exceptions.Exception):
+class TranslationError(Exception):
     def __init__(self,msg):
-        exceptions.Exception.__init__(self,msg)
+        Exception.__init__(self,msg)
         self.msg = msg
 
 class InternalCompilerError(TranslationError):
     def __init__(self,msg):
         TranslationError.__init__("Internal Compiler Error:" + msg)
     
-import stdlib
-
-class Func:
-    def __init__(self,args,ret,fname,pos=-1):
-        self.args = args
-        self.implicit_args = []
-        self.ret = ret
-        self.pos = pos
-        self.set_func(fname)
-        
-    def __copy__(self):
-        c = Func(self.args,self.ret,self.fname,self.pos)
-        c.implicit_args = copy.copy(self.implicit_args)
-        if hasattr(self,"override_name"):
-            c.set_override_name(self.override_name)
-        if hasattr(self,"caption"):
-            c.caption = self.caption
-        return c
-    
-    def first(self):
-        return self
-
-    def set_implicit_arg(self,arg):
-        self.implicit_args.append(arg)
-
-    def set_override_name(self,name):
-        self.override_name = name
-        
-    def set_func(self,fname):
-        # compute the name of the stdlib function to call
-        # this is similar in purpose to C++ name mangling
-        if fname == None:
-            self.genFunc = None
-        else:
-            typed_fname = fname + "_"
-            for arg in self.args:
-                typed_fname = typed_fname + suffixOfType[arg]
-            typed_fname = typed_fname + "_" + suffixOfType[self.ret]
-        
-            self.genFunc = stdlib.__dict__.get(typed_fname,typed_fname)
-
-        self.cname = fname
-        self.fname = fname
-        
-    def matchesArgs(self, potentialArgs):
-        if len(potentialArgs) != len(self.args):
-            return False
-        i = 0
-        for arg in self.args:
-            if not canBeCast(potentialArgs[i],arg):
-                return False
-            i = i + 1
-        return True 
-
 class Var:
     def __init__(self,type,value=None,pos=-1,**kwds):
         #assert(type_ != None)
         #assert(isinstance(pos,types.IntType))
         self._set_type(type)
-        if value == None:
+        if value is None:
             self.value = self._typeobj.default
         else:
             self.value = value
@@ -421,7 +362,7 @@ class Var:
         try:
             return self._typeobj.init_val(self)
         except AttributeError:
-            print "%s type for %s" % (self._typeobj.typename, self.cname)
+            print("%s type for %s" % (self._typeobj.typename, self.cname))
             raise
 
     def _get_part_names(self):
@@ -438,4 +379,3 @@ class Temp(Var):
         return True
 
     is_temp = property(_get_is_temp)
-

@@ -1,8 +1,4 @@
-import re
-
-import fctutils 
-import gradient
-import fc
+from . import fctutils, gradient, fc
 
 class T(fctutils.T):
     '''Parses the various different kinds of color data we have'''
@@ -17,9 +13,9 @@ class T(fctutils.T):
         
     def load(self,f):
         line = f.readline()
-        while line != "":
+        while line:
             (name,val) = self.nameval(line)
-            if name != None:
+            if name is not None:
                 if name == self.endsect: break
                 self.parseVal(name,val,f)
             line = f.readline()
@@ -55,7 +51,7 @@ class T(fctutils.T):
         
     def parse_colordata(self,val,f):
         'long list of hex digits: gf4d < 2.0'
-        nc =len(val)//6
+        nc = len(val)//6
         i = 0
         colorlist = []
         while i < nc:
@@ -67,7 +63,7 @@ class T(fctutils.T):
             else:
                 c = tuple([float(i-1)/(nc-2)] + cols)
                 colorlist.append(c)
-            i+= 1
+            i += 1
         self.gradient.load_list(colorlist)
         self.read_gradient = True
         
@@ -75,7 +71,7 @@ class T(fctutils.T):
         line = f.readline()
         self.solids = []
         while not line.startswith("]"):
-            cols = self.extract_color(line,0,True)            
+            cols = self.extract_color(line,0,True)
             self.solids.append(tuple(cols))
             line = f.readline()
         
@@ -87,9 +83,9 @@ class T(fctutils.T):
             entry = line.split("=")
             
             if len(entry) != 2:
-                raise ValueError, "invalid color %s in file" % line
+                raise ValueError("invalid color %s in file" % line)
 
-            cols = self.extract_color(entry[1],0,True)            
+            cols = self.extract_color(entry[1],0,True)
             index = float(entry[0])
             
             colorlist.append(tuple([index] + cols))
@@ -105,26 +101,25 @@ class T(fctutils.T):
     def parse_file(self,val,f):
         try:
             mapfile = open(val)
-        except IOError:            
+        except IOError:
             # maybe it's not in the right place
             fname = self.parent.compiler.find_file(
                 val, fc.FormulaTypes.GRADIENT)
             mapfile = open(fname)
 
         self.parse_map_file(mapfile)
-
-    def parse_map_file(self,mapfile, maxdiff=0):
-        x = mapfile.tell()
+        mapfile.close()
+        
+    def parse_map_file(self, mapfile, maxdiff=0):
+        mapfile.tell()
         try:
             result = self.gradient.load(mapfile)
             if result:
                 self.solids[0] = result
             self.read_gradient = True
-        except gradient.HsvError, err:
-            if self.parent:
-                self.parent.warn("Error reading colormap: %s" % str(err))            
-        except Exception, err:
+        except gradient.HsvError as err:
             if self.parent:
                 self.parent.warn("Error reading colormap: %s" % str(err))
-
-        
+        except Exception as err:
+            if self.parent:
+                self.parent.warn("Error reading colormap: %s" % str(err))

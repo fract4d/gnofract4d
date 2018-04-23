@@ -69,7 +69,7 @@ class Slave(object):
             self.stdin.write(
                 self.input[self.in_pos:self.in_pos+bytes_to_write])
             #print "wrote %d" % bytes_to_write
-        except IOError, err:
+        except IOError as err:
             if err.errno == errno.EAGAIN:
                 #print "again!"
                 return True
@@ -90,7 +90,7 @@ class Slave(object):
                 # since they don't seem to be reliable
                 if self.process.poll() == None or self.process.returncode != None:
                     return False
-        except IOError, err:
+        except IOError as err:
             if err.errno == errno.EAGAIN:
                 #print "again!"
                 return True
@@ -111,7 +111,7 @@ class Slave(object):
                 if self.process.poll() == None or self.process.returncode != None:
                     self.on_complete()
                     return False
-        except IOError, err:
+        except IOError as err:
             if err.errno == errno.EAGAIN:
                 #print "again!"
                 return True
@@ -129,7 +129,7 @@ class Slave(object):
         try:
             self.dead = True
             os.kill(self.process.pid,signal.SIGKILL)
-        except OSError, err:
+        except OSError as err:
             if err.errno == errno.ESRCH:
                 # already dead
                 return
@@ -178,7 +178,7 @@ class GTKSlave(gobject.GObject,Slave):
     def remove(self,fd):
         try:
             gobject.source_remove(fd)
-        except AttributeError, err:
+        except AttributeError as err:
             gtk.input_remove(fd)
         
     def unregister(self):
@@ -199,14 +199,14 @@ class GTKSlave(gobject.GObject,Slave):
         try:
             return gobject.io_add_watch(
                 fd, gobject.IO_IN | gobject.IO_HUP, cb)
-        except AttributeError, err:
+        except AttributeError as err:
             return gtk.input_add(fd, gtk.gdk.INPUT_READ, cb)
 
     def add_write(self,fd,cb):
         try:
             return gobject.io_add_watch(
                 fd, gobject.IO_OUT | gobject.IO_HUP, cb)
-        except AttributeError, err:
+        except AttributeError as err:
             return gtk.input_add(fd, gtk.gdk.INPUT_WRITE, cb)
         
     def register(self):

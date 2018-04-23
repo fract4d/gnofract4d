@@ -1,7 +1,9 @@
 *.pyc
 *.so
 *~
+#*
 MANIFEST
+token
 
 build/*
 dist/*
@@ -11,6 +13,7 @@ doc/gnofract4d-manual/C/gnofract4d-manual.pdf
 doc/gnofract4d-manual/C/stdlib.xml
 elephant-valley/*
 experiments/*
+fract4d/c/cmap_name.h
 images/*
 other_maps/*
 params/*

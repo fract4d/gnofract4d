@@ -1,30 +1,16 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import string
 import unittest
-import StringIO
-import sys
+import io
 import math
 import copy
-import os
+import os.path
 import time
-import types
 import filecmp
 
-import fc
-import fractal
-import fracttypes
-import image
-import formsettings
+import testbase
 
-# centralized to speed up tests
-g_comp = fc.Compiler()
-g_comp.add_func_path("../formulas")
-g_comp.add_path("../maps", fc.FormulaTypes.GRADIENT)
-
-g_comp.load_formula_file("gf4d.frm")
-g_comp.load_formula_file("test.frm")
-g_comp.load_formula_file("gf4d.cfrm")
+from fract4d import fc, fractal, fracttypes, image, formsettings
 
 g_testfile = '''gnofract4d parameter file
 version=2.0
@@ -311,10 +297,16 @@ class WarningCatcher:
     def warn(self,msg):
         self.warnings.append(msg)
         
-class Test(unittest.TestCase):
+class Test(testbase.ClassSetup):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.g_comp.add_path("../maps", fc.FormulaTypes.GRADIENT)
+        cls.g_comp.load_formula_file("gf4d.frm")
+        cls.g_comp.load_formula_file("gf4d.cfrm")
+        cls.g_comp.load_formula_file("gf4d.cfrm")
+
     def setUp(self):
-        global g_comp
-        self.compiler = g_comp
         self.default_flat_params = [
             0.0, #_offset
             1.0, #_density
@@ -330,22 +322,22 @@ class Test(unittest.TestCase):
         pass
 
     def testCreation(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.compile()
         
     def testRead(self):
         file = g_testfile
         
-        f = fractal.T(self.compiler);
-        f.loadFctFile(StringIO.StringIO(file))
+        f = fractal.T(Test.g_comp);
+        f.loadFctFile(io.StringIO(file))
         self.assertExpectedValues(f)
         
     def testUpsideDown(self):
         file = g_testfile
 
         file = file.replace('version=2.0','version=1.9',1)
-        f = fractal.T(self.compiler);
-        f.loadFctFile(StringIO.StringIO(file))
+        f = fractal.T(Test.g_comp);
+        f.loadFctFile(io.StringIO(file))
         self.assertEqual(f.params[f.XYANGLE], 0.00000001)
         self.assertEqual(f.yflip, True)
         f.reset()
@@ -380,7 +372,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(f.maxiter, 259)
         g = f.get_gradient()
-        self.failUnless(len(g.segments)> 1)
+        self.assertTrue(len(g.segments)> 1)
         self.assertEqual(g.segments[0].left,0.0)
         self.assertEqual(g.segments[-1].right,1.0)
         self.assertEqual(f.solids[0],(0,0,0,255))
@@ -392,20 +384,21 @@ class Test(unittest.TestCase):
         sofile = f.compile()
         im = image.T(40,30)
         f.draw(im)
-        self.compiler.leave_dirty = True
+        Test.g_comp.leave_dirty = True
 
     def testLoadGradientFunc(self):
-        f = fractal.T(self.compiler)
-        f.loadFctFile(open("../testdata/gradient_func.fct"))
-
+        f = fractal.T(Test.g_comp)
+        file = open("../testdata/gradient_func.fct")
+        f.loadFctFile(file)
+        file.close()
+        
         f.compile()
         (w,h) = (40,30)
         im = image.T(w,h)
         f.draw(im)
 
     def testRefresh(self):
-        try:
-            formula = '''
+        formula = '''
 test_circle {
 loop:
 z = pixel
@@ -417,28 +410,25 @@ float param bailout
 endparam
 }
 '''
-            ff = open("fracttest.frm","w")
+        fracttest_file = os.path.join(Test.tmpdir.name, "fracttest.frm")
+        with open(fracttest_file,"w") as ff:
             ff.write(formula)
-            ff.close()
 
-            f = fractal.T(self.compiler)
-            f.set_formula("fracttest.frm","test_circle")
+        f = fractal.T(Test.g_comp)
+        f.set_formula(fracttest_file,"test_circle")
 
-            self.assertEqual(f.get_initparam(1,0), 4.0)
-            time.sleep(1.0)
-            formula = formula.replace('4.0','6.0')
-            ff = open("fracttest.frm","w")
+        self.assertEqual(f.get_initparam(1,0), 4.0)
+        time.sleep(1.0)
+        formula = formula.replace('4.0','6.0')
+        with open(fracttest_file,"w") as ff:
             ff.write(formula)
-            ff.close()
 
-            self.assertEqual(f.get_initparam(1,0), 4.0)
-            f.refresh()
-            self.assertEqual(f.get_initparam(1,0), 6.0)
-        finally:
-            os.remove("fracttest.frm")
+        self.assertEqual(f.get_initparam(1,0), 4.0)
+        f.refresh()
+        self.assertEqual(f.get_initparam(1,0), 6.0)
 
     def testSetSolid(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.set_solid(0,(255,127,8,190))
         self.assertEqual((255,127,8,190), f.solids[0])
         
@@ -473,10 +463,10 @@ colorlist=[
 ]
 '''
         wc = WarningCatcher()
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.warn = wc.warn
         self.assertRaises(ValueError,f.loadFctFile,
-                          (StringIO.StringIO(bad_testfile)))
+                          (io.StringIO(bad_testfile)))
 
         self.assertEqual(os.path.exists('evil.txt'),False)
 
@@ -509,9 +499,9 @@ colorlist=[
 1.000000=ffffffff
 ]
 '''
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertRaises(ValueError,f.loadFctFile,
-                          (StringIO.StringIO(bad_testfile)))
+                          (io.StringIO(bad_testfile)))
 
     def testLoadColorFile(self):
         testfile = '''gnofract4d parameter file
@@ -539,7 +529,7 @@ solids=[
 000000ff
 ]
 '''
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.deserialize(testfile)
         self.assertEqual(len(f.get_gradient().segments),255)
 
@@ -572,9 +562,9 @@ colorlist=[
 1.000000=ffffffff
 ]
 '''
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertRaises(ValueError,f.loadFctFile,
-                          (StringIO.StringIO(bad_testfile)))
+                          (io.StringIO(bad_testfile)))
 
     def testLoadBadColor(self):
         bad_testfile = '''gnofract4d parameter file
@@ -605,28 +595,30 @@ colorlist=[
 1.000000=ffffffff
 ]
 '''
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertRaises(ValueError,f.loadFctFile,
-                          (StringIO.StringIO(bad_testfile)))
+                          (io.StringIO(bad_testfile)))
 
 
     def testLoadBoolParamSavedByOlderVersion(self):
         '''Bug reported by Elaine Normandy: file saved by 2.7 containing
         boolean param can\'t be loaded by 2.8'''
 
-        f = fractal.T(self.compiler)
-        f.loadFctFile(open("../testdata/chainsoflight.fct"))
+        f = fractal.T(Test.g_comp)
+        file = open("../testdata/chainsoflight.fct")
+        f.loadFctFile(file)
+        file.close()
         self.assertEqual(f.periodicity, True)
         
     def testSaveFlag(self):
         'Test that we know when we\'re up-to-date on disk'
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertEqual(f.saved, True)
 
         f.set_param(0,7.3)
         self.assertEqual(f.saved, False)
 
-        savefile = StringIO.StringIO("")
+        savefile = io.StringIO("")
         f.save(savefile)
         self.assertEqual(f.saved, True)
 
@@ -642,26 +634,26 @@ colorlist=[
         x = f.serialize()
         self.assertEqual(f.saved, False)
 
-        f.loadFctFile(StringIO.StringIO(g_testfile))
+        f.loadFctFile(io.StringIO(g_testfile))
         self.assertEqual(f.saved, True)
 
     def testLoadBadFileRaises(self):
         'Test we throw an exception when loading an invalid file'
-        f = fractal.T(self.compiler)
-        not_a_file = StringIO.StringIO("ceci n'est pas un file")
+        f = fractal.T(Test.g_comp)
+        not_a_file = io.StringIO("ceci n'est pas un file")
         self.assertRaises(Exception,f.loadFctFile,not_a_file)
 
     def testSetBadGradientFromFile(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertRaises(IOError, f.set_gradient_from_file,"fish.uxf","moops")
 
     def testSetGradientFromFile(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.set_gradient_from_file("blatte1.ugr","blatte10")
         self.assertEqual("blatte10", f.get_gradient().name)
         
     def testIntParams(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.set_formula("test.frm", "fn_with_intparam")
 
         p = f.forms[0].formula.symbols.parameters()
@@ -679,10 +671,10 @@ colorlist=[
         
         f.set_initparam(1, "17", 0)
         self.assertEqual(f.forms[0].params[1],17)
-        self.failUnless(isinstance(f.forms[0].params[1],types.IntType))
+        self.assertTrue(isinstance(f.forms[0].params[1],int))
             
     def testCFParams(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
 
         # offset, density, bailout
         self.assertEqual([0.0, 1.0, 4.0], f.forms[1].params)
@@ -697,9 +689,9 @@ colorlist=[
         p = f.forms[0].formula.symbols.parameters()
         self.assertEqual(p["t__a_bailout"].cname, "t__a_fbailout")
 
-        cg = self.compiler.compile(f.forms[0].formula)
-        self.compiler.compile(f.forms[1].formula)
-        self.compiler.compile(f.forms[2].formula)
+        cg = Test.g_comp.compile(f.forms[0].formula)
+        Test.g_comp.compile(f.forms[1].formula)
+        Test.g_comp.compile(f.forms[2].formula)
 
         f.forms[0].formula.merge(f.forms[1].formula,"cf0_")        
         f.forms[0].formula.merge(f.forms[2].formula,"cf1_")        
@@ -747,13 +739,13 @@ colorlist=[
         cg.output_decls(f.forms[0].formula)
         c_code = cg.output_c(f.forms[0].formula)
 
-        self.failUnless("double t__a_cf0bailout = t__pfo->p[5]" in c_code)
+        self.assertTrue("double t__a_cf0bailout = t__pfo->p[5]" in c_code)
 
         self.assertNotEqual( # use
             c_code.find("log(t__a_cf0bailout)"),-1)
 
     def testAllParams(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertEqual(f.forms[1].params,[0.0,1.0,4.0])
         
         f.set_outer("test.cfrm", "Triangle")
@@ -779,9 +771,9 @@ colorlist=[
         # check that each element is within epsilon of expected value
         epsilon = 1.0e-12
         for (ra,rb) in zip(a,b):
-            if isinstance(ra, types.FloatType):
+            if isinstance(ra, float):
                 d = abs(ra-rb)
-                self.failUnless(d < epsilon,"%f != %f (by %f)" % (ra,rb,d))
+                self.assertTrue(d < epsilon,"%f != %f (by %f)" % (ra,rb,d))
             else:
                 self.assertEqual(ra,rb)
                 
@@ -816,35 +808,35 @@ green=0.666
 blue=0.3
 [endsection]
 '''
-        f = fractal.T(self.compiler);
-        rgb_file = StringIO.StringIO(file)
+        f = fractal.T(Test.g_comp);
+        rgb_file = io.StringIO(file)
         
         f.loadFctFile(rgb_file)
         self.assertEqual(f.forms[1].funcName,"rgb")
 
     def testLoadWithInlineFormula(self):
-        f1 = fractal.T(self.compiler)
-        file1 = StringIO.StringIO(g_test3file)
+        f1 = fractal.T(Test.g_comp)
+        file1 = io.StringIO(g_test3file)
         f1.loadFctFile(file1)
 
-        self.failUnless("__inline__" in f1.forms[0].funcFile)
+        self.assertTrue("__inline__" in f1.forms[0].funcFile)
         self.assertEqual(f1.forms[0].funcName, "Mandelbrot")
 
-        self.failUnless("__inline__" in f1.forms[1].funcFile)
+        self.assertTrue("__inline__" in f1.forms[1].funcFile)
         self.assertEqual(f1.forms[1].funcName, "continuous_potential")
 
-        self.failUnless("__inline__" in f1.forms[2].funcFile)
+        self.assertTrue("__inline__" in f1.forms[2].funcFile)
         self.assertEqual(f1.forms[2].funcName, "zero")
 
-        outfile = StringIO.StringIO()
+        outfile = io.StringIO()
         f1.save(outfile)
 
-        self.failUnless(outfile.getvalue().count("formula=[")==3)
+        self.assertTrue(outfile.getvalue().count("formula=[")==3)
 
     def testSaveWithCFParams(self):
         'load and save a file with a colorfunc which has parameters'
-        f1 = fractal.T(self.compiler)
-        file1 = StringIO.StringIO(g_test2file)
+        f1 = fractal.T(Test.g_comp)
+        file1 = io.StringIO(g_test2file)
         f1.loadFctFile(file1)
 
         f1.compile()
@@ -863,24 +855,24 @@ blue=0.3
         self.assertEqual(f1.forms[2].get_func_value("@myfunc"),"sqrt")
         
         # save again
-        file2 = StringIO.StringIO()
+        file2 = io.StringIO()
         f1.save(file2)
         saved = file2.getvalue()
-        self.failUnless(saved.startswith("gnofract4d parameter file"))
+        self.assertTrue(saved.startswith("gnofract4d parameter file"))
         self.assertNotEqual(saved.find("@power=3.0"),-1)
         
         # load it into another instance
-        file3 = StringIO.StringIO(saved)
-        f3 = fractal.T(self.compiler)
+        file3 = io.StringIO(saved)
+        f3 = fractal.T(Test.g_comp)
         f3.loadFctFile(file3)
 
         self.assertFractalsEqual(f1,f3)
         self.assertEqual(f3.forms[2].get_func_value("@myfunc"),"sqrt")
 
     def testParseVersionString(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertEqual(2000.0, f.parse_version_string("2.0"))
-        self.failUnless(f.parse_version_string("2.14") > f.parse_version_string("2.9"))
+        self.assertTrue(f.parse_version_string("2.14") > f.parse_version_string("2.9"))
 
     def assertFuncsEqual(self, form1, form2):
         for name in form1.func_names():
@@ -917,19 +909,19 @@ blue=0.3
         
     def runSaveTest(self,compressed):
         # load some settings
-        f1 = fractal.T(self.compiler)
-        file1 = StringIO.StringIO(g_testfile)        
+        f1 = fractal.T(Test.g_comp)
+        file1 = io.StringIO(g_testfile)        
         f1.loadFctFile(file1)
 
         # save again
-        file2 = StringIO.StringIO()
+        file2 = io.StringIO()
         f1.save(file2,compress=compressed)
         saved = file2.getvalue()
-        self.failUnless(saved.startswith("gnofract4d parameter file"))
+        self.assertTrue(saved.startswith("gnofract4d parameter file"))
         
         # load it into another instance
-        file3 = StringIO.StringIO(saved)
-        f2 = fractal.T(self.compiler)
+        file3 = io.StringIO(saved)
+        f2 = fractal.T(Test.g_comp)
         f2.loadFctFile(file3)
         f2.auto_deepen = False
         f2.auto_tolerance = False
@@ -941,7 +933,7 @@ blue=0.3
 
     def testResetZoom(self):
         # mandelbrot has no specifier, picks up 4.0
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         
         f.set_param(f.MAGNITUDE, 0.002)
 
@@ -957,7 +949,7 @@ blue=0.3
         
         
     def testRelocation(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         
         f.compile()
 
@@ -1010,7 +1002,7 @@ blue=0.3
         self.assertNearlyEqual(f.params,tparams)
 
     def testNudges(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
 
         f.set_formula("gf4d.frm","Nova")
         f.compile()
@@ -1043,7 +1035,7 @@ blue=0.3
         self.assertNearlyEqual(f.forms[0].params, oldparams)
         
     def testPeriodTolerance(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.compile()
 
         (w,h) = (40,30)
@@ -1057,8 +1049,8 @@ blue=0.3
         # the image with loose tolerance should be inside everywhere the 
         # tight one is, and some more places too
 
-        for y in xrange(h):
-            for x in xrange(w):
+        for y in range(h):
+            for x in range(w):
                 (is_solid,fate) = im.get_fate(x,y)
                 if fate == 32:
                     (is_solid2, fate2) = im2.get_fate(x,y)
@@ -1066,65 +1058,63 @@ blue=0.3
                         fate,fate2, "tolerance lost a pixel @ %d, %d" % (x,y))
 
     def testDefaultFractal(self):
-        try:
-            f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
 
-            # check defaults
-            self.assertEqual(f.params[f.XCENTER],0.0)
-            self.assertEqual(f.params[f.YCENTER],0.0)
-            self.assertEqual(f.params[f.ZCENTER],0.0)
-            self.assertEqual(f.params[f.WCENTER],0.0)
-            self.assertEqual(f.params[f.MAGNITUDE],4.0)
-            self.assertEqual(f.params[f.XYANGLE],0.0)
-            self.assertEqual(f.params[f.XZANGLE],0.0)
-            self.assertEqual(f.params[f.XWANGLE],0.0)
-            self.assertEqual(f.params[f.YZANGLE],0.0)
-            self.assertEqual(f.params[f.YWANGLE],0.0)
-            self.assertEqual(f.params[f.ZWANGLE],0.0)
-            self.assertEqual(f.forms[0].params, [f.get_gradient(), 4.0])
+        # check defaults
+        self.assertEqual(f.params[f.XCENTER],0.0)
+        self.assertEqual(f.params[f.YCENTER],0.0)
+        self.assertEqual(f.params[f.ZCENTER],0.0)
+        self.assertEqual(f.params[f.WCENTER],0.0)
+        self.assertEqual(f.params[f.MAGNITUDE],4.0)
+        self.assertEqual(f.params[f.XYANGLE],0.0)
+        self.assertEqual(f.params[f.XZANGLE],0.0)
+        self.assertEqual(f.params[f.XWANGLE],0.0)
+        self.assertEqual(f.params[f.YZANGLE],0.0)
+        self.assertEqual(f.params[f.YWANGLE],0.0)
+        self.assertEqual(f.params[f.ZWANGLE],0.0)
+        self.assertEqual(f.forms[0].params, [f.get_gradient(), 4.0])
 
-            f.compile()
-            (w,h) = (40,30)
-            im = image.T(w,h)
-            f.auto_deepen = False
-            f.auto_tolerance = False
-            f.draw(im)
-            im.save("def.tga")
+        image1_file = os.path.join(Test.tmpdir.name, "def.tga")
+        f.compile()
+        (w,h) = (40,30)
+        im = image.T(w,h)
+        f.auto_deepen = False
+        f.auto_tolerance = False
+        f.draw(im)
+        im.save(image1_file)
 
-            buf = im.image_buffer(0,0)
+        buf = im.image_buffer(0,0)
 
-            # corners must be white
-            self.assertWhite(buf,0,0,w)
-            self.assertWhite(buf,w-1,0,w)
-            self.assertWhite(buf,0,h-1,w)
-            self.assertWhite(buf,w-1,h-1,w)
+        # corners must be white
+        self.assertWhite(buf,0,0,w)
+        self.assertWhite(buf,w-1,0,w)
+        self.assertWhite(buf,0,h-1,w)
+        self.assertWhite(buf,w-1,h-1,w)
 
-            # center is black
-            self.assertBlack(buf,w/2,h/2,w)        
+        # center is black
+        self.assertBlack(buf,w//2,h//2,w)
 
-            # and vertically symmetrical
-            for x in xrange(w):
-                for y in xrange(h/2):
-                    apos = (y*w+x)*3
-                    bpos = ((h-y-1)*w+x)*3
-                    a = buf[apos:apos+3]
-                    b = buf[bpos:bpos+3]
-                    self.assertEqual(a,b)
+        # and vertically symmetrical
+        for x in range(w):
+            for y in range(h//2):
+                apos = (y*w+x)*3
+                bpos = ((h-y-1)*w+x)*3
+                a = buf[apos:apos+3]
+                b = buf[bpos:bpos+3]
+                self.assertEqual(a,b)
 
-            # draw it again in fragments and check result is identical
-            im = image.T(40,4,40,30)
-            im.start_save("def2.tga")
-            f.draw(im)
-            im.finish_save()
+        # draw it again in fragments and check result is identical
+        image2_file = os.path.join(Test.tmpdir.name, "def2.tga")
+        im = image.T(40,4,40,30)
+        im.start_save(image2_file)
+        f.draw(im)
+        im.finish_save()
 
-            self.assertEqual(True, filecmp.cmp("def.tga","def2.tga",False))
-        finally:
-            if os.path.exists("def.tga"): os.remove("def.tga")
-            if os.path.exists("def2.tga"): os.remove("def2.tga")
-            
+        self.assertEqual(True, filecmp.cmp(image1_file,image2_file,False))
+
     def testReset(self):
         # test that formula's defaults are applied
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
 
         f.params[f.XCENTER] = 777.0
         f.set_formula("test.frm","test_defaults")
@@ -1152,7 +1142,7 @@ blue=0.3
             f.forms[2].params)
 
     def testResetAngles(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.params[f.XYANGLE]=0.1
         f.params[f.XZANGLE]=0.2
         f.params[f.XWANGLE]=0.3
@@ -1168,8 +1158,8 @@ blue=0.3
 version=99.9
 '''
         warning_catcher = WarningCatcher()
-        f = fractal.T(self.compiler);
-        future_file = StringIO.StringIO(file)
+        f = fractal.T(Test.g_comp);
+        future_file = io.StringIO(file)
         
         f.warn = warning_catcher.warn
         f.loadFctFile(future_file)
@@ -1180,13 +1170,13 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
 
     def testNoPeriodIfNoZ(self):
         'if z isn\'t used in the fractal, disable periodicity'
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
 
         f.set_formula("test.frm","test_noz")
         f.compile() # previously, failed to compile
 
     def testEpsilonTolerance(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertNearlyEqual(
             [(4.0/640.0) * 0.05] , [f.epsilon_tolerance(640,480)])
         
@@ -1195,7 +1185,7 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
 
     def testWarpParameter(self):
         # test using a specific parameter for warping
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertEqual(f.warp_param, None)
         f.set_formula("test.frm","test_warp_param")
         f.compile()
@@ -1216,13 +1206,13 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         #im.save("yes_warp.png") # should look like a circle
 
     def round_trip(self,f):
-        f2 = fractal.T(self.compiler)
+        f2 = fractal.T(Test.g_comp)
         s = f.serialize()
         f2.deserialize(s)
         return f2
     
     def testCircle(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
 
         f.set_formula("test.frm","test_circle")
         f.set_outer("gf4d.cfrm","continuous_potential")
@@ -1233,27 +1223,27 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         im = image.T(w,h)
         f.draw(im)
 
-        im.save("/tmp/foo.tga")
+        im.save(os.path.join(Test.tmpdir.name, "foo.tga"))
         # check that result is horizontally symmetrical
         buf = im.image_buffer(0,0)
-        for y in xrange(h):
-            line = map(ord,list(buf[y*w*3:(y*w+w)*3]))
+        for y in range(h):
+            line = buf[y*w*3:(y*w+w)*3].tolist()
             line.reverse()
             revline = line
-            line = map(ord,list(buf[y*w*3:(y*w+w)*3]))
-            for x in xrange(w):
+            line = buf[y*w*3:(y*w+w)*3].tolist()
+            for x in range(w):
                 a = line[x*3:(x+1)*3]
                 b = revline[x*3:(x+1)*3]
 
                 if a != b:
                     fate_buf = im.fate_buffer(0,y)
-                    print map(ord,list(fate_buf[0:w]))
+                    print(fate_buf[0:w].tolist())
                     self.assertEqual(a,b,"%s != %s, %d != %d" % (a,b,x,w-x))
 
 
         # and vertically symmetrical
-        for x in xrange(w):
-            for y in xrange(h/2):
+        for x in range(w):
+            for y in range(h//2):
                 apos = (y*w+x)*3
                 bpos = ((h-y-1)*w+x)*3
                 a = buf[apos:apos+3]
@@ -1261,7 +1251,7 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
                 self.assertEqual(a,b)
 
     def testDiagonal(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.set_formula("test.frm","test_simpleshape")
         f.set_outer("gf4d.cfrm","default")
         f.compile()
@@ -1273,8 +1263,8 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         f.draw(im)
 
         buf = im.image_buffer(0,0)
-        for y in xrange(h):
-            for x in xrange(w):
+        for y in range(h):
+            for x in range(w):
                 if x > y:
                     self.assertWhite(buf,x,y,w)
                 elif y > x:
@@ -1282,11 +1272,11 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
                 else:
                     # pixels on boundary should be antialiased to 25% grey
                     # because 3 subpixels are white and 1 black
-                    self.assertColor(buf,x,y,w,(255*3)/4)
+                    self.assertColor(buf,x,y,w,(255*3)//4)
 
         
     def testRecolor(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.set_formula("test.frm","test_simpleshape")
         f.set_outer("gf4d.cfrm","default")
         f.compile()
@@ -1298,8 +1288,8 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         f.draw(im)
 
         buf = im.image_buffer(0,0)
-        for y in xrange(h):
-            for x in xrange(w):
+        for y in range(h):
+            for x in range(w):
                 if x > y:
                     self.assertWhite(buf,x,y,w)
                 elif y > x:
@@ -1307,10 +1297,10 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
                 else:
                     # pixels on boundary should be antialiased to 25% grey
                     # because 3 subpixels are white and 1 black
-                    self.assertColor(buf,x,y,w,(255*3)/4)
+                    self.assertColor(buf,x,y,w,(255*3)//4)
         
     def testDiagonalWithColorFuncs(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         #f.pixel_changed = f._pixel_changed
         f.set_formula("test.frm","test_simpleshape")
         f.set_inner("test.cfrm","flat")
@@ -1329,8 +1319,8 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
         # check all this stuff survives serialization
         saved = f.serialize()
 
-        f2 = fractal.T(self.compiler)
-        f2.loadFctFile(StringIO.StringIO(saved))
+        f2 = fractal.T(Test.g_comp)
+        f2.loadFctFile(io.StringIO(saved))
         self.check_diagonal_image(f2, ingrey, outgrey)
         
     def check_diagonal_image(self,f,ingrey,outgrey):
@@ -1343,8 +1333,8 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
 
         buf = im.image_buffer(0,0)
         
-        for y in xrange(h):
-            for x in xrange(w):
+        for y in range(h):
+            for x in range(w):
                 if x >= y:
                     self.assertColor(buf,x,y,w,outgrey)
                 else:
@@ -1385,10 +1375,10 @@ green=1
 blue=0.5543108971162746
 [endsection]
 '''
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         wc = WarningCatcher()
         f.warn = wc.warn
-        f.loadFctFile(StringIO.StringIO(file))
+        f.loadFctFile(io.StringIO(file))
 
         self.assertEqual(
             [ f.get_gradient(), 4.0, 0.34,-0.28],
@@ -1451,14 +1441,14 @@ solids=[
 000000ff
 ]
 '''
-        f = fractal.T(self.compiler)
-        f.loadFctFile(StringIO.StringIO(file))
+        f = fractal.T(Test.g_comp)
+        f.loadFctFile(io.StringIO(file))
 
         g = f.get_gradient()
         self.assertEqual(len(g.segments),6)
 
     def failBuf(self,buf):
-        self.failUnless(False)
+        self.assertTrue(False)
         
     def assertWhite(self,buf,x,y,w):
         self.assertColor(buf,x,y,w,255)
@@ -1468,27 +1458,27 @@ solids=[
 
     def assertColor(self,buf,x,y,w,c):
         off = (x+y*w)*3
-        r = ord(buf[off])
-        g = ord(buf[off+1])
-        b = ord(buf[off+2])
+        r = buf[off]
+        g = buf[off+1]
+        b = buf[off+2]
         self.assertEqual(r,c)
         self.assertEqual(g,c)
         self.assertEqual(b,c)
 
     def testTransforms(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertEqual([], f.transforms)
         f.append_transform("gf4d.uxf","Inverse")
         self.assertEqual(1,len(f.transforms))
         t = f.transforms[0]
-        self.failUnless(isinstance(t, formsettings.T))
+        self.assertTrue(isinstance(t, formsettings.T))
         self.assertEqual("Inverse", t.funcName)
 
         f.remove_transform(0)
         self.assertEqual(0,len(f.transforms))
         
     def testSet(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.set_formula("gf4d.frm","Mandelbar")
         f.set_inner("gf4d.cfrm","zero")
         f.set_outer("gf4d.cfrm","default")
@@ -1504,14 +1494,15 @@ solids=[
 
     def testFct(self):
         file = open("../testdata/test.fct")
-        f = fractal.T(self.compiler);
+        f = fractal.T(Test.g_comp);
         f.loadFctFile(file)
+        file.close()
         f.compile()
         im = image.T(64,48)
         f.draw(im)
 
     def testCopy(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.set_formula("gf4d.frm","Barnsley Type 1")
         f.forms[0].set_named_item("@bailfunc","manhattanish")
         f.set_outer("test.cfrm","flat")
@@ -1548,7 +1539,7 @@ solids=[
         old_colors = f.get_gradient().segments
 
         c0 = new_colors[0].left_color
-        for i in xrange(len(new_colors)):
+        for i in range(len(new_colors)):
             self.assertEqual(new_colors[i].left_color,
                              old_colors[i].left_color)
 
@@ -1559,8 +1550,10 @@ solids=[
     def testCopy2(self):
         '''There was a bug where copy() would reset func values.
         Check for recurrence'''
-        f = fractal.T(self.compiler)
-        f.loadFctFile(open("../testdata/julfn.fct"))
+        f = fractal.T(Test.g_comp)
+        file = open("../testdata/julfn.fct")
+        f.loadFctFile(file)
+        file.close()
         f.forms[0].set_named_item("@fn1","sinh")
 
         self.assertEqual(f.forms[0].get_func_value("@fn1"),"sinh")
@@ -1576,7 +1569,7 @@ solids=[
         self.assertEqual(f.dirty,False)
         
     def testDirtyFlag(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertDirty(f)
         f.clean()
         self.assertClean(f)
@@ -1594,13 +1587,15 @@ solids=[
         self.assertDirty(f)
 
     def testLoadGivesCorrectParameters(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertEqual(len(f.forms[0].formula.symbols.parameters()),3)
-        f.loadFctFile(open("../testdata/elfglow.fct"))
+        file = open("../testdata/elfglow.fct")
+        f.loadFctFile(file)
+        file.close()
         self.assertEqual(len(f.forms[0].formula.symbols.parameters()),5)
         
     def testFractalBadness(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         self.assertRaises(ValueError,f.set_formula,"gf4d.frm","xMandelbrot")
         self.assertRaises(ValueError,f.set_inner,"gf4d.cfrm","xdefault")
         self.assertRaises(ValueError,f.set_outer,"gf4d.cfrm","xzero")
@@ -1610,8 +1605,10 @@ solids=[
         f.compile()
 
     def testTumorCrash(self):
-        f = fractal.T(self.compiler)
-        f.loadFctFile(open("../testdata/tumor.fct"))
+        f = fractal.T(Test.g_comp)
+        file = open("../testdata/tumor.fct")
+        f.loadFctFile(file)
+        file.close()
         f.compile()
         f.set_formula("gf4d.frm", "Buffalo")
         f.compile()
@@ -1619,8 +1616,8 @@ solids=[
         f.draw(im)
 
     def testBlend(self):
-        f = fractal.T(self.compiler)
-        f2 = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
+        f2 = fractal.T(Test.g_comp)
         f2.set_param(f.XCENTER,4.0)
         f2.set_param(f.MAGNITUDE,1.0)
         f2.forms[0].set_named_item("@bailout",4000.0)
@@ -1631,18 +1628,18 @@ solids=[
         self.assertFractalsEqual(blend,f2)
         blend = f.blend(f2,0.5)
         self.assertEqual(2.0, blend.get_param(f.XCENTER)) # linear blend
-        self.failUnless(2.5 > blend.get_param(f.MAGNITUDE)) # exponential blend
+        self.assertTrue(2.5 > blend.get_param(f.MAGNITUDE)) # exponential blend
         self.assertEqual(2002.0, blend.forms[0].get_named_param_value("@bailout"))
 
     def testBadBlend(self):
-        f1 = fractal.T(self.compiler)
-        f2 = fractal.T(self.compiler)
+        f1 = fractal.T(Test.g_comp)
+        f2 = fractal.T(Test.g_comp)
         f2.set_formula("gf4d.frm","Magnet")
         self.assertRaises(ValueError,f1.blend,f2,0.5)
         
     def testBlendAngles(self):
-        f = fractal.T(self.compiler)
-        f2 = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
+        f2 = fractal.T(Test.g_comp)
         
         f2.set_param(f.XYANGLE,math.pi/4.0)
         blend = f.blend(f2,0.5)
@@ -1650,28 +1647,28 @@ solids=[
         self.assertEqual(math.pi/8.0,blend.get_param(f.XYANGLE))
 
     def testSetCompilerOptions(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.set_compiler_option("optimize", 1)
         self.assertEqual({"optimize" : 1 } , f.compiler_options)
 
     def testImage(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.set_formula("test.frm", "ident")
         f.set_inner("test.cfrm", "image")
         f.compile()
         im = image.T(30,30)
         f.draw(im)
-        im.save("/tmp/foo.tga")
+        im.save(os.path.join(Test.tmpdir.name, "foo.tga"))
 
     def disabled_testPeriodColorfunc(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.set_inner("gf4d.cfrm", "Periodicity")
         f.compile()
         im = image.T(30,30)
         f.draw(im)
         
     def testDetermineDirection(self):
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
 
         self.tryDirections(f,fractal.BLEND_NEAREST,  [True,  False, True,  False, True])
         self.tryDirections(f,fractal.BLEND_FURTHEST, [False, True,  False, True,  False])
@@ -1702,11 +1699,11 @@ solids=[
             f.determine_direction(0, -math.pi * 1.5,mode))
 
     def assertValidType(self,val):
-        self.assertNotEqual(val.__class__, types.ListType, "%s shouldn't be a list" % val)
+        self.assertNotEqual(val.__class__, list, "%s shouldn't be a list" % val)
         
     def testMandelbrotMix4(self):
         # regression test
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.set_formula("test.frm","MandelbrotMix4")
         s = f.forms[0].formula.symbols
         #print s["t__a_p1"]
@@ -1718,7 +1715,7 @@ solids=[
 
     def disabled_testDump(self):
         # produces distracting output
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.dump["trace"] = True
         f.compile()
         im = image.T(4,3)
@@ -1727,7 +1724,7 @@ solids=[
     def testJm25(self):
         # regression test for a problem accidentally introduced in
         # private builds of gf4d 3.5
-        f = fractal.T(self.compiler)
+        f = fractal.T(Test.g_comp)
         f.set_formula("fractint-g4.frm", "Jm_25")        
         f.compile()
         self.assertEqual(len(f.forms[0].params), len(f.forms[0].paramtypes))

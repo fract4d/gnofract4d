@@ -1,11 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 
-import translate
-import fractparser
-import fractlexer
-import gradient
+from fract4d import translate, fractparser, fractlexer, gradient
 
 class T:
     def __init__(self):        
@@ -25,7 +22,7 @@ class T:
             g.load_ugr(t)
             out_name = g.name + ".ggr"
             f = open("gradients/" + out_name, "w")
-            print >>f, g.serialize()
+            print(g.serialize(), file=f)
             f.close()
 
 def main(args):
