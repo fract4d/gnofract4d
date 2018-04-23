@@ -7,11 +7,6 @@
        <menuitem name="SaveImage" action="FileSaveImageAction"/>
        <menuitem name="SaveHiResImage" action="FileSaveHighResImageAction"/>
        <separator/>
-       <menuitem name="Recent1" action="FileRecent1Action"/>
-       <menuitem name="Recent2" action="FileRecent2Action"/>
-       <menuitem name="Recent3" action="FileRecent3Action"/>
-       <menuitem name="Recent4" action="FileRecent4Action"/>
-       <separator/>
        <menuitem name="Quit" action="FileQuitAction"/>
     </menu>
     <menu name="EditMenu" action="EditMenuAction">

@@ -68,8 +68,6 @@ class MainWindow:
         for path in extra_paths:
             self.compiler.add_func_path(path)
 
-        self.recent_files = self.userPrefs.get_list("recent_files")
-        
         self.vbox = Gtk.VBox()
         self.window.add(self.vbox)
         
@@ -120,8 +118,6 @@ class MainWindow:
 
         self.update_subfract_visibility(False)
         self.populate_warpmenu(self.f)
-        self.update_recent_file_menu()
-        
         self.update_image_prefs(self.userPrefs)
         
         self.statuses = [ _("Done"),
@@ -580,18 +576,6 @@ class MainWindow:
              '<control><shift>I', _('Save a higher-resolution version of the current image'),
              self.save_hires_image),
 
-            # FIXME: UI merging would seem to be better, but it's a bit bloody complicated
-            # There's a special widget in pygtk 2.10 for this but that's too new, not all
-            # interesting distributions have it
-            ('FileRecent1Action', None, _('_1'), None, None,
-             lambda *args : self.load_recent_file(1)),
-            ('FileRecent2Action', None, _('_2'), None, None,
-             lambda *args : self.load_recent_file(2)),
-            ('FileRecent3Action', None, _('_3'), None, None,
-             lambda *args : self.load_recent_file(3)),
-            ('FileRecent4Action', None, _('_4'), None, None,
-             lambda *args : self.load_recent_file(4)),
-
             ('FileQuitAction', Gtk.STOCK_QUIT, None,
              None, _('Quit'), self.quit),
 
@@ -688,12 +672,6 @@ class MainWindow:
         self.model.seq.make_undo_sensitive(undo)
         redo = self.manager.get_widget(_("/MenuBar/EditMenu/EditRedo"))
         self.model.seq.make_redo_sensitive(redo)
-
-        self.recent_menuitems = [
-            self.manager.get_widget("/MenuBar/FileMenu/Recent1"),
-            self.manager.get_widget("/MenuBar/FileMenu/Recent2"),
-            self.manager.get_widget("/MenuBar/FileMenu/Recent3"),
-            self.manager.get_widget("/MenuBar/FileMenu/Recent4")]
 
         # command reference
         if (not Gtk.check_version(3,19,0)):
@@ -1081,29 +1059,6 @@ class MainWindow:
         if is4dsensitive:
             self.four_d_sensitives.append(my_fourway)
 
-    def update_recent_files(self, file):
-        self.recent_files = self.userPrefs.update_list("recent_files",
-                                                       os.path.abspath(file), 4)
-        self.update_recent_file_menu()
-        
-    def update_recent_file_menu(self):
-        i = 1
-        for menuitem in self.recent_menuitems:
-            if i > len(self.recent_files):
-                menuitem.hide()
-            else:
-                filename = self.recent_files[i-1]
-                display_name = os.path.basename(filename).replace("_","__")
-                menuitem.get_child().set_label("_%d %s" % (i, display_name))
-                menuitem.show()
-            i += 1
-
-    def load_recent_file(self, file_num, *args):
-        if not self.load(self.recent_files[file_num - 1]):
-            self.userPrefs.remove_section_item("recent_files", file_num - 1)
-            self.recent_files = self.userPrefs.get_list("recent_files")
-            self.update_recent_file_menu()
-        
     def save_file(self,file):
         fileHandle = None
         try:
@@ -1111,7 +1066,6 @@ class MainWindow:
             fileHandle = open(file,'w')
             self.f.save(fileHandle,compress=comp)
             self.set_filename(file)
-            self.update_recent_files(file)
             return True
         except Exception as err:
             self.show_error_message(
@@ -1356,7 +1310,6 @@ class MainWindow:
                 self.f.loadFctFile(fh)
             finally:
                 fh.close()
-            self.update_recent_files(file)
             self.set_filename(file)
             return True
         except Exception as err:
