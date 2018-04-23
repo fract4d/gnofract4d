@@ -17,6 +17,9 @@ class Bag:
         
 announce = [
         Bag(
+            date="April 22, 2018",
+            text="Version 4.0 released. This supports Python 3.x"),
+        Bag(
             date="June 1st, 2015",
             text="Moved to GitHub"),            
 	Bag(

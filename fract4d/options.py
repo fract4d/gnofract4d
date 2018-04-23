@@ -4,7 +4,7 @@ import os.path
 import sys
 
 # version of Gnofract 4D
-VERSION = '3.14.1'
+VERSION = '4.0'
 
 POSITION_ARGUMENTS = ("xcenter", "ycenter", "zcenter", "wcenter",
     "xyangle", "xzangle", "xwangle", "yzangle", "ywangle", "zwangle",

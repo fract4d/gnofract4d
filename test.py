@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # run all the tests
 import os
@@ -14,19 +14,23 @@ print("Running all unit tests. This may take several minutes.")
 
 class Test(unittest.TestCase):
     def testSetupPyVersionMatches(self):
-        doc = Path("setup.py").read_text()
+        doc = open("setup.py")
+        content = doc.read()
+        doc.close()
         doc_re = re.compile(r"gnofract4d_version = '(\S+)'")
-        m = doc_re.search(doc)
+        m = doc_re.search(content)
 
         self.assertTrue(m,"setup.py doesn't specify version")
         self.assertEqual(options.VERSION, m.group(1))
 
     def testDocVersionMatches(self):
         # check the docs
-        doc = Path("doc/gnofract4d-manual/C/gnofract4d-manual.xml").read_text()
+        doc = open("doc/gnofract4d-manual/C/gnofract4d-manual.xml")
+        content = doc.read()
+        doc.close()
         doc_re = re.compile(r'\<\!ENTITY version "(\S+)"\>')
 
-        m = doc_re.search(doc)
+        m = doc_re.search(content)
         self.assertTrue(m,"doc doesn't specify version")
         self.assertEqual(options.VERSION,m.group(1), "Version mismatch")
 
@@ -34,10 +38,12 @@ class Test(unittest.TestCase):
         if not os.path.exists("website"):
             # not included in source dist
             return
-        mkweb = Path("website/mkweb.py").read_text()
+        mkweb = open("website/mkweb.py")
+        content = mkweb.read()
+        mkweb.close()
         ver_re = re.compile(r'text="Version (\S+) released.')
 
-        m = ver_re.search(mkweb)
+        m = ver_re.search(content)
         self.assertTrue(m,"doc doesn't specify version")
         self.assertEqual(options.VERSION,m.group(1), "Version mismatch")
 
