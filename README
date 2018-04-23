@@ -39,12 +39,11 @@ Requirements
 Gnofract 4D requires these packages to run:
 
 o Python version 3.5 or higher
-o PyGObject
-o Pycairo
-o GTK+ version 3.22 or higher
-o libjpeg
-o libpng
+o GTK version 3.18 or higher
 o A C++ compiler
+o Optionally, headers for libpng and libjpeg
+
+Ubuntu 16.04 or newer releases should work.
 
 If you're not sure if you have these or not, just try running
 "./setup.py build" and see if it complains.
