@@ -36,7 +36,7 @@ urchinTracker();
 	<a href="https://github.com/edyoung/gnofract4d">GitHub Project Page</a>
 </li>
 </ul>
-<h3 class="downloadbar"><a href="https://github.com/edyoung/gnofract4d/archive/V_3_14_1.tar.gz">Download</a></h3>
+<h3 class="downloadbar"><a href="https://github.com/edyoung/gnofract4d/archive/v4.0.tar.gz">Download</a></h3>
 
 <div class="announce" py:if="hasattr(page,'announce')">
 <h3>Latest news:</h3>

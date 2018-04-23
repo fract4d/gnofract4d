@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Writing Your Own Functions</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.1" /><link rel="home" href="index.html" title="Gnofract 4D" /><link rel="up" href="index.html" title="Gnofract 4D" /><link rel="prev" href="maths.html" title="About the maths" /><link rel="next" href="formref.html" title="Formula Language Reference" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Writing Your Own Functions</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="maths.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="formref.html">Next</a></td></tr></table><hr /></div><div class="sect1" title="Writing Your Own Functions"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="compiler"></a>Writing Your Own Functions</h2></div></div></div><p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Writing Your Own Functions</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="Gnofract 4D" /><link rel="up" href="index.html" title="Gnofract 4D" /><link rel="prev" href="maths.html" title="About the maths" /><link rel="next" href="formref.html" title="Formula Language Reference" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Writing Your Own Functions</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="maths.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="formref.html">Next</a></td></tr></table><hr /></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="compiler"></a>Writing Your Own Functions</h2></div></div></div><p>
 When you get tired of the fractal functions which come with Gnofract
 4D, you can write your own, or take advantage of thousands of formulas
 written by other fractal enthusiasts. Gnofract4D can load most fractal
@@ -13,7 +12,7 @@ extra care when writing formulas if you want them to work in <span class="applic
 too.
 </p><p>
 Here are links to some online resources for formula files:
-</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p> <a class="ulink" href="http://home.att.net/~Paul.N.Lee/OrgForm.html" target="_top">ORGFORM.ZIP</a>
+</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p> <a class="ulink" href="http://home.att.net/~Paul.N.Lee/OrgForm.html" target="_top">ORGFORM.ZIP</a>
 A collection of about 25,000 <span class="application">Fractint</span> formula files by many authors,
 originally compiled by George C. Martin and currently maintained by
 Paul N. Lee. Indispensable. </p></li><li class="listitem"><p> <a class="ulink" href="http://formulas.ultrafractal.com/" target="_top"><span class="application">UltraFractal</span> public formula
@@ -21,7 +20,7 @@ database</a> Many thousands of formulas by users of
 <span class="application">UltraFractal</span>. Most of these will work with <span class="application">Gnofract 4D</span>. Let me know of
 any issues, since I aim to improve compatibility further in future
 releases. </p></li></ul></div><p>
-</p><div class="sect2" title="Writing Your First Formula"><div class="titlepage"><div><div><h3 class="title"><a id="frm_tutorial"></a>Writing Your First Formula</h3></div></div></div><p>
+</p><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="frm_tutorial"></a>Writing Your First Formula</h3></div></div></div><p>
 This section steps you through the creation of a new fractal
 formula. By the way, the formulas for each of these steps can also be
 found in the file <code class="filename">formulas/tutorial.frm</code>.
@@ -33,17 +32,17 @@ is a formula or a coloring function).
 </p></li><li class="listitem"><p>
 Enter the following in <code class="filename">example.frm</code>.
 
-</p><pre class="programlisting"><span><span class="bold"><strong>MyFormula {</strong></span></span><span>
-</span><span><span class="emphasis"><em>; First example formula - this produces a variant on the Mandelbrot set</em></span></span><span>
-</span><span><span class="bold"><strong>init:</strong></span></span><span>
-</span><span> </span><span> </span><span> </span><span> </span><span>z</span><span> </span><span>=</span><span> </span><span><code class="literal">0</code></span><span>
-</span><span> </span><span> </span><span> </span><span> </span><span>c</span><span> </span><span>=</span><span> </span><span>#pixel</span><span>
-</span><span><span class="bold"><strong>loop:</strong></span></span><span>
-</span><span> </span><span> </span><span> </span><span> </span><span>z</span><span> </span><span>=</span><span> </span><span>z</span><span>*</span><span>z</span><span>*</span><span>c</span><span> </span><span>+</span><span> </span><span>c</span><span>*</span><span>c</span><span>
-</span><span><span class="bold"><strong>bailout:</strong></span></span><span>
-</span><span> </span><span> </span><span> </span><span> </span><span>|</span><span>z</span><span>|</span><span> </span><span>&lt;</span><span> </span><span><code class="literal">4.0</code></span><span>
-</span><span>}</span><span>
-</span><span>
+</p><pre class="programlisting"><span class="phrase"><span class="bold"><strong>MyFormula {</strong></span></span><span class="phrase">
+</span><span class="phrase"><span class="emphasis"><em>; First example formula - this produces a variant on the Mandelbrot set</em></span></span><span class="phrase">
+</span><span class="phrase"><span class="bold"><strong>init:</strong></span></span><span class="phrase">
+</span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase">z</span><span class="phrase"> </span><span class="phrase">=</span><span class="phrase"> </span><span class="phrase"><code class="literal">0</code></span><span class="phrase">
+</span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase">c</span><span class="phrase"> </span><span class="phrase">=</span><span class="phrase"> </span><span class="phrase">#pixel</span><span class="phrase">
+</span><span class="phrase"><span class="bold"><strong>loop:</strong></span></span><span class="phrase">
+</span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase">z</span><span class="phrase"> </span><span class="phrase">=</span><span class="phrase"> </span><span class="phrase">z</span><span class="phrase">*</span><span class="phrase">z</span><span class="phrase">*</span><span class="phrase">c</span><span class="phrase"> </span><span class="phrase">+</span><span class="phrase"> </span><span class="phrase">c</span><span class="phrase">*</span><span class="phrase">c</span><span class="phrase">
+</span><span class="phrase"><span class="bold"><strong>bailout:</strong></span></span><span class="phrase">
+</span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase">|</span><span class="phrase">z</span><span class="phrase">|</span><span class="phrase"> </span><span class="phrase">&lt;</span><span class="phrase"> </span><span class="phrase"><code class="literal">4.0</code></span><span class="phrase">
+</span><span class="phrase">}</span><span class="phrase">
+</span><span class="phrase">
 </span></pre><p>
 
 </p></li><li class="listitem"><p>
@@ -66,17 +65,17 @@ At this point, the widgets for rotating the image in 4D will be
 disabled, because your formula doesn't use any of the 4D
 options. Let's turn those on. Edit your formula so it reads:
 
-</p><pre class="programlisting"><span><span class="bold"><strong>MyFormula {</strong></span></span><span>
-</span><span><span class="emphasis"><em>; Second example - introduce 4D</em></span></span><span>
-</span><span><span class="bold"><strong>init:</strong></span></span><span>
-</span><span> </span><span> </span><span> </span><span> </span><span>z</span><span> </span><span>=</span><span> </span><span><span class="bold"><strong>#zwpixel</strong></span></span><span> </span><span><span class="emphasis"><em>; take initial value from 4D position</em></span></span><span>
-</span><span> </span><span> </span><span> </span><span> </span><span>c</span><span> </span><span>=</span><span> </span><span>#pixel</span><span>
-</span><span><span class="bold"><strong>loop:</strong></span></span><span>
-</span><span> </span><span> </span><span> </span><span> </span><span>z</span><span> </span><span>=</span><span> </span><span>z</span><span>*</span><span>z</span><span>*</span><span>c</span><span> </span><span>+</span><span> </span><span>c</span><span>*</span><span>c</span><span>
-</span><span><span class="bold"><strong>bailout:</strong></span></span><span>
-</span><span> </span><span> </span><span> </span><span> </span><span>|</span><span>z</span><span>|</span><span> </span><span>&lt;</span><span> </span><span><code class="literal">4.0</code></span><span>
-</span><span>}</span><span>
-</span><span>
+</p><pre class="programlisting"><span class="phrase"><span class="bold"><strong>MyFormula {</strong></span></span><span class="phrase">
+</span><span class="phrase"><span class="emphasis"><em>; Second example - introduce 4D</em></span></span><span class="phrase">
+</span><span class="phrase"><span class="bold"><strong>init:</strong></span></span><span class="phrase">
+</span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase">z</span><span class="phrase"> </span><span class="phrase">=</span><span class="phrase"> </span><span class="phrase"><span class="bold"><strong>#zwpixel</strong></span></span><span class="phrase"> </span><span class="phrase"><span class="emphasis"><em>; take initial value from 4D position</em></span></span><span class="phrase">
+</span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase">c</span><span class="phrase"> </span><span class="phrase">=</span><span class="phrase"> </span><span class="phrase">#pixel</span><span class="phrase">
+</span><span class="phrase"><span class="bold"><strong>loop:</strong></span></span><span class="phrase">
+</span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase">z</span><span class="phrase"> </span><span class="phrase">=</span><span class="phrase"> </span><span class="phrase">z</span><span class="phrase">*</span><span class="phrase">z</span><span class="phrase">*</span><span class="phrase">c</span><span class="phrase"> </span><span class="phrase">+</span><span class="phrase"> </span><span class="phrase">c</span><span class="phrase">*</span><span class="phrase">c</span><span class="phrase">
+</span><span class="phrase"><span class="bold"><strong>bailout:</strong></span></span><span class="phrase">
+</span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase">|</span><span class="phrase">z</span><span class="phrase">|</span><span class="phrase"> </span><span class="phrase">&lt;</span><span class="phrase"> </span><span class="phrase"><code class="literal">4.0</code></span><span class="phrase">
+</span><span class="phrase">}</span><span class="phrase">
+</span><span class="phrase">
 </span></pre><p>
 
 </p><p>
@@ -85,20 +84,20 @@ should now find that all the options are enabled. This is because the image now 
 </p></li><li class="listitem"><p>
 Next let's add some parameters to our function:
 
-</p><pre class="programlisting"><span><span class="bold"><strong>MyFormula {</strong></span></span><span>
-</span><span><span class="emphasis"><em>; Third example - add a parameter</em></span></span><span>
-</span><span><span class="bold"><strong>init:</strong></span></span><span>
-</span><span> </span><span> </span><span> </span><span> </span><span>z</span><span> </span><span>=</span><span> </span><span>#zwpixel</span><span>
-</span><span> </span><span> </span><span> </span><span> </span><span>c</span><span> </span><span>=</span><span> </span><span>#pixel</span><span>
-</span><span><span class="bold"><strong>loop:</strong></span></span><span>
-</span><span> </span><span> </span><span> </span><span> </span><span>z</span><span> </span><span>=</span><span> </span><span><span class="bold"><strong>@myfunc</strong></span></span><span>(</span><span>z</span><span>*</span><span>z</span><span>*</span><span>c</span><span>)</span><span> </span><span>+</span><span> </span><span><span class="bold"><strong>@factor</strong></span></span><span> </span><span>*</span><span> </span><span>z</span><span> </span><span>+</span><span> </span><span>c</span><span>*</span><span>c</span><span>
-</span><span><span class="bold"><strong>bailout:</strong></span></span><span>
-</span><span> </span><span> </span><span> </span><span> </span><span>|</span><span>z</span><span>|</span><span> </span><span>&lt;</span><span> </span><span><code class="literal">4</code></span><span>
-</span><span><span class="bold"><strong>default:</strong></span></span><span>
-</span><span>param</span><span> </span><span>factor</span><span>
-</span><span>	</span><span>default</span><span> </span><span>=</span><span> </span><span>(</span><span><code class="literal">1.0</code></span><span>,</span><span><code class="literal">0.5</code></span><span>)</span><span>
-</span><span>endparam</span><span>
-</span><span>}</span><span>
+</p><pre class="programlisting"><span class="phrase"><span class="bold"><strong>MyFormula {</strong></span></span><span class="phrase">
+</span><span class="phrase"><span class="emphasis"><em>; Third example - add a parameter</em></span></span><span class="phrase">
+</span><span class="phrase"><span class="bold"><strong>init:</strong></span></span><span class="phrase">
+</span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase">z</span><span class="phrase"> </span><span class="phrase">=</span><span class="phrase"> </span><span class="phrase">#zwpixel</span><span class="phrase">
+</span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase">c</span><span class="phrase"> </span><span class="phrase">=</span><span class="phrase"> </span><span class="phrase">#pixel</span><span class="phrase">
+</span><span class="phrase"><span class="bold"><strong>loop:</strong></span></span><span class="phrase">
+</span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase">z</span><span class="phrase"> </span><span class="phrase">=</span><span class="phrase"> </span><span class="phrase"><span class="bold"><strong>@myfunc</strong></span></span><span class="phrase">(</span><span class="phrase">z</span><span class="phrase">*</span><span class="phrase">z</span><span class="phrase">*</span><span class="phrase">c</span><span class="phrase">)</span><span class="phrase"> </span><span class="phrase">+</span><span class="phrase"> </span><span class="phrase"><span class="bold"><strong>@factor</strong></span></span><span class="phrase"> </span><span class="phrase">*</span><span class="phrase"> </span><span class="phrase">z</span><span class="phrase"> </span><span class="phrase">+</span><span class="phrase"> </span><span class="phrase">c</span><span class="phrase">*</span><span class="phrase">c</span><span class="phrase">
+</span><span class="phrase"><span class="bold"><strong>bailout:</strong></span></span><span class="phrase">
+</span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase"> </span><span class="phrase">|</span><span class="phrase">z</span><span class="phrase">|</span><span class="phrase"> </span><span class="phrase">&lt;</span><span class="phrase"> </span><span class="phrase"><code class="literal">4</code></span><span class="phrase">
+</span><span class="phrase"><span class="bold"><strong>default:</strong></span></span><span class="phrase">
+</span><span class="phrase">param</span><span class="phrase"> </span><span class="phrase">factor</span><span class="phrase">
+</span><span class="phrase">	</span><span class="phrase">default</span><span class="phrase"> </span><span class="phrase">=</span><span class="phrase"> </span><span class="phrase">(</span><span class="phrase"><code class="literal">1.0</code></span><span class="phrase">,</span><span class="phrase"><code class="literal">0.5</code></span><span class="phrase">)</span><span class="phrase">
+</span><span class="phrase">endparam</span><span class="phrase">
+</span><span class="phrase">}</span><span class="phrase">
 </span></pre><p>
 
 </p><p>

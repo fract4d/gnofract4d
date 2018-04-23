@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>About the maths</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.1" /><link rel="home" href="index.html" title="Gnofract 4D" /><link rel="up" href="index.html" title="Gnofract 4D" /><link rel="prev" href="cmdref.html" title="Command Reference" /><link rel="next" href="compiler.html" title="Writing Your Own Functions" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center"> About the maths</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="cmdref.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="compiler.html">Next</a></td></tr></table><hr /></div><div class="sect1" title="About the maths"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="maths"></a> About the maths</h2></div></div></div><div class="caution" title="Warning: Dubious mathematics ahead" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning: Dubious mathematics ahead</h3><p>I'm not a mathematician. You may find this discussion
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>About the maths</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="Gnofract 4D" /><link rel="up" href="index.html" title="Gnofract 4D" /><link rel="prev" href="cmdref.html" title="Command Reference" /><link rel="next" href="compiler.html" title="Writing Your Own Functions" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center"> About the maths</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="cmdref.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="compiler.html">Next</a></td></tr></table><hr /></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="maths"></a> About the maths</h2></div></div></div><div class="caution" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning: Dubious mathematics ahead</h3><p>I'm not a mathematician. You may find this discussion
 insultingly oversimplified or just plain wrong.
-</p></div><div class="sect2" title="The Mandelbrot Set"><div class="titlepage"><div><div><h3 class="title"><a id="mset"></a>The Mandelbrot Set</h3></div></div></div><p> The Mandelbrot may be
+</p></div><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="mset"></a>The Mandelbrot Set</h3></div></div></div><p> The Mandelbrot may be
 defined as the set of all complex numbers which, when you
 repeatedly square them and add them again, never become infinite. (The
 official definition of the set is somewhat different: it is the set of
@@ -58,7 +57,7 @@ are known as <span class="emphasis"><em>perturbed</em></span> sets:
 </p><p>
 </p><div align="center"><img src="figures/mandelbrot_perturbed.png" align="middle" /></div><p>
 
-</p></div><div class="sect2" title="The Julia Set"><div class="titlepage"><div><div><h3 class="title"><a id="julia"></a>The Julia Set</h3></div></div></div><p>
+</p></div><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="julia"></a>The Julia Set</h3></div></div></div><p>
 The Julia set is actually drawn by the same procedure as the
 Mandelbrot set. But instead of changing the value of
 <span class="emphasis"><em>c</em></span> for each pixel, we keep <span class="emphasis"><em>c</em></span>
@@ -79,7 +78,7 @@ interesting:
 </p><p>
 </p><div align="center"><img src="figures/julia_perturbed.png" align="middle" /></div><p>
 
-</p></div><div class="sect2" title="The Julibrot"><div class="titlepage"><div><div><h3 class="title"><a id="julibrot"></a>The Julibrot</h3></div></div></div><p>
+</p></div><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="julibrot"></a>The Julibrot</h3></div></div></div><p>
 
 Here we come to the heart of the matter. I said above that both the
 Julia and Mandelbrot sets are drawn with the <span class="emphasis"><em>same
@@ -112,7 +111,7 @@ also look at other planes: here's an image of the
 </p><p>
 </p><div align="center"><img src="figures/xw_plane.png" align="middle" /></div><p>
 
-</p></div><div class="sect2" title="Viewing in Four Dimensions"><div class="titlepage"><div><div><h3 class="title"><a id="viewing"></a>Viewing in Four Dimensions</h3></div></div></div><p>
+</p></div><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="viewing"></a>Viewing in Four Dimensions</h3></div></div></div><p>
 However, we can draw any 2D slice we like, not just those which are
 parallel to the Julibrot axes. To do this we'll need to describe our
 scene by four things. First, the (<span class="emphasis"><em>x,y,z,w</em></span>)
@@ -142,7 +141,7 @@ looks decidedly odd:
 </p><p>
 In fact, we can rotate to any angle in each of the planes,
 creating a whole world of bizarre pictures.
-</p></div><div class="sect2" title="Hypercomplex Fractals and Quaternions"><div class="titlepage"><div><div><h3 class="title"><a id="hypercomplex"></a>Hypercomplex Fractals and Quaternions</h3></div></div></div><p> There are other kinds of fractal which are commonly described
+</p></div><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a id="hypercomplex"></a>Hypercomplex Fractals and Quaternions</h3></div></div></div><p> There are other kinds of fractal which are commonly described
 as "four-dimensional" - hypercomplex and quaternion-based
 fractals. Hypercomplex numbers have four components (one real and
 three imaginary) where complex numbers have two. Since the
