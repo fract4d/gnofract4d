@@ -24,7 +24,7 @@ def create_stdlib_docs():
 
         # create HTML version of docs for them as don't have yelp
         os.chdir("doc/gnofract4d-manual/C")        
-        retval = os.system("xsltproc --output gnofract4d-manual.html --stringparam html.stylesheet docbook.css gnofract4d.xsl gnofract4d-manual.xml")
+        retval = os.system("xsltproc --nonet --output gnofract4d-manual.html --stringparam html.stylesheet docbook.css gnofract4d.xsl gnofract4d-manual.xml")
         if retval != 0:
             raise Exception("error processing xslt")
     except Exception as err:

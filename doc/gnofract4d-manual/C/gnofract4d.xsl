@@ -3,7 +3,7 @@
 
 
 <!-- Imports the DocBook HTML chunking stylesheets. --> 
-<xsl:import href="/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/xhtml/docbook.xsl"/>
+<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/xhtml/docbook.xsl"/>
 <xsl:template match="guimenuitem">
   <span class="guimenuitem"><xsl:call-template name="inline.charseq"/></span>
 </xsl:template>
