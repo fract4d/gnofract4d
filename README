@@ -17,6 +17,10 @@ Run:
 
  ./setup.py build
 
+If you would like a copy of the manual:
+
+./createdocs.py
+
 You can then run Gnofract4D in the local directory:
 
 ./gnofract4d
