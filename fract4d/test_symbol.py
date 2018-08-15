@@ -2,7 +2,7 @@
 
 # test symbol table implementation
 
-import collections
+import collections.abc
 import unittest
 import copy
 import sys
@@ -286,7 +286,7 @@ class SymbolTest(unittest.TestCase):
         
     def assertIsValidFunc(self,val):
         specialFuncs = [ "noteq", "eq" ]
-        self.assertTrue(isinstance(val.genFunc, collections.Callable) or
+        self.assertTrue(isinstance(val.genFunc, collections.abc.Callable) or
                         val.genFunc == None or
                         specialFuncs.count(val.cname) > 0, val.cname)
 
