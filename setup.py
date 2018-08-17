@@ -178,7 +178,7 @@ if have_gmp:
 def get_files(dir,ext):
     return [ os.path.join(dir,x) for x in os.listdir(dir) if x.endswith(ext)]
 
-so_extension = distutils.sysconfig.get_config_var("SO")
+so_extension = distutils.sysconfig.get_config_var("EXT_SUFFIX")
 
 with open("fract4d/c/cmap_name.h", "w") as fh:
 	fh.write("""
