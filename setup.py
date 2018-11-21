@@ -10,9 +10,14 @@ import sys
 
 gnofract4d_version = '4.0'
 
-if float(sys.version[:3]) < 3.5:
+if sys.version_info < (3, 5):
     print("Sorry, you need Python 3.5 or higher to run Gnofract 4D.")
     print("You have version %s. Please upgrade." % sys.version)
+    sys.exit(1)
+
+if not os.path.exists(os.path.join(distutils.sysconfig.get_python_inc(), "Python.h")):
+    print("Python header files are required.")
+    print("Please install libpython3-dev")
     sys.exit(1)
 
 # by default python uses all the args which were used to compile it. But Python is C and some
