@@ -34,20 +34,26 @@ from buildtools import my_install_lib
 def call_package_config(package,option,optional=False):
     '''invoke pkg-config, if it exists, to find the appropriate
     arguments for a library'''
-    cmd = "pkg-config %s %s" % (package, option)
-    (status,output) = subprocess.getstatusoutput(cmd)
-    if status != 0:
+    try:
+        cp = subprocess.run(["pkg-config", package, option],
+                            universal_newlines=True, stdout=subprocess.PIPE)
+    except FileNotFoundError:
+        print("Unable to check for %s, pkg-config not installed" % package, file=sys.stderr)
+        if optional:
+            return []
+        else:
+            sys.exit(1)
+
+    if cp.returncode != 0:
         if optional:
             print("Can't find '%s'" % package, file=sys.stderr)
             print("Some functionality will be disabled", file=sys.stderr)
             return []
         else:
-            print("Can't set up. Error running '%s'." % cmd, file=sys.stderr)
-            print(output, file=sys.stderr)
-            print("Possibly you don't have one of these installed: '%s'." % package, file=sys.stderr)
+            print("Development files not found for: '%s'." % package, file=sys.stderr)
             sys.exit(1)
 
-    return output.split()
+    return cp.stdout.split()
 
 extra_macros = []
 
