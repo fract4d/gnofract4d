@@ -57,13 +57,9 @@ def call_package_config(package,option,optional=False):
 
 extra_macros = []
 
-png_flags = call_package_config("libpng", "--cflags", True)
-if png_flags != []:
-    extra_macros.append(('PNG_ENABLED', 1))
-else:
-    raise Exception("NO PNG HEADERS FOUND, you need to install libpng-dev")
-
-png_libs = call_package_config("libpng", "--libs", True)
+png_flags = call_package_config("libpng", "--cflags")
+png_libs = call_package_config("libpng", "--libs")
+extra_macros.append(('PNG_ENABLED', 1))
 
 jpg_lib = "jpeg"
 for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
@@ -72,7 +68,7 @@ for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
         jpg_libs = [ jpg_lib ]
         break
 else:
-    raise Exception("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
+    raise SystemExit("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
 
 #not ready yet.
 have_gmp = False # os.path.isfile("/usr/include/gmp.h")
