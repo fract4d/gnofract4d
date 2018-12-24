@@ -47,11 +47,13 @@ o GTK version 3.18 or higher
 o A C++ compiler (used at runtime to compile your fractal formulas)
 
 To build from source you also need:
-o headers for libpng and libjpeg (on Ubuntu, install libpng-dev and libjpeg=dev)
-o Python headers (python3-dev)
-o Pkg-Config (pkg-config)
+o headers for libpng and libjpeg
+o Python headers
+o Pkg-Config
 
-Ubuntu 16.04 or newer releases should work.
+On Ubuntu, these can be installed with:
+
+sudo apt-get install libpng-dev libjpeg-dev python3-dev gtk3.0 cairo python3-cairo python3-gi-cairo pkg-config 
 
 If you're not sure if you have these or not, just try running
 "./setup.py build" and see if it complains.
