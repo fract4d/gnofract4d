@@ -1,25 +1,29 @@
 #!/usr/bin/env python3
 
-import shutil
 from distutils.core import setup, Extension
 import distutils.sysconfig
 import os
-import stat
+import shutil
 import subprocess
 import sys
 
 gnofract4d_version = '4.0'
 
-if float(sys.version[:3]) < 3.5:
+if sys.version_info < (3, 5):
     print("Sorry, you need Python 3.5 or higher to run Gnofract 4D.")
     print("You have version %s. Please upgrade." % sys.version)
+    sys.exit(1)
+
+if not os.path.exists(os.path.join(distutils.sysconfig.get_python_inc(), "Python.h")):
+    print("Python header files are required.")
+    print("Please install libpython3-dev")
     sys.exit(1)
 
 # by default python uses all the args which were used to compile it. But Python is C and some
 # extension files are C++, resulting in annoying '-Wstrict-prototypes is not supported' messages.
 # tweak the cflags to override
-os.environ["CFLAGS"]= distutils.sysconfig.get_config_var("CFLAGS").replace("-Wstrict-prototypes","")
-os.environ["OPT"]= distutils.sysconfig.get_config_var("OPT").replace("-Wstrict-prototypes","")
+os.environ["CFLAGS"] = distutils.sysconfig.get_config_var("CFLAGS").replace("-Wstrict-prototypes","")
+os.environ["OPT"] = distutils.sysconfig.get_config_var("OPT").replace("-Wstrict-prototypes","")
 
 from buildtools import my_install_lib
 
@@ -29,30 +33,32 @@ from buildtools import my_install_lib
 def call_package_config(package,option,optional=False):
     '''invoke pkg-config, if it exists, to find the appropriate
     arguments for a library'''
-    cmd = "pkg-config %s %s" % (package, option)
-    (status,output) = subprocess.getstatusoutput(cmd)
-    if status != 0:
+    try:
+        cp = subprocess.run(["pkg-config", package, option],
+                            universal_newlines=True, stdout=subprocess.PIPE)
+    except FileNotFoundError:
+        print("Unable to check for %s, pkg-config not installed" % package, file=sys.stderr)
+        if optional:
+            return []
+        else:
+            sys.exit(1)
+
+    if cp.returncode != 0:
         if optional:
             print("Can't find '%s'" % package, file=sys.stderr)
             print("Some functionality will be disabled", file=sys.stderr)
             return []
         else:
-            print("Can't set up. Error running '%s'." % cmd, file=sys.stderr)
-            print(output, file=sys.stderr)
-            print("Possibly you don't have one of these installed: '%s'." % package, file=sys.stderr)
+            print("Development files not found for: '%s'." % package, file=sys.stderr)
             sys.exit(1)
 
-    return output.split()
+    return cp.stdout.split()
 
 extra_macros = []
 
-png_flags = call_package_config("libpng", "--cflags", True)
-if png_flags != []:
-    extra_macros.append(('PNG_ENABLED', 1))
-else:
-    raise Exception("NO PNG HEADERS FOUND, you need to install libpng-dev")
-
-png_libs = call_package_config("libpng", "--libs", True)
+png_flags = call_package_config("libpng", "--cflags")
+png_libs = call_package_config("libpng", "--libs")
+extra_macros.append(('PNG_ENABLED', 1))
 
 jpg_lib = "jpeg"
 for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
@@ -61,9 +67,9 @@ for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
         jpg_libs = [ jpg_lib ]
         break
 else:
-    raise Exception("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
+    raise SystemExit("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
 
-#not ready yet.
+# not ready yet.
 have_gmp = False # os.path.isfile("/usr/include/gmp.h")
 
 # use currently specified compilers, not ones from when Python was compiled
@@ -91,7 +97,7 @@ fract4d_sources = [
 # both users with GMP and users without it, by conditionally loading
 # the appropriate extension
 fract4d_gmp_sources = []
-if(have_gmp):
+if have_gmp:
     for sourcefile in fract4d_sources:
         # this particular part of the hack is so that each file gets
         # compiled twice
@@ -129,7 +135,7 @@ module_fract4dgmp = Extension(
     ] + png_flags,
     extra_link_args = png_libs,
     define_macros = defines + [('USE_GMP',1)] + extra_macros,
-    undef_macros = [ 'NDEBUG']
+    undef_macros = ['NDEBUG']
     )
 
 warnings = '-Wall'
@@ -167,7 +173,7 @@ module_cmap = Extension(
     ],
     libraries = libs,
     extra_link_args = extra_link,
-    define_macros = [ ('_REENTRANT', 1)]
+    define_macros = [('_REENTRANT', 1)]
     )
 
 modules = [module_fract4dc, module_cmap]
@@ -176,12 +182,12 @@ if have_gmp:
     modules.append(module_gmp)
 
 def get_files(dir,ext):
-    return [ os.path.join(dir,x) for x in os.listdir(dir) if x.endswith(ext)]
+    return [os.path.join(dir,x) for x in os.listdir(dir) if x.endswith(ext)]
 
 so_extension = distutils.sysconfig.get_config_var("EXT_SUFFIX")
 
 with open("fract4d/c/cmap_name.h", "w") as fh:
-	fh.write("""
+    fh.write("""
 #ifndef CMAP_NAME
 #define CMAP_NAME "/fract4d_stdlib%s"
 #endif
@@ -190,7 +196,7 @@ with open("fract4d/c/cmap_name.h", "w") as fh:
 setup (name = 'gnofract4d',
        version = gnofract4d_version,
        description = 'A program to draw fractals',
-       long_description = \
+       long_description =
 '''Gnofract 4D is a fractal browser. It can generate many different fractals, 
 including some which are hybrids between the Mandelbrot and Julia sets,
 and includes a Fractint-compatible parser for your own fractal formulas.''',
@@ -230,7 +236,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
            ('share/gnome/help/gnofract4d/C',
             get_files("doc/gnofract4d-manual/C",".css")),
 
-           #internal pixmaps
+           # internal pixmaps
            ('share/pixmaps/gnofract4d',
             ['pixmaps/improve_now.png',
              'pixmaps/explorer_mode.png',
@@ -279,5 +285,3 @@ def copy_libs(root, dirlist, namelist):
 
 for root, dirs, files in os.walk("build"):
     copy_libs(root, dirs, files)
-
-
