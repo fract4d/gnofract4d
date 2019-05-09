@@ -2,7 +2,7 @@
 
 import unittest
 
-import testbase
+from . import testbase
 
 from fract4d import ffloat
 from fract4d.ffloat import Float, PrecisionError
@@ -18,7 +18,7 @@ class NoBigMathTest(testbase.TestBase):
 
     def tearDown(self):
         ffloat.has_bigmath = save_has_bigmath
-        
+
     def testCreate(self):
         f = Float(0.0) 
         self.assertEqual(type(f), float)
@@ -37,23 +37,13 @@ class NoBigMathTest(testbase.TestBase):
         self.assertEqual("1.0123456789012346", "%.17g" % f)
 
 class BigMathTest(testbase.TestBase):
+    @unittest.skipIf(not save_has_bigmath, "arbitrary precision math is not enabled")
     def testCreateWithHighPrecision(self):
         f = Float(1.0,128)
         self.assertEqual(128, f.getprec())
         self.assertEqual(f, gmpy.mpf(1.0,128))
-        
 
+    @unittest.skipIf(not save_has_bigmath, "arbitrary precision math is not enabled")
     def testCreateNumberWhichNeedsHighPrecision(self):
         f = Float("1.012345678901234567890123456789", 128)
         self.assertEqual("1.012345678901234567890123456789", "%s" % f)
-        
-def suite():
-    s = unittest.makeSuite(NoBigMathTest,'test')
-    if save_has_bigmath:
-        s.addTest(unittest.makeSuite(BigMathTest, 'test'))
-    return s
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-
-

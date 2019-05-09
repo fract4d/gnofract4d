@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
-import unittest
 import os.path
 from pathlib import Path
 import time
 import pickle
 
-import testbase
+from . import testbase
 
 from fract4d import cache, fractconfig
 
@@ -124,9 +123,3 @@ class Test(testbase.TestSetup):
         self.assertEqual("acbd18db4cc2f85cedef654fccc4a4d8", c.hashcode("foo"))
         self.assertEqual(
             "b34231a85737d0b078d7ffb17e6bb3b5",c.hashcode("foo","flag"))
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

@@ -2,10 +2,9 @@
 
 # unit tests for model
 
-import unittest
 import io
 
-import testgui
+from . import testgui
 
 from gi.repository import Gtk
 
@@ -102,9 +101,3 @@ class Test(testgui.TestCase):
 
         self.m.redo()
         self.assertEqual(f.forms[0].get_func_value("@bailfunc"),"real2")
-        
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

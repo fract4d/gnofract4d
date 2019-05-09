@@ -4,12 +4,10 @@ import cmath
 import math
 from pathlib import Path
 import re
-import sys
 import subprocess
 import tempfile
-import unittest
 
-import testbase
+from . import testbase
 
 from fract4d import (absyn, ir, fsymbol, codegen, translate, fractparser,
                      fractlexer, optimize, instructions)
@@ -247,7 +245,7 @@ int main()
         cFile.flush()
         oFileName = str(Path(cFile.name).with_suffix(""))
 
-        cmd = "g++ -g -Wall %s -o %s -Ic -lm" % (cFile.name, oFileName)
+        cmd = "g++ -g -Wall %s -o %s -Ifract4d/c -lm" % (cFile.name, oFileName)
         status, output = subprocess.getstatusoutput(cmd)
         self.assertEqual(status,0,"C error:\n%s\nProgram:\n%s\n" % \
                          ( output,c_code))
@@ -288,14 +286,14 @@ int main()
         
     def testPFHeader(self):
         'Check inline copy of pf.h is up-to-date'
-        pfh = open('c/pf.h')
+        pfh = open('fract4d/c/pf.h')
         header_contents = pfh.read()
         pfh.close()
         self.assertEqual(header_contents,self.codegen.pf_header)
 
     def testStdlibHeader(self):
         'Check inline copy of fract_stdlib.h is up-to-date'
-        header = open('c/fract_stdlib.h')
+        header = open('fract4d/c/fract_stdlib.h')
         header_contents = header.read()
         header.close()
         self.assertEqual(header_contents,self.codegen.fract_stdlib_header)
@@ -2300,35 +2298,3 @@ Newton4(XYAXIS) {; Mark Peterson
         template = self.codegen.expand(template)
         self.assertEqual(self.codegen.match_template(tree,template),result,
                          "%s mismatches %s" % (tree.pretty(),template))
-
-
-    
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-def main():
-    # special cases for manual experiments.
-    # ./test_codegen.py --x "(1,2)" --exp "1+2+x" compiles and runs 1+2+x
-    # and prints the result
-
-    try:
-        global g_exp
-        index = sys.argv.index("--exp")
-        g_exp = sys.argv[index+1]
-        sys.argv[index] = "Test.testExpression"
-        del sys.argv[index+1]
-    except ValueError:
-        pass
-    
-    try:
-        index = sys.argv.index("--x")
-        g_x = sys.argv[index+1]
-        del sys.argv[index:index+2]
-    except ValueError:
-        pass
-    
-    unittest.main(defaultTest='suite')
-
-if __name__ == '__main__':
-    main()
-    

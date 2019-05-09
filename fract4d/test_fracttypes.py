@@ -2,10 +2,7 @@
 
 # test types which are used by formula authors
 
-import sys
 import unittest
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import fracttypes, function
 
@@ -215,10 +212,3 @@ class Test(unittest.TestCase):
         f.set_implicit_arg("fish")
         f.set_implicit_arg("blouse")
         self.assertEqual(["fish","blouse"],f.implicit_args)
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-

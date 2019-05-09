@@ -8,7 +8,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-import undo
+from . import undo
 
 class Status:
     def __init__(self):
@@ -170,9 +170,3 @@ class UndoTest(unittest.TestCase):
         undoer = undo.Sequence()
         self.assertRaises(ValueError,undoer.undo)
         self.assertRaises(ValueError,undoer.redo)
-        
-def suite():
-    return unittest.makeSuite(UndoTest,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

@@ -2,10 +2,9 @@
 
 # test director bean class implementation
 
-import unittest
 import os.path
 
-import testbase
+from . import testbase
 
 from fract4d import animation
 
@@ -112,7 +111,7 @@ class Test(testbase.ClassSetup):
         self.assertEqual(anim.get_redblue(),False)
     
     def testLoading(self):
-        self.anim.load_animation("../testdata/animation.fcta")
+        self.anim.load_animation("testdata/animation.fcta")
         self.checkExpectedLoadedValues(self.anim)
         test_name = os.path.join(Test.tmpdir.name, "test.fcta")
         self.anim.save_animation(test_name)
@@ -157,8 +156,8 @@ class Test(testbase.ClassSetup):
         self.assertRaises(ValueError, self.anim.get_mu,83, 0.6)
 	
     def testGetKeyframeValues(self):
-        self.anim.add_keyframe("../testdata/director1.fct", 10, 0, animation.INT_LINEAR)
-        self.anim.add_keyframe("../testdata/director2.fct", 5, 0, animation.INT_LINEAR)
+        self.anim.add_keyframe("testdata/director1.fct", 10, 0, animation.INT_LINEAR)
+        self.anim.add_keyframe("testdata/director2.fct", 5, 0, animation.INT_LINEAR)
 
         durations = self.anim.get_keyframe_durations()
 
@@ -168,32 +167,25 @@ class Test(testbase.ClassSetup):
         self.assertEqual(0, self.anim.get_total_frames())
 
         self.anim.add_keyframe(
-            "../testdata/director1.fct", 10, 0, animation.INT_LINEAR)
+            "testdata/director1.fct", 10, 0, animation.INT_LINEAR)
         
         self.assertEqual(0,self.anim.get_total_frames())
         
         self.anim.add_keyframe(
-            "../testdata/director2.fct", 5, 3, animation.INT_LINEAR)
+            "testdata/director2.fct", 5, 3, animation.INT_LINEAR)
         
         self.assertEqual(10+3,self.anim.get_total_frames())
 
         self.anim.add_keyframe(
-            "../testdata/director2.fct", 7, 1, animation.INT_LINEAR)
+            "testdata/director2.fct", 7, 1, animation.INT_LINEAR)
 
         self.assertEqual(10+5+3+1,self.anim.get_total_frames())
 
     def testKeyFrame(self):
         kf = animation.KeyFrame(
-            "../testdata/director1.fct", 10, 5, animation.INT_INVLOG)
+            "testdata/director1.fct", 10, 5, animation.INT_INVLOG)
 
-        self.assertEqual("../testdata/director1.fct", kf.filename)
+        self.assertEqual("testdata/director1.fct", kf.filename)
         self.assertEqual(10, kf.duration)
         self.assertEqual(5, kf.stop)
         self.assertEqual(animation.INT_INVLOG, kf.int_type)
-        
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-

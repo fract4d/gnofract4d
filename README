@@ -59,3 +59,14 @@ If you're not sure if you have these or not, just try running
 "./setup.py build" and see if it complains.
 
 If FFmpeg is installed it will be possible to create videos.
+
+Testing
+=======
+
+Testing requires pytest.
+
+Run individual tests from the top-level directory using pytest, e.g.:
+pytest fract4d/test_absyn.py
+
+Optionally, install tox and test with all supported Python versions by running:
+tox

@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
-import unittest
 import math
 import io
 import copy
 import re
 
-import testbase
+from . import testbase
 
 from fract4d import gradient, fract4dc, translate, fractparser
 from fract4d.gradient import Blend, ColorMode
@@ -159,22 +158,22 @@ opacity:
 
     def testfromColormap4(self):
         # this should always produce 255 segments
-        colorlist = self.colorMapFromFile("../maps/4zebbowx.map")
+        colorlist = self.colorMapFromFile("maps/4zebbowx.map")
         grad = self.checkColorMapAndGradientEquivalent(colorlist)
         self.assertEqual(len(grad.segments),255)
 
     def testfromColormapHlsrain(self):
         # this map once caused issues
-        colorlist = self.colorMapFromFile("../maps/hlsrain5.map")
+        colorlist = self.colorMapFromFile("maps/hlsrain5.map")
         grad = self.checkColorMapAndGradientEquivalent(colorlist)
 
     def testFromColormapCompressible(self):
-        colorlist = self.colorMapFromFile("../maps/Gallet02.map")
+        colorlist = self.colorMapFromFile("maps/Gallet02.map")
         grad = self.checkColorMapAndGradientEquivalent(colorlist)
         self.assertTrue(len(grad.segments) < 255,"should have been compressed")
 
     def testFromColormapLossyCompression(self):
-        colorlist = self.colorMapFromFile("../maps/Gallet02.map")
+        colorlist = self.colorMapFromFile("maps/Gallet02.map")
         grad = self.checkColorMapAndGradientEquivalent(colorlist, 2)
         
     def colorMapFromFile(self, name):
@@ -669,7 +668,7 @@ opacity:
 
     def testLoadCS(self):
         g = gradient.Gradient()
-        f = open("../testdata/test.cs","rb")
+        f = open("testdata/test.cs","rb")
 
         g.load_cs(f)
         self.assertEqual(8,len(g.segments))
@@ -731,10 +730,3 @@ opacity:
             self.assertTrue(seg.right > seg.left)
             self.assertEqual(seg.left, previous_seg.right)
             previous_seg = seg
-
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

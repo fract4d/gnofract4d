@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
-import unittest
 import subprocess
 import os.path
 import time
 
-import testbase
+from . import testbase
 
 from fract4d import fc, fractconfig, translate
 
@@ -13,7 +12,7 @@ class Test(testbase.ClassSetup):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.g_comp.add_path("../maps", fc.FormulaTypes.GRADIENT)
+        cls.g_comp.add_path("maps", fc.FormulaTypes.GRADIENT)
         cls.g_comp.load_formula_file("gf4d.frm")
         cls.g_comp.load_formula_file("gf4d.cfrm")
         cls.g_comp.load_formula_file("gf4d.cfrm")
@@ -252,10 +251,3 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
     def testGetFormulaText(self):
         t = Test.g_comp.get_formula_text("gf4d.frm","Mandelbrot")
         self.assertTrue(t.startswith("Mandelbrot {"))
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-

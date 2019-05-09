@@ -3,11 +3,8 @@
 # a base class other test classes inherit from - some shared functionality
 
 import os.path
-import sys
 import tempfile
 import unittest
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import fc, ir, fracttypes, fractconfig
 
@@ -235,8 +232,8 @@ class ClassSetup(TestBase):
         cls.userConfig["formula_path"].clear()
         cls.userConfig["map_path"].clear()
         cls.g_comp = fc.Compiler(cls.userConfig)
-        cls.g_comp.add_func_path("../fract4d")
-        cls.g_comp.add_func_path("../formulas")
+        cls.g_comp.add_func_path("fract4d")
+        cls.g_comp.add_func_path("formulas")
 
     @classmethod
     def tearDownClass(cls):
@@ -251,8 +248,8 @@ class TestSetup(TestBase):
         self.userConfig["formula_path"].clear()
         self.userConfig["map_path"].clear()
         self.g_comp = fc.Compiler(self.userConfig)
-        self.g_comp.add_func_path("../fract4d")
-        self.g_comp.add_func_path("../formulas")
+        self.g_comp.add_func_path("fract4d")
+        self.g_comp.add_func_path("formulas")
 
     def tearDown(self):
         del self.g_comp

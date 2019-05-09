@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-import unittest
 import math
 
-import testbase
+from . import testbase
 
 from fract4d import fractal, fract4dc, image
 from fract4d.test_fractalsite import FractalSite
@@ -166,9 +165,3 @@ class Test(testbase.ClassSetup):
         im = image.T(80,60)
         self.f.draw(im)
         #im.save("mb.tga")
-        
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

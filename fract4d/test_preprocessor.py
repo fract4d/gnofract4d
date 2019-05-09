@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
-import sys
 import unittest
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import preprocessor
 
@@ -263,11 +260,3 @@ class Test(unittest.TestCase):
   3w7AuhzA3wlhb4E42/p/vV4fBwn5qoH=
 }
 ''')
-        
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-
-        

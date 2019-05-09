@@ -2,9 +2,6 @@
 
 import io
 import unittest
-import sys
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import colorizer
 
@@ -37,7 +34,7 @@ and most of them are included in the allmaps file.""")
 
     def testReadMapFile(self):
         c = colorizer.T()
-        file = open("../maps/4zebbowx.map")
+        file = open("maps/4zebbowx.map")
         c.parse_map_file(file)
         file.close()
         
@@ -46,9 +43,3 @@ and most of them are included in the allmaps file.""")
     def testSolids(self):
         c = colorizer.T()
         self.assertEqual([(0,0,0,255)], c.solids)
-        
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
 import unittest
-import sys
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import fractlexer
 from fract4d import preprocessor
@@ -134,9 +131,3 @@ myComment {}
         pp = preprocessor.T('&\\\n&')
         ts = self.tokensFromString(pp.out())
         self.assertTrue(ts[0].type == "BOOL_AND")
-        
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

@@ -3,9 +3,6 @@
 # test graph
 
 import unittest
-import sys
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import graph
 
@@ -52,10 +49,3 @@ class Test(unittest.TestCase):
         g.newEdge(n,n2)
         self.assertEqual(g.succ(n), [n2])
         self.assertEqual(g.pred(n2), [n])
-        
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-

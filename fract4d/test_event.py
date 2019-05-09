@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import unittest
-
-import testbase
+from . import testbase
 
 from fract4d import event
 
@@ -44,10 +42,3 @@ class Test(testbase.TestBase):
         f = Foo()
         f.x()
         f.y()
-        
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-

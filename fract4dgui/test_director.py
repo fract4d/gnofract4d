@@ -3,9 +3,8 @@
 # unit tests for renderqueue module
 
 import os.path
-import unittest
 
-import testgui
+from . import testgui
 
 from gi.repository import Gtk
 
@@ -33,8 +32,8 @@ class Test(testgui.TestCase):
         dd.show()
         dd.animation.set_png_dir(Test.tmpdir.name)
         dd.animation.set_fct_enabled(False)
-        dd.animation.add_keyframe("../testdata/director1.fct",1,10,animation.INT_LOG)
-        dd.animation.add_keyframe("../testdata/director2.fct",1,10,animation.INT_LOG)
+        dd.animation.add_keyframe("testdata/director1.fct",1,10,animation.INT_LOG)
+        dd.animation.add_keyframe("testdata/director2.fct",1,10,animation.INT_LOG)
 
         video_file = os.path.join(Test.tmpdir.name, "video.webm")
         dd.animation.set_avi_file(video_file)
@@ -120,9 +119,3 @@ class Test(testgui.TestCase):
         pg.generate_png()
         
         dd.destroy()
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

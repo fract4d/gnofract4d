@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 import io
-import unittest
 import copy
 
-import testbase
+from . import testbase
 
 from fract4d import formsettings, gradient, fracttypes, fctutils
 
@@ -233,9 +232,3 @@ function=DirectOrbitTraps
 
         self.assertEqual(fs1.get_func_value("@trapmergemode"),"mergenormal")
         self.assertEqual(fs1.get_named_param_value("@trapshape"),23)
-        
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

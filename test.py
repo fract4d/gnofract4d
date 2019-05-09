@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
-# run all the tests
 import os
+import re
 import subprocess
 import sys
 import tempfile
 import unittest
-import re
+
+import pytest
 
 from fract4d import options
-
-print("Running all unit tests. This may take several minutes.")
 
 class Test(unittest.TestCase):
     def testSetupPyVersionMatches(self):
@@ -50,27 +49,20 @@ class Test(unittest.TestCase):
     def testGenerateMandelbrot(self):
         with tempfile.TemporaryDirectory(prefix="fract4d_") as tmpdir:
             test_file = os.path.join(tmpdir, "test.png")
-            subprocess.run(["./gnofract4d", "--nogui", "-s", test_file,
-                            "--width", "24", "-j", "12", "-q"], check=True)
+            subprocess.run([
+                os.path.join(os.path.dirname(sys.modules[__name__].__file__),
+                             "gnofract4d"), "--nogui", "-s", test_file,
+                "--width", "24", "-j", "12", "-q"], check=True)
             self.assertTrue(os.path.exists(test_file))
-
 
 def suite():
     return unittest.makeSuite(Test,'test')
 
 def main():
-    os.chdir('fract4d')
-    os.system('./test.py')
-    os.chdir('../fract4dgui')
-    os.system('./test.py')
-    os.chdir('..')
-
-    unittest.main(defaultTest='suite')
+    pytest.main(['fract4d', 'fract4dgui'])
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1 and sys.argv[1] == "--thisonly":
-        sys.argv.remove("--thisonly")
-        unittest.main(defaultTest='suite')
-    else:
+    if len(sys.argv) == 1 or sys.argv[1] != "--thisonly":
         main()
+    unittest.main(defaultTest='suite')
