@@ -425,10 +425,10 @@ class SettingsPane(Gtk.Box):
         sw.set_min_content_height(200)
         table.pack_start(sw, True, True, 0)
 
-        add_button = Gtk.Button.new_from_stock(Gtk.STOCK_ADD)
+        add_button = Gtk.Button.new_with_label("Add")
         add_button.connect(
             'clicked', self.show_browser, browser_model.TRANSFORM)
-        remove_button = Gtk.Button.new_from_stock(Gtk.STOCK_REMOVE)
+        remove_button = Gtk.Button.new_with_label("Remove")
         remove_button.connect(
             'clicked', self.remove_transform)
         buttonbox = Gtk.ButtonBox(orientation=Gtk.Orientation.VERTICAL)
