@@ -323,11 +323,11 @@ class PrefsDialog(dialog.T):
         table.attach(pathlist_label,0,2,1,1)
         pathlist_label.set_mnemonic_widget(pathlist)
 
-        add_button = Gtk.Button.new_from_stock(Gtk.STOCK_ADD)
+        add_button = Gtk.Button.new_with_label("Add")
         add_button.connect('clicked', self.browse_for_dir, form_path_section, pathlist)
         table.attach(add_button,0,3,1,1)
         
-        remove_button = Gtk.Button.new_from_stock(Gtk.STOCK_REMOVE)
+        remove_button = Gtk.Button.new_with_label("Remove")
         remove_button.connect('clicked', self.remove_dir, form_path_section, pathlist)
         table.attach(remove_button,0,4,1,1)
 

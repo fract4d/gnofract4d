@@ -195,7 +195,7 @@ def Empty(pos):
 def Formula(id, stmlist, pos):
     # rather gruesome: we re-lex the formula ID to extract the symmetry spec
     # if any. Then we smuggle it into the top-level node
-    m = re.match(".*?(\s*\(\s*(\w+)\s*\))", id)
+    m = re.match(r".*?(\s*\(\s*(\w+)\s*\))", id)
     if m:
         symmetry = m.group(2)
         id = id[:m.start(1)]

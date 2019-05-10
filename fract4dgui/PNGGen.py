@@ -63,7 +63,7 @@ class PNGGeneration(Gtk.Dialog,hig.MessagePopper):
         working=True
         while(working):
             gt.join(1)
-            working=gt.isAlive()
+            working=gt.is_alive()
             yield True
 
         if thread_error is True:

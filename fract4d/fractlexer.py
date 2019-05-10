@@ -153,7 +153,7 @@ def t_FORM_ID(t):
     r'[^\r\n;"\{]+{'
     # remove trailing whitespace and {
     if not keep_all:
-        t.value = re.sub("\s*{$", "", t.value)
+        t.value = re.sub(r"\s*{$", "", t.value)
     return t
 
 def t_NUMBER(t):

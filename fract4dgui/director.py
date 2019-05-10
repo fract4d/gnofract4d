@@ -564,11 +564,11 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.tv_keyframes.get_selection().set_select_function(self.before_selection,None)
         self.current_select=-1
 
-        self.btn_add_keyframe=Gtk.Button.new_from_stock(Gtk.STOCK_ADD)
+        self.btn_add_keyframe = Gtk.Button.new_with_label("Add")
         #self.btn_add_keyframe.connect("clicked",self.add_keyframe_clicked,None)
         self.btn_add_keyframe.connect_object("event",self.add_keyframe_clicked,self.popup_menu)
 
-        self.btn_remove_keyframe=Gtk.Button.new_from_stock(Gtk.STOCK_REMOVE)
+        self.btn_remove_keyframe = Gtk.Button.new_with_label("Remove")
         self.btn_remove_keyframe.connect("clicked",self.remove_keyframe_clicked,None)
 
         button_box_kfs.pack_start(self.btn_add_keyframe, True, True, 0)
