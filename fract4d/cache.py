@@ -32,6 +32,8 @@ class T:
         self.createPickledFile(self._indexName(), self.files)
     
     def clear(self):
+        if not os.path.exists(self.dir):
+            return
         for f in os.listdir(self.dir):
             try:
                 os.remove(os.path.join(self.dir,f))

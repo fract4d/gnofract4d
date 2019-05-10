@@ -2,11 +2,9 @@
 
 # unit tests for renderqueue module
 
-import unittest
 import os
-import warnings
 
-import testgui
+from . import testgui
 
 from gi.repository import Gtk
 
@@ -70,9 +68,3 @@ class Test(testgui.TestCase):
         d = renderqueue.QueueDialog(parent, f, rq)
         d.show()
         self.wait()
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

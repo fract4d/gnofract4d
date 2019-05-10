@@ -4,11 +4,7 @@
 
 import unittest
 
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
-
-import utils
+from . import utils
 
 class Test(unittest.TestCase):
     def testOptionMenu(self):
@@ -35,11 +31,3 @@ class Test(unittest.TestCase):
         self.assertEqual(cyan.red,0)
         self.assertEqual(cyan.green,65535)
         self.assertEqual(cyan.blue,65535)
-
-
-def suite():
-    s = unittest.makeSuite(Test,'test')
-    return s
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

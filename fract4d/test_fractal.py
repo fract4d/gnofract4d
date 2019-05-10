@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import unittest
 import io
 import math
 import copy
@@ -8,7 +7,7 @@ import os.path
 import time
 import filecmp
 
-import testbase
+from . import testbase
 
 from fract4d import fc, fractal, fracttypes, image, formsettings
 
@@ -301,7 +300,7 @@ class Test(testbase.ClassSetup):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.g_comp.add_path("../maps", fc.FormulaTypes.GRADIENT)
+        cls.g_comp.add_path("maps", fc.FormulaTypes.GRADIENT)
         cls.g_comp.load_formula_file("gf4d.frm")
         cls.g_comp.load_formula_file("gf4d.cfrm")
         cls.g_comp.load_formula_file("gf4d.cfrm")
@@ -388,7 +387,7 @@ class Test(testbase.ClassSetup):
 
     def testLoadGradientFunc(self):
         f = fractal.T(Test.g_comp)
-        file = open("../testdata/gradient_func.fct")
+        file = open("testdata/gradient_func.fct")
         f.loadFctFile(file)
         file.close()
         
@@ -523,7 +522,7 @@ function=Triangle
 [endsection]
 [colors]
 colorizer=0
-file=../maps/4zebbowx.map
+file=maps/4zebbowx.map
 solids=[
 000000ff
 000000ff
@@ -605,7 +604,7 @@ colorlist=[
         boolean param can\'t be loaded by 2.8'''
 
         f = fractal.T(Test.g_comp)
-        file = open("../testdata/chainsoflight.fct")
+        file = open("testdata/chainsoflight.fct")
         f.loadFctFile(file)
         file.close()
         self.assertEqual(f.periodicity, True)
@@ -1493,7 +1492,7 @@ solids=[
         f.draw(im)
 
     def testFct(self):
-        file = open("../testdata/test.fct")
+        file = open("testdata/test.fct")
         f = fractal.T(Test.g_comp);
         f.loadFctFile(file)
         file.close()
@@ -1551,7 +1550,7 @@ solids=[
         '''There was a bug where copy() would reset func values.
         Check for recurrence'''
         f = fractal.T(Test.g_comp)
-        file = open("../testdata/julfn.fct")
+        file = open("testdata/julfn.fct")
         f.loadFctFile(file)
         file.close()
         f.forms[0].set_named_item("@fn1","sinh")
@@ -1589,7 +1588,7 @@ solids=[
     def testLoadGivesCorrectParameters(self):
         f = fractal.T(Test.g_comp)
         self.assertEqual(len(f.forms[0].formula.symbols.parameters()),3)
-        file = open("../testdata/elfglow.fct")
+        file = open("testdata/elfglow.fct")
         f.loadFctFile(file)
         file.close()
         self.assertEqual(len(f.forms[0].formula.symbols.parameters()),5)
@@ -1606,7 +1605,7 @@ solids=[
 
     def testTumorCrash(self):
         f = fractal.T(Test.g_comp)
-        file = open("../testdata/tumor.fct")
+        file = open("testdata/tumor.fct")
         f.loadFctFile(file)
         file.close()
         f.compile()
@@ -1728,9 +1727,3 @@ solids=[
         f.set_formula("fractint-g4.frm", "Jm_25")        
         f.compile()
         self.assertEqual(len(f.forms[0].params), len(f.forms[0].paramtypes))
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

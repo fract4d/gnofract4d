@@ -3,9 +3,6 @@
 "Tests for fctutils"
 import io
 import unittest
-import sys
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import fctutils
 
@@ -42,9 +39,3 @@ fook
 mimsy
 """,
                          fct.dict["multiline"])
-        
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

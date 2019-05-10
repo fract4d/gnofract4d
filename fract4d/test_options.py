@@ -4,14 +4,12 @@ import unittest
 import sys
 import io
 
-if sys.path[1] != "..": sys.path.insert(1, "..")
-
 from fract4d.options import Arguments, Formula
 
 class Test(unittest.TestCase):
     def testDefaults(self):
         o = Arguments()
-        ns = o.parse_args()
+        ns = o.parse_args("")
         
         for x in [ns.formula.name, ns.formula.func,
                   ns.inner.name, ns.inner.func, ns.outer.name, ns.outer.func, ns.map]:
@@ -77,9 +75,3 @@ class Test(unittest.TestCase):
         o = Arguments()
         ns = o.parse_args(["--transforms", "a#b,x#y"])
         self.assertEqual([Formula("", "a","b"), Formula("", "x","y")], ns.transforms)
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

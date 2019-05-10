@@ -2,10 +2,9 @@
 
 # test configuration file parsing
 
-import unittest
 import os.path
 
-import testbase
+from . import testbase
 
 from fract4d import fractconfig
 
@@ -64,10 +63,3 @@ class Test(testbase.TestSetup):
     def testDarwin(self):
         c = fractconfig.DarwinConfig("testprefs")
         self.assertEqual("open -e", c.get_default_editor())
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-

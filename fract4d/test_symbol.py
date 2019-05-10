@@ -5,9 +5,6 @@
 import collections.abc
 import unittest
 import copy
-import sys
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import fsymbol, function
 from fract4d.fracttypes import *
@@ -289,11 +286,3 @@ class SymbolTest(unittest.TestCase):
         self.assertTrue(isinstance(val.genFunc, collections.abc.Callable) or
                         val.genFunc == None or
                         specialFuncs.count(val.cname) > 0, val.cname)
-
-    
-def suite():
-    return unittest.makeSuite(SymbolTest,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-

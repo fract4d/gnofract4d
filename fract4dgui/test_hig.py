@@ -8,11 +8,12 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib
 
-import hig
+from . import hig
 
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
 
+Gtk.init()
 toplevel = Gtk.Window()
 
 class MockDialog(Gtk.MessageDialog,hig.MessagePopper):
@@ -25,8 +26,8 @@ class MockDialog(Gtk.MessageDialog,hig.MessagePopper):
         
 class Test(unittest.TestCase):
     def setUp(self):
-        pass
-                
+        hig.timeout = 0
+
     def tearDown(self):
         pass
 
@@ -131,10 +132,3 @@ class Test(unittest.TestCase):
 
         dd.show_error("Hello","A catastrophe has occurred")
         dd.ask_question("Eh?", "Speak into t'trumpet!")
-        
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

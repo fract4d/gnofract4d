@@ -2,10 +2,10 @@
 
 # high-level unit tests for main window
 
-import unittest
+from unittest.mock import patch
 import os
 
-import testgui
+from . import testgui
 
 from gi.repository import Gtk
 
@@ -13,9 +13,11 @@ from fract4d import fractal
 from fract4dgui import main_window
 
 class WrapMainWindow(main_window.MainWindow):
-    def __init__(self, config):
+    @patch('fract4d.fractconfig.T.get_data_path')
+    def __init__(self, config, mock_data_path):
         self.errors = []
-        main_window.MainWindow.__init__(self, config, ['../formulas'])
+        mock_data_path.return_value = "gnofract4d.css"
+        main_window.MainWindow.__init__(self, config, ['formulas'])
 
     def show_error_message(self,message,exception):
         self.errors.append((message,exception))
@@ -38,7 +40,7 @@ class Test(testgui.TestCase):
 
     def testLoad(self):
         # load good file
-        fn_good = "../testdata/test.fct"
+        fn_good = "testdata/test.fct"
         result = self.mw.load(fn_good)
         self.assertTrue(result, "load failed")
         self.assertEqual(self.mw.filename, fn_good)
@@ -63,7 +65,7 @@ class Test(testgui.TestCase):
 
     def testSave(self):
         # load good file
-        fn_good = "../testdata/test.fct"
+        fn_good = "testdata/test.fct"
         result = self.mw.load(fn_good)
         self.assertTrue(result, "load failed")
 
@@ -83,7 +85,7 @@ class Test(testgui.TestCase):
 
     def testSaveImage(self):
         # load good file
-        fn_good = "../testdata/test.fct"
+        fn_good = "testdata/test.fct"
         result = self.mw.load(fn_good)
         self.assertTrue(result, "load failed")
 
@@ -107,7 +109,7 @@ class Test(testgui.TestCase):
 
     def testPreview(self):
         'Check for problem where preview differs from main image'
-        result = self.mw.load("../testdata/collapsar.fct")
+        result = self.mw.load("testdata/collapsar.fct")
         self.assertTrue(result, "load failed")
 
         self.mw.update_preview(self.mw.f, False)
@@ -128,7 +130,7 @@ class Test(testgui.TestCase):
         self.mw.get_open_fs()
         
     def testExplorer(self):
-        self.mw.load("../testdata/nexus.fct")
+        self.mw.load("testdata/nexus.fct")
         self.mw.set_explorer_state(True)
         self.mw.update_subfracts()
         sub3_file = os.path.join(Test.tmpdir.name, "sub3.fct")
@@ -156,11 +158,11 @@ class Test(testgui.TestCase):
         self.assertEqual("Mandelbrot.png", self.mw.default_save_filename(".png"))
         self.assertEqual("Mandelbrot.png", self.mw.default_image_filename())
         
-        self.mw.load("../testdata/elfglow.fct")
-        self.assertEqual("../testdata/elfglow002.fct", self.mw.default_save_filename())
+        self.mw.load("testdata/elfglow.fct")
+        self.assertEqual("testdata/elfglow002.fct", self.mw.default_save_filename())
         self.assertEqual(
-            "../testdata/elfglow.png",
-            self.mw.image_save_filename("../testdata/elfglow.fct"))
+            "testdata/elfglow.png",
+            self.mw.image_save_filename("testdata/elfglow.fct"))
 
     def testCantFindDefault(self):
         old_default = fractal.T.DEFAULT_FORMULA_FILE
@@ -169,9 +171,3 @@ class Test(testgui.TestCase):
             self.assertRaises(IOError, WrapMainWindow, Test.userConfig)
         finally:
             fractal.T.DEFAULT_FORMULA_FILE = old_default
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

@@ -9,7 +9,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-import angle
+from . import angle
 
 class EmitCounter:
     def __init__(self):
@@ -90,9 +90,3 @@ class Test(unittest.TestCase):
         for (ra,rb) in zip(a,b):
             d = abs(ra-rb)
             self.assertTrue(d < epsilon,"%f != %f (by %f)" % (ra,rb,d))
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

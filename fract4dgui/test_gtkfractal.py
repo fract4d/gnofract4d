@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
-import unittest
 import copy
 import math
 import os.path
 
-import testgui
+from . import testgui
 
 from gi.repository import Gdk, Gtk
 
@@ -80,7 +79,7 @@ class TestHidden(testgui.TestCase):
 
     def testLoad(self):
         f = gtkfractal.Hidden(TestHidden.g_comp,64,40)
-        with open("../testdata/test_bail.fct") as fh:
+        with open("testdata/test_bail.fct") as fh:
             f.loadFctFile(fh)
         self.assertEqual(f.saved, True)
         f.connect('status-changed', self.quitloop)
@@ -343,7 +342,7 @@ class Test(testgui.TestCase):
     def disabled_testTumorCrash(self):
         '''Provokes an issue which used to cause a crash.
         Disabled because if we don\'t crash wait() hangs'''
-        self.f.loadFctFile(open("../testdata/tumor.fct"))
+        self.f.loadFctFile(open("testdata/tumor.fct"))
         self.f.compile()
         print("d1")
         self.f.draw_image(0,1)
@@ -360,12 +359,3 @@ class Test(testgui.TestCase):
         for (ra,rb) in zip(a,b):
             d = abs(ra-rb)
             self.assertTrue(d < epsilon,"%f != %f (by %f)" % (ra,rb,d))
-
-            
-def suite():
-    s = unittest.makeSuite(Test,'test')
-    s.addTest(unittest.makeSuite(TestHidden, 'test'))
-    return s
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

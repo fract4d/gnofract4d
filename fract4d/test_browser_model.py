@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import unittest
-
-import testbase
+from . import testbase
 
 from fract4d import browser_model, fc
 
@@ -29,7 +27,7 @@ class Test(testbase.ClassSetup):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.g_comp.add_path("../maps", fc.FormulaTypes.GRADIENT)
+        cls.g_comp.add_path("maps", fc.FormulaTypes.GRADIENT)
         cls.g_comp.load_formula_file("gf4d.frm")
         cls.g_comp.load_formula_file("gf4d.cfrm")
         cls.g_comp.load_formula_file("gf4d.cfrm")
@@ -202,11 +200,3 @@ class Test(testbase.ClassSetup):
         bm.set_type(browser_model.GRADIENT)
         files = bm.current.files
         self.assertEqual(1,files.count("blatte1.ugr"))
-
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-

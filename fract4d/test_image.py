@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
-import unittest
 import os.path
 import filecmp
 import subprocess
 
-import testbase
+from . import testbase
 
 from fract4d import image
 
@@ -341,11 +340,3 @@ class Test(testbase.ClassSetup):
         buf2 = im2.image_buffer()
 
         self.assertEqual(buf1, buf2)
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-
-

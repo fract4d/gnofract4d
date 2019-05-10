@@ -3,10 +3,9 @@
 # unit tests for canon module
 
 import copy
-import unittest
 import pickle
 
-import testbase
+from . import testbase
 
 from fract4d import canon
 from fract4d import absyn
@@ -343,10 +342,3 @@ class CanonTest(testbase.TestBase):
 #         self.failUnless(
 #             t1.pretty() == t2.pretty(),
 #             ("%s, %s should be equivalent" % (t1.pretty(), t2.pretty())))
-
-def suite():
-    return unittest.makeSuite(CanonTest,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-

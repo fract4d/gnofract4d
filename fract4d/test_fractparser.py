@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
 
 import re
-import sys
 import unittest
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d import absyn
 from fract4d import fractlexer
@@ -1049,11 +1046,3 @@ init:
 %s
 }
 ''' % exp
-    
-def suite():
-    return unittest.makeSuite(ParserTest,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-
-        

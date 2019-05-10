@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 
-import unittest
 import os.path
 import struct
 import math
 
-import testbase
+from . import testbase
 
 from fract4d import fract4dc, gradient, image, messages
 
-from test_fractalsite import FractalSite
+from .test_fractalsite import FractalSite
 
 pos_params = [
     0.0, 0.0, 0.0, 0.0,
@@ -1025,10 +1024,3 @@ class Test(testbase.ClassSetup):
                     "bad result %s instead of %s for %d,%d" % (val,(i,1),x,y))
                 
                 i += 1
-
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

@@ -8,7 +8,7 @@ import gi
 gi.require_version('Gtk','3.0')
 from gi.repository import Gtk
 
-import fourway
+from . import fourway
 
 class EmitCounter:
     def __init__(self):
@@ -40,9 +40,3 @@ class Test(unittest.TestCase):
         w.add(f)
         w.show()
         Gtk.main_iteration()
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

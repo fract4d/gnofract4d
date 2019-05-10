@@ -2,9 +2,7 @@
 
 # unit tests for settings window
 
-import unittest
-
-import testgui
+from . import testgui
 
 from gi.repository import Gtk
 
@@ -100,10 +98,3 @@ class Test(testgui.TestCase):
             i += 1
 
         self.assertEqual(exp_pagelist, pagelist)
-
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

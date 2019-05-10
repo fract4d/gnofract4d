@@ -2,10 +2,9 @@
 
 # test harness for translate module
 
-import unittest
 import pickle
 
-import testbase
+from . import testbase
 
 from fract4d import (absyn, translate, fractparser, fractlexer, fracttypes, ir,
                      stdlib)
@@ -1636,10 +1635,3 @@ default:
         self.assertWarning(t, "4: Unrecognized parameter setting 'value' ignored")
         bailout = t.symbols["@bailout"]
         self.assertFalse(hasattr(bailout.value, "value"))
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-

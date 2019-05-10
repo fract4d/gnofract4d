@@ -3,9 +3,6 @@
 # test graph
 
 import unittest
-import sys
-
-if sys.path[1] != "..": sys.path.insert(1, "..")
 
 from fract4d.instructions import *
 from fract4d import optimize
@@ -91,10 +88,3 @@ class Test(unittest.TestCase):
             except Exception as exn:
                 print("Error comparing trees %s, %s" % (out,expected))
                 raise
-                            
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
-

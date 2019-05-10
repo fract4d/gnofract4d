@@ -3,12 +3,10 @@
 # test classes for preferences logic
 
 import unittest
-import sys
 
 import gi
 gi.require_version('Gtk', '3.0')
 
-if sys.path[1] != "..": sys.path.insert(1, "..")
 from fract4dgui import preferences
 from fract4d import fractconfig
 
@@ -46,9 +44,3 @@ class Test(unittest.TestCase):
     def testInstance(self):
         dummy = preferences.Preferences(fractconfig.T(""))
         self.assertNotEqual(None,dummy)
-        
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

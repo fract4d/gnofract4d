@@ -2,9 +2,7 @@
 
 # unit tests for settings window
 
-import unittest
-
-import testgui
+from . import testgui
 
 from gi.repository import Gtk
 
@@ -38,10 +36,3 @@ class Test(testgui.TestCase):
         self.f.onButtonRelease(self.f.widget,event)
         self.settings.hide()
         self.assertEqual(False, self.f.paint_mode)
-
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')

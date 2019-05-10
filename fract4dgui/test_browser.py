@@ -2,9 +2,7 @@
 
 # unit tests for browser window
 
-import unittest
-
-import testgui
+from . import testgui
 
 from gi.repository import Gtk
 
@@ -65,13 +63,7 @@ class Test(testgui.TestCase):
         b = browser.BrowserDialog(self.mainWindow, self.f)
         m = b.model
         # load good formula file
-        b.load_file("../formulas/fractint.cfrm")
+        b.load_file("formulas/fractint.cfrm")
         self.assertEqual('fractint.cfrm', m.current.fname, "failed to load formula")
         # load missing file
         self.assertRaises(OSError, b.load_file, "/no_such_dir/wibble.frm")
-
-def suite():
-    return unittest.makeSuite(Test,'test')
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
