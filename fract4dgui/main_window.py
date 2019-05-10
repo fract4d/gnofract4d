@@ -10,7 +10,7 @@ from gi.repository import Gdk, Gtk
 from fract4d import fractal, fc, image, fracttypes, fractconfig
 
 from . import (gtkfractal, model, preferences, autozoom, settings, toolbar,
-    browser, fourway, angle, utils, hig, painter, icons, renderqueue, director)
+    browser, fourway, angle, utils, hig, painter, renderqueue, director)
 
 re_ends_with_num = re.compile(r'\d+\Z')
 re_cleanup = re.compile(r'[\s\(\)]+')
@@ -48,6 +48,14 @@ class MainWindow:
         theme_provider.load_from_path(css_filepath)
         Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),
             theme_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+        # custom icon images for toolbar buttons
+        Gtk.IconTheme.prepend_search_path(Gtk.IconTheme.get_default(),
+                                          os.path.dirname(fractconfig.T.find_resource(
+                                          'pixmaps/explorer_mode.png',
+                                          '..',
+                                          '')))
+
 
         # keyboard handling
         self.keymap = {
@@ -556,11 +564,11 @@ class MainWindow:
 
     def get_toggle_actions(self):
         return [
-            ('ToolsExplorerAction', icons.explorer.stock_name, _('_Explorer'),
+            ('ToolsExplorerAction', 'explorer_mode', _('Explorer'),
              '<control>E', _('Create random fractals similar to this one'),
              self.toggle_explorer)
             ]
-            
+
     def get_main_actions(self):
         return [
             ('FileMenuAction', None, _('_File')),
@@ -598,16 +606,16 @@ class MainWindow:
              'F11', _('Full Screen (press Esc to finish)'), self.full_screen),
 
             ('ToolsMenuAction', None, _('_Tools')),
-            ('ToolsAutozoomAction', icons.autozoom.stock_name, _('_Autozoom'),
+            ('ToolsAutozoomAction', 'autozoom', _('_Autozoom'),
              '<control>A', _('Automatically zoom in to interesting regions'), self.autozoom),
             # explorer is a toggle, see above
             ('ToolsBrowserAction', None, _('Formula _Browser'),
              '<control>B', _('Browse available formulas'), self.browser),
             ('ToolsDirectorAction', None, _('_Director'),
              '<control>D', _('Create animations'), self.director),
-            ('ToolsRandomizeAction', icons.randomize.stock_name, _('_Randomize Colors'),
+            ('ToolsRandomizeAction', 'randomize', _('_Randomize Colors'),
              '<control>R', _('Apply a new random color scheme'), self.randomize_colors),
-            ('ToolsPainterAction', icons.draw_brush.stock_name, _('_Painter'),
+            ('ToolsPainterAction', 'draw_brush', _('_Painter'),
              None, _('Change colors interactively'), self.painter),
 
             ('HelpMenuAction', None, _('_Help')),
@@ -615,7 +623,7 @@ class MainWindow:
              'F1', _('Display manual'), self.contents),
             ('HelpCommandReferenceAction', None, _('Command _Reference'),
              None, _('A list of keyboard and mouse shortcuts'), self.command_reference),
-            ('HelpReportBugAction', icons.face_sad.stock_name, _('_Report a Bug'),
+            ('HelpReportBugAction', 'face_sad', _('_Report a Bug'),
              '', _('Report a bug you\'ve found'), self.report_bug),
             ('HelpAboutAction', Gtk.STOCK_ABOUT, _('_About'),
              None, _('About Gnofract 4D'), self.about)
@@ -831,8 +839,8 @@ class MainWindow:
         # deepen/resize
         self.toolbar.add_space()
         
-        self.toolbar.add_stock(
-            icons.improve_now.stock_name,
+        self.toolbar.add_tool(
+            "improve_now",
             _("Double the maximum number of iterations and tighten periodicity. This will fill in some black areas but increase drawing time"),
             self.improve_now)
 
@@ -846,15 +854,15 @@ class MainWindow:
         # undo/redo
         self.toolbar.add_space()
 
-        self.toolbar.add_stock(
-            Gtk.STOCK_UNDO,
+        self.toolbar.add_button(
+            "edit-undo",
             _("Undo the last change"),
             self.undo)
 
         self.model.seq.make_undo_sensitive(self.toolbar.get_children()[-1])
         
-        self.toolbar.add_stock(
-            Gtk.STOCK_REDO,
+        self.toolbar.add_button(
+            "edit-redo",
             _("Redo the last undone change"),
             self.redo)
         
@@ -864,8 +872,7 @@ class MainWindow:
         self.toolbar.add_space()
 
         self.explorer_toolbar_button = self.toolbar.add_toggle(
-            icons.explorer.stock_name,
-            icons.explorer.title,
+            "explorer_mode",
             _("Toggle Explorer Mode"),
             self.toolbar_toggle_explorer)
 

@@ -237,7 +237,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
             get_files("doc/gnofract4d-manual/C",".css")),
 
            # internal pixmaps
-           ('share/pixmaps/gnofract4d',
+           ('share/gnofract4d/pixmaps',
             ['pixmaps/improve_now.png',
              'pixmaps/explorer_mode.png',
              'pixmaps/mail-forward.png',
