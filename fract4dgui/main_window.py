@@ -839,7 +839,7 @@ class MainWindow:
         # deepen/resize
         self.toolbar.add_space()
         
-        self.toolbar.add_tool(
+        self.toolbar.add_button(
             "improve_now",
             _("Double the maximum number of iterations and tighten periodicity. This will fill in some black areas but increase drawing time"),
             self.improve_now)
