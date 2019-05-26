@@ -607,7 +607,7 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
 
         adj_kf_stop = Gtk.Adjustment.new(1,1,10000,1,10,0)
         self.spin_kf_stop = Gtk.SpinButton()
-        self.spin_duration.set_adjustment(adj_kf_stop)
+        self.spin_kf_stop.set_adjustment(adj_kf_stop)
         self.spin_kf_stop.connect("output",self.stop_changed,None)
         self.tbl_keyframes_right.attach(self.spin_kf_stop,1,1,1,1)
 
