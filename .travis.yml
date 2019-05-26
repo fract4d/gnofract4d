@@ -12,6 +12,6 @@ env: PIP_NO_BUILD_ISOLATION=false
 install:
   - python setup.py build
   - pip install tox-travis
-script: xvfb-run tox
+script: tox
 notifications:
   email: false
