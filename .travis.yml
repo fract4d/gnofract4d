@@ -6,6 +6,8 @@ python:
   - "3.5"
   - "3.6"
   - "3.7"
+before_install:
+  sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
 install: pip install tox-travis
 script: xvfb-run tox
 notifications:
