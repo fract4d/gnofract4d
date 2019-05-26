@@ -128,6 +128,7 @@ class AVIGeneration:
                 text=str(err))
             error_dlg.run()
             error_dlg.destroy()
+            self.dialog.destroy()
             
             return -1
         
