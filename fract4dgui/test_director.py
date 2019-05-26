@@ -116,6 +116,8 @@ class Test(testgui.TestCase):
     def testPNGGen(self):
         f = fractal.T(Test.g_comp)
         dd = director.DirectorDialog(None,f,Test.userConfig)
+        dd.animation.add_keyframe("testdata/director1.fct",1,10,animation.INT_LOG)
+        dd.animation.add_keyframe("testdata/director2.fct",1,10,animation.INT_LOG)
         pg = PNGGen.PNGGeneration(dd.animation,Test.g_comp,dd)
         pg.generate_png()
         
