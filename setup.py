@@ -212,7 +212,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
         # MIME type registration
         ('share/mime/packages', ['gnofract4d-mime.xml']),
         # doc files
-        ('share/doc/gnofract4d/', ['COPYING', 'README']),
+        ('share/doc/gnofract4d/', ['COPYING', 'README.md']),
     ],
     cmdclass={
         "install_lib": my_install_lib.my_install_lib
