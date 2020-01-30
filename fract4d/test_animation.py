@@ -132,7 +132,7 @@ class Test(testbase.ClassSetup):
         # then a sequence of 10 changing frames
         self.assertEqual([os.path.join(Test.tmpdir.name, "image_%07d.png") % n for n in range(1,11)], list[4:14])
         # then 3 more unchanging frames
-        self.assertEqual([os.path.join(Test.tmpdir.name, "image_0000010.png")] * 3, list[14:17])
+        self.assertEqual([os.path.join(Test.tmpdir.name, "image_0000011.png")] * 3, list[14:17])
 
     def testFilenames(self):
         self.assertEqual(

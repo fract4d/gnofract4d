@@ -550,10 +550,10 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         column = Gtk.TreeViewColumn('Keyframes', Gtk.CellRendererText(),text=0)
         self.tv_keyframes.append_column(column)
 
-        column = Gtk.TreeViewColumn('Duration', Gtk.CellRendererText(),text=1)
+        column = Gtk.TreeViewColumn('Stopped for', Gtk.CellRendererText(),text=2)
         self.tv_keyframes.append_column(column)
 
-        column = Gtk.TreeViewColumn('Stopped for', Gtk.CellRendererText(),text=2)
+        column = Gtk.TreeViewColumn('Transition duration', Gtk.CellRendererText(),text=1)
         self.tv_keyframes.append_column(column)
 
         column = Gtk.TreeViewColumn('Interpolation type', Gtk.CellRendererText(),text=3)
@@ -593,23 +593,23 @@ class DirectorDialog(dialog.T,hig.MessagePopper):
         self.tbl_keyframes_right.set_column_spacing(10)
         self.tbl_keyframes_right.set_border_width(10)
 
-        self.lbl_duration = Gtk.Label(label="Duration:")
-        self.tbl_keyframes_right.attach(self.lbl_duration,0,0,1,1)
-
-        adj_duration = Gtk.Adjustment.new(25,1,10000,1,10,0)
-        self.spin_duration = Gtk.SpinButton()
-        self.spin_duration.set_adjustment(adj_duration)
-        self.spin_duration.connect("output",self.duration_changed,None)
-        self.tbl_keyframes_right.attach(self.spin_duration,1,0,1,1)
-
         self.lbl_kf_stop=Gtk.Label(label="Keyframe stopped for:")
-        self.tbl_keyframes_right.attach(self.lbl_kf_stop,0,1,1,1)
+        self.tbl_keyframes_right.attach(self.lbl_kf_stop,0,0,1,1)
 
         adj_kf_stop = Gtk.Adjustment.new(1,1,10000,1,10,0)
         self.spin_kf_stop = Gtk.SpinButton()
         self.spin_kf_stop.set_adjustment(adj_kf_stop)
         self.spin_kf_stop.connect("output",self.stop_changed,None)
-        self.tbl_keyframes_right.attach(self.spin_kf_stop,1,1,1,1)
+        self.tbl_keyframes_right.attach(self.spin_kf_stop,1,0,1,1)
+
+        self.lbl_duration = Gtk.Label(label="Transition duration:")
+        self.tbl_keyframes_right.attach(self.lbl_duration,0,1,1,1)
+
+        adj_duration = Gtk.Adjustment.new(25,1,10000,1,10,0)
+        self.spin_duration = Gtk.SpinButton()
+        self.spin_duration.set_adjustment(adj_duration)
+        self.spin_duration.connect("output",self.duration_changed,None)
+        self.tbl_keyframes_right.attach(self.spin_duration,1,1,1,1)
 
         self.lbl_int_type=Gtk.Label(label="Interpolation type:")
         self.tbl_keyframes_right.attach(self.lbl_int_type,0,2,1,1)

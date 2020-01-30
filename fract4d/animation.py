@@ -258,14 +258,15 @@ class T:
     # create a list containing all the filenames of the frames
     def create_list(self):
         framelist = []
-        current = 1
+        current = 0
         for i in range(self.keyframes_count()):
             for j in range(self.get_keyframe_stop(i)):  # output keyframe 'stop' times
-                framelist.append(self.get_image_filename(current-1))
+                framelist.append(self.get_image_filename(current))
+            current += 1
 
-            if i < self.keyframes_count()-1:
-                # final frame has no transitions following it
-                for j in range(self.get_keyframe_duration(i)):  # output all transition files
+            if i < self.keyframes_count() - 1:
+                # skip final frame which has no transitions following it
+                for j in range(self.get_keyframe_duration(i)):  # output all transition files minus keyframe
                     framelist.append(self.get_image_filename(current))
                     current += 1
         

@@ -336,15 +336,15 @@ are. </para></listitem>
 <title>Director</title>
 <para>
 
-The <emphasis>Director</emphasis> allows you to create fractal movies.
-You first define keyframes (including base keyframes) which are stops
-in video.  Then, for each of them, you define for how long they last
-(<guilabel>duration</guilabel> - in frames), how long still image of
-keyframe will stay in video (<guilabel>stopped for</guilabel>) and
-interpolation type between several possibilities. When you hit
-<guibutton>Render</guibutton> button, Director will render all frames
-and put them in directory you selected and then it will try to create
-a video using <ulink url="https://www.ffmpeg.org/">
+The <emphasis>Director</emphasis> allows you to create fractal videos.
+You first define keyframes which are points in the video.
+Then, for each of them, you specify how long a still image of the keyframe will
+stay in the video (<guilabel>stopped for</guilabel>), how long the transition
+is to the next keyframe (<guilabel>transition duration</guilabel> - in frames)
+and the interpolation type used for the transition from several possibilities.
+When you hit <guibutton>Render</guibutton> button, Director will render all
+frames and put them in the directory you selected and then it will create
+the video using <ulink url="https://www.ffmpeg.org/">
 <emphasis>FFmpeg</emphasis></ulink>.</para>
 
 <para>
