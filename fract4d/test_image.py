@@ -210,9 +210,8 @@ class Test(testbase.ClassSetup):
             self.saveAndCheck("no_such_dir/test.png","PNG")
             self.fail("No exception thrown")
         except FileNotFoundError as err:
-            self.assertEqual(
-                str(err),
-                "[Errno 2] No such file or directory: 'no_such_dir/test.png'")
+            self.assertTrue(str(err).find('[Errno 2]') is not -1)
+            self.assertTrue(str(err).find('no_such_dir/test.png') is not -1)
 
     def testResize(self):
         im = image.T(10,20)
