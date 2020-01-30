@@ -232,7 +232,11 @@ int main()
         cFile.flush()
 
         oFileName = str(Path(cFile.name).with_suffix(".so"))
-        cmd = "gcc -Wall -fPIC -DPIC -shared %s -o %s -lm" % (cFile.name, oFileName)
+        import sys
+        if sys.platform[:6] == "darwin":
+            cmd = "gcc -Wall -fPIC -DPIC -shared %s -o %s -lm -flat_namespace -undefined suppress" % (cFile.name, oFileName)
+        else:
+            cmd = "gcc -Wall -fPIC -DPIC -shared %s -o %s -lm" % (cFile.name, oFileName)
         status, output = subprocess.getstatusoutput(cmd)
         self.assertEqual(status,0,"C error:\n%s\nProgram:\n%s\n" % \
                          ( output,c_code))
@@ -1696,8 +1700,8 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         return "printf(\"%s = %%d\\n\", f%s);" % (name,name)
 
     def inspect_complex(self,name,prefix="f"):
-        return "printf(\"%s = (%%g,%%g)\\n\", %s%s_re, %s%s_im);" % \
-               (name,prefix,name,prefix,name)
+        return "printf(\"%s = (%%g,%%g)\\n\", isnan(%s%s_re) ? NAN : %s%s_re, isnan(%s%s_im) ? NAN : %s%s_im);" % \
+               (name,prefix,name,prefix,name,prefix,name,prefix,name)
 
     def inspect_hyper(self,name,prefix="f"):
         return ("printf(\"%s = (%%g,%%g,%%g,%%g)\\n\"," +
@@ -1751,7 +1755,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         tests = self.manufacture_tests("cotan",mycotan)
 
         # CONSIDER: Python 2.7 thinks this cotan(0) is -nan,-nan, older versions think (nan,nan)
-        tests[0][2] = "(-nan,-nan)"
+        tests[0][2] = "(nan,nan)"
 
         # CONSIDER: comes out as -0,1.31304 in python, but +0 in C++ and gf4d
         # think Python's probably in error, but not 100% sure
@@ -1768,7 +1772,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         #print tests
         
         # CONSIDER: Python 2.7 thinks this cotanh(0) is -nan,-nan, older versions think (nan,nan)
-        tests[0][2] = "(-nan,-nan)"
+        tests[0][2] = "(nan,nan)"
 
         return tests
         
@@ -1797,8 +1801,8 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         tests = self.manufacture_tests("atan",cmath.atan)
 
         #print("before", tests)
-        tests[1][2] = "(-nan,-nan)"
-        tests[6][2] = "(-nan,-inf)" # not really sure who's right on this
+        tests[1][2] = "(nan,nan)"
+        tests[6][2] = "(nan,-inf)" # not really sure who's right on this
         #print("after", tests)
         return tests
 
@@ -1899,7 +1903,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
             [ "l = (log(1),log(3))", "l", self.predict(math.log,1,3)],
             [ "ex = (exp(1),exp(2))","ex", self.predict(math.exp,1,2)],
             [ "pow0a = (2^2, 9^0.5)", "pow0a", "(4,3)"],
-            [ "pow0b = ((-1)^0.5,(-1)^2)", "pow0b", "(-nan,1)"], 
+            [ "pow0b = ((-1)^0.5,(-1)^2)", "pow0b", "(nan,1)"],
             [ "pow1 = (1,0)^2","pow1", "(1,0)"],
             [ "pow2 = (-2,-3)^7.5","pow2","(-13320.5,6986.17)"],
             [ "pow3 = (-2,-3)^(1.5,-3.1)","pow3","(0.00507248,-0.00681128)"],
