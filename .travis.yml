@@ -6,7 +6,12 @@ python:
   - "3.5"
   - "3.6"
   - "3.7"
-install: pip install tox-travis
-script: xvfb-run tox
+before_install:
+  sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
+env: PIP_NO_BUILD_ISOLATION=false
+install:
+  - python setup.py build
+  - pip install tox-travis
+script: tox
 notifications:
   email: false

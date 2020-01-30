@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
+import copy
 import io
 import math
-import copy
 import random
 from time import time as now
 
-from . import fract4dc, gradient, fctutils, colorizer, formsettings, fc
+from . import colorizer, fc, fctutils, formsettings, fract4dc, gradient
 
 # the version of the earliest gf4d release which can parse all the files
 # this version can output
@@ -161,7 +161,7 @@ class T(fctutils.T):
             g = self.forms[0].get_named_param_value("@_gradient")
             if g == 0:
                 g = self.default_gradient
-        except Exception as exn:
+        except:
             g = self.default_gradient
         return g
 
@@ -309,54 +309,53 @@ class T(fctutils.T):
 
         return isClockwise
 
-    def blend_angle(self,a,b,ratio,mode):
-        angle = 0.0
-        isClockwise = self.determine_direction(a,b,mode)
-        
+    def blend_angle(self, a, b, ratio, mode):
+        isClockwise = self.determine_direction(a, b, mode)
+
         if isClockwise and b < a:
             b = b + math.pi * 2.0
         if not isClockwise and b > a:
             a = a + math.pi * 2.0
 
-        angle = a * (1-ratio) + b * ratio
+        angle = a * (1 - ratio) + b * ratio
         while angle > math.pi:
             angle -= math.pi * 2.0
-            
+
         return angle
-    
-    def blend(self,other,ratio,angle_options=()):
-        """Create a new fractal which blends the this and other's parameter sets using ratio.
+
+    def blend(self, other, ratio, angle_options=()):
+        """Create a new fractal which blends this and the other's parameter sets using ratio.
         'angle_options' can be used to override the default method of interpolating angles."""
         new = copy.copy(self)
-        for i in range(self.XCENTER,self.MAGNITUDE):
-            (a,b) = (self.params[i], other.params[i])
-            new.set_param(i, a*(1-ratio) + b*ratio)
+        for i in range(self.XCENTER, self.MAGNITUDE):
+            a, b = self.params[i], other.params[i]
+            new.set_param(i, a * (1 - ratio) + b * ratio)
 
         # magnitude is exponential
-        (a,b) = (self.params[self.MAGNITUDE], other.params[self.MAGNITUDE])
+        a, b = self.params[self.MAGNITUDE], other.params[self.MAGNITUDE]
         if abs(a) > abs(b):
-            factor = (a-b)/(math.e-1)
-            val = factor * math.exp(1-ratio) + (b - factor)
+            factor = (a - b) / (math.e - 1)
+            val = factor * math.exp(1 - ratio) + (b - factor)
         else:
-            factor = (b-a)/(math.e-1)
+            factor = (b - a) / (math.e - 1)
             val = factor * math.exp(ratio) + (a - factor)
 
         new.set_param(self.MAGNITUDE, val)
 
-        for i in range(self.XYANGLE, self.ZWANGLE+1):
-            (a,b) = (self.params[i], other.params[i])
-            option = angle_options[i-self.XYANGLE:i-self.XYANGLE]
-            if len(option):
+        for i in range(self.XYANGLE, self.ZWANGLE + 1):
+            a, b = self.params[i], other.params[i]
+            option = angle_options[i - self.XYANGLE:i - self.XYANGLE]
+            if option:
                 mode = option[0]
             else:
                 mode = BLEND_NEAREST
-            new.set_param(i, self.blend_angle(a,b,ratio,mode))
+            new.set_param(i, self.blend_angle(a, b, ratio, mode))
 
-        for (form1,form2) in zip(new.forms,other.forms):
-            form1.blend(form2,ratio)
-            
+        for form1, form2 in zip(new.forms, other.forms):
+            form1.blend(form2, ratio)
+
         return new
-    
+
     def reset_angles(self):
         for i in range(self.XYANGLE,self.ZWANGLE+1):
             self.set_param(i,0.0)
@@ -864,7 +863,7 @@ class T(fctutils.T):
         try:
             (major,minor) = tuple([int(a) for a in s.split(".")])
             return major * 1000.0 + minor
-        except Exception as exn:
+        except:
             raise ValueError("Invalid version number %s" % s)
 
     def parse_version(self,val,f):

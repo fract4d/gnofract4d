@@ -69,7 +69,8 @@ class Test(testgui.TestCase):
             director.SanityCheckError, "There must be at least two keyframes",
             dd.check_sanity)
         
-        dd.animation.add_keyframe("/tmp/director2.fct",1,10,animation.INT_LOG)
+        dd.animation.add_keyframe(os.path.join(Test.tmpdir.name, "director2.fct"),
+            1, 10, animation.INT_LOG)
         dd.animation.set_png_dir("")
         self.assertRaisesMessage(
             director.SanityCheckError,
@@ -82,21 +83,21 @@ class Test(testgui.TestCase):
             "Path for temporary .png files is not a directory",
             dd.check_sanity)
 
-        dd.animation.set_png_dir("/tmp/")
+        dd.animation.set_png_dir(Test.tmpdir.name)
         
         self.assertRaisesMessage(
             director.SanityCheckError,
             "Output AVI file name not set",
             dd.check_sanity)
 
-        dd.animation.set_avi_file("/tmp/foo.avi")
+        dd.animation.set_avi_file(os.path.join(Test.tmpdir.name, "foo.avi"))
 
         dd.animation.set_fct_enabled(True)
-        dd.animation.set_fct_dir("/tmp")
+        dd.animation.set_fct_dir(Test.tmpdir.name)
         
         self.assertRaisesMessage(
             director.SanityCheckError,
-            "Keyframe /tmp/director2.fct is in the temporary .fct directory and could be overwritten. Please change temp directory.",
+            "Keyframe {} is in the temporary .fct directory and could be overwritten. Please change temp directory.".format(os.path.join(Test.tmpdir.name, "director2.fct")),
             dd.check_sanity)
         
     def testKeyframeClash(self):
@@ -107,10 +108,10 @@ class Test(testgui.TestCase):
         
         self.assertRaises(
             director.SanityCheckError,
-            dd.check_for_keyframe_clash, "/tmp/foo.fct", "/tmp")
+            dd.check_for_keyframe_clash, os.path.join(Test.tmpdir.name, "foo.fct"), Test.tmpdir.name)
         self.assertRaises(
             director.SanityCheckError,
-            dd.check_for_keyframe_clash, "/tmp/foo.fct", "/tmp/")
+            dd.check_for_keyframe_clash, os.path.join(Test.tmpdir.name, "foo.fct"), Test.tmpdir.name)
 
     def testPNGGen(self):
         f = fractal.T(Test.g_comp)

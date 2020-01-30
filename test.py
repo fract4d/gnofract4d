@@ -46,6 +46,8 @@ class Test(unittest.TestCase):
         self.assertTrue(m,"doc doesn't specify version")
         self.assertEqual(options.VERSION,m.group(1), "Version mismatch")
 
+    @pytest.mark.skipif(os.path.expandvars("${HOME}") == "${HOME}",
+                        reason="cache_dir requires $HOME to be set")
     def testGenerateMandelbrot(self):
         with tempfile.TemporaryDirectory(prefix="fract4d_") as tmpdir:
             test_file = os.path.join(tmpdir, "test.png")

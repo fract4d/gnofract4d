@@ -18,6 +18,8 @@ class Test(testbase.ClassSetup):
 
     def setUp(self):
         self.anim = animation.T(Test.g_comp, Test.userConfig)
+        self.anim.set_fct_dir(Test.tmpdir.name)
+        self.anim.set_png_dir(Test.tmpdir.name)
 
     def tearDown(self):
         pass
@@ -126,19 +128,19 @@ class Test(testbase.ClassSetup):
 
         self.assertEqual(17, len(list))
         # starts with 4 identical frames
-        self.assertEqual(["/tmp/image_0000000.png"] * 4, list[0:4])
+        self.assertEqual([os.path.join(Test.tmpdir.name, "image_0000000.png")] * 4, list[0:4])
         # then a sequence of 10 changing frames
-        self.assertEqual(["/tmp/image_%07d.png" % n for n in range(1,11)], list[4:14])
+        self.assertEqual([os.path.join(Test.tmpdir.name, "image_%07d.png") % n for n in range(1,11)], list[4:14])
         # then 3 more unchanging frames
-        self.assertEqual(["/tmp/image_0000010.png"] * 3, list[14:17])
+        self.assertEqual([os.path.join(Test.tmpdir.name, "image_0000010.png")] * 3, list[14:17])
 
     def testFilenames(self):
         self.assertEqual(
-            self.anim.get_png_dir() + "/image_0000037.png",
+            os.path.join(self.anim.get_png_dir(), "image_0000037.png"),
             self.anim.get_image_filename(37))
 
         self.assertEqual(
-            self.anim.get_fct_dir() + "/file_0000064.fct",
+            os.path.join(self.anim.get_fct_dir(), "file_0000064.fct"),
             self.anim.get_fractal_filename(64))
 
     def testMu(self):

@@ -11,6 +11,7 @@ class AVIGeneration:
     def __init__(self, animation, parent):
         self.animation = animation
         self.converterpath = parent.converterpath
+        self.error_watch = None
         self.fh_err = None
         self.pid = None
 
@@ -83,7 +84,8 @@ class AVIGeneration:
                                     standard_output=False, standard_error=True)
         self.fh_err = os.fdopen(fd_err, "r")
         GLib.child_watch_add(GLib.PRIORITY_DEFAULT, self.pid, self.video_complete)
-        GLib.io_add_watch(self.fh_err, GLib.PRIORITY_DEFAULT, GLib.IOCondition.IN, self.video_error)
+        self.error_watch = GLib.io_add_watch(self.fh_err, GLib.PRIORITY_DEFAULT,
+                                             GLib.IOCondition.IN, self.video_error)
 
     def video_error(self, source, condition):
         error_text = source.read()
@@ -126,6 +128,7 @@ class AVIGeneration:
                 text=str(err))
             error_dlg.run()
             error_dlg.destroy()
+            self.dialog.destroy()
             
             return -1
         
@@ -142,6 +145,8 @@ class AVIGeneration:
             elif self.error is True:  # error
                 result = -1
 
+        if self.error_watch is not None:
+            GLib.source_remove(self.error_watch)
         if self.fh_err:
             self.fh_err.close()
         self.dialog.destroy()
