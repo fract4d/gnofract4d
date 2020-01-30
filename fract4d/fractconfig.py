@@ -16,7 +16,7 @@ class T(configparser.ConfigParser):
             ("compiler",
              OrderedDict((
                          ("name", comp),
-                         ("options", T.get_default_compiler_options()),
+                         ("options", self.get_default_compiler_options()),
                          ))
              ),
             ("optimize",
@@ -41,9 +41,9 @@ class T(configparser.ConfigParser):
              ),
             ("helpers",
              OrderedDict((
-                         ("editor", T.get_default_editor()),
-                         ("mailer", T.get_default_mailer()),
-                         ("browser", T.get_default_browser()),
+                         ("editor", self.get_default_editor()),
+                         ("mailer", self.get_default_mailer()),
+                         ("browser", self.get_default_browser()),
                          ))
              ),
             ("general",
@@ -146,20 +146,16 @@ class T(configparser.ConfigParser):
         #print "missing resource %s" % full_name
         return full_name
 
-    @staticmethod
-    def get_default_editor():
+    def get_default_editor(self):
         return "emacs"
 
-    @staticmethod
-    def get_default_mailer():
+    def get_default_mailer(self):
         return "evolution %s"
 
-    @staticmethod
-    def get_default_browser():
+    def get_default_browser(self):
         return "firefox %s"
 
-    @staticmethod
-    def get_default_compiler_options():
+    def get_default_compiler_options(self):
         # appears to work for most unixes
         return "-fPIC -DPIC -D_REENTRANT -O2 -shared -ffast-math"
 
@@ -252,22 +248,18 @@ class DarwinConfig(T):
     def __init__(self,file):
         T.__init__(self,file)
 
-    @staticmethod
-    def get_default_editor():
+    def get_default_editor(self):
         # edit file in TextPad
         return "open -e"
 
-    @staticmethod
-    def get_default_mailer():
+    def get_default_mailer(self):
         # create message in default mail app
         return "open %s"
 
-    @staticmethod
-    def get_default_browser():
+    def get_default_browser(self):
         return "open %s"
 
-    @staticmethod
-    def get_default_compiler_options():
+    def get_default_compiler_options(self):
         return "-fPIC -DPIC -D_REENTRANT -O2 -dynamiclib -flat_namespace -undefined suppress -ffast-math"
 
 def userConfig():
