@@ -6,7 +6,8 @@ import os.path
 import tempfile
 import unittest
 
-from fract4d import fc, ir, fracttypes, fractconfig
+from fract4d_compiler import fc, fracttypes, ir
+from fract4d import fractconfig
 
 class TestBase(unittest.TestCase):
     def assertNearlyEqual(self,a,b,epsilon=1.0e-12):

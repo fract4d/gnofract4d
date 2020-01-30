@@ -7,7 +7,8 @@ import re
 import io
 import weakref
 
-from . import fracttypes, function, gradient, image
+from fract4d_compiler import fracttypes, function
+from . import gradient, image
 
 # matches a complex number
 cmplx_re = re.compile(r'\((.*?),(.*?)\)')

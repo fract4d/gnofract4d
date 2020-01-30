@@ -5,7 +5,7 @@
 import sys
 from xml.sax.saxutils import escape
 
-from . import fracttypes, fsymbol
+from fract4d_compiler import fracttypes, fsymbol
 
 def strOfType(t):
     return fracttypes.strOfType(t).capitalize()

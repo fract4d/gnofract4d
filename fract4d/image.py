@@ -3,7 +3,7 @@
 
 import os.path
 
-    from . import fract4dc
+from . import fract4dc
 
 file_types = {
     ".jpg" : fract4dc.FILE_TYPE_JPG,

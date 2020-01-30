@@ -9,7 +9,8 @@ import filecmp
 
 from . import testbase
 
-from fract4d import fc, fractal, fracttypes, image, formsettings
+from fract4d_compiler import fc, fracttypes
+from fract4d import fractal, image, formsettings
 
 g_testfile = '''gnofract4d parameter file
 version=2.0

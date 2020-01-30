@@ -2,8 +2,7 @@
 
 import unittest
 
-from fract4d import fracttypes
-from fract4d import absyn
+from . import fracttypes, absyn
 
 class Test(unittest.TestCase):
     def testNumber(self):

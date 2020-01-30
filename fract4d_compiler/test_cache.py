@@ -5,9 +5,9 @@ from pathlib import Path
 import time
 import pickle
 
-from . import testbase
+from fract4d import testbase, fractconfig
 
-from fract4d import cache, fractconfig
+from . import cache
 
 
 class Test(testbase.TestSetup):

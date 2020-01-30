@@ -7,7 +7,8 @@ import re
 
 from gi.repository import Gdk, Gtk
 
-from fract4d import fractal, fc, image, fracttypes, fractconfig
+from fract4d_compiler import fc, fracttypes
+from fract4d import fractal, image, fractconfig
 
 from . import (gtkfractal, model, preferences, autozoom, settings, toolbar,
     browser, fourway, angle, utils, hig, painter, renderqueue, director)

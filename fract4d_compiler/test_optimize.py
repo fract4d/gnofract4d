@@ -4,8 +4,8 @@
 
 import unittest
 
-from fract4d.instructions import *
-from fract4d import optimize
+from .instructions import *
+from . import optimize
 
 class Test(unittest.TestCase):
     def setUp(self):

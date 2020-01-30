@@ -6,8 +6,8 @@ import collections.abc
 import unittest
 import copy
 
-from fract4d import fsymbol, function
-from fract4d.fracttypes import *
+from . import fsymbol, function
+from .fracttypes import *
 
 class SymbolTest(unittest.TestCase):
     def setUp(self):

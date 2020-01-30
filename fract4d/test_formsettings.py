@@ -5,7 +5,8 @@ import copy
 
 from . import testbase
 
-from fract4d import formsettings, gradient, fracttypes, fctutils
+from fract4d_compiler import fracttypes, fctutils
+from fract4d import formsettings, gradient
 
 g_grad = gradient.Gradient()
 

@@ -315,7 +315,7 @@ class TranslationError(Exception):
 
 class InternalCompilerError(TranslationError):
     def __init__(self,msg):
-        TranslationError.__init__("Internal Compiler Error:" + msg)
+        TranslationError.__init__(self,"Internal Compiler Error:" + msg)
     
 class Var:
     def __init__(self,type,value=None,pos=-1,**kwds):

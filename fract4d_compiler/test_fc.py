@@ -4,9 +4,9 @@ import subprocess
 import os.path
 import time
 
-from . import testbase
+from . import fc, translate
 
-from fract4d import fc, fractconfig, translate
+from fract4d import testbase, fractconfig
 
 class Test(testbase.ClassSetup):
     @classmethod

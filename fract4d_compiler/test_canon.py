@@ -5,13 +5,9 @@
 import copy
 import pickle
 
-from . import testbase
-
-from fract4d import canon
-from fract4d import absyn
-from fract4d import ir
-from fract4d import fsymbol
-from fract4d.fracttypes import *
+from fract4d import testbase
+from . import ir, absyn, canon, fsymbol
+from .fracttypes import *
 
 class CanonTest(testbase.TestBase):
     def setUp(self):

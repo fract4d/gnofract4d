@@ -31,8 +31,9 @@ import hashlib
 import re
 import copy
 
+from fract4d import gradient, fractconfig
 from . import (fractparser, fractlexer, translate, codegen, fracttypes, absyn,
-               preprocessor, cache, gradient)
+               preprocessor, cache)
 
 class FormulaTypes:
     FRACTAL = 0
@@ -508,7 +509,7 @@ def generate(fc,formulafile, formula, outputfile, cfile):
     fc.generate_code(ir, cg, outputfile,cfile)
 
 def main(args):
-    fc = Compiler()
+    fc = Compiler(fractconfig.userConfig())
     fc.leave_dirty = True
     for arg in args:
         ff = fc.load_formula_file(arg)

@@ -200,7 +200,7 @@ def colorRange(s):
 
 if __name__ == "__main__":
     import sys
-    import fc
+    from fract4d_compiler import fc
     import fractal
     
     g_comp = fc.Compiler(fractconfig.userConfig())

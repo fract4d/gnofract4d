@@ -7,11 +7,11 @@ import re
 import subprocess
 import tempfile
 
-from . import testbase
+from fract4d import testbase
 
-from fract4d import (absyn, ir, fsymbol, codegen, translate, fractparser,
+from . import (absyn, ir, fsymbol, codegen, translate, fractparser,
                      fractlexer, optimize, instructions)
-from fract4d.fracttypes import *
+from .fracttypes import *
 
 g_exp = None
 g_x = None
