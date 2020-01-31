@@ -1,7 +1,7 @@
 import os.path
 
 from fract4d_compiler import fc
-from . import event, gradient
+from fract4d import event, gradient
 
 FRACTAL = 0
 OUTER = 1

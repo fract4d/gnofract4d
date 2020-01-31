@@ -4,8 +4,7 @@
 
 from gi.repository import Gtk, GObject
 
-from fract4d import browser_model
-from . import dialog, utils, gtkfractal
+from . import dialog, utils, gtkfractal, browser_model
 
 class BrowserDialog(dialog.T):
     RESPONSE_REFRESH = 2
