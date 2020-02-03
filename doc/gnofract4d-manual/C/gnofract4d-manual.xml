@@ -1010,8 +1010,7 @@ The important directories in the source are:
 <entry> <para>This contains all the non-GUI-related, relatively
 platform-independent parts of the code. This is in case it ever needs
 to be ported to another environment (eg run on a server without a GUI
-as part of a cluster). Most of the files here are parts of the
-compiler (see below). The main class which represents a fractal is in
+as part of a cluster). The main class which represents a fractal is in
 <filename>fractal.py</filename>. This holds references to the compiled
 code, the formula and colorfunc definitions, the parameters and the
 colormap. It also handles loading and saving information from a
@@ -1019,6 +1018,18 @@ colormap. It also handles loading and saving information from a
 wrappers for some of the gnarlier C++ extension functions. </para>
 </entry>
 
+</row>
+
+<row>
+<entry>
+    <para><filename>fract4d_compiler</filename></para>
+</entry>
+<entry>
+    <para>
+    This contains all the files of the compiler (see below).
+    The main class is <filename>fc.py</filename>
+    </para>
+</entry>
 </row>
 
 <row>
