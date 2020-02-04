@@ -4,9 +4,10 @@ import subprocess
 import os.path
 import time
 
-from . import fc, translate
+from fract4d import fractconfig
+from fract4d.tests import testbase
 
-from fract4d import testbase, fractconfig
+from fract4d_compiler import fc, translate
 
 class Test(testbase.ClassSetup):
     @classmethod
@@ -43,7 +44,7 @@ class Test(testbase.ClassSetup):
 
     def assertListDoesntContain(self,list,element):
         self.assertEqual(0, list.count(element))
-                         
+
     def testFindFilesOfType(self):
         expected_files = {
             fc.FormulaTypes.FRACTAL : "gf4d.frm",
@@ -73,7 +74,7 @@ class Test(testbase.ClassSetup):
             self.assertNotEqual(file.formulas[f].symmetry, "OUTSIDE")
 
         outside_names = file.get_formula_names("INSIDE")
-        for f in outside_names:            
+        for f in outside_names:
             self.assertNotEqual(file.formulas[f].symmetry, "INSIDE")
 
     def testFileTimeChecking(self):
@@ -138,7 +139,7 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
             IOError, Test.g_comp.load_formula_file, "nonexistent.frm")
 
         self.assertRaises(
-            ValueError, Test.g_comp.get_formula, "test.xxx","nonexistent") 
+            ValueError, Test.g_comp.get_formula, "test.xxx","nonexistent")
 
         f = Test.g_comp.get_formula("test.frm","nonexistent")
         self.assertEqual(f,None)
@@ -151,7 +152,7 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
         self.assertEqual(len(f.errors),0)
         cg = Test.g_comp.compile(f)
         Test.g_comp.generate_code(f,cg,"test-evil.so",None)
-        
+
         f = Test.g_comp.get_formula("test.frm","Fractint-9-21")
         self.assertNoErrors(f)
         cg = Test.g_comp.compile(f)
@@ -166,23 +167,23 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
     def testPreprocessorError(self):
         ff = Test.g_comp.load_formula_file("test_bad_pp.frm")
         f = Test.g_comp.get_formula("test_bad_pp.frm","error")
-        self.assertEqual(len(f.errors),1)        
+        self.assertEqual(len(f.errors),1)
         Test.g_comp.files["test_bad_pp.frm"] = None
 
     def testBehr(self):
         ff = Test.g_comp.get_file("Bujumbura.cs")
         ff = Test.g_comp.get_file("BehrQuiltedRed.cs")
-        
+
     def testColorFunc(self):
         'Compile inner + outer colorfuncs and merge'
         cf1 = Test.g_comp.get_formula("gf4d.cfrm","default","cf0")
         self.assertEqual(len(cf1.errors),0)
         Test.g_comp.compile(cf1)
-        
+
         cf2 = Test.g_comp.get_formula("gf4d.cfrm","zero","cf1")
         self.assertEqual(len(cf2.errors),0)
         Test.g_comp.compile(cf2)
-        
+
         f = Test.g_comp.get_formula("gf4d.frm","Mandelbrot")
         cg = Test.g_comp.compile(f)
 
@@ -224,14 +225,14 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
         prefs.set("compiler","options","foo")
         prefs.set_list("formula_path",["fish"])
         prefs.set_list("map_path", ["wibble"])
-        
+
         compiler.update_from_prefs(prefs)
 
         self.assertEqual("x", compiler.compiler_name)
         self.assertEqual("foo", compiler.flags)
         self.assertEqual(["fish"], compiler.path_lists[0])
         self.assertEqual(["wibble"], compiler.path_lists[3])
-        
+
     def testInstance(self):
         compiler = fc.Compiler(Test.userConfig)
         self.assertNotEqual(None, compiler)

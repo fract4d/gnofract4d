@@ -6,8 +6,8 @@ import collections.abc
 import unittest
 import copy
 
-from . import fsymbol, function
-from .fracttypes import *
+from fract4d_compiler import fsymbol, function
+from fract4d_compiler.fracttypes import *
 
 class SymbolTest(unittest.TestCase):
     def setUp(self):
@@ -25,14 +25,14 @@ class SymbolTest(unittest.TestCase):
         self.assertEqual(c["foo"].value,4)
         self.assertEqual(c["@fn1"][0].cname,"sin")
         self.assertEqual(c.nextTemp, self.t.nextTemp)
-        
+
         self.t["foo"].value = 5
         self.t["@fn1"][0].set_func("sinh")
-        
+
         self.assertEqual(c["foo"].value,4)
         self.assertEqual(c["@fn1"][0].cname,"sin")
         self.assertTrue(c[name].is_temp == True)
-        
+
     def testParamSlots(self):
         t = fsymbol.T("boo")
         v = Var(Int,1)
@@ -51,7 +51,7 @@ class SymbolTest(unittest.TestCase):
         t["@pc"] = v3
         self.assertEqual(2,v3.param_slot)
         self.assertEqual(6,t.nextParamSlot)
-        
+
         v4 = Var(Int,77)
         self.assertEqual(-1,v4.param_slot)
         t["@pi"] = v4
@@ -69,7 +69,7 @@ class SymbolTest(unittest.TestCase):
         t["@image"] = v5
         self.assertEqual(7,v5.param_slot)
         self.assertEqual(8,t.nextParamSlot)
-        
+
     def testOrderOfParams(self):
         "Are parameters returned in the right order?"
         t = fsymbol.T("f")
@@ -101,7 +101,7 @@ class SymbolTest(unittest.TestCase):
         t["@f"] = Var(Gradient,None)
         t["@g"] = Var(Color,[0.0,1.0,2.0,3.0])
         t["@h"] = Var(Image, None)
-        
+
         self.assertEqual(
             [Int,
              Bool,
@@ -112,14 +112,14 @@ class SymbolTest(unittest.TestCase):
              Float,Float,Float,Float,
              Image],
             t.type_of_params())
-    
+
     def testOrderOfParamsMerges(self):
         (t1,t2) = (fsymbol.T("a"), fsymbol.T("b"))
         t1["@a"] = Var(Int, 1)
         t1["d"] = Var(Int,100)
         t2["d"] = Var(Int,200)
         t2["@a"] = Var(Int, 3)
-        t2["@b"] = Var(Float, 2)        
+        t2["@b"] = Var(Float, 2)
         t1["@myfunc"] = fsymbol.OverloadList([function.Func([Int],Int,"ident")])
         t2["@myotherfunc"] = fsymbol.OverloadList([function.Func([Int],Int,"ident")])
         t1.merge(t2)
@@ -135,12 +135,12 @@ class SymbolTest(unittest.TestCase):
         t1 = fsymbol.T("a")
         x = t1["z"]
         self.assertEqual(-1,x.param_slot)
-        
+
     def testGetDefaultParamSetsSlot(self):
         t = fsymbol.T("f")
         x = t["@p1"]
         self.assertEqual(0,x.param_slot)
-        
+
     def testPrefix(self):
         t = fsymbol.T("boo")
         v = Var(Int,1)
@@ -148,7 +148,7 @@ class SymbolTest(unittest.TestCase):
         self.assertEqual(t["x"].cname,"boox")
         self.assertEqual(t.realName("@x"),"t__a_x")
         self.assertEqual(t.mangled_name("@x"),"t__a_x")
-        
+
     def testSqr(self):
         sqr_c = self.t[("sqr")][2];
         sqr_i = self.t[("sqR")][0];
@@ -157,7 +157,7 @@ class SymbolTest(unittest.TestCase):
 
     def testNoOverride(self):
         self.assertRaises(KeyError,self.t.__setitem__,("sqr"),1)
-        
+
     def testAddCheckVar(self):
         self.t["fish"] = Var(Int,1)
         self.assertTrue("fish" in self.t)
@@ -172,7 +172,7 @@ class SymbolTest(unittest.TestCase):
         self.assertTrue(self.t.is_user("fish"))
         self.assertTrue(not self.t.is_user("z"))
         self.assertTrue(not self.t.is_user("cmag"))
-        
+
     def test_expand(self):
         l = fsymbol.efl("foo", "[_,_] , _", [Int, Float, Complex])
         self.assertEqual(len(l),3)
@@ -188,7 +188,7 @@ class SymbolTest(unittest.TestCase):
 
     def test_use_hash(self):
         self.assertRaises(KeyError, self.t.__setitem__, ("#foo"), 1)
-        
+
     def test_clash_with_secret_vars(self):
         self.assertRaises(KeyError, self.t.__setitem__, ("t__temp0"), 1)
 
@@ -207,7 +207,7 @@ class SymbolTest(unittest.TestCase):
         self.t["var_with_name"] = v
         self.assertEqual(self.t["var_with_name"].cname,"fish")
         self.assertEqual(self.t["cos"][0].cname,"cos")
-        
+
     def testZ(self):
         self.assertEqual(self.t["z"].type, Complex)
 
@@ -227,7 +227,7 @@ class SymbolTest(unittest.TestCase):
     def testFirst(self):
         self.assertEqual(self.t["z"].first(),self.t["z"])
         self.assertTrue(isinstance(self.t["@fn1"].first(), function.Func))
-        
+
     def testReset(self):
         self.t["fish"] = Var(Int, 1, 1)
         self.t.reset()
@@ -239,7 +239,7 @@ class SymbolTest(unittest.TestCase):
         self.assertEqual(1, self.t["x"].value)
         x.value = 20
         self.assertEqual(20, self.t["x"].value)
-                
+
     def testAvailable(self):
         fnames = self.t.available_param_functions(Complex,[Complex])
         self.assertEqual(fnames.count("ident"),1)
@@ -257,7 +257,7 @@ class SymbolTest(unittest.TestCase):
         exp_cnames = ['mergenormal']
         for exp in exp_cnames:
             self.assertEqual(cnames.count(exp),1,exp)
-        
+
     def testAllSymbolsWork(self):
         for (name,val) in list(self.t.default_dict.items()):
             try:
@@ -280,7 +280,7 @@ class SymbolTest(unittest.TestCase):
                              isinstance(realvar, fsymbol.OverloadList), True)
         else:
             self.fail("weird variable")
-        
+
     def assertIsValidFunc(self,val):
         specialFuncs = [ "noteq", "eq" ]
         self.assertTrue(isinstance(val.genFunc, collections.abc.Callable) or

@@ -5,9 +5,10 @@ from pathlib import Path
 import time
 import pickle
 
-from fract4d import testbase, fractconfig
+from fract4d import fractconfig
+from fract4d.tests import testbase
 
-from . import cache
+from fract4d_compiler import cache
 
 
 class Test(testbase.TestSetup):
@@ -25,7 +26,7 @@ class Test(testbase.TestSetup):
         self.assertEqual(self.cache_dir,c.dir)
 
         self.assertEqual(False,os.path.exists(self.cache_dir))
-        
+
         c.init()
         self.assertTrue(os.path.isdir(self.cache_dir))
 
@@ -54,7 +55,7 @@ class Test(testbase.TestSetup):
         with open(file1_name,"w") as f:
             f.write("fish")
         self.readall_called = False
-        
+
         contents = c.getcontents(file1_name, self.readall)
         self.assertEqual("fish",contents)
         self.assertTrue(self.readall_called, "Should have called readall")
@@ -71,19 +72,19 @@ class Test(testbase.TestSetup):
         file1_name = os.path.join(self.tmpdir.name, "file1.txt")
         with open(file1_name,"w") as f:
             f.write("fish")
-        
+
         self.readall_called = False
-        
+
         contents = c.getcontents(file1_name, self.readall)
         self.assertEqual("fish",contents)
         self.assertTrue(self.readall_called, "Should have called readall")
 
         self.readall_called = False
         time.sleep(1.0) # ensure filesystem will have a different time
-        
+
         with open(file1_name,"w") as f:
             f.write("wibble")
-        
+
         contents = c.getcontents(file1_name, self.readall)
         self.assertEqual("wibble",contents)
         self.assertTrue(
@@ -95,7 +96,7 @@ class Test(testbase.TestSetup):
         file1_name = os.path.join(self.tmpdir.name, "file1.txt")
         with open(file1_name,"w") as f:
             f.write("fish")
-        
+
         contents = c.getcontents(file1_name, self.readall)
         pkl_name = os.path.join(self.cache_dir, "0de8fb66544e4ae95935a50ab783fdba.pkl")
         self.assertEqual(

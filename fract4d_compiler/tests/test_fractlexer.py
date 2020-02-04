@@ -2,16 +2,16 @@
 
 import unittest
 
-from . import fractlexer, preprocessor
+from fract4d_compiler import fractlexer, preprocessor
 
 class Test(unittest.TestCase):
     def setUp(self):
         self.lexer = fractlexer.lexer
         self.lexer.lineno = 1
-        
+
     # utility function - open file f, lex it, and return a list of
     # all the tokens therein
-    
+
     def tokensFromFile(self, f):
         data = open(f,"r").read()
         return self.tokensFromString(data)
@@ -45,7 +45,7 @@ gradient:
         self.assertEqual(tokens[2].type, "SECT_PARMS")
 
         self.assertEqual(tokens[9].type, "CONST")
-        
+
     def testEmpty(self):
         self.assertEqual(self.tokensFromString(""),[])
 
@@ -59,7 +59,7 @@ init:
 loop:
    if @soort ==  0
       z = z^@power/@een(#pixel)
-   endif  
+   endif
 bailout:
    |z|>@bailout
 default:
@@ -99,7 +99,7 @@ default:
         tokens = self.tokensFromString("@_bailout_part _314159 #__ hello f_i7")
         for t in tokens:
             self.assertTrue(t.type == "ID")
-        
+
     def testCommentFormula(self):
         tokens = self.tokensFromString('''
 ;Comment {

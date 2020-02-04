@@ -7,11 +7,11 @@ import re
 import subprocess
 import tempfile
 
-from fract4d import testbase
+from fract4d.tests import testbase
 
-from . import (absyn, ir, fsymbol, codegen, translate, fractparser,
-                     fractlexer, optimize, instructions)
-from .fracttypes import *
+from fract4d_compiler import (absyn, ir, fsymbol, codegen, translate,
+                     fractparser, fractlexer, optimize, instructions)
+from fract4d_compiler.fracttypes import *
 
 g_exp = None
 g_x = None
@@ -31,7 +31,7 @@ int main()
         0.0, 0.0, 0.0, 0.0,
         4.0,
         0.0, 0.0, 0.0, 0.0, 0.0, 0.0} ;
-        
+
     struct s_param initparams[] = {
         { GRADIENT, 0, 0},
         { FLOAT, 0, 0.0},
@@ -48,32 +48,32 @@ int main()
     int solid=0;
     int fDirectUsed=0;
     double colors[4] = {0.0};
-    
+
     pf_obj *pf = pf_new();
     pf->vtbl->init(pf,pos_params,initparams,7);
-    
+
     pf->vtbl->calc(
          pf,
          pparams,
-         100, -1, 
+         100, -1,
          ((100)), ((1.0E-9)),
          0,0,0,
          &nItersDone, &nFate, &dist,&solid,&fDirectUsed, &colors[0]);
-    
+
     printf("(%d,%d,%g)\\n",nItersDone,nFate,dist);
     if(fDirectUsed)
     {
         printf("[%g,%g,%g,%g]\\n", colors[0], colors[1], colors[2], colors[3]);
     }
-    
+
     pparams[0] = 0.1; pparams[1] = 0.2;
     pparams[2] = 0.1; pparams[3] = 0.3;
     initparams[5].doubleval = 3.0; initparams[6].doubleval = 3.5;
-    
+
     pf->vtbl->calc(
         pf,
         pparams,
-        20, -1, 
+        20, -1,
         ((100)), ((1.0E-9)),
         0,0,0,
         &nItersDone, &nFate, &dist,&solid,&fDirectUsed, &colors[0]);
@@ -83,13 +83,13 @@ int main()
     {
         printf("[%g,%g,%g,%g]\\n", colors[0], colors[1], colors[2], colors[3]);
     }
-    
+
     pf->vtbl->kill(pf);
     return 0;
 }
 '''
 
-        
+
     def tearDown(self):
         pass
 
@@ -138,7 +138,7 @@ int main()
         #print t.pretty()
         self.assertNoErrors(t)
         return t
-        
+
     def sourceToAsm(self,s,section,options={}):
         t = self.translate(s,options)
         if options.get("trace") == 1:
@@ -167,13 +167,13 @@ int main()
         #include "image.cpp"
         #include "fract_stdlib.cpp"
         #include "pf.h"
-        
+
         typedef struct {
             struct s_param *p;
             double pos_params[N_PARAMS];
             arena_t arena;
         } pf_fake;
-        
+
         int main(){
         struct s_param params[20];
         int i = 0;
@@ -188,7 +188,7 @@ int main()
         rgba_t blue;
         blue.r = 0; blue.g = 0; blue.b = 255;
         im->put(0,0,blue);
-        
+
         for(i = 0; i < 20; ++i) {
             params[i].t = FLOAT;
             params[i].intval = 773;
@@ -199,7 +199,7 @@ int main()
 
         pf_fake t__f;
         pf_fake *t__p_stub = &t__f;
-        
+
         for(i = 0; i < N_PARAMS; ++i) {
            t__f.pos_params[i] = 0.0;
         }
@@ -266,11 +266,11 @@ int main()
         v = Var(
             Complex,[-1.0,3.7])
         v.cname = "wibble"
-        
+
         (d_re, d_im) = self.codegen.decl_from_sym(v)
         self.assertEqual("double wibble_re;", d_re.assem)
         self.assertEqual("double wibble_im;", d_im.assem)
-        
+
         v.param_slot = 4
         (a_re, a_im) = self.codegen.return_sym(v)
 
@@ -287,7 +287,7 @@ int main()
         self.assertEqual(1, len(self.codegen.out))
         move = self.codegen.out[0]
         #print move.format()
-        
+
     def testPFHeader(self):
         'Check inline copy of pf.h is up-to-date'
         pfh = open('fract4d/c/pf.h')
@@ -311,7 +311,7 @@ int main()
 
         tree = self.const()
         self.assertMatchResult(tree,template,0)
-        
+
         tree = self.binop([self.const(), self.var()])
         self.assertMatchResult(tree, template,0)
 
@@ -330,8 +330,8 @@ BINOP(*,[Float(3.00000000000000000),Temp(a_re)],[Temp(t__2)])
 BINOP(*,[Float(1.00000000000000000),Temp(a_im)],[Temp(t__3)])
 BINOP(-,[Temp(t__0),Temp(t__1)],[Temp(t__4)])
 BINOP(+,[Temp(t__2),Temp(t__3)],[Temp(t__5)])""")
-         
-        
+
+
     def testWhichMatch(self):
         'check we get the right tree match'
         tree = self.binop([self.const(),self.const()])
@@ -356,7 +356,7 @@ BINOP(+,[Temp(t__2),Temp(t__3)],[Temp(t__5)])""")
         self.assertEqual(isinstance(x,codegen.ComplexArg),1)
         self.assertEqual(x.re.value,"b_re")
         self.assertEqual(x.im.format(),"b_im")
-        
+
         tree = self.binop([self.const(),self.var()])
         x = self.codegen.generate_code(tree)
         self.assertEqual(isinstance(x,codegen.TempArg),1,x)
@@ -377,7 +377,7 @@ BINOP(+,[Temp(t__2),Temp(t__3)],[Temp(t__5)])""")
         self.assertEqual(x.parts[1].value,"h_i")
         self.assertEqual(x.parts[2].value,"h_j")
         self.assertEqual(x.parts[3].value,"h_k")
-        
+
     def testComplexAdd(self):
         'simple complex arithmetic'
         # (1,3) + a
@@ -392,7 +392,7 @@ BINOP(+,[Temp(t__2),Temp(t__3)],[Temp(t__5)])""")
         self.assertOutputMatch(expAdd)
 
     def testComplexAdd2(self):
-        # a + (1,3) 
+        # a + (1,3)
         tree = self.binop([self.var("a",Complex),self.const([1,3],Complex)],"+",Complex)
         self.codegen.generate_code(tree)
         self.assertEqual(len(self.codegen.out),2)
@@ -431,7 +431,7 @@ t__2 = 3.00000000000000000 * a_re;
 t__3 = 1.00000000000000000 * a_im;
 t__4 = t__0 - t__1;
 t__5 = t__2 + t__3;'''
-        
+
         self.assertOutputMatch(exp)
 
     def testComplexMul2(self):
@@ -480,7 +480,7 @@ t__2 = t__0 && t__1;''')
     def testCompareComplexInequality(self):
         tree = self.binop(
             [self.const([1,3],Complex),self.var("a",Complex)],"!=",Complex)
-        
+
         self.codegen.generate_code(tree)
         self.assertOutputMatch('''t__0 = 1.00000000000000000 != a_re;
 t__1 = 3.00000000000000000 != a_im;
@@ -513,7 +513,7 @@ t__f2 = 0.0;
 fa_re = t__f1;
 fa_im = t__f2;
 goto t__end_finit;''')
-    
+
     def testNewSymbol(self):
         'test symbols used are declared correctly'
         self.codegen.symbols["q"] = Var(Complex)
@@ -534,7 +534,7 @@ goto t__end_finit;''')
         out = self.codegen.output_local_vars(self.codegen, {})
         l = [x for x in out if x.assem == "double t__0 = 0.00000000000000000;"]
         self.assertTrue(len(l)==1)
-        
+
     def testBailoutVars(self):
         t = self.translate('''t{
         init:
@@ -582,9 +582,9 @@ goto t__end_finit;''')
         #print [x.pretty() for x in t.canon_sections["bailout"]]
         #print [x.format() for x in t.output_sections["bailout"]]
         self.assertEqual('f__bailout', self.codegen.get_bailout_var(t))
-        
+
     def testNoZ(self):
-        'test a formula which doesn\'t use Z' 
+        'test a formula which doesn\'t use Z'
         src = '''t_mandel{
 init:
 x = #zwpixel
@@ -596,7 +596,7 @@ bailout:
         t = self.translate(src)
         self.codegen.output_all(t)
         self.codegen.output_decls(t)
-        
+
         inserts = {
             "loop_inserts":"printf(\"(%g,%g)\\n\",fx_re,fx_im);",
             "main_inserts": self.main_stub
@@ -605,13 +605,13 @@ bailout:
         #print c_code
         output = self.compileAndRun(c_code)
         lines = output.split("\n")
-        # 1st point we try should bail out 
+        # 1st point we try should bail out
         self.assertEqual(lines[0:3],["(1.5,0)","(3.75,0)", "(1,0,0)"],output)
 
         # 2nd point doesn't
         self.assertEqual(lines[3],"(0.02,0.26)",output)
         self.assertEqual(lines[-1],"(20,32,0)",output)
-        self.assertEqual(lines[-2],lines[-3],output)        
+        self.assertEqual(lines[-2],lines[-3],output)
 
     def testBirch(self):
         'Test whether a UF formula which used to be problematic works'
@@ -621,7 +621,7 @@ bailout:
 init:
   z=fn1(fn2((#pixel^@power)))
 loop:
-  
+
 bailout:
   @inside
 default:
@@ -687,7 +687,7 @@ default:
 
     def testFnPartsWorks(self):
         src = '''FnParts {
-; A generalization of Burning Ship - apply separate functions to the 
+; A generalization of Burning Ship - apply separate functions to the
 ; X and Y parts of Z, then another to Z itself
 init:
 	z = #zwpixel
@@ -732,8 +732,8 @@ init:
 loop:
   z = @p1*c^@exp*z+@p3*z
   c = c*@p2
-    
-bailout:  
+
+bailout:
   |z| <= @bailout
 default:
   title = "Ball"
@@ -767,7 +767,7 @@ param p3
 
 param bailout
     caption = "Bailout value"
-    default = 4000000.0    
+    default = 4000000.0
   endparam
 func fn1
   caption = "Function 1"
@@ -804,7 +804,7 @@ func fn1
 
         self.assertEqual(-1,tcf1.symbols["d"].param_slot)
         self.assertEqual(-1,tcf1.symbols["z"].param_slot)
-        
+
         t = self.translate('''
         mandel {
         loop:
@@ -815,18 +815,18 @@ func fn1
 
         cg = codegen.T(t.symbols)
         cg.output_all(t)
-        
+
         t.merge(tcf0,"cf0_")
         t.merge(tcf1,"cf1_")
 
         self.assertEqual(-1,t.symbols["cf1d"].param_slot)
-        
+
         cg.output_decls(t)
 
         inserts = {
             "main_inserts": self.main_stub
             }
-        
+
         c_code = self.codegen.output_c(t,inserts)
 
         #print c_code
@@ -862,7 +862,7 @@ func fn1
 
         cg = codegen.T(t.symbols)
         cg.output_all(t)
-        
+
         t.merge(tcf0,"cf0_")
         t.merge(tcf1,"cf1_")
 
@@ -870,9 +870,9 @@ func fn1
 
         inserts = {
             "main_inserts": self.main_stub,
-            "return_inserts": "printf(\"%d\\n\",t__h_solid);" 
+            "return_inserts": "printf(\"%d\\n\",t__h_solid);"
             }
-        
+
         c_code = self.codegen.output_c(t,inserts)
         output = self.compileAndRun(c_code)
         outlines = output.split("\n")
@@ -922,7 +922,7 @@ func fn1
         self.assertEqual(True, "int t__f0;" in struct_string)
         self.assertEqual(True, "double fxx_re;" in struct_string)
         self.assertEqual(True, "double fxx_im;" in struct_string)
-        
+
     def testInside(self):
         'test that #inside works correctly'
         t = self.translate('''
@@ -938,19 +938,19 @@ func fn1
         cg = codegen.T(t.symbols)
         cg.output_all(t)
         cg.output_decls(t)
-        
+
         inserts = {
             "main_inserts": self.main_stub,
-            "return_inserts": "printf(\"%d\\n\",t__h_inside);" 
+            "return_inserts": "printf(\"%d\\n\",t__h_inside);"
             }
-        
+
         c_code = self.codegen.output_c(t,inserts)
         output = self.compileAndRun(c_code)
         outlines = output.split("\n")
         self.assertEqual(outlines[0],"1")
         self.assertEqual(outlines[2],"0")
-        
-        
+
+
     def testFateCF(self):
         'test that #fate works correctly'
         tcf0 = self.translatecf('''
@@ -983,7 +983,7 @@ func fn1
 
         cg = codegen.T(t.symbols)
         cg.output_all(t)
-        
+
         t.merge(tcf0,"cf0_")
         t.merge(tcf1,"cf1_")
 
@@ -991,9 +991,9 @@ func fn1
 
         inserts = {
             "main_inserts": self.main_stub,
-            "return_inserts": "printf(\"%d\\n\",t__h_fate);" 
+            "return_inserts": "printf(\"%d\\n\",t__h_fate);"
             }
-        
+
         c_code = self.codegen.output_c(t,inserts)
         output = self.compileAndRun(c_code)
         outlines = output.split("\n")
@@ -1013,7 +1013,7 @@ func fn1
         }''',"cf0")
         cg_cf0 = codegen.T(tcf0.symbols)
         self.assertEqual(cg_cf0.is_direct(),True)
-        
+
         cg_cf0.output_all(tcf0)
 
         tcf1 = self.translatecf('x {\n #solid = true\n}', "cf1")
@@ -1030,26 +1030,26 @@ func fn1
 
         cg = codegen.T(t.symbols)
         cg.output_all(t)
-        
+
         t.merge(tcf0,"cf0_")
         t.merge(tcf1,"cf1_")
 
         self.assertEqual(cg.is_direct(),True)
-        
+
         cg.output_decls(t)
 
         inserts = {
             "main_inserts": self.main_stub,
-            "return_inserts": "printf(\"%d\\n\",t__h_solid);" 
+            "return_inserts": "printf(\"%d\\n\",t__h_solid);"
             }
-        
+
         c_code = self.codegen.output_c(t,inserts)
         output = self.compileAndRun(c_code)
         outlines = output.split("\n")
         self.assertEqual(len(outlines),6)
         self.assertEqual(outlines[2],'[14.0625,0,2.25,1]')
         self.assertEqual(outlines[5],'[0,0,0,0]')
-        
+
     def testCColor(self):
         'test color arithmetic'
         src = '''t_color{
@@ -1101,7 +1101,7 @@ init:
 loop:
   z=k*((a*(z^b))+(d*(z^f)))+c
 bailout:
-  |z| < l 
+  |z| < l
 default:
 complex param p1
 endparam
@@ -1112,7 +1112,7 @@ endparam
 }
 '''
         exp = "g = -0.666667\nh = 1\nj = (-0.333333,0)\nabgh = -1\nz2 = (0.5,-0.866025)\nz3 = (0,2)"
-        
+
         self.assertCSays(
             src,"init",
             self.inspect_float("g") +
@@ -1140,10 +1140,10 @@ endparam
             "fy_im = 3\n"+
             "fi = 4",
             {"trace":1})
-        
+
     def testRandom(self):
         src = '''t {
-        init:        
+        init:
         x = rand
         y = #rand
         }'''
@@ -1167,7 +1167,7 @@ endparam
                     # we generated the same number twice. Highly suspicious
                     self.fail("All numbers should differ in %s" % output)
                 numbers[part] = 1
-        
+
     def testColorParts(self):
         # access to parts
         src = '''t_color3 {
@@ -1201,7 +1201,7 @@ endparam
 
         color r = rgb(1.0,0.0,0.0)
         color gp5 = rgba(0.0,1.0,0.0,0.5)
-        
+
         color c1 = compose(r, gp5,0)
         color c2 = compose(r, gp5,0.5)
         color c3 = compose(r, gp5,1)
@@ -1243,7 +1243,7 @@ endparam
                          "transyellow = (0.6,0.6,0,0.5)\n"+
                          "h = 4\ns = 1\nl = 0.5"
                          )
-        
+
     def testMergeFunctions(self):
         # color merging functions
         funcs = [
@@ -1263,7 +1263,7 @@ endparam
         init:
         color r = rgb(1.0,0.0,0.0)
         color gp5 = rgba(0.0,1.0,0.0,0.5)
-        
+
         %s
         }''' % "\n".join(srcs)
 
@@ -1305,7 +1305,7 @@ endparam
             "init",
             self.inspect_color("imcolor"),
             "imcolor = (0,0,1,1)")
-        
+
     def testCHyper(self):
         'test arithmetic in hypercomplex numbers'
 
@@ -1363,7 +1363,7 @@ endparam
                          "negx = (-1,-2,3,-4)\n" +
                          "negx2 = (-1,-2,3,-4)"
                          )
-        
+
         # access to parts
         src = '''t_hyper3 {
         init:
@@ -1393,7 +1393,7 @@ endparam
                          "y = (3,4,1,2)")
 
     def testHyperFuncs(self):
-        'test calling an example hypercomplex function' 
+        'test calling an example hypercomplex function'
         src = '''t_hyperfunc {
         init:
         hyper s = sin((1,2,3,4))
@@ -1428,7 +1428,7 @@ endparam
                          "h = (1,2,3,4)\n" +
                          "h2 = (1,2,3,4)\n" +
                          "c2 = (0,1,1,0)")
-        
+
     def testMultipleDeclare(self):
         'Declare a var in both branches of an if. Check for correct answer'
 
@@ -1452,14 +1452,14 @@ endparam
                          self.inspect_int("c"),
                          "b = 2\nc = 2")
 
-        
+
     def testC(self):
         '''basic end-to-end testing. Compile a code fragment + instrumentation,
         run it and check output'''
-        
+
         src = 't_c1 {\nloop: int a = 1\nz = z + a\n}'
         self.assertCSays(src,"loop","printf(\"%g,%g\\n\",z_re,z_im);","1,0")
-        
+
         src = '''t_c2{\ninit:int a = 1 + 3 * 7 + 4 % 2\n}'''
         self.assertCSays(src,"init","printf(\"%d\\n\",fa);","22")
 
@@ -1532,7 +1532,7 @@ endparam
         float f_from_bt = temp
         temp = f0
         float f_from_bf = temp
-        
+
         }'''
 
         tests = "".join([
@@ -1546,7 +1546,7 @@ endparam
             self.inspect_float("f_from_bt"),
             self.inspect_float("f_from_bf"),
             ])
-        
+
         results = "\n".join([
             "t = 1",
             "f = 0",
@@ -1575,12 +1575,12 @@ endparam
         move_insn = asm[1]
         self.assertTrue(isinstance(move_insn, instructions.Move))
         self.assertEqual(0.0, move_insn.source()[0][0].value)
-        
+
     def testEnum(self):
         'Test we can correctly generate code for enumerated params'
         src = '''t_c7{
         init:
-        bool b = @y != "bar"        
+        bool b = @y != "bar"
         bool b2 = @zp == "bar"
         int zval = @zp
         default:
@@ -1598,7 +1598,7 @@ endparam
             self.inspect_bool("b2"),
             self.inspect_int("zval"),
             ])
-        
+
         results = "\n".join([
             "b = 1",
             "b2 = 0",
@@ -1623,7 +1623,7 @@ endparam
 
         check = self.inspect_complex("x") + self.inspect_complex("y")
         postamble = "t__end_f%s:\n%s\n" % ("init",check)
-        c_code = self.makeC("", postamble)        
+        c_code = self.makeC("", postamble)
         output = self.compileAndRun(c_code)
         self.assertEqual(output,"x = (0,0)\ny = (5,-1)")
 
@@ -1636,14 +1636,14 @@ endparam
 
         check = self.inspect_complex("x") + self.inspect_complex("y")
         postamble = "t__end_f%s:\n%s\n" % ("init",check)
-        c_code = self.makeC("", postamble)        
+        c_code = self.makeC("", postamble)
         output = self.compileAndRun(c_code)
         self.assertEqual(output,"x = (0,0)\ny = (7,1)")
 
     def testFormulas(self):
         '''these formulas caused an error at one point in development
         so have been added to regression suite'''
-        
+
         t = self.translate('''andy03 {
         z = c = pixel/4:
         z = p1*z + c
@@ -1655,7 +1655,7 @@ endparam
         self.assertNoErrors(t)
 
         # compiler error
-        
+
         t = self.translate('''
 TileMandel {; Terren Suydam (terren@io.com), 1996
             ; modified by Sylvie Gallet [101324,3444]
@@ -1683,7 +1683,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
 }
 ''')
         self.assertNoErrors(t)
-        
+
 
     def testUseBeforeAssign(self):
         src = 't_uba0{\ninit: z = z - x\n}'
@@ -1713,7 +1713,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
 
     def inspect_colors(self,namelist):
         return "".join([self.inspect_color(x) for x in namelist])
-    
+
     def predict(self,f,arg1=0,arg2=1):
         # compare our compiler results to Python stdlib
         try:
@@ -1724,26 +1724,26 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
             y = "%.6g" % f(arg2)
         except ZeroDivisionError:
             y = "inf"
-        
+
         return "(%s,%s)" % (x,y)
 
     def cpredict(self,f,arg=(1+0j)):
         try:
             z = f(arg)
-            return "(%.6g,%.6g)" % (z.real,z.imag) 
+            return "(%.6g,%.6g)" % (z.real,z.imag)
         except OverflowError:
             return "(inf,inf)"
         except ZeroDivisionError:
             return "(nan,nan)"
         except ValueError:
             return "(inf,inf)"
-    
+
     def make_test(self,myfunc,pyfunc,val,n):
         codefrag = "ct_%s%d = %s((%d,%d))" % (myfunc, n, myfunc, val.real, val.imag)
         lookat = "ct_%s%d" % (myfunc, n)
         result = self.cpredict(pyfunc,val)
         return [ codefrag, lookat, result]
-        
+
     def manufacture_tests(self,myfunc,pyfunc):
         vals = [ 0+0j, 0+1j, 1+0j, 1+1j, 3+2j, 1-0j, 0-1j, -3+2j, -2-2j, -1+0j ]
         return [self.make_test(myfunc,pyfunc,x_y[0],x_y[1]) for x_y in zip(vals,list(range(1,len(vals))))]
@@ -1760,7 +1760,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         # CONSIDER: comes out as -0,1.31304 in python, but +0 in C++ and gf4d
         # think Python's probably in error, but not 100% sure
         tests[6][2] = "(0,1.31304)"
-        
+
         return tests
 
     def cotanhtests(self):
@@ -1770,28 +1770,28 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         tests = self.manufacture_tests("cotanh",mycotanh)
 
         #print tests
-        
+
         # CONSIDER: Python 2.7 thinks this cotanh(0) is -nan,-nan, older versions think (nan,nan)
         tests[0][2] = "(nan,nan)"
 
         return tests
-        
+
     def logtests(self):
         tests = self.manufacture_tests("log",cmath.log)
-                    
+
         tests[0][2] = "(-inf,0)" # log(0+0j) is overflow in python
         return tests
 
     def asintests(self):
         tests = self.manufacture_tests("asin",cmath.asin)
         # asin(x+0j) = (?,-0) in python, which is wrong
-        tests[0][2] = "(0,0)" 
+        tests[0][2] = "(0,0)"
         tests[2][2] = tests[5][2] = "(1.5708,0)"
 
         return tests
 
     def acostests(self):
-        # work around buggy python acos 
+        # work around buggy python acos
         tests = self.manufacture_tests("acos",cmath.acos)
         tests[0][2] = "(1.5708,0)"
         tests[2][2] = tests[5][2] = "(0,0)"
@@ -1833,16 +1833,16 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
             "black = (0,0,0,1)",
             "something = (0.4,0.7,0.3,0.9)"])
         self.assertCSays(src,"init",check,exp)
-        
+
     def test_stdlib(self):
         '''This is the slowest test, due to how much compilation it does.
         Calls standard functions with a variety
         of values, checking that they produce the right answers'''
-        
+
         # additions to python math stdlib
         def myfcotan(x):
             return math.cos(x)/math.sin(x)
-        
+
         def myfcotanh(x):
             return math.cosh(x)/math.sinh(x)
 
@@ -1867,7 +1867,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         def mycceil(z):
             x = complex(math.ceil(z.real),math.ceil(z.imag))
             return x
-        
+
         def mycosxx(z):
             # python 2.6's cmath cos produces opposite sign from 2.5 &
             # my implementation. odd but hopefully harmless
@@ -1876,15 +1876,15 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
 
             cosz = cmath.cos(z)
             i = -cosz.imag
-            
+
             return complex(cosz.real, i)
-        
+
         def myczero(z):
             return complex(0,0)
-        
+
         tests = [
             # code to run, var to inspect, result
-            [ "fm = (3.0 % 2.0, 3.1 % 1.5)","fm","(1,0.1)"], 
+            [ "fm = (3.0 % 2.0, 3.1 % 1.5)","fm","(1,0.1)"],
             [ "cj = conj(y)", "cj", "(1,-2)"],
             [ "fl = flip(y)", "fl", "(2,1)"],
             [ "ri = (imag(y),real(y))","ri", "(2,1)"],
@@ -1929,7 +1929,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
             [ "fzero = (zero(77),zero(-41.2))", "fzero", "(0,0)"],
             [ "fmin = (min(-2,-3), min(2,3))", "fmin", "(-3,2)"],
             [ "fmax = (max(-2,-3), max(2,3))", "fmax", "(-2,3)"],
-            
+
             # trig functions
             [ "t_sin = (sin(0),sin(1))","t_sin", self.predict(math.sin)],
             [ "t_cos = (cos(0),cos(1))","t_cos", self.predict(math.cos)],
@@ -1940,7 +1940,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
             [ "t_tanh = (tanh(0),tanh(1))","t_tanh", self.predict(math.tanh)],
             [ "t_cotanh = (cotanh(0),cotanh(1))","t_cotanh",
               self.predict(myfcotanh)],
-              
+
             # inverse trig functions
             [ "t_asin = (asin(0),asin(1))","t_asin", self.predict(math.asin)],
             [ "t_acos = (acos(0),acos(1))","t_acos", self.predict(math.acos)],
@@ -1969,7 +1969,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         tests += self.cotantests()
         tests += self.cotanhtests()
         tests += self.logtests()
-        
+
         tests += self.asintests()
         tests += self.acostests()
         tests += self.atantests()
@@ -1991,7 +1991,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         global g_exp,g_x
         if g_exp == None:
             return
-        x = g_x or "(1,0)"        
+        x = g_x or "(1,0)"
         src = 't_test {\ninit:\nx = %s\nresult = %s\n}' % (x,g_exp)
         asm = self.sourceToAsm(src,"init",{})
         postamble = "t__end_finit:\nprintf(\"(%g,%g)\\n\",fresult_re,fresult_im);"
@@ -2014,7 +2014,7 @@ bailout:
         t = self.translate(src)
         self.codegen.output_all(t)
         self.codegen.output_decls(t)
-        
+
         inserts = {
             "done_inserts": 'printf(\"%g\\n\",fk);',
             "main_inserts": self.main_stub.replace("((100))", "0")
@@ -2042,7 +2042,7 @@ bailout:
         t = self.translate(src)
         self.codegen.output_all(t)
         self.codegen.output_decls(t)
-        
+
         inserts = {
             "done_inserts": 'printf(\"%g\\n\",fk);',
             "main_inserts": self.main_stub.replace("((100))", "0").replace("((1.0E-9))", "0.001")
@@ -2075,7 +2075,7 @@ bailout:
         t = self.translate(src)
         self.codegen.output_all(t)
         self.codegen.output_decls(t)
-        
+
         inserts = {
             "loop_inserts":"printf(\"(%g,%g)\\n\",z_re,z_im);",
             "main_inserts": self.main_stub
@@ -2084,7 +2084,7 @@ bailout:
         #print c_code
         output = self.compileAndRun(c_code)
         lines = output.split("\n")
-        # 1st point we try should bail out 
+        # 1st point we try should bail out
         self.assertEqual(lines[0:3],["(1.5,0)","(3.75,0)", "(1,0,0)"],output)
 
         # 2nd point doesn't
@@ -2094,7 +2094,7 @@ bailout:
         # last 2 points should be within #tolerance of each other
         p1 = self.complexFromLine(lines[-2])
         p2 = self.complexFromLine(lines[-3])
-        
+
         diff = max(math.fabs(p1.real - p2.real),math.fabs(p1.imag - p2.imag))
         self.assertTrue(diff < 0.001)
 
@@ -2113,7 +2113,7 @@ bailout:
         c_code = self.codegen.output_c(t,inserts)
         output2 = self.compileAndRun(c_code)
         lines2 = output2.split("\n")
-        # 1st point we try should bail out 
+        # 1st point we try should bail out
         self.assertEqual(lines, lines2, output2)
 
         # and again with ^2
@@ -2131,7 +2131,7 @@ bailout:
         c_code = self.codegen.output_c(t,inserts)
         output3 = self.compileAndRun(c_code)
         lines3 = output2.split("\n")
-        # 1st point we try should bail out 
+        # 1st point we try should bail out
         self.assertEqual(lines, lines3, output3)
 
     def testFinal(self):
@@ -2149,7 +2149,7 @@ float t = #tolerance
         t = self.translate(src)
         self.codegen.output_all(t)
         self.codegen.output_decls(t)
-        
+
         inserts = {
             "main_inserts": self.main_stub,
             "done_inserts": "printf(\"(%g,%g,%g)\\n\",z_re,z_im,ft);",
@@ -2165,7 +2165,7 @@ float t = #tolerance
     def testDumpParams(self):
         cg = codegen.T(fsymbol.T(),{ "trace" : True})
         self.assertEqual(cg.generate_trace, True)
-        
+
     def testLibrary(self):
         # create a library containing the compiled code
         src = '''
@@ -2185,7 +2185,7 @@ Newton4(XYAXIS) {; Mark Peterson
         self.compileSharedLib(c_code)
 
     def testReservedWords(self):
-        '''Check that user vars don\'t clash with C reserved words''' 
+        '''Check that user vars don\'t clash with C reserved words'''
         src = '''t_foo {
         init:
         int for
@@ -2276,14 +2276,14 @@ Newton4(XYAXIS) {; Mark Peterson
 
         self.assertCSays(
             src, "init",
-            self.inspect_int("x"),            
+            self.inspect_int("x"),
             "x = -inf")
 
     # assertions
     def assertCSays(self,source,section,check,result,options={}):
         asm = self.sourceToAsm(source,section,options)
         postamble = "t__end_f%s:\n%s\n" % (section,check)
-        c_code = self.makeC("", postamble)        
+        c_code = self.makeC("", postamble)
         output = self.compileAndRun(c_code)
 
         #print c_code
@@ -2293,7 +2293,7 @@ Newton4(XYAXIS) {; Mark Peterson
                 self.assertEqual(exp,res)
         else:
             self.assertEqual(output,result)
-        
+
     def assertOutputMatch(self,exp):
         str_output = "\n".join([x.format() for x in self.codegen.out])
         self.assertEqual(str_output,exp)

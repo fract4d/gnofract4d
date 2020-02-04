@@ -4,8 +4,8 @@
 
 import unittest
 
-from .instructions import *
-from . import optimize
+from fract4d_compiler.instructions import *
+from fract4d_compiler import optimize
 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -13,7 +13,7 @@ class Test(unittest.TestCase):
         self.a = TempArg("a",Float)
         self.b = TempArg("b",Float)
         self.c = TempArg("c",Float)
-        
+
     def tearDown(self):
         pass
 
@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
                 self.assertTreesEqual(s1,s2)
             for (d1,d2) in zip(t1.dest(), t2.dest()):
                 self.assertTreesEqual(d1,d2)
-        
+
     def testPeephole(self):
         tests = [
             # can't be optimized
@@ -73,7 +73,7 @@ class Test(unittest.TestCase):
              Move([ConstFloatArg(0.0)], [TempArg("c",Float)])),
             (Binop("*", [ TempArg("a",Float), ConstFloatArg(0.0)], [TempArg("c",Float)]),
              Move([ConstFloatArg(0.0)], [TempArg("c",Float)]))
-            
+
             ]
 
         (allin, allexp) = ([],[])
@@ -83,7 +83,7 @@ class Test(unittest.TestCase):
                 expected = input
             allexp.append(expected)
             out = self.o.peephole_binop(input)
-            try:                
+            try:
                 self.assertTreesEqual(out, expected)
             except Exception as exn:
                 print("Error comparing trees %s, %s" % (out,expected))

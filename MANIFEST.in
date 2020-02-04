@@ -29,10 +29,10 @@ include formulas/gf4d.uxf
 include formulas/standard.ucl
 include formulas/tutorial.frm
 include formulas/sterling2.frm
+include formulas/test.cfrm
+include formulas/test.frm
+include formulas/test_bad_pp.frm
 include fract4d/c/*.h
-include fract4d/test.cfrm
-include fract4d/test.frm
-include fract4d/test_bad_pp.frm
 include fract4dgui/ui.xml
 include gnofract4d
 include gnofract4d-mime.xml

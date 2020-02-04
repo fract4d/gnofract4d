@@ -8,7 +8,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib
 
-from . import hig
+from fract4dgui import hig
 
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
@@ -23,7 +23,7 @@ class MockDialog(Gtk.MessageDialog,hig.MessagePopper):
             text="Title",
             transient_for=toplevel)
         hig.MessagePopper.__init__(self)
-        
+
 class Test(unittest.TestCase):
     def setUp(self):
         hig.timeout = 0
@@ -33,7 +33,7 @@ class Test(unittest.TestCase):
 
     def wait(self):
         Gtk.main()
-        
+
     def quitloop(self,f,status):
         if status == 0:
             Gtk.main_quit()
@@ -51,7 +51,7 @@ class Test(unittest.TestCase):
             secondary="A terrible thing has happened")
 
         self.runAndDismiss(d)
-        
+
     def testInformation(self):
         d = hig.InformationAlert(
             transient_for=toplevel,
@@ -59,7 +59,7 @@ class Test(unittest.TestCase):
             secondary="This might be considered unsightly.")
 
         self.runAndDismiss(d)
-        
+
     def testError(self):
         d = hig.ErrorAlert(
             transient_for=toplevel,
@@ -67,7 +67,7 @@ class Test(unittest.TestCase):
             secondary="Chaos will ensue.")
 
         self.runAndDismiss(d)
-        
+
         d = hig.ErrorAlert(
             transient_for=toplevel,
             primary="Could not destroy universe",
@@ -75,7 +75,7 @@ class Test(unittest.TestCase):
             fix_button="Try again")
 
         self.runAndDismiss(d)
-        
+
     def testConfirm(self):
         d = hig.ConfirmationAlert(
             transient_for=toplevel,
@@ -103,13 +103,13 @@ class Test(unittest.TestCase):
 
         d.run()
         d.destroy()
-        
+
     def testPeriodText(self):
         self.assertEqual(hig._periodText(86400 * 3.5), "3 days")
         self.assertEqual(hig._periodText(3600 * 17.2), "17 hours")
         self.assertEqual(hig._periodText(60 * 17), "17 minutes")
         self.assertEqual(hig._periodText(23), "23 seconds")
-        
+
     def testSaveConfirm(self):
         d = hig.SaveConfirmationAlert(
             transient_for=toplevel,

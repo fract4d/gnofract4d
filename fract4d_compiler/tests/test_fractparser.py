@@ -3,7 +3,7 @@
 import re
 import unittest
 
-from . import preprocessor, fractparser, fractlexer, absyn
+from fract4d_compiler import preprocessor, fractparser, fractlexer, absyn
 
 class ParserTest(unittest.TestCase):
     def setUp(self):
@@ -15,10 +15,10 @@ class ParserTest(unittest.TestCase):
         fractlexer.lexer.lineno = 1
         pp = preprocessor.T(s)
         return self.parser.parse(pp.out())
-    
+
     def tearDown(self):
         self.parser.restart()
-        
+
     def testEmpty(self):
         tree = self.parse("\n")
         self.assertTrue(absyn.CheckTree(tree))
@@ -47,7 +47,7 @@ class ParserTest(unittest.TestCase):
         err = formula.children[0]
         self.assertTrue(err.type == "error")
         self.assertNotEqual(re.search("^2:",err.leaf),None,
-                            "bad error message line number") 
+                            "bad error message line number")
 
     def testErrorBeforeAndInFormula(self):
         tree = self.parse("gibberish\nt1 {\n ~\n}\n")
@@ -58,7 +58,7 @@ class ParserTest(unittest.TestCase):
         err = formula.children[0]
         self.assertTrue(err.type == "error")
         self.assertNotEqual(re.search("^3:",err.leaf),None,
-                            "bad error message line number") 
+                            "bad error message line number")
 
     def testErrorAfterFormula(self):
         tree = self.parse("t1{\n}\ngibberish")
@@ -71,7 +71,7 @@ class ParserTest(unittest.TestCase):
     def testOneStm(self):
         t1 = self.parse("t1 {\nt=1\n}")
         self.assertIsValidParse(t1)
-        
+
     def testIfdef(self):
         self.assertParsesEqual('''
         $define foo
@@ -121,7 +121,7 @@ gradient:
 
         names = ["title", "smooth",
                  "index", "color",
-                 "index", "color",  
+                 "index", "color",
                  "index", "color"]
 
         vals = [ "cl1rorangemixed", False,
@@ -649,11 +649,11 @@ gradient:
 ''')
 
         self.assertIsValidParse(t1)
-                
+
     def testIfStatement(self):
         t1 = self.parse(self.makeMinimalFormula("if x==1\nx=2\nendif"))
         self.assertIsValidParse(t1)
-        
+
         t1 = self.parse(self.makeMinimalFormula('''
         if x==1
         x=2
@@ -661,7 +661,7 @@ gradient:
         x=3
         endif'''))
         self.assertIsValidParse(t1)
-        
+
         t1 = self.parse(self.makeMinimalFormula('''
         if x==1
         x=2
@@ -670,11 +670,11 @@ gradient:
         y=5
         endif'''))
         self.assertIsValidParse(t1)
-        
+
         t1 = self.parse(self.makeMinimalFormula('''
         if x == 2
         endif'''))
-        self.assertIsValidParse(t1)                        
+        self.assertIsValidParse(t1)
 
         t1 = self.parse(self.makeMinimalFormula('''
         if x == 2
@@ -689,7 +689,7 @@ gradient:
         else
         endif'''))
         #print t1.pretty()
-        self.assertIsValidParse(t1)                        
+        self.assertIsValidParse(t1)
 
         t1 = self.parse(self.makeMinimalFormula('''
         IF x==1
@@ -698,7 +698,7 @@ gradient:
         x=3
         Endif'''))
         self.assertIsValidParse(t1)
-        
+
     def testBadIfStatements(self):
         self.assertIsBadFormula(self.makeMinimalFormula("if = 7"),
                                 "unexpected assign '='", 3)
@@ -718,7 +718,7 @@ gradient:
         color c = color(0.0,1.0,1.0,0.0)
         '''))
         self.assertIsValidParse(t1)
-        
+
     def testDecls(self):
         t1 = self.parse(self.makeMinimalFormula(
         '''bool a
@@ -743,7 +743,7 @@ gradient:
         self.assertListTypesMatch(
             complex_decl,
             ["decl","binop","binop","const","binop","const","const","id"])
-            
+
     def testArrays(self):
         # arrays aren't supported yet - make sure errors are nice
         t1 = self.parse(self.makeMinimalFormula("float array[10]"))
@@ -756,7 +756,7 @@ gradient:
         self.assertEqual(1, indexes[0].leaf)
         self.assertEqual(3, len(indexes))
         self.assertIsValidParse(t1)
-        
+
     def testStrings(self):
         t1 = self.parse('''
         t1 {
@@ -795,7 +795,7 @@ gradient:
            x = 1
         elseif @y == "bar"
            x = 2
-        endif          
+        endif
         default:
         param y
         enum = "foo" "bar"
@@ -803,7 +803,7 @@ gradient:
         }
         ''')
         self.assertIsValidParse(t1)
-        
+
     def testFuncBlocks(self):
         t1 = self.parse('''
         t1 {
@@ -822,7 +822,7 @@ gradient:
         t1 {
         ''')
         self.assertTrue(absyn.CheckTree(t))
-        
+
     def testHeading(self):
         t1 = self.parse('''
         t1{
@@ -833,7 +833,7 @@ gradient:
         }
         ''')
         self.assertIsValidParse(t1)
-        
+
     def testRepeat(self):
         t1 = self.parse(self.makeMinimalFormula(
         '''repeat
@@ -853,7 +853,7 @@ gradient:
            '''))
         self.assertIsValidParse(t1)
         ns = [n for n in t1.children[0].children[0].children[0]]
-            
+
         self.assertListTypesMatch(
             [n for n in t1.children[0].children[0].children[0]],
             ["while", "binop", "const", "const",
@@ -861,7 +861,7 @@ gradient:
                  "assign", "id", "binop", "id", "const",
                  "while", "binop", "id", "id",
                  "stmlist",
-                     "assign", "id", "id"              
+                     "assign", "id", "id"
             ])
 
     # this comes from anon.ufm, which appears broken -UF doesn't
@@ -924,7 +924,7 @@ loop:
 ''')
         self.assertEqual(t1.children[0].leaf,"MySymmetricalFractal")
         self.assertEqual(t1.children[0].symmetry,"XAXIS")
-        
+
     def testSimpleMandelbrot(self):
         t1 = self.parse('''
 MyMandelbrot {
@@ -949,7 +949,7 @@ default:
         t1 = self.parse('''t1{\ndefault:\n
           param bailout,caption = "Bailout",default = 30,endparam}''')
         self.assertIsValidParse(t1)
-        
+
     def testParseErrors(self):
         self.assertIsBadFormula(self.makeMinimalFormula("2 + 3 +"),
                                  "unexpected newline",3)
@@ -967,11 +967,11 @@ default:
         src = '''TwoLogistic {; Peter Anders (anders@physik.hu-berlin.de)
   z=p1, c=pixel:
   r=rand
-  if r<0.5 
+  if r<0.5
   z=c*z*(1-z)
   if r>=0.5
   z=c*z*(z-1)
-  |fn1(z)|<real(p2) 
+  |fn1(z)|<real(p2)
   ;SOURCE: lambda.frm
 }
 '''
@@ -997,12 +997,12 @@ default:
         }'''
         t = self.parse(src)
         self.assertIsValidParse(t)
-        
+
     def assertListTypesMatch(self,nodes,types):
         self.assertEqual(len(nodes),len(types))
         for (n,t) in zip(nodes,types):
             self.assertEqual(n.type,t)
-        
+
     def assertIsBadFormula(self,s,message,line):
         t1 = self.parse(s)
         self.assertTrue(absyn.CheckTree(t1), "invalid tree created")
@@ -1014,20 +1014,20 @@ default:
         self.assertNotEqual(re.search(message,err.leaf),None,
                             ("bad error message text '%s'", err.leaf))
         self.assertNotEqual(re.search(("^%s:" % line),err.leaf),None,
-                            ("bad error message line number in '%s'", err.leaf)) 
-        
+                            ("bad error message line number in '%s'", err.leaf))
+
     def assertIsValidParse(self,t1):
         self.assertTrue(absyn.CheckTree(t1))
         errors = self.allNodesOfType(t1,"error")
         self.assertEqual(errors,[], [ str(e) for e in errors])
-        
+
     def assertParsesEqual(self, s1, s2):
         t1 = self.parse(self.makeMinimalFormula(s1))
         t2 = self.parse(self.makeMinimalFormula(s2))
         #print(t1.pretty())
         #print(t2.pretty())
         self.assertTreesEqual(t1,t2)
-        
+
     def assertTreesEqual(self, t1, t2):
         self.assertTrue(
             t1.DeepCmp(t2)==0,
@@ -1035,7 +1035,7 @@ default:
 
     def allNodesOfType(self, t1, type):
         return [ n for n in t1 if n.type == type]
-        
+
     # shorthand for minimal formula defn containing exp
     def makeMinimalFormula(self,exp):
         return '''t2 {

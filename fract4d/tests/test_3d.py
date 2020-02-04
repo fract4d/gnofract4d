@@ -5,7 +5,7 @@ import math
 from . import testbase
 
 from fract4d import fractal, fract4dc, image
-from fract4d.test_fractalsite import FractalSite
+from .fractalsite import FractalSite
 
 def sum(l):
     x = 0
@@ -40,7 +40,7 @@ class Test(testbase.ClassSetup):
 
         self.im = image.T(40,30)
         siteobj = FractalSite()
-        
+
         self.fw = fract4dc.fw_create(
             1,self.pfunc,self.cmap,self.im._img,self.f.site)
 
@@ -71,7 +71,7 @@ class Test(testbase.ClassSetup):
         # can be effectively ray-traced
         (iter,fate,dist,solid) = fract4dc.pf_calc(self.pfunc, [0.0, 0.0, 0.0, 0.0], 100)
         self.assertEqual(fate,32) # should be inside
-        
+
         (iter,fate,dist,solid) = fract4dc.pf_calc(self.pfunc, [-2.5, 0.0, 0.0, 0.0], 100)
         self.assertEqual(fate,0) # should be outside
 
@@ -103,7 +103,7 @@ class Test(testbase.ClassSetup):
 
         t1_ray = [t1 * a for a in look]
         intersection = [a+b for (a,b) in zip(eye,t1_ray)]
-        
+
         return (True, intersection)
 
     def testLookVector(self):
@@ -158,7 +158,7 @@ class Test(testbase.ClassSetup):
             site=self.f.site)
 
         #self.im.save("hs.tga")
-        
+
     def testDrawMBrot(self):
         self.f.set_formula("gf4d.frm", "Mandelbrot")
         self.f.compile()

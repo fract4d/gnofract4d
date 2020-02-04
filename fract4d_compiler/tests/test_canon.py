@@ -5,9 +5,9 @@
 import copy
 import pickle
 
-from fract4d import testbase
-from . import ir, absyn, canon, fsymbol
-from .fracttypes import *
+from fract4d.tests import testbase
+from fract4d_compiler import ir, absyn, canon, fsymbol
+from fract4d_compiler.fracttypes import *
 
 class CanonTest(testbase.TestBase):
     def setUp(self):
@@ -40,10 +40,10 @@ class CanonTest(testbase.TestBase):
 
     def testPickle(self):
         pickle.dumps(self.canon,True)
-        
+
     def testEmptyTree(self):
         self.assertEqual(self.canon.linearize(None),None)
-                                     
+
     def testBinop(self):
         # binop with no eseqs
         tree = self.binop([self.var(), self.const()])
@@ -118,17 +118,17 @@ class CanonTest(testbase.TestBase):
         tree = self.binop([tree, tree2])
         ltree = self.canon.linearize(tree)
         self.assertESeqsNotNested(ltree,1)
-        
+
     def testESeq(self):
         tree = self.eseq([self.var("a")], self.var("b"))
         ltree = self.canon.linearize(tree)
         self.assertTreesEqual("",tree,ltree)
         self.assertESeqsNotNested(ltree,1)
-        
+
         tree = self.eseq([self.eseq([self.var("a")], self.var("b"))], self.var("c"))
         ltree = self.canon.linearize(tree)
         self.assertESeqsNotNested(ltree,1)
-        
+
         tree2 = self.eseq([self.var("a")], self.eseq([self.var("b")], self.var("c")))
         ltree2 = self.canon.linearize(tree2)
         self.assertESeqsNotNested(ltree2,1)
@@ -143,12 +143,12 @@ class CanonTest(testbase.TestBase):
         tree = self.seq([self.seq([self.var("a"), self.var("b")]), self.var("c")])
         ltree = self.canon.linearize(tree)
         self.assertESeqsNotNested(ltree,1)
-        
+
         tree2 = self.seq([self.var("a"), self.seq([self.var("b"), self.var("c")])])
         ltree2 = self.canon.linearize(tree2)
         self.assertESeqsNotNested(ltree2,1)
         self.assertTreesEqual("",ltree, ltree2)
-        
+
     def testCJump(self):
         tree = self.cjump(self.var(), self.var())
         ltree = self.canon.linearize(tree)
@@ -169,7 +169,7 @@ class CanonTest(testbase.TestBase):
                                     self.var("b")))
         ltree = self.canon.linearize(tree)
         self.assertESeqsNotNested(ltree,1)
-        
+
         # doesn't commute
         tree = self.cjump(self.var("c"),
                           self.eseq([self.move(self.var("a"),self.const())],
@@ -244,10 +244,10 @@ class CanonTest(testbase.TestBase):
         self.assertEqual(len(blocks),3)
 
         # jump to next stm
-        seq = self.seq([self.jump("d"),self.label("d")])        
+        seq = self.seq([self.jump("d"),self.label("d")])
         blocks = self.canon.basic_blocks(seq, "t__start", "t__end")
         self.assertBlocksAreWellFormed(blocks)
-        self.assertEqual(len(blocks),2)        
+        self.assertEqual(len(blocks),2)
 
     def testTraceScheduling(self):
         # cjump followed by falsedest
@@ -304,7 +304,7 @@ class CanonTest(testbase.TestBase):
 
         trace = self.canon.canonicalize(seq,"t__start","t__end")
         self.assertValidTrace(trace)
-        
+
     def printAllBlocks(self,blocks):
         for b in blocks:
             for stm in b: print(stm.pretty(), end=' ')
@@ -320,8 +320,8 @@ class CanonTest(testbase.TestBase):
 #                 expecting = None
 #             elif isinstance(stm, ir.CJump):
 #                 expecting = stm.falseDest
-                
-                    
+
+
 #     def assertESeqsNotNested(self,t,parentAllowsESeq):
 #         'check that no ESeqs are left below other nodes'
 #         if isinstance(t,ir.ESeq):
@@ -333,7 +333,7 @@ class CanonTest(testbase.TestBase):
 #         else:
 #             for child in t.children:
 #                 self.assertESeqsNotNested(child,0)
-                
+
 #     def assertTreesEqual(self, t1, t2):
 #         self.failUnless(
 #             t1.pretty() == t2.pretty(),

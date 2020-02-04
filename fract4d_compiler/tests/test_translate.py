@@ -4,10 +4,10 @@
 
 import pickle
 
-from fract4d import testbase
+from fract4d.tests import testbase
 
-from . import (absyn, translate, fractparser, fractlexer, fracttypes, ir,
-                     stdlib)
+from fract4d_compiler import (absyn, translate, fractparser, fractlexer,
+                     fracttypes, ir, stdlib)
 
 class Test(testbase.TestBase):
     def setUp(self):
@@ -36,7 +36,7 @@ class Test(testbase.TestBase):
         fractlexer.lexer.lineno = 1
         pt = self.parser.parse(s)
         return translate.Transform(pt.children[0], "t0", dump)
-        
+
     def testEmpty(self):
         pt = absyn.Formula("",[],-1)
         t = translate.T(pt)
@@ -52,8 +52,8 @@ class Test(testbase.TestBase):
         self.assertNoErrors(t)
 
         xform = t.sections["transform"].children
-        self.assertEqual(1, len(xform))        
-        
+        self.assertEqual(1, len(xform))
+
     def testGradientCF(self):
         t = self.translatecf('''c1 {
         #color = gradient(cmag(#z))
@@ -74,7 +74,7 @@ class Test(testbase.TestBase):
 
         # check type of default
         self.assertEqual(0,t.symbols.default_params()[-1])
-        
+
     def testBadImageFunc(self):
         t = self.translate('''cf {
         init:
@@ -83,7 +83,7 @@ class Test(testbase.TestBase):
         }''')
 
         self.assertError(t, "4: 'wibble' is not a function")
-        
+
     def testGradientFile(self):
         t = self.translateGradient('''
         blatte10 {
@@ -115,7 +115,7 @@ Init:
  else
  z = 0
  endif
- 
+
 Bailout:
 
  |z|<=@bailout
@@ -128,8 +128,8 @@ Default:
  magn=0.8
  maxiter=250
  method=multipass
- periodicity=0 
- 
+ periodicity=0
+
 heading
  caption="Mandelbrot Mode"
  visible=(@mode==0)
@@ -173,22 +173,22 @@ endfunc
 ; parameters: alpha, beta
 
 global:
-   
+
 init:
   z=#pixel
-  
+
 loop:
   z = z * @aa * (z^2 - 3) + @bb;
-  
+
 bailout:
 ; -- this isn\'t the bailout but the continuing condition
 ;    false = bail; true = continue
   |z| < @bailout
-  
+
 default:
   title = "Polynomial of degree 3"
   periodicity = 0
-  
+
   complex param aa
     caption="alpha"
     default=exp( (0,2) * #pi / 3 )
@@ -202,13 +202,13 @@ default:
     default=1e10
     min=1
   endparam
-  
+
 switch:
   type = "Poly3_Ma"
   bb = bb
 ;  aa = aa
   bailout = bailout
-}  
+}
 ''')
         self.assertError(t, "26: only constants can be used in default sections")
 
@@ -221,7 +221,7 @@ switch:
         }''')
 
         self.assertError(t, "3: symbol '#foo': only predefined symbols can begin with #")
-        
+
     def testBadDefault(self):
         t = self.translate('''t {
         default:
@@ -252,9 +252,9 @@ switch:
 
         self.assertTrue(isinstance(
             t1.sections["final"].children[-1],ir.Move))
-        
+
         t2 = self.translatecf('c1 {\n#index = #numiter / 256.0\n}')
-        
+
         self.assertNoErrors(t1)
         self.assertNoErrors(t2)
         self.assertEquivalentTranslations(t1,t2)
@@ -281,7 +281,7 @@ recolor:
 ''')
 
         self.assertNoErrors(t1)
-        
+
     def testMultiplyFunc(self):
         "Make sure we get a sensible error for this typo"
         t = self.translatecf('''
@@ -301,7 +301,7 @@ recolor:
         }''')
 
         self.assertNoErrors(t)
-        
+
     def testHslProblem(self):
         "Make sure this previously-problematic func works"
         t = self.translatecf('''
@@ -319,7 +319,7 @@ default:
 float func hueFunc
 	default = real
 endfunc
-float func satFunc        
+float func satFunc
 	default = real
 endfunc
 float func satFunc2
@@ -387,7 +387,7 @@ endfunc
         init:
         float d = 0.0
         color current = rgb(0,0,0)
-        
+
         current = gradient(d/@threshold)
         default:
         param threshold
@@ -440,7 +440,7 @@ default:
         t = self.translatecf('''
 Triangle {
 ;
-; Variation on the Triangle Inequality Average coloring method 
+; Variation on the Triangle Inequality Average coloring method
 ; from Kerry Mitchell. The smoothing used here is based on the
 ; Smooth formula, which only works for z^n+c and derivates.
 ;
@@ -469,7 +469,7 @@ final:
   sum = sum / (#numiter)
   sum2 = sum2 / (#numiter-1)
   f = il*lp - il*log(log(cabs(#z)))
-  #index = sum2 + (sum-sum2) * (f+1)  
+  #index = sum2 + (sum-sum2) * (f+1)
 default:
   title = "Triangle Inequality Average"
   helpfile = "Uf3.chm"
@@ -507,7 +507,7 @@ default:
         self.assertNoErrors(t)
 
         self.assertJumpsMatchLabs(t.sections["loop"])
-        
+
         expectedLabs = [
             'L:flabel0',
             'CJ:flabel1,flabel2',
@@ -523,19 +523,19 @@ default:
         init:
         x1 = rand
         x2 = #random
-        x3 = #rand        
+        x3 = #rand
         }
         ''')
 
         self.assertNoErrors(t)
-        
+
     def testBadEnum(self):
         t = self.translate('''
         t1 {
         init:
         if @y == "xxx"
            x = 1
-        endif          
+        endif
         default:
         param y
         enum = "foo" "bar"
@@ -572,7 +572,7 @@ default:
         ''')
 
         self.assertNoErrors(t)
-                           
+
     def testImplicitParamTypes(self):
         # Some UF coloring algorithms cause problems. The
         # type of the param is implicitly set based on the default value
@@ -625,14 +625,14 @@ default:
         self.assertEqual(t.symbols["@complex_of_ints"].type, fracttypes.Complex)
 
         defval_re = t.symbols["@complex_of_ints"].default.value[0].value
-        
+
         self.assertTrue(isinstance(defval_re,float))
-        
+
     def testFractintSections(self):
         t1 = self.translate("t1 {\na=1,a=2:\nb=2\nc=3}")
         t2 = self.translate('''
              t2 {
-                 init: 
+                 init:
                  a=1
                  a=2
                  loop:
@@ -640,7 +640,7 @@ default:
                  bailout:
                  c=3
                  }''')
-        
+
         self.assertEquivalentTranslations(t1,t2)
         self.assertNoErrors(t1)
         self.assertNoErrors(t2)
@@ -697,7 +697,7 @@ default:
         self.assertNoErrors(t_icc)
         self.assertNoErrors(t_icc2)
         self.assertEquivalentTranslations(t_icc,t_icc2)
-        
+
     def testBailout(self):
         # empty bailout
         t = self.translate('''t_bail_1 {
@@ -718,7 +718,7 @@ default:
         self.assertError(t, "invalid type none")
 
         # a var
-        t = self.translate('''t_bail_3 {        
+        t = self.translate('''t_bail_3 {
         bailout:
         x
         }''')
@@ -728,7 +728,7 @@ default:
         self.assertEqual(move.children[0].name, "__bailout")
 
         # a complex expression
-        t = self.translate('''t_bail_4 {        
+        t = self.translate('''t_bail_4 {
         bailout:
         (x && y) || (y && x)
         }''')
@@ -737,7 +737,7 @@ default:
         self.assertTrue(isinstance(move, ir.Move))
         self.assertEqual(move.children[0].name, "__bailout")
 
-        
+
     def testGradientFunc(self):
         t = self.translate('''t {
         init:
@@ -745,7 +745,7 @@ default:
         default:
         }''')
         self.assertNoProbs(t)
-        
+
     def testAssign(self):
         # correct declarations
         t9 = self.translate('''t9 {
@@ -826,7 +826,7 @@ default:
         self.assertWarning(t, "implicit loop section")
 
         t2 = self.translate('''t_sections {
-        ; this comment shouldnt cause alarm 
+        ; this comment shouldnt cause alarm
         init:
         int x= 2
         loop:
@@ -841,7 +841,7 @@ default:
         default:
         bool param x
             default = True
-        endparam        
+        endparam
         }''')
 
         self.assertNoErrors(t)
@@ -852,12 +852,12 @@ default:
         default:
         bool param x
             default = true
-        endparam        
+        endparam
         }''')
 
         self.assertNoErrors(t)
         self.assertEqual(True, t.symbols["@x"].default.value)
-        
+
     def disable_testMixedImplicitAndNamedParams(self):
         t = self.translate('''t_mix {
         init:
@@ -870,7 +870,7 @@ default:
 
         print(t.symbols.parameters(True))
         print(t.symbols.default_params())
-        
+
     def testFuncWithCaption(self):
         t = self.translate('''t {
         default:
@@ -922,7 +922,7 @@ default:
         self.assertEqual(t.defaults["center"].value[1].value,-2.0)
         self.assertEqual(t.defaults["title"].value,"Hello World")
         self.assertEqual("random", t.defaults["point_mode"].value)
-        
+
         k = list(t.symbols.parameters().keys())
         k.sort()
         exp_k = [
@@ -931,9 +931,9 @@ default:
             "t__a_foo",
             "t__a_with_turnaround8",
             "t__a_h1"]
-        
+
         exp_k.sort()
-        self.assertEqual(k,exp_k)        
+        self.assertEqual(k,exp_k)
 
         foo = t.symbols["@foo"]
         self.assertEqual(foo.caption.value, "Angle")
@@ -948,7 +948,7 @@ default:
 
         params = t.symbols.parameters(True)
         op = t.symbols.order_of_params()
-        
+
         self.assertEqual(0, op["t__a__gradient"])
         self.assertEqual(1, op["t__a_foo"])
         self.assertEqual(3, op["t__a_with_turnaround8"])
@@ -965,7 +965,7 @@ default:
             4.0,5.0,6.0,7.0, #h1
             ])
 
-        
+
     def testEnum(self):
         t = self.translate('''t_enum {
         default:
@@ -1021,9 +1021,9 @@ default:
         enum = "hello"
         endparam
         }''')
-        
+
         self.assertNoErrors(t)
-        
+
     def testParams(self):
         t12 = self.translate('''t_params {
         init: complex x = @p1 + p2 + @my_param
@@ -1050,7 +1050,7 @@ default:
             "t__a_my_param": 5,
             "__SIZE__": 7
             }
-        
+
         op = t12.symbols.order_of_params()
 
         for (key,ord) in list(op.items()):
@@ -1104,11 +1104,11 @@ default:
         self.assertEqual(t.symbols["@myfunc"][0].genFunc,stdlib.sqr_c_c)
         self.assertEqual(t.symbols["@myotherfunc"][0].genFunc,stdlib.sqr_c_c)
         self.assertEqual(t.symbols["@mycolorfunc2"][0].genFunc, stdlib.mergenormal_CC_C)
-        
+
     def testBadFunc(self):
         t = self.translate('t_badfunc {\nx= badfunc(0):\n}')
         self.assertError(t,"Unknown function badfunc on line 2")
-        
+
     def testIDs(self):
         t11 = self.translate('''t11 {
         init: int a = 1, int b = 2
@@ -1128,7 +1128,7 @@ default:
         a = b + c
         ia = ib + ic
         }''')
-        
+
         #print t13.sections["loop"].pretty()
         self.assertNoProbs(t13)
         result = t13.sections["loop"]
@@ -1186,7 +1186,7 @@ default:
         self.assertNoErrors(t)
         ifseq = t.sections["loop"].children[0]
         self.assertTrue(ifseq.children[0].op == "!=")
-        
+
         self.assertTrue(ifseq.children[1].children[0].name == "flabel0" and \
                         ifseq.children[1].children[-1].dest == "flabel2" and \
                         ifseq.children[2].children[0].name == "flabel1" and \
@@ -1249,7 +1249,7 @@ default:
         }''')
         self.assertNoErrors(t)
         self.assertJumpsMatchLabs(t.sections["init"])
-        
+
         t = self.translate('''t_bool_2 {
         init:
         if a == 1 && b == 2
@@ -1275,7 +1275,7 @@ default:
         float f = |a&&b|
         }''')
         self.assertNoErrors(t)
-        
+
     def testMandel(self):
         t = self.translate('''t_mandel_1 {
         loop:
@@ -1302,7 +1302,7 @@ default:
 
         self.assertNoErrors(t)
         pickle.dumps(t.canonicalizer.symbols,True)
-        
+
     def testHyperOps(self):
         t = self.translate('''t_c8{
         init:
@@ -1310,7 +1310,7 @@ default:
         }''')
 
         self.assertNoErrors(t)
-        
+
     def testDecls(self):
         t1 = self.translate(
             "t4 {\nglobal:int a\ncomplex b\nbool c = true\nhyper h\n}")
@@ -1318,7 +1318,7 @@ default:
         self.assertVar(t1, "a", fracttypes.Int)
         self.assertVar(t1, "b", fracttypes.Complex)
         self.assertVar(t1, "h", fracttypes.Hyper)
-        
+
         t1 = self.translate('''
         t5 {
         init:
@@ -1379,9 +1379,9 @@ default:
     def testComplexBool(self):
         t = self.translate('''t_cb{
             float x=real(z), float y=imag(z)
-            bool chrH1 = x<-0.16646 || x>-0.13646; 
+            bool chrH1 = x<-0.16646 || x>-0.13646;
             }''')
-        
+
         self.assertNoErrors(t)
 
     def testVisible(self):
@@ -1415,7 +1415,7 @@ default:
         self.checkArrayProperties(t,"f",fracttypes.FloatArray, 8, 700, 1)
         self.checkArrayProperties(
             t,"carray",fracttypes.ComplexArray, 8, 88*2, 2)
-        
+
     def checkArrayProperties(self,t,sym,type, esize, size, pos):
         x = t.symbols[sym]
         self.assertEqual(type, x.type)
@@ -1428,7 +1428,7 @@ default:
         self.assertEqual(esize, element_size.value)
         amount_to_alloc = decl.children[1].children[0].children[2]
         if hasattr(amount_to_alloc,"value"):
-            self.assertEqual(size,amount_to_alloc.value)            
+            self.assertEqual(size,amount_to_alloc.value)
 
     def test2DArray(self):
         t = self.translate('''t {
@@ -1446,7 +1446,7 @@ default:
         self.assertEqual(ir.Move, decl.__class__)
 
         args = decl.children[1].children[0].children
-        self.assertEqual("t__p_stub->arena",args[0].name)        
+        self.assertEqual("t__p_stub->arena",args[0].name)
         self.assertEqual(
             [4, 2,7], # element size, indexes
             [child.value for child in args[1:]])
@@ -1459,7 +1459,7 @@ default:
         }''')
 
         self.assertNoErrors(t)
-        
+
     def testArrayBadIndexType(self):
         t = self.translate('''t {
         init:
@@ -1510,28 +1510,28 @@ default:
         target = t.sections["init"].children[1]
         self.assertEqual(ir.Call, target.__class__)
         self.assertEqual("_write_lookup", target.op)
-        
+
         var= target.children[0]
         self.assertEqual(ir.Var, var.__class__)
         self.assertEqual("x", var.name)
-        
+
         index = target.children[1]
         self.assertEqual(ir.Const, index.__class__)
-        self.assertEqual(1, index.value) 
+        self.assertEqual(1, index.value)
 
         val = target.children[2]
         self.assertEqual(ir.Const, val.__class__)
-        self.assertEqual(4, val.value) 
+        self.assertEqual(4, val.value)
 
         # check array read
         dereference = t.sections["init"].children[2].children[1]
         self.assertEqual(ir.Call, dereference.__class__)
         self.assertEqual("_read_lookup", dereference.op)
-        
+
         var= dereference.children[0]
         self.assertEqual(ir.Var, var.__class__)
         self.assertEqual("x", var.name)
-        
+
         index = dereference.children[1]
         self.assertEqual(ir.Const, index.__class__)
         self.assertEqual(1, index.value)
@@ -1544,7 +1544,7 @@ default:
         }''')
 
         self.assertNoErrors(t)
-        
+
     def testArrayTypeMismatch(self):
         t = self.translate('''t {
         init:
@@ -1581,7 +1581,7 @@ default:
         int g
         g = f[0]
         }''')
-        
+
         self.assertError(t, "5: f is not an array")
 
     def testDeclArrayWithoutType(self):
@@ -1631,7 +1631,7 @@ default:
           max=1e20
         endparam
         }''')
-        
+
         self.assertWarning(t, "4: Unrecognized parameter setting 'value' ignored")
         bailout = t.symbols["@bailout"]
         self.assertFalse(hasattr(bailout.value, "value"))

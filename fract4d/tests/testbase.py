@@ -44,7 +44,7 @@ class TestBase(unittest.TestCase):
                 self.assertESeqsNotNested(stm,1)
             self.assertValidTrace(item)
         self.assertWellTyped(t)
-        
+
     def assertValidTrace(self,trace):
         # must have each cjump followed by false case
         expecting = None
@@ -81,7 +81,7 @@ class TestBase(unittest.TestCase):
                 index = 0.0
             else:
                 continue
-            
+
             r += color[0]; g += color[1]; b += color[2]
             nsubpixels += 1
             if fate != img.UNKNOWN and efate is None:
@@ -91,20 +91,20 @@ class TestBase(unittest.TestCase):
                     "unexpected index %.17f for subpixel %d with fate %d" % (findex,i,fate))
 
         color = [r//nsubpixels, g//nsubpixels, b//nsubpixels]
-        
+
         self.assertEqual(img.get_color(x,y),color)
 
     def assertNoProbs(self, t):
         self.assertEqual(len(t.warnings),0,
                          "Unexpected warnings %s" % t.warnings)
         self.assertNoErrors(t)
-        
+
     def assertVar(self,t, name,type):
         self.assertEqual(t.symbols[name].type,type)
 
     def assertNode(self,name,n):
         self.assertTrue(isinstance(n,ir.T), ("%s(%s) is not a node" % (n, name)))
-        
+
     def assertTreesEqual(self, name, t1, t2):
         if isinstance(t1,list):
             # canonicalized trees are a list, not a Seq()
@@ -239,7 +239,6 @@ class ClassSetup(TestBase):
         cls.userConfig["formula_path"].clear()
         cls.userConfig["map_path"].clear()
         cls.g_comp = fc.Compiler(cls.userConfig)
-        cls.g_comp.add_func_path("fract4d")
         cls.g_comp.add_func_path("formulas")
 
     @classmethod
@@ -255,7 +254,6 @@ class TestSetup(TestBase):
         self.userConfig["formula_path"].clear()
         self.userConfig["map_path"].clear()
         self.g_comp = fc.Compiler(self.userConfig)
-        self.g_comp.add_func_path("fract4d")
         self.g_comp.add_func_path("formulas")
 
     def tearDown(self):

@@ -9,7 +9,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-from . import angle
+from fract4dgui import angle
 
 class EmitCounter:
     def __init__(self):
@@ -24,13 +24,13 @@ class FakeEvent:
 class Test(unittest.TestCase):
     def setUp(self):
         pass
-    
+
     def tearDown(self):
         pass
-        
+
     def wait(self):
         Gtk.main()
-        
+
     def quitloop(self,f,status):
         if status == 0:
             Gtk.main_quit()
@@ -41,10 +41,10 @@ class Test(unittest.TestCase):
         self.assertEqual(a.adjustment.get_lower(),-math.pi)
         self.assertEqual(a.adjustment.get_upper(),math.pi)
         self.assertEqual(a.adjustment.get_value(),0.0)
-        
+
     def testAngles(self):
         a = angle.T('foo')
-        
+
         self.assertEqual(a.get_current_angle(),0.0)
 
         a.adjustment.set_value(a.adjustment.get_lower())
@@ -83,7 +83,7 @@ class Test(unittest.TestCase):
 
     def testMouseInteraction(self):
         pass
-    
+
     def assertNearlyEqual(self,a,b):
         # check that each element is within epsilon of expected value
         epsilon = 1.0e-12

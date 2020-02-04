@@ -61,7 +61,7 @@ def suite():
     return unittest.makeSuite(Test,'test')
 
 def main():
-    pytest.main(['fract4d', 'fract4dgui', 'fract4d_compiler'])
+    pytest.main(['fract4d/tests', 'fract4dgui/tests', 'fract4d_compiler/tests'])
 
 
 if __name__ == '__main__':
