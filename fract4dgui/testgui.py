@@ -20,7 +20,13 @@ class TestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.tmpdir = tempfile.TemporaryDirectory(prefix="fract4d_")
-        cls.userConfig = fractconfig.T("")
+
+        import sys
+        if sys.platform[:6] == "darwin":
+            cls.userConfig = fractconfig.DarwinConfig("")
+        else:
+            cls.userConfig = fractconfig.T("")
+
         cls.userConfig.set("general","cache_dir", os.path.join(cls.tmpdir.name,
                            "gnofract4d-cache"))
         cls.userConfig["formula_path"].clear()

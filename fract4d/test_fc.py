@@ -236,8 +236,8 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
         compiler = fc.Compiler(Test.userConfig)
         self.assertNotEqual(None, compiler)
         self.assertEqual(
-            compiler.flags, fractconfig.T("").get("compiler", "options"))
-            
+            compiler.flags, Test.userConfig.get("compiler", "options"))
+
     def testAllFormulasCompile(self):
         'Go through every formula and check for errors'
         for filename in Test.g_comp.find_formula_files():

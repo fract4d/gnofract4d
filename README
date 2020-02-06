@@ -53,12 +53,16 @@ o Pkg-Config
 
 On Ubuntu, these can be installed with:
 
-sudo apt-get install libpng-dev libjpeg-dev python3-dev gtk3.0 cairo python3-cairo python3-gi-cairo pkg-config 
+sudo apt-get install libpng-dev libjpeg-dev python3-dev gtk3.0 cairo python3-cairo python3-gi-cairo pkg-config
 
 If you're not sure if you have these or not, just try running
 "./setup.py build" and see if it complains.
 
 If FFmpeg is installed it will be possible to create videos.
+
+On MacOS, you can install the dependencies using brew:
+
+brew install librsvg python3 pkg-config cairo gtk+3 pygobject3 py3cairo libpng jpeg
 
 Testing
 =======
@@ -70,3 +74,5 @@ pytest fract4d/test_absyn.py
 
 Optionally, install tox and test with all supported Python versions by running:
 tox
+
+On MacOS you might find an error regarding the number of opened files, you can increase the system limit with `ulimit -Sn 10000`
