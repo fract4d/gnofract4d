@@ -10,7 +10,8 @@ import copy
 import cairo
 from gi.repository import Gtk, Gdk, GObject, GdkPixbuf, GLib
 
-from fract4d import fractal, fract4dc, fracttypes, function, image, messages
+from fract4d_compiler import fracttypes, function
+from fract4d import fractal, fract4dc, image, messages
 
 from . import utils, fourway
 from .gtkio import gtkio

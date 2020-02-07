@@ -3,10 +3,7 @@
 import re
 import unittest
 
-from fract4d import absyn
-from fract4d import fractlexer
-from fract4d import fractparser
-from fract4d import preprocessor
+from . import preprocessor, fractparser, fractlexer, absyn
 
 class ParserTest(unittest.TestCase):
     def setUp(self):

@@ -2,8 +2,7 @@
 
 import unittest
 
-from fract4d import fractlexer
-from fract4d import preprocessor
+from . import fractlexer, preprocessor
 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -15,7 +14,7 @@ class Test(unittest.TestCase):
     
     def tokensFromFile(self, f):
         data = open(f,"r").read()
-        return self.tokensFromString(self, data)
+        return self.tokensFromString(data)
 
     def tokensFromString(self, data):
         # Give the lexer some input

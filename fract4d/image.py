@@ -3,10 +3,7 @@
 
 import os.path
 
-try:
-    from . import fract4dcgmp as fract4dc
-except ImportError as err:
-    from . import fract4dc
+from . import fract4dc
 
 file_types = {
     ".jpg" : fract4dc.FILE_TYPE_JPG,

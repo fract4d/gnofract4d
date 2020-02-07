@@ -2,7 +2,7 @@
 
 import unittest
 
-from fract4d import preprocessor
+from . import preprocessor
 
 class Test(unittest.TestCase):
     def testEmpty(self):

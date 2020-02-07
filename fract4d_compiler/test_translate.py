@@ -4,9 +4,9 @@
 
 import pickle
 
-from . import testbase
+from fract4d import testbase
 
-from fract4d import (absyn, translate, fractparser, fractlexer, fracttypes, ir,
+from . import (absyn, translate, fractparser, fractlexer, fracttypes, ir,
                      stdlib)
 
 class Test(testbase.TestBase):

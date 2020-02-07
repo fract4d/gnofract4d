@@ -10,7 +10,8 @@ import sys
 
 if sys.path[1] != "..": sys.path.insert(1, "..")
 
-from fract4d import testbase, fractal, fractconfig, fc, preprocessor, gradient
+from fract4d_compiler import fc, preprocessor
+from fract4d import testbase, fractal, fractconfig, gradient
 from fractutils import parfile
 
 g_comp = fc.Compiler(fractconfig.T(""))

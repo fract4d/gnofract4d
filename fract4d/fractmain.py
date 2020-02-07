@@ -3,7 +3,8 @@
 import os
 import shutil
 
-from . import fractal, fc, image
+from fract4d_compiler import fc
+from . import fractal, image
 
 class T:
     def __init__(self, userConfig):

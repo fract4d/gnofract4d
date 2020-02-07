@@ -7,7 +7,8 @@ import re
 
 from . import testbase
 
-from fract4d import gradient, fract4dc, translate, fractparser
+from fract4d import gradient, fract4dc
+from fract4d_compiler import translate, fractparser
 from fract4d.gradient import Blend, ColorMode
 
 wood='''GIMP Gradient

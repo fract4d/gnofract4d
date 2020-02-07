@@ -4,10 +4,9 @@ import copy
 
 from gi.repository import Gdk, Gtk
 
-from fract4d import browser_model
-from fract4d.fc import FormulaTypes
+from fract4d_compiler.fc import FormulaTypes
 
-from . import hig, dialog, browser, utils
+from . import hig, dialog, browser, utils, browser_model
 
 class SettingsPane(Gtk.Box):
     def __init__(self, main_window, f):

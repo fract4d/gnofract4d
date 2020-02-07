@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from . import testbase
-
-from fract4d import browser_model, fc
+from fract4d import testbase
+from fract4d_compiler import fc
+from . import browser_model
 
 class Wrapper(browser_model.T):
     def __init__(self):

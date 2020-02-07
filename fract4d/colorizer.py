@@ -1,4 +1,5 @@
-from . import fctutils, gradient, fc
+from fract4d_compiler import fc, fctutils
+from . import gradient
 
 class T(fctutils.T):
     '''Parses the various different kinds of color data we have'''

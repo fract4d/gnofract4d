@@ -4,7 +4,7 @@
 # code, performing type checking as a side effect
 import sys
 
-from fract4d.absyn import *
+from .absyn import *
 from . import fsymbol, fractparser, ir, canon, function
 from .fracttypes import *
     

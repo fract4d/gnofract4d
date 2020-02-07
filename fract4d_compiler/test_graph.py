@@ -4,7 +4,7 @@
 
 import unittest
 
-from fract4d import graph
+from . import graph
 
 class Test(unittest.TestCase):
     def setUp(self):

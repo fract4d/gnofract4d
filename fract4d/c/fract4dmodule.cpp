@@ -33,12 +33,7 @@
 #define PyMODINIT_FUNC void
 #endif
 
-#ifdef USE_GMP
-#define MODULE_NAME "fract4dcgmp"
-#include "gmp.h"
-#else
 #define MODULE_NAME "fract4dc"
-#endif
 
 struct module_state {
     int dummy;
@@ -2830,10 +2825,6 @@ PyInit_fract4dc(void)
 
     PyEval_InitThreads();
 
-#ifdef USE_GMP
-    mpf_t x;
-    mpf_init(x);
-#endif
     /* expose some constants */
     PyModule_AddIntConstant(pymod, "CALC_DONE", GF4D_FRACTAL_DONE);
     PyModule_AddIntConstant(pymod, "CALC_CALCULATING", GF4D_FRACTAL_CALCULATING);

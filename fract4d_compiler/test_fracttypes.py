@@ -4,7 +4,7 @@
 
 import unittest
 
-from fract4d import fracttypes, function
+from . import fracttypes, function
 
 class Test(unittest.TestCase):
     def testTypeCtor(self):
