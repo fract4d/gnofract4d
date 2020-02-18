@@ -4,12 +4,12 @@
 import io
 import unittest
 
-from . import fctutils
+from fract4d_compiler import fctutils
 
 class Test(unittest.TestCase):
     def setUp(self):
         pass
-    
+
     def tearDown(self):
         pass
 
@@ -32,7 +32,7 @@ parishioner=arse
         fct.load(in_f)
 
         self.assertEqual("goodbye", fct.dict["hello"])
-        self.assertEqual("arse", fct.dict["parishioner"]) 
+        self.assertEqual("arse", fct.dict["parishioner"])
         self.assertEqual("wiggle", fct.dict["fish"])
         self.assertEqual("""hello
 fook

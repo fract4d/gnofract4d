@@ -8,24 +8,24 @@ import gi
 gi.require_version('Gtk','3.0')
 from gi.repository import Gtk
 
-from . import fourway
+from fract4dgui import fourway
 
 class EmitCounter:
     def __init__(self):
         self.count = 0
     def onCallback(self,*args):
         self.count += 1
-        
+
 class Test(unittest.TestCase):
     def setUp(self):
         pass
-    
+
     def tearDown(self):
         pass
-        
+
     def wait(self):
         Gtk.main()
-        
+
     def quitloop(self,f,status):
         if status == 0:
             Gtk.main_quit()
@@ -33,7 +33,7 @@ class Test(unittest.TestCase):
     def testCreate(self):
         f = fourway.T("hello")
         self.assertTrue(f)
-        
+
     def testAddToWindow(self):
         w = Gtk.Window()
         f = fourway.T("wibble")

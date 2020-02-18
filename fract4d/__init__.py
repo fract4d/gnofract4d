@@ -1,4 +1,4 @@
 #!/usr/bin/env python3
 
-# package file for fract4d
+# subpackage file for fract4d package tests
 

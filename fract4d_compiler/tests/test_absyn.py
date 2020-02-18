@@ -2,14 +2,14 @@
 
 import unittest
 
-from . import fracttypes, absyn
+from fract4d_compiler import fracttypes, absyn
 
 class Test(unittest.TestCase):
     def testNumber(self):
         n = absyn.Number("1",None)
         self.assertEqual(fracttypes.Int, n.datatype)
         self.assertEqual(1, n.leaf)
-        
+
         n = absyn.Number("1.0",None)
         self.assertEqual(fracttypes.Float, n.datatype)
         self.assertEqual(1.0,n.leaf)

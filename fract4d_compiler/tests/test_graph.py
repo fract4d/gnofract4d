@@ -4,7 +4,7 @@
 
 import unittest
 
-from . import graph
+from fract4d_compiler import graph
 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -40,7 +40,7 @@ class Test(unittest.TestCase):
         self.assertEqual(g.succ(n), [n2,n3])
         self.assertEqual(g.pred(n2), [n])
         self.assertEqual(g.pred(n3), [n])
-        
+
     def testAddEdgeTwice(self):
         g = graph.T()
         n = g.newNode()

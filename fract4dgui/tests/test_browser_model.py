@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from fract4d import testbase
+from fract4d.tests import testbase
 from fract4d_compiler import fc
-from . import browser_model
+from fract4dgui import browser_model
 
 class Wrapper(browser_model.T):
     def __init__(self):
@@ -13,7 +13,7 @@ class Wrapper(browser_model.T):
         self.type_changed += self._type_changed
         self.file_changed += self._file_changed
         self.formula_changed += self._formula_changed
-        
+
     def _type_changed(self):
         self.type_changelist.append(self.current_type)
 
@@ -22,7 +22,7 @@ class Wrapper(browser_model.T):
 
     def _formula_changed(self):
         self.formula_changelist.append(self.current.formula)
-        
+
 class Test(testbase.ClassSetup):
     @classmethod
     def setUpClass(cls):
@@ -35,23 +35,23 @@ class Test(testbase.ClassSetup):
 
     def setUp(self):
         pass
-        
+
     def testCreation(self):
         bm = browser_model.T(Test.g_comp)
 
     def testFuncMapping(self):
         bm = browser_model.T(Test.g_comp)
         ti = bm.get_type_info(browser_model.FRACTAL)
-        
+
         self.assertEqual(
             fc.FormulaTypes.FRACTAL, ti.formula_type)
 
         self.assertEqual( None, ti.fname)
         self.assertEqual( None, ti.formula)
         self.assertEqual( [], ti.formulas)
-        
+
         ti2 = bm.get_type_info(browser_model.GRADIENT)
-        
+
         self.assertEqual(
             fc.FormulaTypes.GRADIENT, ti2.formula_type)
 
@@ -60,9 +60,9 @@ class Test(testbase.ClassSetup):
         bm.set_type(browser_model.FRACTAL)
         self.assertEqual([browser_model.FRACTAL], bm.type_changelist)
         self.assertEqual(browser_model.FRACTAL, bm.current_type)
-        self.assertEqual(            
+        self.assertEqual(
             bm.typeinfo[bm.current_type], bm.current)
-        
+
         bm.set_type(browser_model.INNER)
         self.assertEqual(browser_model.INNER, bm.current_type)
         self.assertEqual(
@@ -74,7 +74,7 @@ class Test(testbase.ClassSetup):
         bm.set_type(browser_model.FRACTAL)
         self.assertNotEqual(bm.current.files, [])
         self.assertListSorted(bm.current.files)
-        
+
     def testSetTypeTwice(self):
         bm = Wrapper()
         bm.set_type(browser_model.INNER)
@@ -89,7 +89,7 @@ class Test(testbase.ClassSetup):
 
         bm.current.fname = "fish"
         bm.current.formula = "haddock"
-        
+
         bm.set_type(browser_model.GRADIENT)
 
         self.assertEqual( None, bm.current.fname)
@@ -107,7 +107,7 @@ class Test(testbase.ClassSetup):
         self.assertEqual("gf4d.frm",bm.current.fname)
         self.assertEqual(
             ["gf4d.frm"], bm.file_changelist)
-        
+
         self.assertNotEqual(0, bm.current.formulas.count("Mandelbrot"))
 
     def testSetBadFile(self):
@@ -120,13 +120,13 @@ class Test(testbase.ClassSetup):
         for f in l:
             self.assertTrue(last < f.lower(),"list not sorted: %s" % l)
             last = f.lower()
-        
+
     def testFormulasSorted(self):
         bm = browser_model.T(Test.g_comp)
         bm.set_type(browser_model.FRACTAL)
         bm.set_file("gf4d.frm")
         self.assertListSorted(bm.current.formulas)
-        
+
     def testExcludeList(self):
         bm = browser_model.T(Test.g_comp)
         bm.set_type(browser_model.INNER)

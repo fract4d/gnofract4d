@@ -8,22 +8,22 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-from . import undo
+from fract4dgui import undo
 
 class Status:
     def __init__(self):
         self.count = 0
-        
+
 class UndoTest(unittest.TestCase):
     def setUp(self):
         pass
-    
+
     def tearDown(self):
         pass
-        
+
     def wait(self):
         Gtk.main()
-        
+
     def quitloop(self,f,status):
         if status == 0:
             Gtk.main_quit()
@@ -36,15 +36,15 @@ class UndoTest(unittest.TestCase):
     def assertExternalAndInternalStatusMatch(self,undoer):
         self.assertEqual(self.undo_cb_status.count, undoer.can_undo())
         self.assertEqual(self.redo_cb_status.count, undoer.can_redo())
-        
+
     def testCreateUndoRedo(self):
         status = Status()
         self.undo_cb_status = Status()
         self.redo_cb_status = Status()
-        
+
         def inc_status(x):
             status.count += x
-            
+
         def dec_status(x):
             status.count -= x
 
@@ -55,27 +55,27 @@ class UndoTest(unittest.TestCase):
         def set_redoable(sequence,state):
             #print "redo_status: %s" % state
             self.redo_cb_status.count = state
-            
+
         self.assertEqual(status.count,0)
         self.assertEqual(self.undo_cb_status.count,0)
         self.assertEqual(self.redo_cb_status.count,0)
-                
+
         # create sequence
         undoer = undo.Sequence()
         undoer.connect('can-undo',set_undoable)
         undoer.connect('can-redo',set_redoable)
-        
+
         self.assertEqual(undoer.can_undo(),False)
         self.assertEqual(undoer.can_redo(),False)
         self.assertExternalAndInternalStatusMatch(undoer)
-        
+
         self.assertEqual(undoer.pos,0)
         self.assertEqual(len(undoer.history),0)
-        
+
         # perform an action
         inc_status(1)
         undoer.do(inc_status,1,dec_status,1)
-        
+
         self.assertEqual(status.count,1)
         self.assertUndoStatus(undoer,True,False)
         self.assertEqual(len(undoer.history),1)
@@ -87,18 +87,18 @@ class UndoTest(unittest.TestCase):
         # check externals
         self.assertEqual(status.count,0)
         self.assertUndoStatus(undoer,False,True)
-        
+
         # check internals
         self.assertEqual(len(undoer.history),1)
         self.assertEqual(undoer.pos,0)
-        
+
         # redo it
         undoer.redo()
 
         # check externals
         self.assertEqual(status.count,1)
         self.assertUndoStatus(undoer,True,False)
-        
+
         # check internals
         self.assertEqual(len(undoer.history),1)
         self.assertEqual(undoer.pos,1)
@@ -108,7 +108,7 @@ class UndoTest(unittest.TestCase):
 
         def inc_status(x):
             status.count += x
-            
+
         def dec_status(x):
             status.count -= x
 
@@ -117,7 +117,7 @@ class UndoTest(unittest.TestCase):
 
         def make_status_int(i):
             status.count = i
-                    
+
         self.assertEqual(status.count,0)
 
         # create sequence
@@ -138,10 +138,10 @@ class UndoTest(unittest.TestCase):
 
         def inc_status(x):
             status.count += x
-            
+
         def dec_status(x):
             status.count -= x
-                    
+
         self.assertEqual(status.count,0)
 
         # perform 3 actions, undo 2, do 1 again
@@ -165,7 +165,7 @@ class UndoTest(unittest.TestCase):
         # undo again, check we're back where we started
         undoer.undo()
         self.assertEqual(status.count,1)
-        
+
     def testInvalidOperationsThrow(self):
         undoer = undo.Sequence()
         self.assertRaises(ValueError,undoer.undo)

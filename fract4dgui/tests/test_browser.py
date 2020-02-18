@@ -18,13 +18,13 @@ class Test(testgui.TestCase):
     def setUp(self):
         self.mainWindow = MockMainWindow(Test.g_comp)
         self.f = fractal.T(self.mainWindow.compiler,self)
-    
+
     def tearDown(self):
         browser._model = None
-        
+
     def wait(self):
         Gtk.main()
-        
+
     def quitloop(self,f,status):
         if status == 0:
             Gtk.main_quit()

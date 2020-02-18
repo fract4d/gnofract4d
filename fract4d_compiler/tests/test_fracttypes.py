@@ -4,7 +4,7 @@
 
 import unittest
 
-from . import fracttypes, function
+from fract4d_compiler import fracttypes, function
 
 class Test(unittest.TestCase):
     def testTypeCtor(self):
@@ -19,7 +19,7 @@ class Test(unittest.TestCase):
         self.assertEqual(
             len(fracttypes.typeObjectList),
             len(fracttypes.typeList))
-        
+
     def testTypes(self):
         self.assertEqual(
             "bool",
@@ -67,7 +67,7 @@ class Test(unittest.TestCase):
             (fracttypes.Float, fracttypes.FloatArray),
             (fracttypes.Complex, fracttypes.ComplexArray)]
 
-        for (element, array) in pairs:            
+        for (element, array) in pairs:
             self.assertEqual(
                 array, fracttypes.arrayTypeOf(element))
             self.assertEqual(
@@ -77,11 +77,11 @@ class Test(unittest.TestCase):
             fracttypes.TranslationError,
             fracttypes.arrayTypeOf, fracttypes.Image)
 
-        
+
     def testTypeIDs(self):
         for i in range(len(fracttypes.typeObjectList)):
             self.assertEqual(i,fracttypes.typeObjectList[i].typeid)
-            
+
     def testPrintfOfType(self):
         self.assertEqual(
             "%d", fracttypes.typeObjectList[fracttypes.Bool].printf)
@@ -102,7 +102,7 @@ class Test(unittest.TestCase):
             self.assertEqual(True, fracttypes.canBeCast(fracttypes.VoidArray, t))
             self.assertEqual(False, fracttypes.canBeCast(t, fracttypes.VoidArray))
 
-            
+
     def testCType(self):
         expected =  {
             fracttypes.Int : "int",
@@ -117,16 +117,16 @@ class Test(unittest.TestCase):
             fracttypes.IntArray : "int *"
             }
 
-        for (k,v) in list(expected.items()):            
+        for (k,v) in list(expected.items()):
             self.assertEqual(v,fracttypes.typeObjectList[k].cname)
 
     def testFloatInitVal(self):
         float_type = fracttypes.typeObjectList[fracttypes.Float]
         v = fracttypes.Var(fracttypes.Float,1.234)
-        
+
         self.assertEqual(["1.23399999999999999"],float_type.init_val(v))
         self.assertEqual(["1.23399999999999999"],v.init_val())
-        
+
         v.param_slot = 3
         self.assertEqual(["t__pfo->p[3].doubleval"],float_type.init_val(v))
         self.assertEqual(["t__pfo->p[3].doubleval"],v.init_val())
@@ -143,11 +143,11 @@ class Test(unittest.TestCase):
 
     def testComplexInitVal(self):
         v = fracttypes.Var(fracttypes.Complex, [1.234,-7.89])
-        
+
         self.assertEqual(
             ["1.23399999999999999","-7.88999999999999968"],
             v.init_val())
-        
+
         v.param_slot = 3
         self.assertEqual(
             ["t__pfo->p[3].doubleval","t__pfo->p[4].doubleval"],
@@ -159,7 +159,7 @@ class Test(unittest.TestCase):
 
         v.param_slot = 3
         self.assertEqual(["t__pfo->p[3].gradient"], v.init_val())
-        
+
     def testIntInitVal(self):
         v = fracttypes.Var(fracttypes.Int, 1)
         self.checkIntInitVal(v)
@@ -173,7 +173,7 @@ class Test(unittest.TestCase):
 
         v.param_slot = 3
         self.assertEqual(["t__pfo->p[3].intval"],v.init_val())
-        
+
     def testColorInitVal(self):
         v = fracttypes.Var(fracttypes.Color, [1.234,-7.89, 11.1, 1.0e10])
         self.checkQuadInitVal(v)
@@ -181,7 +181,7 @@ class Test(unittest.TestCase):
     def testHyperInitVal(self):
         v = fracttypes.Var(fracttypes.Hyper, [1.234,-7.89, 11.1, 1.0e10])
         self.checkQuadInitVal(v)
-        
+
     def checkQuadInitVal(self,v):
         self.assertEqual(
             ["1.23399999999999999",
@@ -189,7 +189,7 @@ class Test(unittest.TestCase):
              "11.09999999999999964",
              "10000000000.00000000000000000"],
             v.init_val())
-        
+
         v.param_slot = 3
         self.assertEqual(
             ["t__pfo->p[3].doubleval",
@@ -208,7 +208,7 @@ class Test(unittest.TestCase):
         self.assertEqual("wibble", f.cname)
         self.assertEqual("wibble_ii_i", f.genFunc)
         self.assertEqual([],f.implicit_args)
-        
+
         f.set_implicit_arg("fish")
         f.set_implicit_arg("blouse")
         self.assertEqual(["fish","blouse"],f.implicit_args)

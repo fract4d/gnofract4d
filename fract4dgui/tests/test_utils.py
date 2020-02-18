@@ -4,7 +4,7 @@
 
 import unittest
 
-from . import utils
+from fract4dgui import utils
 
 class Test(unittest.TestCase):
     def testOptionMenu(self):
@@ -25,7 +25,7 @@ class Test(unittest.TestCase):
         utils.set_selected_value(om,"world")
         i = utils.get_selected(om)
         self.assertEqual(1,i)
-        
+
     def testCreateColor(self):
         cyan = utils.create_color(0.0,1.0,1.0)
         self.assertEqual(cyan.red,0)
