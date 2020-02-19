@@ -28,11 +28,6 @@
 
 #include "cmap_name.h"
 
-/* not sure why this isn't defined already */
-#ifndef PyMODINIT_FUNC 
-#define PyMODINIT_FUNC void
-#endif
-
 #define MODULE_NAME "fract4dc"
 
 struct module_state {
