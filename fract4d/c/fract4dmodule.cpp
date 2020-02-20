@@ -31,8 +31,7 @@
 #include "fract4dc/common.h"
 #include "fract4dc/colormaps.h"
 #include "fract4dc/loaders.h"
-#include "fract4dc/pysite.h"
-#include "fract4dc/fdsite.h"
+#include "fract4dc/sites.h"
 
 struct module_state
 {
@@ -222,16 +221,7 @@ image_fromcapsule(PyObject *pyimage)
     return image;
 }
 
-static IFractalSite *
-site_fromcapsule(PyObject *pysite)
-{
-    IFractalSite *site = (IFractalSite *)PyCapsule_GetPointer(pysite, OBTYPE_SITE);
-    if (NULL == site)
-    {
-        fprintf(stderr, "%p : ST : BAD\n", pysite);
-    }
-    return site;
-}
+
 
 struct calc_args
 {
@@ -295,7 +285,7 @@ struct calc_args
     void set_site(PyObject *pysite_)
     {
         pysite = pysite_;
-        site = site_fromcapsule(pysite);
+        site = sites::site_fromcapsule(pysite);
         Py_XINCREF(pysite);
     }
 
@@ -312,11 +302,7 @@ struct calc_args
 };
 
 
-static void
-site_delete(IFractalSite *site)
-{
-    delete site;
-}
+
 
 static void
 fw_delete(IFractWorker *worker)
@@ -341,47 +327,14 @@ ff_delete(struct ffHandle *ffh)
     delete ffh;
 }
 
-static void
-pysite_delete(PyObject *pysite)
+static PyObject * pysite_create(PyObject *self, PyObject *args)
 {
-    IFractalSite *site = site_fromcapsule(pysite);
-    site_delete(site);
+    return sites::pysite_create(self, args);
 }
 
-static PyObject *
-pysite_create(PyObject *self, PyObject *args)
+static PyObject * pyfdsite_create(PyObject *self, PyObject *args)
 {
-    PyObject *pysite;
-    if (!PyArg_ParseTuple(
-            args,
-            "O",
-            &pysite))
-    {
-        return NULL;
-    }
-
-    IFractalSite *site = new PySite(pysite);
-
-    //fprintf(stderr,"pysite_create: %p\n",site);
-    PyObject *pyret = PyCapsule_New(site, OBTYPE_SITE, pysite_delete);
-
-    return pyret;
-}
-
-static PyObject *
-pyfdsite_create(PyObject *self, PyObject *args)
-{
-    int fd;
-    if (!PyArg_ParseTuple(args, "i", &fd))
-    {
-        return NULL;
-    }
-
-    IFractalSite *site = new FDSite(fd);
-
-    PyObject *pyret = PyCapsule_New(site, OBTYPE_SITE, pysite_delete);
-
-    return pyret;
+    return sites::pyfdsite_create(self, args);
 }
 
 static PyObject *
@@ -396,7 +349,7 @@ pystop_calc(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    IFractalSite *site = site_fromcapsule(pysite);
+    IFractalSite *site = sites::site_fromcapsule(pysite);
     if (!site)
     {
         return NULL;
@@ -446,7 +399,7 @@ fw_create(PyObject *self, PyObject *args)
     cmap = colormaps::cmap_fromcapsule(pycmap);
     pfo = (loaders::pf_fromcapsule(pypfo))->pfo;
     im = image_fromcapsule(pyim);
-    site = site_fromcapsule(pysite);
+    site = sites::site_fromcapsule(pysite);
     if (!cmap || !pfo || !im || !im->ok() || !site)
     {
         return NULL;
@@ -585,7 +538,7 @@ ff_create(PyObject *self, PyObject *args)
     cmap = colormaps::cmap_fromcapsule(pycmap);
     pfo = (loaders::pf_fromcapsule(pypfo))->pfo;
     im = image_fromcapsule(pyim);
-    site = site_fromcapsule(pysite);
+    site = sites::site_fromcapsule(pysite);
     worker = fw_fromcapsule(pyworker);
 
     if (!cmap || !pfo || !im || !site || !worker)
