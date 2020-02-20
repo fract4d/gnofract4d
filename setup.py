@@ -82,6 +82,7 @@ fract4d_sources = [
 
     'fract4d/c/fract4dc/colormaps.cpp',
     'fract4d/c/fract4dc/loaders.cpp',
+    'fract4d/c/fract4dc/pysite.cpp',
 
     'fract4d/c/cmap.cpp',
     'fract4d/c/pointFunc.cpp',

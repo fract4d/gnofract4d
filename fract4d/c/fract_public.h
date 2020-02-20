@@ -3,6 +3,8 @@
 
 #include <pthread.h>
 
+#include "stats.h"
+
 // current state of calculation
 typedef enum {
     GF4D_FRACTAL_DONE,
@@ -48,7 +50,7 @@ typedef enum {
 
 // how to draw the image
 typedef enum {
-    DRAW_GUESSING, // several passes, starting with large boxes 
+    DRAW_GUESSING, // several passes, starting with large boxes
     DRAW_TO_DISK   // complete all passes on one box_row before continuing
 } draw_type_t;
 
@@ -62,7 +64,7 @@ typedef struct s_pixel_stat pixel_stat_t;
 
 #include "pointFunc_public.h"
 
-// a type which must be implemented by the user of 
+// a type which must be implemented by the user of
 // libfract4d. We use this to inform them of the progress
 // of an ongoing calculation
 
@@ -98,7 +100,7 @@ class IFractalSite
 	int x, int y, int aa,
 	double dist, int fate, int nIters,
 	int r, int g, int b, int a) {};
- 
+
     // asynchronous support
 
     // return true if we've been interrupted and are supposed to stop
