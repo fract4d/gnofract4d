@@ -79,6 +79,10 @@ cxxcompiler = os.environ.get("CXX", "g++")
 
 fract4d_sources = [
     'fract4d/c/fract4dmodule.cpp',
+
+    'fract4d/c/fract4dc/colormaps.cpp',
+    'fract4d/c/fract4dc/loaders.cpp',
+
     'fract4d/c/cmap.cpp',
     'fract4d/c/pointFunc.cpp',
     'fract4d/c/fractFunc.cpp',
