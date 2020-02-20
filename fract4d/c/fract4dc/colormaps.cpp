@@ -1,6 +1,12 @@
+#include <new>
+
 #include "Python.h"
 
 #include "../cmap.h"
+
+#include "common.h"
+#include "colormaps.h"
+
 
 void * get_double_field(PyObject *pyitem, const char *name, double *pVal);
 void * get_int_field(PyObject *pyitem, const char *name, int *pVal);
@@ -8,11 +14,7 @@ void * get_double_array(PyObject *pyitem, const char *name, double *pVal, int n)
 
 namespace colormaps {
 
-    static void pycmap_delete(PyObject *capsule);
-    static ColorMap * cmap_from_pyobject(PyObject *pyarray);
-    static ColorMap * cmap_fromcapsule(PyObject *capsule);
-
-    static PyObject * cmap_create(PyObject *self, PyObject *args)
+    PyObject * cmap_create(PyObject *self, PyObject *args)
     {
         /* args = an array of (index,r,g,b,a) tuples */
         PyObject *pyarray, *pyret;
@@ -73,7 +75,7 @@ namespace colormaps {
         return pyret;
     }
 
-    static PyObject * cmap_create_gradient(PyObject *self, PyObject *args)
+    PyObject * cmap_create_gradient(PyObject *self, PyObject *args)
     {
         /* args = a gradient object:
         an array of objects with:
@@ -106,7 +108,7 @@ namespace colormaps {
     }
 
 
-    static PyObject * pycmap_set_solid(PyObject *self, PyObject *args)
+    PyObject * pycmap_set_solid(PyObject *self, PyObject *args)
     {
         PyObject *pycmap;
         int which, r, g, b, a;
@@ -130,7 +132,7 @@ namespace colormaps {
     }
 
 
-    static PyObject * pycmap_set_transfer(PyObject *self, PyObject *args)
+    PyObject * pycmap_set_transfer(PyObject *self, PyObject *args)
     {
         PyObject *pycmap;
         int which;
@@ -155,7 +157,7 @@ namespace colormaps {
     }
 
 
-    static PyObject * cmap_pylookup(PyObject *self, PyObject *args)
+    PyObject * cmap_pylookup(PyObject *self, PyObject *args)
     {
         PyObject *pyobj, *pyret;
         double d;
@@ -181,7 +183,7 @@ namespace colormaps {
     }
 
 
-    static PyObject * cmap_pylookup_with_flags(PyObject *self, PyObject *args)
+    PyObject * cmap_pylookup_with_flags(PyObject *self, PyObject *args)
     {
         PyObject *pyobj, *pyret;
         double d;
@@ -209,7 +211,7 @@ namespace colormaps {
     }
 
 
-    static ColorMap * cmap_from_pyobject(PyObject *pyarray)
+    ColorMap * cmap_from_pyobject(PyObject *pyarray)
     {
         int len, i;
         GradientColorMap *cmap;
@@ -269,7 +271,7 @@ namespace colormaps {
     }
 
 
-    static ColorMap * cmap_fromcapsule(PyObject *capsule)
+    ColorMap * cmap_fromcapsule(PyObject *capsule)
     {
         ColorMap *cmap = (ColorMap *)PyCapsule_GetPointer(capsule, OBTYPE_CMAP);
         if (NULL == cmap)
@@ -280,7 +282,7 @@ namespace colormaps {
     }
 
 
-    static void pycmap_delete(PyObject *capsule)
+    void pycmap_delete(PyObject *capsule)
     {
         ColorMap *cmap = cmap_fromcapsule(capsule);
         cmap_delete(cmap);
