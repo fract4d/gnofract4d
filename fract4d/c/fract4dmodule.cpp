@@ -32,6 +32,8 @@
 #include "fract4dc/colormaps.h"
 #include "fract4dc/loaders.h"
 #include "fract4dc/sites.h"
+#include "fract4dc/images.h"
+#include "fract4dc/calcs.h"
 
 struct module_state
 {
@@ -48,18 +50,6 @@ typedef enum
     TOPLEFT
 } vec_type_t;
 
-
-static ImageWriter *
-image_writer_fromcapsule(PyObject *p)
-{
-    ImageWriter *iw = (ImageWriter *)PyCapsule_GetPointer(p, OBTYPE_IMAGE_WRITER);
-    if (NULL == iw)
-    {
-        fprintf(stderr, "%p : IW : BAD\n", p);
-    }
-
-    return iw;
-}
 
 static arena_t
 arena_fromcapsule(PyObject *p)
@@ -207,100 +197,130 @@ cmap_pylookup_with_flags(PyObject *self, PyObject *args)
 
 
 /*
-* Sites
+* sites
 */
 
-static IImage *
-image_fromcapsule(PyObject *pyimage)
+static PyObject * pysite_create(PyObject *self, PyObject *args)
 {
-    IImage *image = (IImage *)PyCapsule_GetPointer(pyimage, OBTYPE_IMAGE);
-    if (NULL == image)
-    {
-        fprintf(stderr, "%p : IM : BAD\n", pyimage);
-    }
-    return image;
+    return sites::pysite_create(self, args);
+}
+
+static PyObject * pyfdsite_create(PyObject *self, PyObject *args)
+{
+    return sites::pyfdsite_create(self, args);
 }
 
 
+/*
+* calcs
+*/
 
-struct calc_args
+static PyObject *
+pystop_calc(PyObject *self, PyObject *args)
 {
-    double params[N_PARAMS];
-    int eaa, maxiter, nThreads;
-    int auto_deepen, yflip, periodicity, dirty;
-    int auto_tolerance;
-    double tolerance;
-    int asynchronous, warp_param;
-    render_type_t render_type;
-    pf_obj *pfo;
-    ColorMap *cmap;
-    IImage *im;
-    IFractalSite *site;
+    return calcs::pystop_calc(self, args);
+}
 
-    PyObject *pycmap, *pypfo, *pyim, *pysite;
-    calc_args()
-    {
-#ifdef DEBUG_CREATION
-        fprintf(stderr, "%p : CA : CTOR\n", this);
-#endif
-        pycmap = NULL;
-        pypfo = NULL;
-        pyim = NULL;
-        pysite = NULL;
-        dirty = 1;
-        periodicity = true;
-        yflip = false;
-        auto_deepen = false;
-        auto_tolerance = false;
-        tolerance = 1.0E-9;
-        eaa = AA_NONE;
-        maxiter = 1024;
-        nThreads = 1;
-        render_type = RENDER_TWO_D;
-        asynchronous = false;
-        warp_param = -1;
-    }
+static PyObject *
+pycalc(PyObject *self, PyObject *args, PyObject *kwds)
+{
+    return calcs::pycalc(self, args, kwds);
+}
 
-    void set_cmap(PyObject *pycmap_)
-    {
-        pycmap = pycmap_;
-        cmap = colormaps::cmap_fromcapsule(pycmap);
-        Py_XINCREF(pycmap);
-    }
 
-    void set_pfo(PyObject *pypfo_)
-    {
-        pypfo = pypfo_;
+/*
+* images
+*/
 
-        pfo = (loaders::pf_fromcapsule(pypfo))->pfo;
-        Py_XINCREF(pypfo);
-    }
+static PyObject *
+pyimage_lookup(PyObject *self, PyObject *args)
+{
+    return images::pyimage_lookup(self, args);
+}
 
-    void set_im(PyObject *pyim_)
-    {
-        pyim = pyim_;
-        im = image_fromcapsule(pyim);
-        Py_XINCREF(pyim);
-    }
-    void set_site(PyObject *pysite_)
-    {
-        pysite = pysite_;
-        site = sites::site_fromcapsule(pysite);
-        Py_XINCREF(pysite);
-    }
+static PyObject *
+image_create(PyObject *self, PyObject *args)
+{
+    return images::image_create(self, args);
+}
 
-    ~calc_args()
-    {
-#ifdef DEBUG_CREATION
-        fprintf(stderr, "%p : CA : DTOR\n", this);
-#endif
-        Py_XDECREF(pycmap);
-        Py_XDECREF(pypfo);
-        Py_XDECREF(pyim);
-        Py_XDECREF(pysite);
-    }
-};
+static PyObject *
+image_resize(PyObject *self, PyObject *args)
+{
+    return images::image_resize(self, args);
+}
 
+static PyObject *
+image_dims(PyObject *self, PyObject *args)
+{
+    return images::image_dims(self, args);
+}
+
+static PyObject *
+image_set_offset(PyObject *self, PyObject *args)
+{
+    return images::image_set_offset(self, args);
+}
+
+static PyObject *
+image_clear(PyObject *self, PyObject *args)
+{
+    return images::image_clear(self, args);
+}
+
+static PyObject *
+image_writer_create(PyObject *self, PyObject *args)
+{
+    return images::image_writer_create(self, args);
+}
+
+static PyObject *
+image_read(PyObject *self, PyObject *args)
+{
+    return images::image_read(self, args);
+}
+
+static PyObject *
+image_save_header(PyObject *self, PyObject *args)
+{
+    return images::image_save_header(self, args);
+}
+
+static PyObject *
+image_save_tile(PyObject *self, PyObject *args)
+{
+    return images::image_save_tile(self, args);
+}
+
+static PyObject *
+image_save_footer(PyObject *self, PyObject *args)
+{
+    return images::image_save_footer(self, args);
+}
+
+static PyObject *
+image_buffer(PyObject *self, PyObject *args)
+{
+    return images::image_buffer(self, args);
+}
+
+static PyObject *
+image_fate_buffer(PyObject *self, PyObject *args)
+{
+    return images::image_fate_buffer(self, args);
+}
+
+static PyObject *
+image_get_color_index(PyObject *self, PyObject *args)
+{
+    return images::image_get_color_index(self, args);
+}
+
+static PyObject *
+image_get_fate(PyObject *self, PyObject *args)
+{
+    return images::image_get_fate(self, args);
+}
 
 
 
@@ -325,40 +345,6 @@ ff_delete(struct ffHandle *ffh)
     delete ffh->ff;
     Py_DECREF(ffh->pyhandle);
     delete ffh;
-}
-
-static PyObject * pysite_create(PyObject *self, PyObject *args)
-{
-    return sites::pysite_create(self, args);
-}
-
-static PyObject * pyfdsite_create(PyObject *self, PyObject *args)
-{
-    return sites::pyfdsite_create(self, args);
-}
-
-static PyObject *
-pystop_calc(PyObject *self, PyObject *args)
-{
-    PyObject *pysite;
-    if (!PyArg_ParseTuple(
-            args,
-            "O",
-            &pysite))
-    {
-        return NULL;
-    }
-
-    IFractalSite *site = sites::site_fromcapsule(pysite);
-    if (!site)
-    {
-        return NULL;
-    }
-
-    site->interrupt();
-
-    Py_INCREF(Py_None);
-    return Py_None;
 }
 
 static IFractWorker *
@@ -398,7 +384,7 @@ fw_create(PyObject *self, PyObject *args)
 
     cmap = colormaps::cmap_fromcapsule(pycmap);
     pfo = (loaders::pf_fromcapsule(pypfo))->pfo;
-    im = image_fromcapsule(pyim);
+    im = images::image_fromcapsule(pyim);
     site = sites::site_fromcapsule(pysite);
     if (!cmap || !pfo || !im || !im->ok() || !site)
     {
@@ -537,7 +523,7 @@ ff_create(PyObject *self, PyObject *args)
 
     cmap = colormaps::cmap_fromcapsule(pycmap);
     pfo = (loaders::pf_fromcapsule(pypfo))->pfo;
-    im = image_fromcapsule(pyim);
+    im = images::image_fromcapsule(pyim);
     site = sites::site_fromcapsule(pysite);
     worker = fw_fromcapsule(pyworker);
 
@@ -580,644 +566,6 @@ ff_create(PyObject *self, PyObject *args)
     Py_INCREF(pyworker);
 
     return pyret;
-}
-
-static void *
-calculation_thread(void *vdata)
-{
-    calc_args *args = (calc_args *)vdata;
-
-#ifdef DEBUG_THREADS
-    fprintf(stderr, "%p : CA : CALC(%d)\n", args, pthread_self());
-#endif
-
-    calc(args->params, args->eaa, args->maxiter,
-         args->nThreads, args->pfo, args->cmap,
-         args->auto_deepen,
-         args->auto_tolerance,
-         args->tolerance,
-         args->yflip, args->periodicity, args->dirty,
-         0, // debug_flags
-         args->render_type,
-         args->warp_param,
-         args->im, args->site);
-
-#ifdef DEBUG_THREADS
-    fprintf(stderr, "%p : CA : ENDCALC(%d)\n", args, pthread_self());
-#endif
-
-    delete args;
-    return NULL;
-}
-
-static calc_args *
-parse_calc_args(PyObject *args, PyObject *kwds)
-{
-    PyObject *pyparams, *pypfo, *pycmap, *pyim, *pysite;
-    calc_args *cargs = new calc_args();
-    double *p = NULL;
-
-    static const char *kwlist[] = {
-        "image",
-        "site",
-        "pfo",
-        "cmap",
-        "params",
-        "antialias",
-        "maxiter",
-        "yflip",
-        "nthreads",
-        "auto_deepen",
-        "periodicity",
-        "render_type",
-        "dirty",
-        "asynchronous",
-        "warp_param",
-        "tolerance",
-        "auto_tolerance",
-        NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(
-            args,
-            kwds,
-            "OOOOO|iiiiiiiiiidi",
-            const_cast<char **>(kwlist),
-
-            &pyim, &pysite,
-            &pypfo, &pycmap,
-            &pyparams,
-            &cargs->eaa,
-            &cargs->maxiter,
-            &cargs->yflip,
-            &cargs->nThreads,
-            &cargs->auto_deepen,
-            &cargs->periodicity,
-            &cargs->render_type,
-            &cargs->dirty,
-            &cargs->asynchronous,
-            &cargs->warp_param,
-            &cargs->tolerance,
-            &cargs->auto_tolerance))
-    {
-        goto error;
-    }
-
-    p = cargs->params;
-    if (!PyList_Check(pyparams) || PyList_Size(pyparams) != N_PARAMS)
-    {
-        PyErr_SetString(PyExc_ValueError, "bad parameter list");
-        goto error;
-    }
-
-    for (int i = 0; i < N_PARAMS; ++i)
-    {
-        PyObject *elt = PyList_GetItem(pyparams, i);
-        if (!PyFloat_Check(elt))
-        {
-            PyErr_SetString(PyExc_ValueError, "a param is not a float");
-            goto error;
-        }
-
-        p[i] = PyFloat_AsDouble(elt);
-    }
-
-    cargs->set_cmap(pycmap);
-    cargs->set_pfo(pypfo);
-    cargs->set_im(pyim);
-    cargs->set_site(pysite);
-    if (!cargs->cmap || !cargs->pfo ||
-        !cargs->im || !cargs->site)
-    {
-        PyErr_SetString(PyExc_ValueError, "bad argument passed to calc");
-        goto error;
-    }
-
-    if (!cargs->im->ok())
-    {
-        PyErr_SetString(PyExc_MemoryError, "image not allocated");
-        goto error;
-    }
-
-    return cargs;
-
-error:
-    delete cargs;
-    return NULL;
-}
-
-static PyObject *
-pycalc(PyObject *self, PyObject *args, PyObject *kwds)
-{
-    calc_args *cargs = parse_calc_args(args, kwds);
-    if (NULL == cargs)
-    {
-        return NULL;
-    }
-
-    if (cargs->asynchronous)
-    {
-        cargs->site->interrupt();
-        cargs->site->wait();
-
-        cargs->site->start(cargs);
-
-        pthread_t tid;
-
-        /* create low-priority attribute block */
-        pthread_attr_t lowprio_attr;
-        //struct sched_param lowprio_param;
-        pthread_attr_init(&lowprio_attr);
-        //lowprio_param.sched_priority = sched_get_priority_min(SCHED_OTHER);
-        //pthread_attr_setschedparam(&lowprio_attr, &lowprio_param);
-
-        /* start the calculation thread */
-        pthread_create(&tid, &lowprio_attr, calculation_thread, (void *)cargs);
-        assert(tid != 0);
-
-        cargs->site->set_tid(tid);
-    }
-    else
-    {
-        Py_BEGIN_ALLOW_THREADS
-            // synchronous
-            calc(cargs->params,
-                 cargs->eaa,
-                 cargs->maxiter,
-                 cargs->nThreads,
-                 cargs->pfo,
-                 cargs->cmap,
-                 cargs->auto_deepen,
-                 cargs->auto_tolerance,
-                 cargs->tolerance,
-                 cargs->yflip,
-                 cargs->periodicity,
-                 cargs->dirty,
-                 0, // debug_flags
-                 cargs->render_type,
-                 cargs->warp_param,
-                 cargs->im,
-                 cargs->site);
-
-        delete cargs;
-        Py_END_ALLOW_THREADS
-    }
-
-    Py_INCREF(Py_None);
-
-    return Py_None;
-}
-
-static void
-image_delete(IImage *image)
-{
-#ifdef DEBUG_CREATION
-    fprintf(stderr, "%p : IM : DTOR\n", image);
-#endif
-    delete image;
-}
-
-static void
-pyimage_delete(PyObject *pyimage)
-{
-    IImage *im = image_fromcapsule(pyimage);
-    image_delete(im);
-}
-
-static PyObject *
-image_create(PyObject *self, PyObject *args)
-{
-    int x, y;
-    int totalx = -1, totaly = -1;
-    if (!PyArg_ParseTuple(args, "ii|ii", &x, &y, &totalx, &totaly))
-    {
-        return NULL;
-    }
-
-    IImage *i = new image();
-
-    i->set_resolution(x, y, totalx, totaly);
-
-    if (!i->ok())
-    {
-        PyErr_SetString(PyExc_MemoryError, "Image too large");
-        delete i;
-        return NULL;
-    }
-
-#ifdef DEBUG_CREATION
-    fprintf(stderr, "%p : IM : CTOR\n", i);
-#endif
-
-    PyObject *pyret = PyCapsule_New(i, OBTYPE_IMAGE, pyimage_delete);
-
-    return pyret;
-}
-
-static PyObject *
-image_resize(PyObject *self, PyObject *args)
-{
-    int x, y;
-    int totalx = -1, totaly = -1;
-    PyObject *pyim;
-
-    if (!PyArg_ParseTuple(args, "Oiiii", &pyim, &x, &y, &totalx, &totaly))
-    {
-        return NULL;
-    }
-
-    IImage *i = image_fromcapsule(pyim);
-    if (NULL == i)
-    {
-        return NULL;
-    }
-
-    i->set_resolution(x, y, totalx, totaly);
-
-    if (!i->ok())
-    {
-        PyErr_SetString(PyExc_MemoryError, "Image too large");
-        return NULL;
-    }
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-static PyObject *
-image_dims(PyObject *self, PyObject *args)
-{
-    PyObject *pyim;
-
-    if (!PyArg_ParseTuple(args, "O", &pyim))
-    {
-        return NULL;
-    }
-
-    IImage *i = image_fromcapsule(pyim);
-    if (NULL == i)
-    {
-        return NULL;
-    }
-
-    int xsize, ysize, xoffset, yoffset, xtotalsize, ytotalsize;
-    xsize = i->Xres();
-    ysize = i->Yres();
-    xoffset = i->Xoffset();
-    yoffset = i->Yoffset();
-    xtotalsize = i->totalXres();
-    ytotalsize = i->totalYres();
-
-    PyObject *pyret = Py_BuildValue(
-        "(iiiiii)", xsize, ysize, xtotalsize, ytotalsize, xoffset, yoffset);
-
-    return pyret;
-}
-
-static PyObject *
-image_set_offset(PyObject *self, PyObject *args)
-{
-    int x, y;
-    PyObject *pyim;
-
-    if (!PyArg_ParseTuple(args, "Oii", &pyim, &x, &y))
-    {
-        return NULL;
-    }
-
-    IImage *i = image_fromcapsule(pyim);
-    if (NULL == i)
-    {
-        return NULL;
-    }
-
-    bool ok = i->set_offset(x, y);
-    if (!ok)
-    {
-        PyErr_SetString(PyExc_ValueError, "Offset out of bounds");
-        return NULL;
-    }
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-static PyObject *
-image_clear(PyObject *self, PyObject *args)
-{
-    PyObject *pyim;
-
-    if (!PyArg_ParseTuple(args, "O", &pyim))
-    {
-        return NULL;
-    }
-
-    IImage *i = image_fromcapsule(pyim);
-    if (NULL == i)
-    {
-        return NULL;
-    }
-
-    i->clear();
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-static void
-image_writer_delete(ImageWriter *im)
-{
-    delete im;
-}
-
-static void
-pyimage_writer_delete(PyObject *pyim)
-{
-    ImageWriter *im = image_writer_fromcapsule(pyim);
-    image_writer_delete(im);
-}
-
-static PyObject *
-image_writer_create(PyObject *self, PyObject *args)
-{
-    PyObject *pyim;
-    char *filename;
-    int file_type;
-    if (!PyArg_ParseTuple(args, "Osi", &pyim, &filename, &file_type))
-    {
-        return NULL;
-    }
-
-    IImage *i = image_fromcapsule(pyim);
-
-    FILE *fp = fopen(filename, "wb");
-
-    if (!fp)
-    {
-        PyErr_SetFromErrnoWithFilename(PyExc_OSError, filename);
-        return NULL;
-    }
-
-    ImageWriter *writer = ImageWriter::create((image_file_t)file_type, fp, i);
-    if (NULL == writer)
-    {
-        PyErr_SetString(PyExc_ValueError, "Unsupported file type");
-        return NULL;
-    }
-
-    return PyCapsule_New(writer, OBTYPE_IMAGE_WRITER, pyimage_writer_delete);
-}
-
-static PyObject *
-image_read(PyObject *self, PyObject *args)
-{
-    PyObject *pyim;
-    char *filename;
-    int file_type;
-    if (!PyArg_ParseTuple(args, "Osi", &pyim, &filename, &file_type))
-    {
-        return NULL;
-    }
-
-    IImage *i = image_fromcapsule(pyim);
-
-    FILE *fp = fopen(filename, "rb");
-
-    if (!fp || !i)
-    {
-        PyErr_SetFromErrnoWithFilename(PyExc_OSError, "filename");
-        return NULL;
-    }
-
-    ImageReader *reader = ImageReader::create((image_file_t)file_type, fp, i);
-
-    if (!reader->read())
-    {
-        PyErr_SetString(PyExc_IOError, "Couldn't read image contents");
-        delete reader;
-        return NULL;
-    }
-    delete reader;
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-static PyObject *
-image_save_header(PyObject *self, PyObject *args)
-{
-    PyObject *pyimwriter;
-    if (!PyArg_ParseTuple(args, "O", &pyimwriter))
-    {
-        return NULL;
-    }
-
-    ImageWriter *i = image_writer_fromcapsule(pyimwriter);
-
-    if (!i || !i->save_header())
-    {
-        PyErr_SetString(PyExc_IOError, "Couldn't save file header");
-        return NULL;
-    }
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-static PyObject *
-image_save_tile(PyObject *self, PyObject *args)
-{
-    PyObject *pyimwriter;
-    if (!PyArg_ParseTuple(args, "O", &pyimwriter))
-    {
-        return NULL;
-    }
-
-    ImageWriter *i = image_writer_fromcapsule(pyimwriter);
-
-    if (!i || !i->save_tile())
-    {
-        PyErr_SetString(PyExc_IOError, "Couldn't save image tile");
-        return NULL;
-    }
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-static PyObject *
-image_save_footer(PyObject *self, PyObject *args)
-{
-    PyObject *pyimwriter;
-    if (!PyArg_ParseTuple(args, "O", &pyimwriter))
-    {
-        return NULL;
-    }
-
-    ImageWriter *i = image_writer_fromcapsule(pyimwriter);
-
-    if (!i || !i->save_footer())
-    {
-        PyErr_SetString(PyExc_IOError, "Couldn't save image footer");
-        return NULL;
-    }
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-static PyObject *
-image_buffer(PyObject *self, PyObject *args)
-{
-    PyObject *pyim;
-    PyObject *pybuf;
-
-    int x = 0, y = 0;
-    if (!PyArg_ParseTuple(args, "O|ii", &pyim, &x, &y))
-    {
-        return NULL;
-    }
-
-    image *i = (image *)image_fromcapsule(pyim);
-
-#ifdef DEBUG_CREATION
-    fprintf(stderr, "%p : IM : BUF\n", i);
-#endif
-
-    if (!i || !i->ok())
-    {
-        PyErr_SetString(PyExc_MemoryError, "image not allocated");
-        return NULL;
-    }
-
-    if (x < 0 || x >= i->Xres() || y < 0 || y >= i->Yres())
-    {
-        PyErr_SetString(PyExc_ValueError, "request for buffer outside image bounds");
-        return NULL;
-    }
-    int offset = 3 * (y * i->Xres() + x);
-    assert(offset > -1 && offset < i->bytes());
-    Py_buffer *buffer = new Py_buffer;
-    PyBuffer_FillInfo(buffer, NULL, i->getBuffer() + offset, i->bytes() - offset, 0, PyBUF_WRITABLE);
-    pybuf = PyMemoryView_FromBuffer(buffer);
-    Py_XINCREF(pybuf);
-    //Py_XINCREF(pyim);
-
-    return pybuf;
-}
-
-static PyObject *
-image_fate_buffer(PyObject *self, PyObject *args)
-{
-    PyObject *pyim;
-    PyObject *pybuf;
-
-    int x = 0, y = 0;
-    if (!PyArg_ParseTuple(args, "O|ii", &pyim, &x, &y))
-    {
-        return NULL;
-    }
-
-    image *i = (image *)image_fromcapsule(pyim);
-
-#ifdef DEBUG_CREATION
-    fprintf(stderr, "%p : IM : BUF\n", i);
-#endif
-
-    if (NULL == i)
-    {
-        PyErr_SetString(PyExc_ValueError,
-                        "Bad image object");
-        return NULL;
-    }
-
-    if (x < 0 || x >= i->Xres() || y < 0 || y >= i->Yres())
-    {
-        PyErr_SetString(PyExc_ValueError, "request for buffer outside image bounds");
-        return NULL;
-    }
-    int index = i->index_of_subpixel(x, y, 0);
-    int last_index = i->index_of_sentinel_subpixel();
-    assert(index > -1 && index < last_index);
-
-    Py_buffer *buffer = new Py_buffer;
-    PyBuffer_FillInfo(buffer, NULL, i->getFateBuffer() + index, (last_index - index) * sizeof(fate_t), 0, PyBUF_WRITABLE);
-    pybuf = PyMemoryView_FromBuffer(buffer);
-
-    Py_XINCREF(pybuf);
-
-    return pybuf;
-}
-
-static PyObject *
-image_get_color_index(PyObject *self, PyObject *args)
-{
-    PyObject *pyim;
-
-    int x = 0, y = 0, sub = 0;
-    if (!PyArg_ParseTuple(args, "Oii|i", &pyim, &x, &y, &sub))
-    {
-        return NULL;
-    }
-
-    image *i = (image *)image_fromcapsule(pyim);
-
-    if (NULL == i)
-    {
-        PyErr_SetString(PyExc_ValueError,
-                        "Bad image object");
-        return NULL;
-    }
-
-    if (x < 0 || x >= i->Xres() ||
-        y < 0 || y >= i->Yres() ||
-        sub < 0 || sub >= image::N_SUBPIXELS)
-    {
-        PyErr_SetString(PyExc_ValueError,
-                        "request for data outside image bounds");
-        return NULL;
-    }
-
-    float dist = i->getIndex(x, y, sub);
-    return Py_BuildValue("d", (double)dist);
-}
-
-static PyObject *
-image_get_fate(PyObject *self, PyObject *args)
-{
-    PyObject *pyim;
-
-    int x = 0, y = 0, sub = 0;
-    if (!PyArg_ParseTuple(args, "Oii|i", &pyim, &x, &y, &sub))
-    {
-        return NULL;
-    }
-
-    image *i = (image *)image_fromcapsule(pyim);
-
-    if (NULL == i)
-    {
-        PyErr_SetString(PyExc_ValueError,
-                        "Bad image object");
-        return NULL;
-    }
-
-    if (x < 0 || x >= i->Xres() ||
-        y < 0 || y >= i->Yres() ||
-        sub < 0 || sub >= image::N_SUBPIXELS)
-    {
-        PyErr_SetString(PyExc_ValueError,
-                        "request for data outside image bounds");
-        return NULL;
-    }
-
-    fate_t fate = i->getFate(x, y, sub);
-    if (fate == FATE_UNKNOWN)
-    {
-        Py_INCREF(Py_None);
-        return Py_None;
-    }
-    int is_solid = fate & FATE_SOLID ? 1 : 0;
-    return Py_BuildValue("(ii)", is_solid, fate & ~FATE_SOLID);
 }
 
 static PyObject *
@@ -1347,30 +695,6 @@ ff_look_vector(PyObject *self, PyObject *args)
     return Py_BuildValue(
         "(dddd)",
         lookvec[0], lookvec[1], lookvec[2], lookvec[3]);
-}
-
-static PyObject *
-pyimage_lookup(PyObject *self, PyObject *args)
-{
-    PyObject *pyimage = NULL;
-    double x, y;
-    double r, g, b;
-
-    if (!PyArg_ParseTuple(
-            args,
-            "Odd",
-            &pyimage, &x, &y))
-    {
-        return NULL;
-    }
-
-    image *i = (image *)image_fromcapsule(pyimage);
-
-    image_lookup(i, x, y, &r, &g, &b);
-
-    return Py_BuildValue(
-        "(dddd)",
-        r, g, b, 1.0);
 }
 
 static PyObject *
