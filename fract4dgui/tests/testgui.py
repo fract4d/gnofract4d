@@ -35,6 +35,7 @@ class TestCase(unittest.TestCase):
         cls.g_comp = fc.Compiler(cls.userConfig)
         cls.g_comp.add_func_path("fract4d")
         cls.g_comp.add_func_path("formulas")
+        cls.g_comp.add_func_path("testdata/formulas")
 
     @classmethod
     def tearDownClass(cls):

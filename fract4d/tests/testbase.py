@@ -240,6 +240,7 @@ class ClassSetup(TestBase):
         cls.userConfig["map_path"].clear()
         cls.g_comp = fc.Compiler(cls.userConfig)
         cls.g_comp.add_func_path("formulas")
+        cls.g_comp.add_func_path("testdata/formulas")
 
     @classmethod
     def tearDownClass(cls):
