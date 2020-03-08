@@ -1,4 +1,4 @@
-dist: xenial  # required for Python >= 3.7
+dist: bionic  # required for Python 3.6
 services:
   - xvfb
 language: python
@@ -6,9 +6,9 @@ python:
   - "3.5"
   - "3.6"
   - "3.7"
+  - "3.8"
 before_install:
   sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
-env: PIP_NO_BUILD_ISOLATION=false
 install:
   - python setup.py build
   - pip install tox-travis
