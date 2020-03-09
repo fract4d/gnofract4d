@@ -1,9 +1,9 @@
 #ifndef __FDSITE_H_INCLUDED__
 #define __FDSITE_H_INCLUDED__
 
-#include <pthread.h>
-
 #include "Python.h"
+
+#include <pthread.h>
 
 #include "../fract_public.h"
 
