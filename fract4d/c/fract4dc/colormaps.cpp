@@ -1,6 +1,6 @@
-#include <new>
-
 #include "Python.h"
+
+#include <new>
 
 #include "../cmap.h"
 
