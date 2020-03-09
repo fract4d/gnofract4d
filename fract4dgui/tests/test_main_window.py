@@ -12,6 +12,7 @@ from gi.repository import Gtk
 from fract4d import fractal
 from fract4dgui import main_window
 
+
 class WrapMainWindow(main_window.MainWindow):
     @patch('fract4d.fractconfig.T.get_data_path')
     def __init__(self, config, mock_data_path):
@@ -19,22 +20,23 @@ class WrapMainWindow(main_window.MainWindow):
         mock_data_path.return_value = "gnofract4d.css"
         main_window.MainWindow.__init__(self, config, ['formulas'])
 
-    def show_error_message(self,message,exception):
-        self.errors.append((message,exception))
-        
+    def show_error_message(self, message, exception):
+        self.errors.append((message, exception))
+
+
 class Test(testgui.TestCase):
     def setUp(self):
         self.mw = WrapMainWindow(Test.userConfig)
         self.assertEqual(self.mw.filename, None, "shouldn't have a filename")
-        
+
     def tearDown(self):
         os.system("killall realyelp > /dev/null 2>&1")
         os.system("killall yelp > /dev/null 2>&1")
-        
+
     def wait(self):
         Gtk.main()
-        
-    def quitloop(self,f,status):
+
+    def quitloop(self, f, status):
         if status == 0:
             Gtk.main_quit()
 
@@ -117,49 +119,53 @@ class Test(testgui.TestCase):
         fct2 = self.mw.preview.f.serialize()
 
         self.assertEqual(fct1, fct2)
-        
+
     def testDialogs(self):
-        self.mw.settings(None,None)
-        self.mw.contents(None,None)
-        self.mw.painter(None,None)
-        
+        self.mw.settings(None, None)
+        self.mw.contents(None, None)
+        self.mw.painter(None, None)
+
     def testFileDialogs(self):
         self.mw.get_save_as_fs()
         self.mw.get_save_image_as_fs()
         self.mw.get_save_hires_image_as_fs()
         self.mw.get_open_fs()
-        
+
     def testExplorer(self):
         self.mw.load("testdata/nexus.fct")
         self.mw.set_explorer_state(True)
         self.mw.update_subfracts()
         sub3_file = os.path.join(Test.tmpdir.name, "sub3.fct")
         with open(sub3_file, "w") as fh:
-                self.mw.subfracts[3].save(fh,False)
-        
-        self.mw.subfracts[3].onButtonRelease(None,None)
+            self.mw.subfracts[3].save(fh, False)
+
+        self.mw.subfracts[3].onButtonRelease(None, None)
         main_file = os.path.join(Test.tmpdir.name, "main.fct")
         with open(main_file, "w") as fh:
-                self.mw.f.save(fh,False)
-        
+            self.mw.f.save(fh, False)
+
         self.assertEqual(self.mw.subfracts[3].serialize(),
                          self.mw.f.serialize())
-            
+
         self.mw.set_explorer_state(False)
 
     def testPlanes(self):
-        self.mw.set_xz_plane(None,None)
-        
+        self.mw.set_xz_plane(None, None)
+
     def testRandomize(self):
-        self.mw.randomize_colors(8,None)
+        self.mw.randomize_colors(8, None)
 
     def testDefaultFilenames(self):
         self.assertEqual("Mandelbrot.fct", self.mw.default_save_filename())
-        self.assertEqual("Mandelbrot.png", self.mw.default_save_filename(".png"))
+        self.assertEqual(
+            "Mandelbrot.png",
+            self.mw.default_save_filename(".png"))
         self.assertEqual("Mandelbrot.png", self.mw.default_image_filename())
-        
+
         self.mw.load("testdata/elfglow.fct")
-        self.assertEqual("testdata/elfglow002.fct", self.mw.default_save_filename())
+        self.assertEqual(
+            "testdata/elfglow002.fct",
+            self.mw.default_save_filename())
         self.assertEqual(
             "testdata/elfglow.png",
             self.mw.image_save_filename("testdata/elfglow.fct"))

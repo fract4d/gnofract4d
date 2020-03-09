@@ -7,30 +7,34 @@ import re
 from . import absyn, fracttypes, ir, optimize
 from .fracttypes import Bool, Int, Float, Complex, Hyper, Color, IntArray, FloatArray, ComplexArray, VoidArray
 from .instructions import *
-    
+
+
 class Formatter:
     ' fed to print to fill the output template'
+
     def __init__(self, codegen, tree, lookup):
         self.codegen = codegen
         self.lookup = lookup
         self.tree = tree
 
-    def __getitem__(self,key):
+    def __getitem__(self, key):
         try:
             out = self.tree.output_sections[key]
             str_output = "\n".join([x.format() for x in out])
             return str_output
 
         except KeyError as err:
-            #print "missed %s" % key
-            return self.lookup.get(key,"")
+            # print "missed %s" % key
+            return self.lookup.get(key, "")
+
 
 class T:
     'code generator'
-    def __init__(self,symbols,options={}):
+
+    def __init__(self, symbols, options={}):
         self.symbols = symbols
         self.out = []
-        self.optimize_flags = options.get("optimize",optimize.Nothing)
+        self.optimize_flags = options.get("optimize", optimize.Nothing)
         # a list of templates and associated actions
         # this must be ordered with largest, most efficient templates first
         # thus performing a crude 'maximal munch' instruction generation
@@ -45,13 +49,13 @@ class T:
             ["Jump", T.jump],
             ["CJump", T.cjump],
             ["Cast", T.cast],
-            ])
-        
+        ])
+
         self.generate_trace = False
 
-        self.generate_trace = options.get("trace",False)
+        self.generate_trace = options.get("trace", False)
         self.log_z = options.get("tracez", False)
-        
+
         self.output_template = '''
 #include <stdio.h>
 #include <stdlib.h>
@@ -437,44 +441,44 @@ extern "C" {
 #endif
 '''
 
-    def emit_binop(self,op,srcs,type):
+    def emit_binop(self, op, srcs, type):
         dst = self.newTemp(type)
 
         self.out.append(Binop(op, srcs, [dst], self.generate_trace))
         return dst
 
-    def emit_func(self,op,srcs,type):
+    def emit_func(self, op, srcs, type):
         # emit a call to C stdlib function 'op'
         dst = self.newTemp(type)
         assem = "%(d0)s = " + op + "(%(s0)s);"
         self.out.append(Oper(assem, srcs, [dst]))
         return dst
 
-    def emit_func2(self,op,srcs,type):
+    def emit_func2(self, op, srcs, type):
         # emit a call to C stdlib function 'op'
         dst = self.newTemp(type)
         assem = "%(d0)s = " + op + "(%(s0)s,%(s1)s);"
         self.out.append(Oper(assem, srcs, [dst]))
         return dst
 
-    def emit_func3(self,op,srcs,type):
+    def emit_func3(self, op, srcs, type):
         # emit a call to a C func which takes 3 args and returns 1
         dst = self.newTemp(type)
         assem = "%(d0)s = " + op + "(%(s0)s,%(s1)s,%(s2)s);"
-        self.out.append(Oper(assem,srcs, [dst]))
+        self.out.append(Oper(assem, srcs, [dst]))
         return dst
 
-    def emit_func_n(self,n,op,srcs,type):
+    def emit_func_n(self, n, op, srcs, type):
         dst = self.newTemp(type)
         srcstrings = []
         for i in range(n):
             srcstrings.append("%%(s%d)s" % i)
-            
+
         assem = "%(d0)s = " + op + "(" + ",".join(srcstrings) + ");"
-        self.out.append(Oper(assem,srcs, [dst]))
+        self.out.append(Oper(assem, srcs, [dst]))
         return dst
-        
-    def emit_func3_3(self,op,srcs,type):
+
+    def emit_func3_3(self, op, srcs, type):
         # emit a call to a C func which takes 3 args and returns 3 out params
         # This rather specialized feature is to call hls2rgb or image lookup
         dst = [
@@ -482,40 +486,40 @@ extern "C" {
             self.newTemp(type),
             self.newTemp(type)]
         assem = op + "(%(s0)s,%(s1)s,%(s2)s, &%(d0)s, &%(d1)s, &%(d2)s);"
-        self.out.append(Oper(assem,srcs, dst))
+        self.out.append(Oper(assem, srcs, dst))
         return dst
 
-    def emit_func2_3(self,op,srcs,type):
+    def emit_func2_3(self, op, srcs, type):
         # take 2 objects and return 3, as in gradient func
         dst = [
             self.newTemp(type),
             self.newTemp(type),
             self.newTemp(type)]
         assem = op + "(%(s0)s,%(s1)s, &%(d0)s, &%(d1)s, &%(d2)s);"
-        self.out.append(Oper(assem,srcs, dst))
+        self.out.append(Oper(assem, srcs, dst))
         return dst
 
-    def emit_func0_2(self,op,srcs,type):
+    def emit_func0_2(self, op, srcs, type):
         # take 0 objects and return 2, as in random()
         dst = [
             self.newTemp(type),
             self.newTemp(type)]
         assem = op + "(&%(d0)s, &%(d1)s);"
-        self.out.append(Oper(assem,srcs, dst))
+        self.out.append(Oper(assem, srcs, dst))
         return dst
-        
-    def emit_move(self, src, dst):
-        self.out.append(Move([src],[dst], self.generate_trace))
 
-    def emit_cjump(self, test,dst):
+    def emit_move(self, src, dst):
+        self.out.append(Move([src], [dst], self.generate_trace))
+
+    def emit_cjump(self, test, dst):
         assem = "if(%(s0)s) goto " + dst + ";"
         self.out.append(Oper(assem, [test], []))
 
     def emit_jump(self, dst):
         assem = "goto %s;" % dst
-        self.out.append(Oper(assem,[],[],[dst]))
+        self.out.append(Oper(assem, [], [], [dst]))
 
-    def emit_label(self,name):
+    def emit_label(self, name):
         self.out.append(Label(name))
 
     def get_gradient_var(self):
@@ -526,26 +530,26 @@ extern "C" {
     def is_direct(self):
         return self.symbols.has_user_key("#color")
 
-    def decl_with_init_from_sym(self,sym):
+    def decl_with_init_from_sym(self, sym):
         "Declare a variable for sym and initialize it"
         parts = sym.part_names
         vals = sym.init_val()
         decls = [None] * len(parts)
         for i in range(len(parts)):
             decls[i] = Decl(
-                "%s %s%s = %s;" % (sym.ctype,sym.cname,parts[i],vals[i]))
+                "%s %s%s = %s;" % (sym.ctype, sym.cname, parts[i], vals[i]))
 
         return decls
 
-    def decl_from_sym(self,sym):
+    def decl_from_sym(self, sym):
         """Declare a variable for sym"""
         parts = sym.part_names
         decls = [
-            Decl("%s %s%s;" % (sym.ctype,sym.cname,part))
+            Decl("%s %s%s;" % (sym.ctype, sym.cname, part))
             for part in parts]
         return decls
 
-    def return_sym(self,sym):
+    def return_sym(self, sym):
         "Code to return computed value of sym to C caller"
         initvals = sym.init_val()
         parts = sym.part_names
@@ -557,122 +561,122 @@ extern "C" {
 
         return returns
 
-    def output_symbol(self,key,sym,out,overrides):
-        if not isinstance(sym,fracttypes.Var):
+    def output_symbol(self, key, sym, out, overrides):
+        if not isinstance(sym, fracttypes.Var):
             return
 
         override = overrides.get(key)
-        
+
         if override is None:
             out += self.decl_with_init_from_sym(sym)
         else:
-            #print "override %s for %s" % (override, key)
+            # print "override %s for %s" % (override, key)
             out.append(Decl(override))
-        
-    def output_decl(self,key,sym,out,overrides):
-        if not isinstance(sym,fracttypes.Var):
+
+    def output_decl(self, key, sym, out, overrides):
+        if not isinstance(sym, fracttypes.Var):
             return
-        
+
         override = overrides.get(key)
         if override is None:
             out += self.decl_from_sym(sym)
         else:
-            #print "override %s for %s" % (override, key)
+            # print "override %s for %s" % (override, key)
             out.append(Decl(override))
 
-    def output_struct_members(self,ir,user_overrides):
+    def output_struct_members(self, ir, user_overrides):
         overrides = {
-            "t__h_zwpixel" : "",
-            "pixel" : "",
-            "t__h_numiter" : "",
-            "t__h_index" : "",
-            "maxiter" : "",
-            "t__h_tolerance" : "",
-            "t__h_solid" : "",
-            "t__h_color" : "",
-            "t__h_fate" : "",
-            "t__h_inside" : ""
-            }
-        
-        for (k,v) in list(user_overrides.items()):
+            "t__h_zwpixel": "",
+            "pixel": "",
+            "t__h_numiter": "",
+            "t__h_index": "",
+            "maxiter": "",
+            "t__h_tolerance": "",
+            "t__h_solid": "",
+            "t__h_color": "",
+            "t__h_fate": "",
+            "t__h_inside": ""
+        }
+
+        for (k, v) in list(user_overrides.items()):
             overrides[k] = v
-            
+
         out = []
 
-        for (key,sym) in list(ir.symbols.items()):
-            self.output_decl(key,sym,out,overrides)
+        for (key, sym) in list(ir.symbols.items()):
+            self.output_decl(key, sym, out, overrides)
 
-        if hasattr(ir,"output_sections"):
+        if hasattr(ir, "output_sections"):
             ir.output_sections["struct_members"] = out
         return out
 
-    def output_local_vars(self,ir,user_overrides):
+    def output_local_vars(self, ir, user_overrides):
         overrides = {
-            "t__h_zwpixel" : "",
-            "pixel" : "",
-            "t__h_numiter" : "",
-            "t__h_index" : "",
-            "maxiter" : "",
-            "t__h_tolerance" :
+            "t__h_zwpixel": "",
+            "pixel": "",
+            "t__h_numiter": "",
+            "t__h_index": "",
+            "maxiter": "",
+            "t__h_tolerance":
             "double t__h_tolerance = period_tolerance;",
-            "t__h_solid" : "",
-            "t__h_color" : "",
-            "t__h_fate" : "",
-            "t__h_inside" : "",
-            "t__h_magn" :
+            "t__h_solid": "",
+            "t__h_color": "",
+            "t__h_fate": "",
+            "t__h_inside": "",
+            "t__h_magn":
                 "double t__h_magn = log(4.0/t__pfo->pos_params[4])/log(2.0) + 1.0;",
-            "t__h_center" :
+            "t__h_center":
                 """double t__h_center_re = t__pfo->pos_params[0];
                 double t__h_center_im = t__pfo->pos_params[1];"""
-            }
-        
-        for (k,v) in list(user_overrides.items()):
-            #print "%s = %s" % (k,v)
-            overrides[k] = v
-            
-        out = []
-        for (key,sym) in list(ir.symbols.items()):
-            self.output_symbol(key,sym,out,overrides)
+        }
 
-        if hasattr(ir,"output_sections"):
+        for (k, v) in list(user_overrides.items()):
+            # print "%s = %s" % (k,v)
+            overrides[k] = v
+
+        out = []
+        for (key, sym) in list(ir.symbols.items()):
+            self.output_symbol(key, sym, out, overrides)
+
+        if hasattr(ir, "output_sections"):
             ir.output_sections["var_inits"] = out
-                
+
         return out
 
-    def output_return_syms(self,ir):
+    def output_return_syms(self, ir):
         out = []
         for key in sorted(ir.symbols):
             sym = ir.symbols[key]
-            if self.symbols.is_param(key) and isinstance(sym,fracttypes.Var):
+            if self.symbols.is_param(key) and isinstance(sym, fracttypes.Var):
                 out += self.return_sym(sym)
 
-        if hasattr(ir,"output_sections"):
+        if hasattr(ir, "output_sections"):
             ir.output_sections["return_syms"] = out
 
         return out
-    
-    def output_section(self,t,section):
+
+    def output_section(self, t, section):
         self.out = []
-        #print "output: %s => %s" % ( \
+        # print "output: %s => %s" % ( \
         #    section,[x.pretty() for x in t.canon_sections[section]])
         self.generate_all_code(t.canon_sections[section])
         self.emit_label("t__end_%s%s" % (t.symbols.prefix, section))
         t.output_sections[section] = self.out
-    
-    def output_all(self,t):
-        for k in list(t.canon_sections.keys()):
-            self.output_section(t,k)
 
-    def output_decls(self,t,overrides={}):
+    def output_all(self, t):
+        for k in list(t.canon_sections.keys()):
+            self.output_section(t, k)
+
+    def output_decls(self, t, overrides={}):
         # must be done after other sections or temps are missing
-        self.output_local_vars(t,overrides)
-        self.output_struct_members(t,overrides)
+        self.output_local_vars(t, overrides)
+        self.output_struct_members(t, overrides)
         self.output_return_syms(t)
-        
-    def get_bailout_var(self,t):
+
+    def get_bailout_var(self, t):
         return t.symbols["__bailout"].cname
-    
-    def output_c(self,t,inserts={},output_template=None):
+
+    def output_c(self, t, inserts={}, output_template=None):
         inserts["bailout_var"] = self.get_bailout_var(t)
         inserts["pf"] = self.pf_header
         inserts["fract_stdlib"] = self.fract_stdlib_header
@@ -690,7 +694,7 @@ extern "C" {
             inserts["init_inserts"] = 'printf("%d,%d,%.17g,%.17g : ", t__p_x, t__p_y, pixel_re, pixel_im);'
             inserts["loop_inserts"] = 'printf("%.17g,%.17g ",z_re, z_im);'
             inserts["done_inserts"] = 'printf("\\n");'
-            
+
         # can only do periodicity if formula uses z
         if "z" in self.symbols.data:
             inserts["decl_period"] = '''
@@ -741,13 +745,13 @@ extern "C" {
             inserts["decl_period"] = ""
             inserts["init_period"] = ""
             inserts["check_period"] = ""
-            
+
         f = Formatter(self, t, inserts)
         if output_template is None:
             output_template = self.output_template
         return output_template % f
 
-    def findOp(self,t):
+    def findOp(self, t):
         ' find the most appropriate overload for this op'
         overloadList = self.symbols[t.op]
         typelist = [n.datatype for n in t.children]
@@ -758,19 +762,19 @@ extern "C" {
         except TypeError as err:
             print(overloadList)
             print(err)
-            
+
         raise fracttypes.TranslationError(
             "Internal Compiler Error: Invalid argument types %s for %s" %
             (typelist, t.op))
 
-    def newTemp(self,type):
-        return TempArg(self.symbols.newTemp(type),type)
+    def newTemp(self, type):
+        return TempArg(self.symbols.newTemp(type), type)
 
-    def temp(self,name,type):
-        return TempArg(name,type)
-    
+    def temp(self, name, type):
+        return TempArg(name, type)
+
     # action routines
-    def cast(self,t):
+    def cast(self, t):
         'Generate code to cast child of type child.datatype to t.datatype'
         child = t.children[0]
         src = self.generate_code(child)
@@ -781,19 +785,19 @@ extern "C" {
                              self.newTemp(Float))
             if child.datatype == Int or child.datatype == Bool:
                 assem = "%(d0)s = ((double)%(s0)s);"
-                self.out.append(Oper(assem,[src], [dst.re]))
+                self.out.append(Oper(assem, [src], [dst.re]))
                 assem = "%(d0)s = 0.0;"
-                self.out.append(Oper(assem,[src], [dst.im]))
+                self.out.append(Oper(assem, [src], [dst.im]))
             elif child.datatype == Float:
                 assem = "%(d0)s = %(s0)s;"
-                self.out.append(Oper(assem,[src], [dst.re]))
+                self.out.append(Oper(assem, [src], [dst.re]))
                 assem = "%(d0)s = 0.0;"
-                self.out.append(Oper(assem,[src], [dst.im]))
+                self.out.append(Oper(assem, [src], [dst.im]))
         elif t.datatype == Float:
             if child.datatype == Int or child.datatype == Bool:
                 dst = self.newTemp(Float)
                 assem = "%(d0)s = ((double)%(s0)s);"
-                self.out.append(Oper(assem,[src], [dst]))
+                self.out.append(Oper(assem, [src], [dst]))
         elif t.datatype == Int:
             if child.datatype == Bool:
                 # needn't do anything
@@ -802,13 +806,13 @@ extern "C" {
             dst = self.newTemp(Bool)
             if child.datatype == Int or child.datatype == Bool:
                 assem = "%(d0)s = (%(s0)s != 0);"
-                self.out.append(Oper(assem,[src], [dst]))
+                self.out.append(Oper(assem, [src], [dst]))
             elif child.datatype == Float:
                 assem = "%(d0)s = (%(s0)s != 0.0);"
-                self.out.append(Oper(assem,[src], [dst]))
+                self.out.append(Oper(assem, [src], [dst]))
             elif child.datatype == Complex:
                 assem = "%(d0)s = ((%(s0)s != 0.0) || (%(s1)s != 0.0));"
-                self.out.append(Oper(assem,[src.re, src.im], [dst]))
+                self.out.append(Oper(assem, [src.re, src.im], [dst]))
             else:
                 dst = None
         elif t.datatype == Hyper or t.datatype == Color:
@@ -817,19 +821,19 @@ extern "C" {
                            self.newTemp(Float),
                            self.newTemp(Float))
             if child.datatype == Int or \
-                   child.datatype == Bool or child.datatype == Float:
+                    child.datatype == Bool or child.datatype == Float:
                 assem = "%(d0)s = ((double)%(s0)s);"
-                self.out.append(Oper(assem,[src], [dst.parts[0]]))
+                self.out.append(Oper(assem, [src], [dst.parts[0]]))
                 assem = "%(d0)s = 0.0;"
-                for i in range(1,4):
-                    self.out.append(Oper(assem,[src], [dst.parts[i]]))
+                for i in range(1, 4):
+                    self.out.append(Oper(assem, [src], [dst.parts[i]]))
             elif child.datatype == Complex:
                 assem = "%(d0)s = ((double)%(s0)s);"
-                self.out.append(Oper(assem,[src.re], [dst.parts[0]]))
-                self.out.append(Oper(assem,[src.im], [dst.parts[1]]))
+                self.out.append(Oper(assem, [src.re], [dst.parts[0]]))
+                self.out.append(Oper(assem, [src.im], [dst.parts[1]]))
                 assem = "%(d0)s = 0.0;"
-                self.out.append(Oper(assem,[src], [dst.parts[2]]))
-                self.out.append(Oper(assem,[src], [dst.parts[3]]))
+                self.out.append(Oper(assem, [src], [dst.parts[2]]))
+                self.out.append(Oper(assem, [src], [dst.parts[3]]))
             else:
                 dst = None
         elif t.datatype == IntArray or t.datatype == FloatArray or t.datatype == ComplexArray:
@@ -841,50 +845,50 @@ extern "C" {
                 assem = "%%(d0)s = (%s%%(s0)s);" % cast
                 dst = self.newTemp(t.datatype)
                 self.out.append(Oper(assem, [src], [dst]))
-                
+
         if dst is None:
             msg = "%d: Invalid Cast from %s to %s" % \
-                  (t.node.pos,fracttypes.strOfType(child.datatype),
+                  (t.node.pos, fracttypes.strOfType(child.datatype),
                    fracttypes.strOfType(t.datatype))
             raise fracttypes.TranslationError(msg)
-        
+
         return dst
-                
-    def move(self,t):
+
+    def move(self, t):
         dst = self.generate_code(t.children[0])
         src = self.generate_code(t.children[1])
         if t.datatype == Complex:
-            self.emit_move(src.re,dst.re)
-            self.emit_move(src.im,dst.im)
+            self.emit_move(src.re, dst.re)
+            self.emit_move(src.im, dst.im)
         elif t.datatype == Hyper or t.datatype == Color:
             for i in range(4):
-                self.emit_move(src.parts[i],dst.parts[i])
+                self.emit_move(src.parts[i], dst.parts[i])
         else:
-            self.emit_move(src,dst)
+            self.emit_move(src, dst)
         return dst
-    
-    def label(self,t):
+
+    def label(self, t):
         assert(t.children == [])
         self.emit_label(t.name)
 
-    def cjump(self,t):
+    def cjump(self, t):
         # canonicalize has ensured we fall through to false branch,
         # so we can just deal with true case
-        binop = ir.Binop(t.op,t.children,t.node,Bool)
+        binop = ir.Binop(t.op, t.children, t.node, Bool)
         result = self.binop(binop)
-        self.emit_cjump(result,t.trueDest)
-        
-    def jump(self,t):
+        self.emit_cjump(result, t.trueDest)
+
+    def jump(self, t):
         self.emit_jump(t.dest)
 
-    def unop(self,t):
+    def unop(self, t):
         s0 = t.children[0]
         src = self.generate_code(s0)
         op = self.findOp(t)
         dst = op.genFunc(self, t, [src])
         return dst
 
-    def call(self,t):
+    def call(self, t):
         srcs = [self.generate_code(x) for x in t.children]
         op = self.findOp(t)
         try:
@@ -893,27 +897,27 @@ extern "C" {
             msg = "Internal Compiler Error: missing stdlib function %s" % \
                   op.genFunc
             raise fracttypes.TranslationError(msg)
-        
+
         return dst
-        
-    def binop(self,t):
+
+    def binop(self, t):
         s0 = t.children[0]
         s1 = t.children[1]
         srcs = [self.generate_code(s0), self.generate_code(s1)]
         op = self.findOp(t)
         try:
-            dst = op.genFunc(self,t,srcs)
+            dst = op.genFunc(self, t, srcs)
         except TypeError as err:
             msg = "Internal Compiler Error: missing stdlib function %s" % \
                   op.genFunc
             print(msg)
             raise fracttypes.TranslationError(msg)
         return dst
-    
-    def const(self,t):
+
+    def const(self, t):
         return create_arg(t)
-    
-    def var(self,t):
+
+    def var(self, t):
         name = self.symbols.realName(t.name)
         if t.datatype == fracttypes.Complex:
             return ComplexArg(
@@ -926,51 +930,52 @@ extern "C" {
                 self.temp(name + "_j", fracttypes.Float),
                 self.temp(name + "_k", fracttypes.Float))
         else:
-            return self.temp(name,t.datatype)
-    
+            return self.temp(name, t.datatype)
+
     # matching machinery
-    def generate_all_code(self,treelist):
+    def generate_all_code(self, treelist):
         for tree in treelist:
             self.generate_code(tree)
         self.optimize(self.optimize_flags)
-        
-    def generate_code(self,tree):
-        action = self.match(tree)
-        return action(*(self,tree))
 
-    def expand_templates(self,list):
+    def generate_code(self, tree):
+        action = self.match(tree)
+        return action(*(self, tree))
+
+    def expand_templates(self, list):
         return [[self.expand(x[0]), x[1]] for x in list]
 
     def expand(self, template):
-        return eval(re.sub(r'(\w+)',r'ir.\1',template))
+        return eval(re.sub(r'(\w+)', r'ir.\1', template))
 
     # implement naive tree matching. We match an ir tree against a
     # nested list of classes
     def match_template(self, tree, template):
-        if isinstance(template,list):
+        if isinstance(template, list):
             object = template[0]
             children = template[1:]
 
             if not isinstance(tree, object):
                 return 0
-        
-            for (child, matchChild) in zip(tree.children,children):
-                if not self.match_template(child,matchChild):
+
+            for (child, matchChild) in zip(tree.children, children):
+                if not self.match_template(child, matchChild):
                     return 0
-                
+
             return 1
         else:
             return isinstance(tree, template)
-        
+
     def optimize(self, flags):
         optimizer = optimize.T()
         self.out = optimizer.optimize(flags, self.out)
-    
-    def match(self,tree):
-        for (template,action) in self.templates:
-            if self.match_template(tree,template):
+
+    def match(self, tree):
+        for (template, action) in self.templates:
+            if self.match_template(tree, template):
                 return action
-        
+
         # every possible tree ought to be matched by *something*
-        msg = "Internal Compiler Error:%d:unmatched tree %s" % (tree.node.pos,tree)
+        msg = "Internal Compiler Error:%d:unmatched tree %s" % (
+            tree.node.pos, tree)
         raise fracttypes.TranslationError(msg)

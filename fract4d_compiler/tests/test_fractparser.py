@@ -5,13 +5,14 @@ import unittest
 
 from fract4d_compiler import preprocessor, fractparser, fractlexer, absyn
 
+
 class ParserTest(unittest.TestCase):
     def setUp(self):
         self.parser = fractparser.parser
         fractlexer.lexer.lineno = 1
         #self.parser.lexer.lineno = 1
 
-    def parse(self,s):
+    def parse(self, s):
         fractlexer.lexer.lineno = 1
         pp = preprocessor.T(s)
         return self.parser.parse(pp.out())
@@ -22,42 +23,42 @@ class ParserTest(unittest.TestCase):
     def testEmpty(self):
         tree = self.parse("\n")
         self.assertTrue(absyn.CheckTree(tree))
-        #print tree.pretty()
+        # print tree.pretty()
 
     def testEmptyFormula(self):
         tree = self.parse("t1 {\n}\n")
         self.assertTrue(absyn.CheckTree(tree))
         formula = tree.children[0]
         self.assertTrue(formula.type == "formula" and formula.leaf == "t1")
-        #print tree.pretty()
+        # print tree.pretty()
 
     def testErrorThenFormula(self):
         tree = self.parse("gibberish~\nt1 {\n}\n")
         self.assertTrue(absyn.CheckTree(tree))
-        #print tree.pretty()
+        # print tree.pretty()
         formula = tree.children[0]
         self.assertTrue(formula.type == "formula" and formula.leaf == "t1")
 
     def testErrorInFormula(self):
         tree = self.parse("t1 {\n ~\n}\n")
         self.assertTrue(absyn.CheckTree(tree))
-        #print tree.pretty()
+        # print tree.pretty()
         formula = tree.children[0]
         self.assertTrue(formula.type == "formula")
         err = formula.children[0]
         self.assertTrue(err.type == "error")
-        self.assertNotEqual(re.search("^2:",err.leaf),None,
+        self.assertNotEqual(re.search("^2:", err.leaf), None,
                             "bad error message line number")
 
     def testErrorBeforeAndInFormula(self):
         tree = self.parse("gibberish\nt1 {\n ~\n}\n")
         self.assertTrue(absyn.CheckTree(tree))
-        #print tree.pretty()
+        # print tree.pretty()
         formula = tree.children[0]
         self.assertTrue(formula.type == "formula")
         err = formula.children[0]
         self.assertTrue(err.type == "error")
-        self.assertNotEqual(re.search("^3:",err.leaf),None,
+        self.assertNotEqual(re.search("^3:", err.leaf), None,
                             "bad error message line number")
 
     def testErrorAfterFormula(self):
@@ -79,7 +80,7 @@ class ParserTest(unittest.TestCase):
         x = 2 * 3
         $else
         x = 3 * 2
-        $endif''','x = 2 * 3')
+        $endif''', 'x = 2 * 3')
 
     def testBadPreProcessor(self):
         self.assertIsBadFormula(self.makeMinimalFormula('$foo'),
@@ -117,19 +118,19 @@ gradient:
         ''')
         self.assertIsValidParse(t1)
 
-        settings =  t1.children[0].children[0].children
+        settings = t1.children[0].children[0].children
 
         names = ["title", "smooth",
                  "index", "color",
                  "index", "color",
                  "index", "color"]
 
-        vals = [ "cl1rorangemixed", False,
-                 0, 5153516,
-                 2, 5087212,
-                 399, 5349352]
+        vals = ["cl1rorangemixed", False,
+                0, 5153516,
+                2, 5087212,
+                399, 5349352]
 
-        for (name,val,setting) in zip(names,vals,settings):
+        for (name, val, setting) in zip(names, vals, settings):
             self.assertEqual(setting.children[0].leaf, name)
             self.assertEqual(setting.children[1].leaf, val)
 
@@ -688,7 +689,7 @@ gradient:
         elseif 4 + 6
         else
         endif'''))
-        #print t1.pretty()
+        # print t1.pretty()
         self.assertIsValidParse(t1)
 
         t1 = self.parse(self.makeMinimalFormula('''
@@ -705,11 +706,11 @@ gradient:
         self.assertIsBadFormula(self.makeMinimalFormula("if x == 2\n1+1"),
                                 "unexpected form_end '}'", 5)
         self.assertIsBadFormula(self.makeMinimalFormula("endif"),
-                                "unexpected endif 'endif'",3)
+                                "unexpected endif 'endif'", 3)
 
     def testCtor(self):
         t1 = self.parse(self.makeMinimalFormula(
-        '''bool a = bool(true)
+            '''bool a = bool(true)
         int i = int(2)
         float f = float(2.5)
         complex c = complex(1.0, 2.0)
@@ -721,7 +722,7 @@ gradient:
 
     def testDecls(self):
         t1 = self.parse(self.makeMinimalFormula(
-        '''bool a
+            '''bool a
         bool b = true
         bool c=false
         int d
@@ -742,7 +743,7 @@ gradient:
         complex_decl = [n for n in i.children[8]]
         self.assertListTypesMatch(
             complex_decl,
-            ["decl","binop","binop","const","binop","const","const","id"])
+            ["decl", "binop", "binop", "const", "binop", "const", "const", "id"])
 
     def testArrays(self):
         # arrays aren't supported yet - make sure errors are nice
@@ -769,9 +770,10 @@ gradient:
         }
         ''')
         self.assertIsValidParse(t1)
-        self.assertEqual(len(self.allNodesOfType(t1,"string")),6)
+        self.assertEqual(len(self.allNodesOfType(t1, "string")), 6)
         self.assertIsBadFormula(self.makeMinimalFormula('"'),
-                                "unexpected '\"'",3)
+                                "unexpected '\"'", 3)
+
     def testParamBlocks(self):
         t1 = self.parse('''
         t1 {
@@ -836,7 +838,7 @@ gradient:
 
     def testRepeat(self):
         t1 = self.parse(self.makeMinimalFormula(
-        '''repeat
+            '''repeat
         z = z ^ 2
         until |z| > 2000.0
         '''))
@@ -844,7 +846,7 @@ gradient:
 
     def testWhile(self):
         t1 = self.parse(self.makeMinimalFormula(
-        '''while 1 > 0
+            '''while 1 > 0
              z = z + 2
              while x > y
                foo = bar
@@ -858,11 +860,11 @@ gradient:
             [n for n in t1.children[0].children[0].children[0]],
             ["while", "binop", "const", "const",
              "stmlist",
-                 "assign", "id", "binop", "id", "const",
-                 "while", "binop", "id", "id",
-                 "stmlist",
-                     "assign", "id", "id"
-            ])
+             "assign", "id", "binop", "id", "const",
+             "while", "binop", "id", "id",
+             "stmlist",
+             "assign", "id", "id"
+             ])
 
     # this comes from anon.ufm, which appears broken -UF doesn't
     # parse it either
@@ -881,7 +883,7 @@ bailout:
   |z| < 4
 }
 '''
-        self.assertIsBadFormula(f,"unexpected newline",8)
+        self.assertIsBadFormula(f, "unexpected newline", 8)
 
     def testSections(self):
         t1 = self.parse('''t1{
@@ -900,7 +902,7 @@ bailout:
         self.assertIsValidParse(t1)
         self.assertListTypesMatch(
             t1.children[0].children,
-            ["stmlist"]*7 + ["setlist"] * 3)
+            ["stmlist"] * 7 + ["setlist"] * 3)
 
         # test we work with old-style fractint sections
         t1 = self.parse('''InvMandel (XAXIS) {; Mark Peterson
@@ -910,7 +912,7 @@ bailout:
   ''')
         self.assertIsValidParse(t1)
         self.assertTrue(
-            t1.children[0].children[0].type =="stmlist" and
+            t1.children[0].children[0].type == "stmlist" and
             t1.children[0].children[0].leaf == "nameless" and
             t1.children[0].children[1].type == "stmlist" and
             t1.children[0].children[1].leaf == "")
@@ -922,8 +924,8 @@ loop:
     z = zero(z)
 }
 ''')
-        self.assertEqual(t1.children[0].leaf,"MySymmetricalFractal")
-        self.assertEqual(t1.children[0].symmetry,"XAXIS")
+        self.assertEqual(t1.children[0].leaf, "MySymmetricalFractal")
+        self.assertEqual(t1.children[0].symmetry, "XAXIS")
 
     def testSimpleMandelbrot(self):
         t1 = self.parse('''
@@ -941,7 +943,7 @@ default:
         self.assertIsValidParse(t1)
 
     def testComma(self):
-        self.assertParsesEqual("a=1,b=2","a=1\nb=2")
+        self.assertParsesEqual("a=1,b=2", "a=1\nb=2")
         self.assertParsesEqual("if a==b,foo=bar,elseif a==c,foo=baz,endif",
                                "if a==b\nfoo=bar\nelseif a==c\nfoo=baz\nendif")
         self.assertParsesEqual("while a==b,foo,endwhile",
@@ -952,13 +954,13 @@ default:
 
     def testParseErrors(self):
         self.assertIsBadFormula(self.makeMinimalFormula("2 + 3 +"),
-                                 "unexpected newline",3)
+                                "unexpected newline", 3)
         self.assertIsBadFormula(self.makeMinimalFormula("3 4"),
-                                 "unexpected number '4'",3)
+                                "unexpected number '4'", 3)
 
         # not a great error message...
         self.assertIsBadFormula(self.makeMinimalFormula("("),
-                                "unexpected newline",3)
+                                "unexpected newline", 3)
 
     def disabled_testTwoLogistic(self):
         # a formula from orgform that causes trouble
@@ -998,46 +1000,46 @@ default:
         t = self.parse(src)
         self.assertIsValidParse(t)
 
-    def assertListTypesMatch(self,nodes,types):
-        self.assertEqual(len(nodes),len(types))
-        for (n,t) in zip(nodes,types):
-            self.assertEqual(n.type,t)
+    def assertListTypesMatch(self, nodes, types):
+        self.assertEqual(len(nodes), len(types))
+        for (n, t) in zip(nodes, types):
+            self.assertEqual(n.type, t)
 
-    def assertIsBadFormula(self,s,message,line):
+    def assertIsBadFormula(self, s, message, line):
         t1 = self.parse(s)
         self.assertTrue(absyn.CheckTree(t1), "invalid tree created")
         formula = t1.children[0]
         self.assertTrue(formula.type == "formula")
         err = formula.children[0]
         self.assertTrue(err.type == "error", "error not found")
-        #print err.leaf
-        self.assertNotEqual(re.search(message,err.leaf),None,
+        # print err.leaf
+        self.assertNotEqual(re.search(message, err.leaf), None,
                             ("bad error message text '%s'", err.leaf))
-        self.assertNotEqual(re.search(("^%s:" % line),err.leaf),None,
+        self.assertNotEqual(re.search(("^%s:" % line), err.leaf), None,
                             ("bad error message line number in '%s'", err.leaf))
 
-    def assertIsValidParse(self,t1):
+    def assertIsValidParse(self, t1):
         self.assertTrue(absyn.CheckTree(t1))
-        errors = self.allNodesOfType(t1,"error")
-        self.assertEqual(errors,[], [ str(e) for e in errors])
+        errors = self.allNodesOfType(t1, "error")
+        self.assertEqual(errors, [], [str(e) for e in errors])
 
     def assertParsesEqual(self, s1, s2):
         t1 = self.parse(self.makeMinimalFormula(s1))
         t2 = self.parse(self.makeMinimalFormula(s2))
-        #print(t1.pretty())
-        #print(t2.pretty())
-        self.assertTreesEqual(t1,t2)
+        # print(t1.pretty())
+        # print(t2.pretty())
+        self.assertTreesEqual(t1, t2)
 
     def assertTreesEqual(self, t1, t2):
         self.assertTrue(
-            t1.DeepCmp(t2)==0,
+            t1.DeepCmp(t2) == 0,
             ("%s, %s should be equivalent" % (t1.pretty(), t2.pretty())))
 
     def allNodesOfType(self, t1, type):
-        return [ n for n in t1 if n.type == type]
+        return [n for n in t1 if n.type == type]
 
     # shorthand for minimal formula defn containing exp
-    def makeMinimalFormula(self,exp):
+    def makeMinimalFormula(self, exp):
         return '''t2 {
 init:
 %s

@@ -2,7 +2,8 @@ import struct
 
 from . import fract4dc
 
-def parse(type,buffer):
+
+def parse(type, buffer):
     if type == fract4dc.MESSAGE_TYPE_ITERS:
         return Iters(buffer)
     if type == fract4dc.MESSAGE_TYPE_IMAGE:
@@ -16,12 +17,14 @@ def parse(type,buffer):
     if type == fract4dc.MESSAGE_TYPE_STATS:
         return Stats(buffer)
 
+
 class T:
     pass
 
+
 class Iters(T):
-    def __init__(self,buffer):
-        (self.iterations,) = struct.unpack("i",buffer)
+    def __init__(self, buffer):
+        (self.iterations,) = struct.unpack("i", buffer)
 
     def get_name(self):
         return "Iters"
@@ -29,10 +32,11 @@ class Iters(T):
 
     def show(self):
         return "Iters: %d" % self.iterations
-        
+
+
 class Image(T):
-    def __init__(self,buffer):
-        (self.x, self.y, self.w, self.h) = struct.unpack("4i",buffer)
+    def __init__(self, buffer):
+        (self.x, self.y, self.w, self.h) = struct.unpack("4i", buffer)
 
     def get_name(self):
         return "Image"
@@ -40,10 +44,11 @@ class Image(T):
 
     def show(self):
         return "Image: (%d,%d) (%d,%d)" % (self.x, self.y, self.w, self.h)
- 
+
+
 class Progress(T):
-    def __init__(self,buffer):
-        (p,) = struct.unpack("i",buffer)
+    def __init__(self, buffer):
+        (p,) = struct.unpack("i", buffer)
         self.progress = float(p)
 
     def show(self):
@@ -55,8 +60,8 @@ class Progress(T):
 
 
 class Status(T):
-    def __init__(self,buffer):
-        (self.status,) = struct.unpack("i",buffer)
+    def __init__(self, buffer):
+        (self.status,) = struct.unpack("i", buffer)
 
     def show(self):
         return "Status: %d" % self.status
@@ -65,13 +70,15 @@ class Status(T):
         return "Status"
     name = property(get_name)
 
+
 class Tolerance(T):
-    def __init__(self,buffer):
-        (self.tolerance,) = struct.unpack("d",buffer)
+    def __init__(self, buffer):
+        (self.tolerance,) = struct.unpack("d", buffer)
 
     def get_name(self):
         return "Tolerance"
     name = property(get_name)
+
 
 class Stats(T):
     def fromList(list):
@@ -88,7 +95,7 @@ class Stats(T):
         return instance
     fromList = staticmethod(fromList)
 
-    def __init__(self,buffer=None):
+    def __init__(self, buffer=None):
         if buffer:
             (self.iterations,
              self.pixels,
@@ -102,7 +109,7 @@ class Stats(T):
              dummy,
              dummy,
              dummy,
-             dummy) = struct.unpack("13L",buffer)
+             dummy) = struct.unpack("13L", buffer)
 
     def _get_name(self):
         return "Stats"
@@ -111,7 +118,7 @@ class Stats(T):
     def _get_percent_skipped(self):
         if self.pixels == 0:
             return 0.0
-        return 100.0 * float(self.pixels_skipped)/self.pixels
+        return 100.0 * float(self.pixels_skipped) / self.pixels
     percent_skipped = property(_get_percent_skipped)
 
     def _get_percent_calculated(self):
@@ -121,19 +128,19 @@ class Stats(T):
     def _get_percent_skipped_wrong(self):
         if self.pixels_skipped == 0:
             return 0.0
-        return 100.0 * float(self.pixels_skipped_wrong)/self.pixels_skipped
+        return 100.0 * float(self.pixels_skipped_wrong) / self.pixels_skipped
     percent_skipped_wrong = property(_get_percent_skipped_wrong)
 
     def _get_percent_inside(self):
         if self.pixels_calculated == 0:
             return 0.0
-        return 100.0 * float(self.pixels_inside)/self.pixels_calculated
+        return 100.0 * float(self.pixels_inside) / self.pixels_calculated
     percent_inside = property(_get_percent_inside)
 
     def _get_percent_periodic(self):
         if self.pixels_inside == 0:
             return 0.0
-        return 100.0 * float(self.pixels_periodic)/self.pixels_inside
+        return 100.0 * float(self.pixels_periodic) / self.pixels_inside
     percent_periodic = property(_get_percent_periodic)
 
     def _get_percent_outside(self):
@@ -145,17 +152,18 @@ class Stats(T):
             "Calculation Statistics:\n" +
             "Total pixels:%d\n" % self.pixels +
             "Calculated pixels:%d(%2g%%)\n" %
-                (self.pixels_calculated, self.percent_calculated) +
+            (self.pixels_calculated, self.percent_calculated) +
             "  Inside pixels:%d(%2g%%)\n" % (self.pixels_inside, self.percent_inside) +
             "    Perodic pixels:%d(%2g%%)\n" % (self.pixels_periodic, self.percent_periodic) +
             "  Outside pixels:%d(%2g%%)\n" % (self.pixels_outside, self.percent_outside) +
-            "Guessed pixels:%d(%2g%%)\n" % (self.pixels_skipped, self.percent_skipped)
-            )
+            "Guessed pixels:%d(%2g%%)\n" % (
+                self.pixels_skipped, self.percent_skipped)
+        )
 
-            #/out/per:\t%d\t%d\t%d\n" % \
-            #    (self.pixels_inside, self.pixels_outside, self.pixels_periodic) +
-            #"calc/skip:\t%d\t%d(%2g%%)\n" % \
-            #    (self.pixels_calculated, self.pixels_skipped, self.percent_skipped) +
-            #"skip right/wrong:\t%d\t%d(%2g%%)\n" % \
-            #    (self.pixels_skipped_right, self.pixels_skipped_wrong, self.percent_skipped_wrong)
-            #)
+        # /out/per:\t%d\t%d\t%d\n" % \
+        #    (self.pixels_inside, self.pixels_outside, self.pixels_periodic) +
+        # "calc/skip:\t%d\t%d(%2g%%)\n" % \
+        #    (self.pixels_calculated, self.pixels_skipped, self.percent_skipped) +
+        # "skip right/wrong:\t%d\t%d(%2g%%)\n" % \
+        #    (self.pixels_skipped_right, self.pixels_skipped_wrong, self.percent_skipped_wrong)
+        # )

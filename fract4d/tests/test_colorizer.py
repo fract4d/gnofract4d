@@ -5,16 +5,19 @@ import unittest
 
 from fract4d import colorizer
 
+
 class WarningCatcher:
     def __init__(self):
         self.warnings = []
-    def warn(self,msg):
+
+    def warn(self, msg):
         self.warnings.append(msg)
-        
+
+
 class Test(unittest.TestCase):
     def setUp(self):
         pass
-    
+
     def tearDown(self):
         pass
 
@@ -30,16 +33,16 @@ and most of them are included in the allmaps file.""")
         c.parse_map_file(f, 0)
 
         self.assertEqual(
-            wc.warnings,['Error reading colormap: No colors found'])
+            wc.warnings, ['Error reading colormap: No colors found'])
 
     def testReadMapFile(self):
         c = colorizer.T()
         file = open("maps/4zebbowx.map")
         c.parse_map_file(file)
         file.close()
-        
-        self.assertEqual(len(c.gradient.segments), 255)        
+
+        self.assertEqual(len(c.gradient.segments), 255)
 
     def testSolids(self):
         c = colorizer.T()
-        self.assertEqual([(0,0,0,255)], c.solids)
+        self.assertEqual([(0, 0, 0, 255)], c.solids)

@@ -14,8 +14,10 @@ Nothing = 0
 Peephole = 1
 ConstantPropagation = 2
 
+
 class FlowGraph:
     "Builds a control flow graph from a sequence of instructions"
+
     def __init__(self):
         pass
 
@@ -27,13 +29,14 @@ class FlowGraph:
             if isinstance(insn, instructions.Insn):
                 n = self.control.newNode()
                 for d in insn.dest():
-                    self.define.setdefault(n,[]).append(d)
+                    self.define.setdefault(n, []).append(d)
                 for s in insn.source():
-                    self.use.setdefault(n,[]).append(s)
-                    
+                    self.use.setdefault(n, []).append(s)
+
 
 class T:
     "Holds overall optimization logic"
+
     def __init__(self):
         pass
 
@@ -69,7 +72,7 @@ class T:
                     insn.dst)
 
         return insn
-    
+
     def peephole_insn(self, insn):
         """Return an optimized version of this instruction, if possible,
         or the same instruction if no change is practical."""
@@ -77,13 +80,13 @@ class T:
             return self.peephole_binop(insn)
         else:
             return insn
-    
+
     def peephole(self, insns):
         """Perform some straightforward algebraic simplifications
         which don't require any global knowledge."""
 
         out_insns = []
-        
+
         for insn in insns:
             result = self.peephole_insn(insn)
             if result:
@@ -98,7 +101,7 @@ class T:
         a = t op b
 
         Then we can replace that with
-        
+
         a = const op b
 
         This is done using dataflow analysis."""

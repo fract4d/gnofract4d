@@ -2,17 +2,18 @@
 
 from gi.repository import Gtk, Gdk, GObject, Pango
 
+
 class T(Gtk.DrawingArea):
     __gsignals__ = {
-        'value-changed' : (
-        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
-        None, (GObject.TYPE_INT, GObject.TYPE_INT)),
-        'value-slightly-changed' : (
-        (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
-        None, (GObject.TYPE_INT, GObject.TYPE_INT))
-        }
+        'value-changed': (
+            (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+            None, (GObject.TYPE_INT, GObject.TYPE_INT)),
+        'value-slightly-changed': (
+            (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
+            None, (GObject.TYPE_INT, GObject.TYPE_INT))
+    }
 
-    def __init__(self,text):
+    def __init__(self, text):
         self.button = 0
         self.radius = 0
         self.last_x = 0
@@ -20,7 +21,7 @@ class T(Gtk.DrawingArea):
         self.text = text
         Gtk.DrawingArea.__init__(self)
 
-        self.set_size_request(53,53)
+        self.set_size_request(53, 53)
 
         self.set_events(
             Gdk.EventMask.BUTTON_RELEASE_MASK |
@@ -30,41 +31,42 @@ class T(Gtk.DrawingArea):
             Gdk.EventMask.LEAVE_NOTIFY_MASK |
             Gdk.EventMask.BUTTON_PRESS_MASK |
             Gdk.EventMask.EXPOSURE_MASK
-            )
+        )
 
         self.notice_mouse = False
         self.connect('motion_notify_event', self.onMotionNotify)
         self.connect('button_release_event', self.onButtonRelease)
         self.connect('button_press_event', self.onButtonPress)
-        self.connect('draw',self.onDraw)
-        
-    def update_from_mouse(self,x,y):
+        self.connect('draw', self.onDraw)
+
+    def update_from_mouse(self, x, y):
         dx = self.last_x - x
         dy = self.last_y - y
         if dx or dy:
-            self.emit('value-slightly-changed',dx,dy)
+            self.emit('value-slightly-changed', dx, dy)
             self.last_x = x
             self.last_y = y
-        
-    def onMotionNotify(self,widget,event):
+
+    def onMotionNotify(self, widget, event):
         if not self.notice_mouse:
             return
         self.update_from_mouse(event.x, event.y)
 
-    def onButtonRelease(self,widget,event):
+    def onButtonRelease(self, widget, event):
         if event.button == 1:
             self.notice_mouse = False
-            (xc,yc) = (widget.get_allocated_width()//2, widget.get_allocated_height()//2)
+            (xc, yc) = (widget.get_allocated_width() //
+                        2, widget.get_allocated_height() // 2)
             dx = xc - self.last_x
             dy = yc - self.last_y
             if dx or dy:
-                self.emit('value-changed',dx,dy)
-        
-    def onButtonPress(self,widget,event):
+                self.emit('value-changed', dx, dy)
+
+    def onButtonPress(self, widget, event):
         if event.button == 1:
             self.notice_mouse = True
-            self.last_x = widget.get_allocated_width()/2
-            self.last_y = widget.get_allocated_height()/2
+            self.last_x = widget.get_allocated_width() / 2
+            self.last_y = widget.get_allocated_height() / 2
             self.update_from_mouse(event.x, event.y)
 
     def onDraw(self, widget, cairo_ctx):
@@ -72,11 +74,11 @@ class T(Gtk.DrawingArea):
 
     def redraw_rect(self, widget, cairo_ctx):
         style_ctx = widget.get_style_context()
-        (w,h) = (widget.get_allocated_width(), widget.get_allocated_height())
-        Gtk.render_background(style_ctx, cairo_ctx, 0, 0, w-1, h-1)
+        (w, h) = (widget.get_allocated_width(), widget.get_allocated_height())
+        Gtk.render_background(style_ctx, cairo_ctx, 0, 0, w - 1, h - 1)
 
-        xc = w//2
-        yc = h//2
+        xc = w // 2
+        yc = h // 2
 
         # Consider using gtk_render_arrow
         def triangle(points):
@@ -93,29 +95,29 @@ class T(Gtk.DrawingArea):
         # Triangle pointing left
         points = [
             (1, yc),
-            (1+th, yc-tw),
-            (1+th, yc+tw)]
+            (1 + th, yc - tw),
+            (1 + th, yc + tw)]
         triangle(points)
 
         # pointing right
         points = [
-            (w-2, yc),
-            (w-2-th, yc-tw),
-            (w-2-th, yc+tw)]
+            (w - 2, yc),
+            (w - 2 - th, yc - tw),
+            (w - 2 - th, yc + tw)]
         triangle(points)
 
         # pointing up
         points = [
             (xc, 1),
-            (xc-tw, th),
-            (xc+tw, th)]
+            (xc - tw, th),
+            (xc + tw, th)]
         triangle(points)
-        
+
         # pointing down
         points = [
-            (xc, h-2),
-            (xc-tw, h-2-th),
-            (xc+tw, h-2-th)]
+            (xc, h - 2),
+            (xc - tw, h - 2 - th),
+            (xc + tw, h - 2 - th)]
         triangle(points)
 
         pango_ctx = widget.get_pango_context()
@@ -129,16 +131,16 @@ class T(Gtk.DrawingArea):
 
         while True:
             layout.set_text(drawtext, len(drawtext))
-            
+
             (text_width, text_height) = layout.get_pixel_size()
             # truncate text if it's too long
-            if text_width < (w-th*2) or len(drawtext) < 3:
+            if text_width < (w - th * 2) or len(drawtext) < 3:
                 break
             drawtext = drawtext[:-1]
 
         Gtk.render_layout(
             style_ctx,
             cairo_ctx,
-            xc - text_width//2,
-            yc - text_height//2,
+            xc - text_width // 2,
+            yc - text_height // 2,
             layout)

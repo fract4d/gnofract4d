@@ -6,6 +6,7 @@ import unittest
 
 from fract4d_compiler import fctutils
 
+
 class Test(unittest.TestCase):
     def setUp(self):
         pass

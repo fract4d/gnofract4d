@@ -11,6 +11,7 @@ from gi.repository import Gtk
 from fract4d import fractal
 from fract4dgui import preferences, renderqueue
 
+
 class Test(testgui.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -19,14 +20,14 @@ class Test(testgui.TestCase):
 
     def setUp(self):
         pass
-    
+
     def tearDown(self):
         pass
 
     def wait(self):
         Gtk.main()
-        
-    def quitloop(self,rq):
+
+    def quitloop(self, rq):
         Gtk.main_quit()
 
     def testRQ(self):
@@ -39,7 +40,7 @@ class Test(testgui.TestCase):
         # add a fractal to generate
         f = fractal.T(Test.g_comp)
         png_file1 = os.path.join(Test.tmpdir.name, "rq1.png")
-        rq.add(f,png_file1,100,1536)
+        rq.add(f, png_file1, 100, 1536)
 
         # check it got added
         self.assertEqual(1, len(rq.queue))
@@ -60,8 +61,8 @@ class Test(testgui.TestCase):
         rq = renderqueue.T(Test.userPrefs)
         png_file2 = os.path.join(Test.tmpdir.name, "foo2.png")
         png_file3 = os.path.join(Test.tmpdir.name, "foo3.png")
-        rq.add(f,png_file2,204,153)
-        rq.add(f,png_file3,80,40)
+        rq.add(f, png_file2, 204, 153)
+        rq.add(f, png_file3, 80, 40)
         rq.connect('done', self.quitloop)
         rq.start()
         parent = Gtk.Window()

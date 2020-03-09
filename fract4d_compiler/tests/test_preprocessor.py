@@ -4,6 +4,7 @@ import unittest
 
 from fract4d_compiler import preprocessor
 
+
 class Test(unittest.TestCase):
     def testEmpty(self):
         pp = preprocessor.T('')
@@ -31,7 +32,7 @@ class Test(unittest.TestCase):
         poo
         $ENDIF
         ''')
-        self.assertEqual(pp.out(),'''
+        self.assertEqual(pp.out(), '''
 
 
 
@@ -45,7 +46,7 @@ class Test(unittest.TestCase):
         5
         ''')
 
-        self.assertEqual(pp.out(),'''
+        self.assertEqual(pp.out(), '''
         z = 1.05
 
         ''')
@@ -56,7 +57,7 @@ class Test(unittest.TestCase):
 
 ; Most of the routines includes something called "Iteration trap".
 ''')
-        self.assertEqual(pp.out(),'''
+        self.assertEqual(pp.out(), '''
 ; The normal library that comes with Ultra Fractal includes much more advanced routines.
 
 ; Most of the routines includes something called "Iteration trap".
@@ -66,7 +67,7 @@ class Test(unittest.TestCase):
         pp = preprocessor.T('''
         $UNDEF foo
         ''')
-        self.assertEqual(pp.out(),'''
+        self.assertEqual(pp.out(), '''
 
         ''')
 

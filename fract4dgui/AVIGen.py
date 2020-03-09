@@ -7,6 +7,7 @@ import signal
 
 from gi.repository import Gdk, Gtk, GLib
 
+
 class AVIGeneration:
     def __init__(self, animation, parent):
         self.animation = animation
@@ -21,7 +22,7 @@ class AVIGeneration:
             modal=True,
             destroy_with_parent=True
         )
-        self.dialog.add_buttons(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL)
+        self.dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
         self.spinner = Gtk.Spinner()
         label = Gtk.Label.new("Please wait...")
         self.dialog.vbox.pack_start(self.spinner, True, True, 10)
@@ -59,14 +60,14 @@ class AVIGeneration:
                 destroy_with_parent=True,
                 message_type=Gtk.MessageType.ERROR,
                 buttons=Gtk.ButtonsType.OK,
-                text="Cannot find ffmpeg video conversion utility" 
+                text="Cannot find ffmpeg video conversion utility"
             )
             error_dlg.run()
             error_dlg.destroy()
             return
-        
+
         self.spinner.start()
-        
+
         # calling ffmpeg
         # https://trac.ffmpeg.org/wiki/Concatenate
         # https://trac.ffmpeg.org/wiki/Encode/VP9
@@ -80,10 +81,13 @@ class AVIGeneration:
             "-c:v", "libvpx-vp9", "-crf", "30", "-b:v", "0",
             "-r", str(framerate), video_file])
         self.pid, fd_in, fd_out, fd_err = GLib.spawn_async(call,
-                                    flags=GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                    standard_output=False, standard_error=True)
+                                                           flags=GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                           standard_output=False, standard_error=True)
         self.fh_err = os.fdopen(fd_err, "r")
-        GLib.child_watch_add(GLib.PRIORITY_DEFAULT, self.pid, self.video_complete)
+        GLib.child_watch_add(
+            GLib.PRIORITY_DEFAULT,
+            self.pid,
+            self.video_complete)
         self.error_watch = GLib.io_add_watch(self.fh_err, GLib.PRIORITY_DEFAULT,
                                              GLib.IOCondition.IN, self.video_error)
 
@@ -114,7 +118,7 @@ class AVIGeneration:
         self.dialog.show_all()
         self.running = True
         self.error = False
-        
+
         try:
             self.generate_avi()
         except GLib.GError as err:
@@ -129,9 +133,9 @@ class AVIGeneration:
             error_dlg.run()
             error_dlg.destroy()
             self.dialog.destroy()
-            
+
             return -1
-        
+
         result = 0
         response = self.dialog.run()
         if response == Gtk.ResponseType.CANCEL:

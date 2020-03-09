@@ -4,12 +4,13 @@ from fract4d.tests import testbase
 from fract4d_compiler import fc
 from fract4dgui import browser_model
 
+
 class Wrapper(browser_model.T):
     def __init__(self):
         self.type_changelist = []
         self.file_changelist = []
         self.formula_changelist = []
-        browser_model.T.__init__(self,Test.g_comp)
+        browser_model.T.__init__(self, Test.g_comp)
         self.type_changed += self._type_changed
         self.file_changed += self._file_changed
         self.formula_changed += self._formula_changed
@@ -22,6 +23,7 @@ class Wrapper(browser_model.T):
 
     def _formula_changed(self):
         self.formula_changelist.append(self.current.formula)
+
 
 class Test(testbase.ClassSetup):
     @classmethod
@@ -46,9 +48,9 @@ class Test(testbase.ClassSetup):
         self.assertEqual(
             fc.FormulaTypes.FRACTAL, ti.formula_type)
 
-        self.assertEqual( None, ti.fname)
-        self.assertEqual( None, ti.formula)
-        self.assertEqual( [], ti.formulas)
+        self.assertEqual(None, ti.fname)
+        self.assertEqual(None, ti.formula)
+        self.assertEqual([], ti.formulas)
 
         ti2 = bm.get_type_info(browser_model.GRADIENT)
 
@@ -92,19 +94,19 @@ class Test(testbase.ClassSetup):
 
         bm.set_type(browser_model.GRADIENT)
 
-        self.assertEqual( None, bm.current.fname)
-        self.assertEqual( None, bm.current.formula)
+        self.assertEqual(None, bm.current.fname)
+        self.assertEqual(None, bm.current.formula)
 
         bm.set_type(browser_model.FRACTAL)
 
-        self.assertEqual( "fish", bm.current.fname)
-        self.assertEqual( "haddock", bm.current.formula)
+        self.assertEqual("fish", bm.current.fname)
+        self.assertEqual("haddock", bm.current.formula)
 
     def testSetFile(self):
         bm = Wrapper()
         bm.set_type(browser_model.FRACTAL)
         bm.set_file("gf4d.frm")
-        self.assertEqual("gf4d.frm",bm.current.fname)
+        self.assertEqual("gf4d.frm", bm.current.fname)
         self.assertEqual(
             ["gf4d.frm"], bm.file_changelist)
 
@@ -113,12 +115,12 @@ class Test(testbase.ClassSetup):
     def testSetBadFile(self):
         bm = browser_model.T(Test.g_comp)
         bm.set_type(browser_model.FRACTAL)
-        self.assertRaises(IOError,bm.set_file,"nonexistent.frm")
+        self.assertRaises(IOError, bm.set_file, "nonexistent.frm")
 
-    def assertListSorted(self,l):
+    def assertListSorted(self, l):
         last = ""
         for f in l:
-            self.assertTrue(last < f.lower(),"list not sorted: %s" % l)
+            self.assertTrue(last < f.lower(), "list not sorted: %s" % l)
             last = f.lower()
 
     def testFormulasSorted(self):
@@ -142,7 +144,7 @@ class Test(testbase.ClassSetup):
         bm.set_type(browser_model.FRACTAL)
         bm.set_file("gf4d.frm")
         bm.set_formula("Mandelbrot")
-        self.assertEqual("Mandelbrot",bm.current.formula)
+        self.assertEqual("Mandelbrot", bm.current.formula)
         self.assertEqual(
             ["Mandelbrot"], bm.formula_changelist)
 
@@ -161,11 +163,11 @@ class Test(testbase.ClassSetup):
         bm.set_type(browser_model.FRACTAL)
         bm.set_file("gf4d.frm")
         bm.set_formula("Mandelbrot")
-        self.assertEqual("gf4d.frm",bm.current.fname)
+        self.assertEqual("gf4d.frm", bm.current.fname)
         self.assertEqual("Mandelbrot", bm.current.formula)
 
         bm.update("fractint-g4.frm", None)
-        self.assertEqual("fractint-g4.frm",bm.current.fname)
+        self.assertEqual("fractint-g4.frm", bm.current.fname)
         self.assertEqual(None, bm.current.formula)
 
         bm.update(None, None)
@@ -192,11 +194,11 @@ class Test(testbase.ClassSetup):
         bm.set_file("blatte1.ugr")
         self.assertEqual(False, bm.current.can_apply)
 
-        bm.update("test.frm","test_error")
+        bm.update("test.frm", "test_error")
         self.assertEqual(False, bm.current.can_apply)
 
     def testUgrPresent(self):
         bm = browser_model.T(Test.g_comp)
         bm.set_type(browser_model.GRADIENT)
         files = bm.current.files
-        self.assertEqual(1,files.count("blatte1.ugr"))
+        self.assertEqual(1, files.count("blatte1.ugr"))
