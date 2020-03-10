@@ -8,16 +8,18 @@ from xml.sax.handler import ContentHandler
 
 # interpolation type constants
 INT_LINEAR = 0
-INT_LOG    = 1
+INT_LOG = 1
 INT_INVLOG = 2
-INT_COS    = 3
+INT_COS = 3
+
 
 def getAttrOrDefault(attrs, name, default):
     x = attrs.get(name)
     if x is None:
         x = default
     return x
-    
+
+
 def getAttrOrElse(attrs, name):
     x = attrs.get(name)
     if x is None:
@@ -25,8 +27,10 @@ def getAttrOrElse(attrs, name):
             "Invalid file: Cannot find required attribute '%s'" % name)
     return x
 
+
 class KeyFrame:
-    def __init__(self, filename, duration, stop, int_type, flags=(0,0,0,0,0,0)):
+    def __init__(self, filename, duration, stop,
+                 int_type, flags=(0, 0, 0, 0, 0, 0)):
         self.filename = filename
         self.duration = duration
         self.stop = stop
@@ -43,18 +47,19 @@ class KeyFrame:
     @staticmethod
     def load_from_xml(attrs):
         kf = KeyFrame(
-            getAttrOrElse(attrs,"filename"),
-            int(getAttrOrElse(attrs,"duration")),
-            int(getAttrOrElse(attrs,"stop")),
-            int(getAttrOrElse(attrs,"inttype")),
-            (int(getAttrOrDefault(attrs,"xy",0)),
-             int(getAttrOrDefault(attrs,"xz",0)),
-             int(getAttrOrDefault(attrs,"xw",0)),
-             int(getAttrOrDefault(attrs,"yz",0)),
-             int(getAttrOrDefault(attrs,"yw",0)),
-             int(getAttrOrDefault(attrs,"zw",0))))
+            getAttrOrElse(attrs, "filename"),
+            int(getAttrOrElse(attrs, "duration")),
+            int(getAttrOrElse(attrs, "stop")),
+            int(getAttrOrElse(attrs, "inttype")),
+            (int(getAttrOrDefault(attrs, "xy", 0)),
+             int(getAttrOrDefault(attrs, "xz", 0)),
+             int(getAttrOrDefault(attrs, "xw", 0)),
+             int(getAttrOrDefault(attrs, "yz", 0)),
+             int(getAttrOrDefault(attrs, "yw", 0)),
+             int(getAttrOrDefault(attrs, "zw", 0))))
         return kf
-        
+
+
 class T:
     def __init__(self, compiler, userConfig):
         self.compiler = compiler
@@ -71,30 +76,30 @@ class T:
         self.keyframes = []
 
     def get_fct_enabled(self):
-        return self.userConfig.getboolean("director","fct_enabled")
-    
-    def set_fct_enabled(self,fct_enabled):
+        return self.userConfig.getboolean("director", "fct_enabled")
+
+    def set_fct_enabled(self, fct_enabled):
         if fct_enabled:
-            self.userConfig.set("director","fct_enabled","1")
+            self.userConfig.set("director", "fct_enabled", "1")
         else:
-            self.userConfig.set("director","fct_enabled","0")
-    
+            self.userConfig.set("director", "fct_enabled", "0")
+
     def get_fct_dir(self):
-        return self.userConfig.get("director","fct_dir")
-    
-    def set_fct_dir(self,dir):
-        self.userConfig.set("director","fct_dir",dir)
-    
+        return self.userConfig.get("director", "fct_dir")
+
+    def set_fct_dir(self, dir):
+        self.userConfig.set("director", "fct_dir", dir)
+
     def get_png_dir(self):
-        return self.userConfig.get("director","png_dir")
-    
-    def set_png_dir(self,dir):
-        self.userConfig.set("director","png_dir",dir)
+        return self.userConfig.get("director", "png_dir")
+
+    def set_png_dir(self, dir):
+        self.userConfig.set("director", "png_dir", dir)
 
     def get_avi_file(self):
         return self.avi_file
 
-    def set_avi_file(self,file):
+    def set_avi_file(self, file):
         if file is not None:
             self.avi_file = file
         else:
@@ -103,7 +108,7 @@ class T:
     def get_width(self):
         return self.width
 
-    def set_width(self,width):
+    def set_width(self, width):
         if width is not None:
             self.width = int(width)
         else:
@@ -112,7 +117,7 @@ class T:
     def get_height(self):
         return self.height
 
-    def set_height(self,height):
+    def set_height(self, height):
         if height is not None:
             self.height = int(height)
         else:
@@ -121,7 +126,7 @@ class T:
     def get_framerate(self):
         return self.framerate
 
-    def set_framerate(self,fr):
+    def set_framerate(self, fr):
         if fr is not None:
             self.framerate = int(fr)
         else:
@@ -130,7 +135,7 @@ class T:
     def get_redblue(self):
         return self.redblue
 
-    def set_redblue(self,rb):
+    def set_redblue(self, rb):
         if rb is not None:
             if rb == 1:
                 self.redblue = True
@@ -140,54 +145,54 @@ class T:
         else:
             self.redblue = True
 
-    def add_keyframe(self,filename,duration,stop,int_type,index=None):
-        kf = KeyFrame(filename,duration,stop,int_type)
+    def add_keyframe(self, filename, duration, stop, int_type, index=None):
+        kf = KeyFrame(filename, duration, stop, int_type)
         if index is None:
             self.keyframes.append(kf)
         else:
             self.keyframes.insert(index, kf)
 
-    def remove_keyframe(self,index):
-        del self.keyframes[index:index+1]
+    def remove_keyframe(self, index):
+        del self.keyframes[index:index + 1]
 
-    def change_keyframe(self,index,duration,stop,int_type):
+    def change_keyframe(self, index, duration, stop, int_type):
         if index < len(self.keyframes):
             kf = self.keyframes[index]
             kf.duration = duration
             kf.stop = stop
             kf.int_type = int_type
 
-    def get_keyframe(self,index):
+    def get_keyframe(self, index):
         return self.keyframes[index]
 
-    def get_keyframe_filename(self,index):
+    def get_keyframe_filename(self, index):
         return self.keyframes[index].filename
 
-    def get_keyframe_duration(self,index):
+    def get_keyframe_duration(self, index):
         return self.keyframes[index].duration
 
-    def set_keyframe_duration(self,index,duration):
+    def set_keyframe_duration(self, index, duration):
         if index < len(self.keyframes):
             self.keyframes[index].duration = duration
 
-    def get_keyframe_stop(self,index):
+    def get_keyframe_stop(self, index):
         return self.keyframes[index].stop
 
-    def set_keyframe_stop(self,index,stop):
+    def set_keyframe_stop(self, index, stop):
         if index < len(self.keyframes):
             self.keyframes[index].stop = stop
 
-    def get_keyframe_int(self,index):
+    def get_keyframe_int(self, index):
         return self.keyframes[index].int_type
 
-    def set_keyframe_int(self,index,int_type):
+    def set_keyframe_int(self, index, int_type):
         if index < len(self.keyframes):
             self.keyframes[index].int_type = int_type
 
-    def get_directions(self,index):
+    def get_directions(self, index):
         return self.keyframes[index].flags
 
-    def set_directions(self,index,drct):
+    def set_directions(self, index, drct):
         if index < len(self.keyframes):
             self.keyframes[index].flags = drct
 
@@ -196,14 +201,14 @@ class T:
 
     def __getstate__(self):
         odict = self.__dict__.copy()  # copy the dict since we change it
-        #del odict['fh']              # remove filehandle entry
+        # del odict['fh']              # remove filehandle entry
         return odict
 
-    def __setstate__(self,dict):
+    def __setstate__(self, dict):
         self.keyframes = []
         self.__dict__.update(dict)   # update attributes
 
-    def load_animation(self,file):
+    def load_animation(self, file):
         # save __dict__ if there was error
         odict = self.__dict__.copy()
         import traceback
@@ -218,7 +223,7 @@ class T:
             self.__dict__ = odict
             raise
 
-    def save_animation(self,file):
+    def save_animation(self, file):
         with open(file, "w") as fh:
             fh.write('<?xml version="1.0"?>\n')
             fh.write("<animation>\n")
@@ -227,49 +232,51 @@ class T:
                 kf.save(fh)
             fh.write('\t</keyframes>\n')
             fh.write('\t<output filename="%s" framerate="%d" width="%d" height="%d" swap="%d"/>\n' %
-                 (self.avi_file,self.framerate,self.width,self.height,self.redblue))
+                     (self.avi_file, self.framerate, self.width, self.height, self.redblue))
             fh.write("</animation>\n")
 
     # leftover from debugging purposes
     def pr(self):
         print(self.__dict__)
 
-    def get_image_filename(self,n):
+    def get_image_filename(self, n):
         "The filename of the image containing the Nth frame"
         return os.path.join(self.get_png_dir(), "image_%07d.png" % n)
 
-    def get_fractal_filename(self,n):
+    def get_fractal_filename(self, n):
         "The filename of the .fct file which generates the Nth frame"
-        return os.path.join(self.get_fct_dir(),"file_%07d.fct" % n)
+        return os.path.join(self.get_fct_dir(), "file_%07d.fct" % n)
 
     def get_mu(self, int_type, x):
         if int_type == INT_LINEAR:
             mu = x
         elif int_type == INT_LOG:
-            mu = math.log(x+1,2)
+            mu = math.log(x + 1, 2)
         elif int_type == INT_INVLOG:
-            mu = (math.exp(x)-1) / (math.e-1)
+            mu = (math.exp(x) - 1) / (math.e - 1)
         elif int_type == INT_COS:
-            mu = (1-math.cos(x*math.pi)) / 2
+            mu = (1 - math.cos(x * math.pi)) / 2
         else:
             raise ValueError("Unknown interpolation type %d" % int_type)
         return mu
-    
+
     # create a list containing all the filenames of the frames
     def create_list(self):
         framelist = []
         current = 0
         for i in range(self.keyframes_count()):
-            for j in range(self.get_keyframe_stop(i)):  # output keyframe 'stop' times
+            for j in range(
+                    self.get_keyframe_stop(i)):  # output keyframe 'stop' times
                 framelist.append(self.get_image_filename(current))
             current += 1
 
             if i < self.keyframes_count() - 1:
                 # skip final frame which has no transitions following it
-                for j in range(self.get_keyframe_duration(i)):  # output all transition files minus keyframe
+                for j in range(self.get_keyframe_duration(
+                        i)):  # output all transition files minus keyframe
                     framelist.append(self.get_image_filename(current))
                     current += 1
-        
+
         return framelist
 
     def get_keyframe_durations(self):
@@ -288,9 +295,10 @@ class T:
                 # don't count the last frame's duration
                 count += self.get_keyframe_duration(i)
         return count
-    
+
+
 class AnimationHandler(ContentHandler):
-    def __init__(self,animation):
+    def __init__(self, animation):
         self.animation = animation
 
     def startElement(self, name, attrs):

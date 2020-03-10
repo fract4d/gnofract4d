@@ -11,6 +11,7 @@ from fract4d import fractal
 
 running = False
 
+
 class PNGGeneration(Gtk.Dialog, hig.MessagePopper):
     def __init__(self, animation, compiler, parent):
         Gtk.Dialog.__init__(
@@ -53,7 +54,7 @@ class PNGGeneration(Gtk.Dialog, hig.MessagePopper):
             durations, self.anim, self.compiler, create_all_images, self)
         gt.run()
         return False
-    
+
     def to_create_images_again(self):
         create = True
         filelist = self.anim.create_list()
@@ -77,7 +78,7 @@ class PNGGeneration(Gtk.Dialog, hig.MessagePopper):
 
         return create
 
-    def show_error(self,message,secondary):
+    def show_error(self, message, secondary):
         self.error = True
         error_dlg = hig.ErrorAlert(
             transient_for=self,
@@ -112,6 +113,8 @@ class PNGGeneration(Gtk.Dialog, hig.MessagePopper):
             return 1
 
 # interpolate values and call generation of .png files
+
+
 class GenerationManager:
     def __init__(
             self, durations, animation, compiler,
@@ -125,12 +128,12 @@ class GenerationManager:
         # initializing progress bars
         self.pbar_image.set_fraction(0)
         self.pbar_overall.set_fraction(0)
-        
+
         self.transition_counter = None
         self.image_counter = None
         # sum of all frames
         self.sumN = len(self.anim.keyframes) + sum(self.durations)
-        
+
         self.compiler = compiler
 
         self.current = gtkfractal.HighResolution(
@@ -217,7 +220,11 @@ class GenerationManager:
 
         # write .fct file if user wants that
         if self.anim.get_fct_enabled():
-            f_frame.save(open(self.anim.get_fractal_filename(self.image_counter), "w"))
+            f_frame.save(
+                open(
+                    self.anim.get_fractal_filename(
+                        self.image_counter),
+                    "w"))
 
         # check if image already exists and user wants to recreate it or not
         image_name = self.anim.get_image_filename(self.image_counter)

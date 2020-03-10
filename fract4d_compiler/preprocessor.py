@@ -23,28 +23,32 @@ uncompressed_re = re.compile(r'\}')
 
 space_re = re.compile(r'^[ \t]+')
 
+
 class Error(Exception):
-    def __init__(self,msg):
-        Exception.__init__(self,msg)
+    def __init__(self, msg):
+        Exception.__init__(self, msg)
+
 
 class StackEntry:
     def __init__(self, line_num, isTrue):
         self.line_num = line_num
         self.isTrue = isTrue
+
     def __repr__(self):
         return "(%s,%s)" % (self.line_num, self.isTrue)
-    
+
+
 class T:
     def get_var(self, m, i, type):
         var = m.group("var")
         if not var:
             raise Error("%d: %s without variable" % (i, type))
         return var
-    
+
     def popstack(self, i):
         if self.ifdef_stack == []:
             raise Error("%d: $ENDIF without $IFDEF" % i)
-        
+
         self.ifdef_stack.pop()
 
         if self.ifdef_stack == []:
@@ -52,15 +56,15 @@ class T:
         else:
             return self.ifdef_stack[-1].isTrue
 
-    def decompress(self,lines):
+    def decompress(self, lines):
         out_lines = []
         compressed = False
         data = []
-        
+
         for line in lines:
             if compressed_re.match(line):
                 compressed = True
-                line = compressed_re.sub("",line)
+                line = compressed_re.sub("", line)
 
             if compressed:
                 if uncompressed_re.match(line):
@@ -68,7 +72,7 @@ class T:
                     bytes = base64.b64decode("".join(data))
                     dc = bytes.decode("latin_1")
                     #chars = [ "%x" % ord(ch) for ch in dc]
-                    #out_lines.append("".join(chars))
+                    # out_lines.append("".join(chars))
                     out_lines.append(dc)
                     data = []
                 else:
@@ -76,7 +80,7 @@ class T:
             else:
                 out_lines.append(line)
         return out_lines
-                
+
     def __init__(self, s):
         self.vars = {}
         lines = s.splitlines(True)
@@ -86,18 +90,18 @@ class T:
         lines = self.decompress(lines)
         last_was_continue = False
         continuations = 0
-        
+
         self.currently_true = True
         for line in lines:
             pass_through = False
 
             if last_was_continue:
                 # remove any leading spaces
-                line = space_re.sub("",line,1)
-                
+                line = space_re.sub("", line, 1)
+
             m = ifdef_re.match(line)
             if m:
-                var = self.get_var(m,i, "$IFDEF")
+                var = self.get_var(m, i, "$IFDEF")
                 if self.currently_true:
                     self.currently_true = var in self.vars
                 self.ifdef_stack.append(StackEntry(i, self.currently_true))
@@ -106,7 +110,7 @@ class T:
 
                 if len(self.ifdef_stack) > 1:
                     self.currently_true = self.currently_true and \
-                                          self.ifdef_stack[-2].isTrue
+                        self.ifdef_stack[-2].isTrue
 
                 self.ifdef_stack[-1].isTrue = self.currently_true
             elif endif_re.match(line):
@@ -116,12 +120,12 @@ class T:
                     m = define_re.match(line)
                     if m:
                         # a $define
-                        var = self.get_var(m,i, "$DEFINE")
+                        var = self.get_var(m, i, "$DEFINE")
                         self.vars[var] = 1
                     else:
                         m = undef_re.match(line)
                         if m:
-                            var = self.get_var(m,i,"$UNDEF")
+                            var = self.get_var(m, i, "$UNDEF")
                             try:
                                 del self.vars[var]
                             except KeyError as err:
@@ -134,9 +138,9 @@ class T:
             m = continue_re.search(line)
             if m:
                 # this line is continued on the line below it
-                
+
                 # remove the continuation
-                line = continue_re.sub("",line)
+                line = continue_re.sub("", line)
                 last_was_continue = True
                 continuations += 1
             else:
@@ -144,7 +148,7 @@ class T:
                 last_was_continue = False
                 line += "\n" * continuations
                 continuations = 0
-                
+
             if pass_through:
                 out_lines.append(line)
             else:
@@ -152,19 +156,20 @@ class T:
                 out_lines.append("\n")
 
             i += 1
-            
+
         if self.ifdef_stack != []:
             raise Error("%d: $IFDEF without $ENDIF" %
                         self.ifdef_stack[-1].line_num)
 
         self._out = "".join(out_lines)
-        
+
     def out(self):
         return self._out
 
-if __name__ == '__main__': #pragma: no cover
+
+if __name__ == '__main__':  # pragma: no cover
     import sys
     # Test it out
-    data = open(sys.argv[1],"r").read()
+    data = open(sys.argv[1], "r").read()
     pp = T(data)
     print(pp.out())

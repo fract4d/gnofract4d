@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
+from fract4dgui import hig
+from gi.repository import Gtk, GLib
 import unittest
 import gettext
 import os
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
 
-from fract4dgui import hig
 
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
@@ -16,13 +16,15 @@ gettext.install('gnofract4d')
 Gtk.init()
 toplevel = Gtk.Window()
 
-class MockDialog(Gtk.MessageDialog,hig.MessagePopper):
+
+class MockDialog(Gtk.MessageDialog, hig.MessagePopper):
     def __init__(self):
         Gtk.MessageDialog.__init__(
             self,
             text="Title",
             transient_for=toplevel)
         hig.MessagePopper.__init__(self)
+
 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -34,13 +36,16 @@ class Test(unittest.TestCase):
     def wait(self):
         Gtk.main()
 
-    def quitloop(self,f,status):
+    def quitloop(self, f, status):
         if status == 0:
             Gtk.main_quit()
 
     def testCreate(self):
-        d = hig.Alert(transient_for=toplevel,type=Gtk.MessageType.INFO,primary="Hello!")
-        self.assertNotEqual(d,None)
+        d = hig.Alert(
+            transient_for=toplevel,
+            type=Gtk.MessageType.INFO,
+            primary="Hello!")
+        self.assertNotEqual(d, None)
 
         self.runAndDismiss(d)
 
@@ -93,13 +98,13 @@ class Test(unittest.TestCase):
 
         self.runAndDismiss(d)
 
-    def runAndDismiss(self,d):
+    def runAndDismiss(self, d):
         def dismiss():
             d.response(Gtk.ResponseType.ACCEPT)
             return False
 
         # increase timeout to see what dialogs look like
-        GLib.timeout_add(10,dismiss)
+        GLib.timeout_add(10, dismiss)
 
         d.run()
         d.destroy()
@@ -130,5 +135,5 @@ class Test(unittest.TestCase):
 
         hig.timeout = 300
 
-        dd.show_error("Hello","A catastrophe has occurred")
+        dd.show_error("Hello", "A catastrophe has occurred")
         dd.ask_question("Eh?", "Speak into t'trumpet!")

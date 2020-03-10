@@ -15,26 +15,33 @@ from gi.repository import Gtk, Gdk, GLib, GObject
 threads_enabled = False
 break_new_things = False
 
+
 def threads_enter():
     if threads_enabled:
         Gdk.threads_enter()
 
+
 def threads_leave():
     if threads_enabled:
         Gdk.threads_leave()
+
 
 def idle_wrapper(callable, *args):
     threads_enter()
     callable(*args)
     threads_leave()
 
+
 def idle_add(callable, *args):
     """A wrapper around GObject.idle_add which wraps the callback in
     threads_enter/threads_leave if required"""
     GLib.idle_add(idle_wrapper, callable, *args)
 
-def input_add(fd,cb):
-    return GLib.io_add_watch(fd, GLib.PRIORITY_DEFAULT, GLib.IO_IN | GLib.IO_HUP | GLib.IO_PRI, cb)
+
+def input_add(fd, cb):
+    return GLib.io_add_watch(fd, GLib.PRIORITY_DEFAULT,
+                             GLib.IO_IN | GLib.IO_HUP | GLib.IO_PRI, cb)
+
 
 def find_in_path(exe):
     # find an executable along PATH env var
@@ -43,11 +50,12 @@ def find_in_path(exe):
         return None
     paths = pathstring.split(":")
     for path in paths:
-        full_path = os.path.join(path,exe)
+        full_path = os.path.join(path, exe)
         if os.path.exists(full_path):
             return full_path
     return None
-    
+
+
 def stack_trace():
     stack = inspect.stack()
     str = ""
@@ -57,13 +65,13 @@ def stack_trace():
             args = inspect.formatargvalues(*inspect.getargvalues(frame_obj))
         except Exception:
             args = "<unavailable>"
-        
+
         frame_desc = "%s(%s)\t\t%s(%s)\n" % (filename, line, funcname, args)
         str += frame_desc
     return str
-    
 
-def get_directory_chooser(title,parent):
+
+def get_directory_chooser(title, parent):
     chooser = Gtk.FileChooserDialog(
         title=title,
         transient_for=parent,
@@ -74,50 +82,59 @@ def get_directory_chooser(title,parent):
         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
 
     return chooser
-    
+
+
 def get_file_chooser_extra_widget(chooser):
     return chooser.get_extra_widget()
 
-def set_file_chooser_filename(chooser,name):
+
+def set_file_chooser_filename(chooser, name):
     if name:
         chooser.set_current_folder(os.path.abspath(os.path.dirname(name)))
         chooser.set_current_name(os.path.basename(name))
-    
+
+
 def create_option_menu(items):
     widget = Gtk.ComboBoxText()
     for item in items:
         widget.append_text(item)
-        
+
     return widget
+
 
 def set_menu_from_list(menu, items):
     model = Gtk.ListStore(str)
     for item in items:
         model.append((item,))
     menu.set_model(model)
-        
+
+
 def add_menu_item(menu, item):
     menu.append_text(item)
 
+
 def set_selected(menu, i):
     menu.set_active(int(i))
-        
+
+
 def get_selected(menu):
     return menu.get_active()
+
 
 def get_selected_value(menu):
     iter = menu.get_active_iter()
     if not iter:
         return None
-    val = menu.get_model().get_value(iter,0)
+    val = menu.get_model().get_value(iter, 0)
     return val
 
-def set_selected_value(menu,val):
+
+def set_selected_value(menu, val):
     model = menu.get_model()
     i = 0
     iter = model.get_iter_first()
     while iter is not None:
-        item = model.get_value(iter,0)
+        item = model.get_value(iter, 0)
         if item == val:
             menu.set_active(i)
             return
@@ -125,14 +142,17 @@ def set_selected_value(menu,val):
         i += 1
 
 
-def create_color(r,g,b):
-    return Gdk.RGBA(int(r*65535),int(g*65535),int(b*65535))
+def create_color(r, g, b):
+    return Gdk.RGBA(int(r * 65535), int(g * 65535), int(b * 65535))
+
 
 def floatColorFrom256(rgba):
-    return [rgba[0]/255.0, rgba[1]/255.0, rgba[2]/255.0, rgba[3]/255.0]
+    return [rgba[0] / 255.0, rgba[1] / 255.0, rgba[2] / 255.0, rgba[3] / 255.0]
 
-def color256FromFloat(r,g,b,color):
-    return (int(r*255), int(g*255), int(b*255), color[3])
+
+def color256FromFloat(r, g, b, color):
+    return (int(r * 255), int(g * 255), int(b * 255), color[3])
+
 
 def launch_browser(prefs, url, window):
     cmd = 'xdg-open "%s" &' % url
@@ -146,6 +166,7 @@ def launch_browser(prefs, url, window):
             transient_for=window)
         d.run()
         d.destroy()
+
 
 class ColorButton(Gtk.ColorButton):
     def __init__(self, rgb, changed_cb, is_left):
@@ -163,10 +184,10 @@ class ColorButton(Gtk.ColorButton):
         self.color = create_color(rgb[0], rgb[1], rgb[2])
         Gtk.ColorButton.set_rgba(self, self.color)
 
-    def color_changed(self,color):
+    def color_changed(self, color):
         self.color = color
         self.changed_cb(
-            color.red/65535.0,
-            color.green/65535.0,
-            color.blue/65535.0,
+            color.red / 65535.0,
+            color.green / 65535.0,
+            color.blue / 65535.0,
             self.is_left)

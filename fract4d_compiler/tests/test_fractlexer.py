@@ -4,6 +4,7 @@ import unittest
 
 from fract4d_compiler import fractlexer, preprocessor
 
+
 class Test(unittest.TestCase):
     def setUp(self):
         self.lexer = fractlexer.lexer
@@ -13,7 +14,7 @@ class Test(unittest.TestCase):
     # all the tokens therein
 
     def tokensFromFile(self, f):
-        data = open(f,"r").read()
+        data = open(f, "r").read()
         return self.tokensFromString(data)
 
     def tokensFromString(self, data):
@@ -22,17 +23,18 @@ class Test(unittest.TestCase):
 
         toklist = []
         # Tokenize
-        while 1:
+        while True:
             tok = self.lexer.token()
-            if not tok: break      # No more input
-            #print tok
+            if not tok:
+                break      # No more input
+            # print tok
             toklist.append(tok)
 
         return toklist
 
     def testUGR(self):
         tokens = self.tokensFromString(
-'''cl1rorangemixed {
+            '''cl1rorangemixed {
 gradient:
  title="cl1rorangemixed" smooth=no
  index=0 color=5153516
@@ -40,14 +42,14 @@ gradient:
  index=399 color=5349352
 }
         ''')
-        #print tokens
+        # print tokens
         self.assertEqual(tokens[0].type, "FORM_ID")
         self.assertEqual(tokens[2].type, "SECT_PARMS")
 
         self.assertEqual(tokens[9].type, "CONST")
 
     def testEmpty(self):
-        self.assertEqual(self.tokensFromString(""),[])
+        self.assertEqual(self.tokensFromString(""), [])
 
     def testBasics(self):
         tokens = self.tokensFromString(
@@ -67,13 +69,17 @@ default:
    baz"
 }
 ''')
-        self.assertTrue(tokens[0].type == tokens[1].type == "NEWLINE","first 2 should be newlines")
+        self.assertTrue(
+            tokens[0].type == tokens[1].type == "NEWLINE",
+            "first 2 should be newlines")
 
-        str = [ tok for tok in tokens if tok.type == "STRING"]
-        self.assertTrue(len(str) == 1 and str[0].value == "foo;barbaz", "string literal parsing problem" and str[0].lineno == 14)
+        str = [tok for tok in tokens if tok.type == "STRING"]
+        self.assertTrue(
+            len(str) == 1 and str[0].value == "foo;barbaz",
+            "string literal parsing problem" and str[0].lineno == 14)
 
-        sections = [ tok for tok in tokens if tok.type == "SECT_STM"]
-        self.assertEqual(len(sections),3, "wrong number of sections")
+        sections = [tok for tok in tokens if tok.type == "SECT_STM"]
+        self.assertEqual(len(sections), 3, "wrong number of sections")
         self.assertEqual(sections[0].lineno, 4, "line counting wrong")
         self.assertEqual(sections[2].lineno, 10, "line counting wrong")
 
@@ -118,6 +124,7 @@ myComment {}
                         ts[2].type == "ELSEIF" and
                         ts[4].type == "ELSE" and
                         ts[1].type == ts[3].type == ts[5].type == "ID")
+
     def testNumbers(self):
         ts = self.tokensFromString('1.0 0.5e+7 1i 1 i')
         self.assertTrue(ts[0].type == ts[1].type == ts[3].type == "NUMBER" and

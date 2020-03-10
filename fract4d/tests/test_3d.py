@@ -7,11 +7,13 @@ from . import testbase
 from fract4d import fractal, fract4dc, image
 from .fractalsite import FractalSite
 
+
 def sum(l):
     x = 0
     for a in l:
         x += a
     return x
+
 
 class Test(testbase.ClassSetup):
     @classmethod
@@ -29,20 +31,21 @@ class Test(testbase.ClassSetup):
 
         handle = fract4dc.pf_load(self.f.outputfile)
         self.pfunc = fract4dc.pf_create(handle)
-        self.cmap = fract4dc.cmap_create_gradient(self.f.get_gradient().segments)
-        (r,g,b,a) = self.f.solids[0]
-        fract4dc.cmap_set_solid(self.cmap,0,r,g,b,a)
-        (r,g,b,a) = self.f.solids[1]
-        fract4dc.cmap_set_solid(self.cmap,1,r,g,b,a)
+        self.cmap = fract4dc.cmap_create_gradient(
+            self.f.get_gradient().segments)
+        (r, g, b, a) = self.f.solids[0]
+        fract4dc.cmap_set_solid(self.cmap, 0, r, g, b, a)
+        (r, g, b, a) = self.f.solids[1]
+        fract4dc.cmap_set_solid(self.cmap, 1, r, g, b, a)
 
         initparams = self.f.all_params()
-        fract4dc.pf_init(self.pfunc,self.f.params,initparams)
+        fract4dc.pf_init(self.pfunc, self.f.params, initparams)
 
-        self.im = image.T(40,30)
+        self.im = image.T(40, 30)
         siteobj = FractalSite()
 
         self.fw = fract4dc.fw_create(
-            1,self.pfunc,self.cmap,self.im._img,self.f.site)
+            1, self.pfunc, self.cmap, self.im._img, self.f.site)
 
         self.ff = fract4dc.ff_create(
             [0.0, 0.0, 0.0, 0.0,
@@ -56,7 +59,7 @@ class Test(testbase.ClassSetup):
             self.cmap,
             0,
             1,
-            2, # 3D
+            2,  # 3D
             self.im._img,
             self.f.site,
             self.fw,
@@ -69,22 +72,24 @@ class Test(testbase.ClassSetup):
     def testHyperSphereFormula(self):
         # check that a formula consisting of a simple 2.0-radius hypersphere
         # can be effectively ray-traced
-        (iter,fate,dist,solid) = fract4dc.pf_calc(self.pfunc, [0.0, 0.0, 0.0, 0.0], 100)
-        self.assertEqual(fate,32) # should be inside
+        (iter, fate, dist, solid) = fract4dc.pf_calc(
+            self.pfunc, [0.0, 0.0, 0.0, 0.0], 100)
+        self.assertEqual(fate, 32)  # should be inside
 
-        (iter,fate,dist,solid) = fract4dc.pf_calc(self.pfunc, [-2.5, 0.0, 0.0, 0.0], 100)
-        self.assertEqual(fate,0) # should be outside
+        (iter, fate, dist, solid) = fract4dc.pf_calc(
+            self.pfunc, [-2.5, 0.0, 0.0, 0.0], 100)
+        self.assertEqual(fate, 0)  # should be outside
 
     def intersect_sphere(self, eye, look):
         # closed form for where we should intersect the hypersphere
         # based on http://stevehollasch.com/thesis/chapter5.html
 
         # v = sphere.center - ray.origin
-        v = [ a - b for (a,b) in zip([0,0,0,0], eye)]
+        v = [a - b for (a, b) in zip([0, 0, 0, 0], eye)]
 
-        bb = sum([a*b for (a,b) in zip(v,look)])
+        bb = sum([a * b for (a, b) in zip(v, look)])
 
-        rad = bb * bb - sum([a * b for (a,b) in zip(v,v)]) + 4.0
+        rad = bb * bb - sum([a * b for (a, b) in zip(v, v)]) + 4.0
 
         if rad < 0:
             # no intersection
@@ -99,10 +104,10 @@ class Test(testbase.ClassSetup):
             t1 = t2
 
         if t1 < 0:
-            return (False, None) # sphere behind eye
+            return (False, None)  # sphere behind eye
 
         t1_ray = [t1 * a for a in look]
-        intersection = [a+b for (a,b) in zip(eye,t1_ray)]
+        intersection = [a + b for (a, b) in zip(eye, t1_ray)]
 
         return (True, intersection)
 
@@ -110,42 +115,43 @@ class Test(testbase.ClassSetup):
         # check that looking at different points in screen works
 
         # top-left corner
-        look = fract4dc.ff_look_vector(self.ff,0,0)
-        big_look = [(-19.5/40) * 4.0, (14.5/30)*3.0, 40.0, 0.0]
-        mag = math.sqrt(sum([x*x for x in big_look]))
-        exp_look = tuple([x/mag for x in big_look])
+        look = fract4dc.ff_look_vector(self.ff, 0, 0)
+        big_look = [(-19.5 / 40) * 4.0, (14.5 / 30) * 3.0, 40.0, 0.0]
+        mag = math.sqrt(sum([x * x for x in big_look]))
+        exp_look = tuple([x / mag for x in big_look])
         self.assertNearlyEqual(look, exp_look)
 
         # center of the screen (betwen pixels)
-        look = fract4dc.ff_look_vector(self.ff,19.5,14.5)
+        look = fract4dc.ff_look_vector(self.ff, 19.5, 14.5)
         big_look = [0, 0, 40.0, 0.0]
-        mag = math.sqrt(sum([x*x for x in big_look]))
-        exp_look = tuple([x/mag for x in big_look])
+        mag = math.sqrt(sum([x * x for x in big_look]))
+        exp_look = tuple([x / mag for x in big_look])
         self.assertNearlyEqual(look, exp_look)
 
         # root finding experiments
 
         # going straight ahead, root should be at -2.0
-        eye = [0,0,-40.0,0]
-        (is_hit,root) = fract4dc.fw_find_root(self.fw, eye ,look)
+        eye = [0, 0, -40.0, 0]
+        (is_hit, root) = fract4dc.fw_find_root(self.fw, eye, look)
         lookfor = [0.0, 0.0, -2.0, 0.0]
         self.assertEqual(is_hit, True)
         self.assertNearlyEqual(root, lookfor, 1.0e-10)
 
         # check each pixel against closed-form results
-        for y in range(0,30):
-            for x in range(0,40):
-                look = fract4dc.ff_look_vector(self.ff,x,y)
-                (is_hit,root) = fract4dc.fw_find_root(self.fw, [0,0,-40.0,0],look)
-                (should_be_hit, real_root) = self.intersect_sphere(eye,look)
+        for y in range(0, 30):
+            for x in range(0, 40):
+                look = fract4dc.ff_look_vector(self.ff, x, y)
+                (is_hit, root) = fract4dc.fw_find_root(
+                    self.fw, [0, 0, -40.0, 0], look)
+                (should_be_hit, real_root) = self.intersect_sphere(eye, look)
                 self.assertEqual(is_hit, should_be_hit)
                 if is_hit:
-                    self.assertNearlyEqual(root, real_root,1e-10)
+                    self.assertNearlyEqual(root, real_root, 1e-10)
 
     def testDraw(self):
         fract4dc.calc(
-            params = self.f.params,
-            antialias = self.f.antialias,
+            params=self.f.params,
+            antialias=self.f.antialias,
             maxiter=self.f.maxiter,
             yflip=self.f.yflip,
             periodicity=self.f.periodicity,
@@ -153,15 +159,15 @@ class Test(testbase.ClassSetup):
             cmap=self.cmap,
             auto_deepen=self.f.auto_deepen,
             nthreads=1,
-            render_type=2, # 3D
+            render_type=2,  # 3D
             image=self.im._img,
             site=self.f.site)
 
-        #self.im.save("hs.tga")
+        # self.im.save("hs.tga")
 
     def testDrawMBrot(self):
         self.f.set_formula("gf4d.frm", "Mandelbrot")
         self.f.compile()
-        im = image.T(80,60)
+        im = image.T(80, 60)
         self.f.draw(im)
-        #im.save("mb.tga")
+        # im.save("mb.tga")

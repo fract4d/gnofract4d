@@ -6,9 +6,11 @@ from gi.repository import Gtk, GObject
 
 from . import dialog, utils, gtkfractal, browser_model
 
+
 class BrowserDialog(dialog.T):
     RESPONSE_REFRESH = 2
-    def __init__(self,main_window,f,type=browser_model.FRACTAL):
+
+    def __init__(self, main_window, f, type=browser_model.FRACTAL):
         dialog.T.__init__(
             self,
             _("Formula Browser"),
@@ -25,10 +27,10 @@ class BrowserDialog(dialog.T):
         self.model.type_changed += self.on_type_changed
         self.model.file_changed += self.on_file_changed
         self.model.formula_changed += self.on_formula_changed
-        
+
         self.file_list = Gtk.ListStore(str)
         self.formula_list = Gtk.ListStore(str)
-        
+
         self.file_selection_changed_spec = None
         self.formula_selection_changed_spec = None
 
@@ -36,19 +38,19 @@ class BrowserDialog(dialog.T):
         self.compiler = f.compiler
 
         self.ir = None
-        self.set_size_request(600,500)
+        self.set_size_request(600, 500)
         self.preview = gtkfractal.Preview(self.compiler)
         self.preview.f.auto_tolerance = False
 
         self.create_panes()
         self.vbox.show_all()
-        
+
         self.set_type(type)
 
-    def onResponse(self,widget,id):
+    def onResponse(self, widget, id):
         if id == Gtk.ResponseType.CLOSE or \
-               id == Gtk.ResponseType.NONE or \
-               id == Gtk.ResponseType.DELETE_EVENT:
+                id == Gtk.ResponseType.NONE or \
+                id == Gtk.ResponseType.DELETE_EVENT:
             self.hide()
         elif id == Gtk.ResponseType.APPLY:
             self.onApply()
@@ -64,7 +66,7 @@ class BrowserDialog(dialog.T):
 
     def onRefresh(self):
         self.f.refresh()
-        self.set_file(self.model.current.fname) # update text window
+        self.set_file(self.model.current.fname)  # update text window
 
     def get_current_text(self):
         buffer = self.sourcetext.get_buffer()
@@ -74,8 +76,8 @@ class BrowserDialog(dialog.T):
 
     def onApply(self):
         self.model.apply(self.f)
-        
-    def set_type_cb(self,optmenu):
+
+    def set_type_cb(self, optmenu):
         self.set_type(utils.get_selected(optmenu))
 
     def on_type_changed(self):
@@ -89,27 +91,27 @@ class BrowserDialog(dialog.T):
         except IndexError:
             pass
         self.populate_file_list()
-        
-    def set_type(self,type):
-        self.model.set_type(type)
-        
-    def create_file_list(self):
-        sw = Gtk.ScrolledWindow ()
 
-        sw.set_shadow_type (Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy (Gtk.PolicyType.NEVER,
-                       Gtk.PolicyType.AUTOMATIC)
+    def set_type(self, type):
+        self.model.set_type(type)
+
+    def create_file_list(self):
+        sw = Gtk.ScrolledWindow()
+
+        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        sw.set_policy(Gtk.PolicyType.NEVER,
+                      Gtk.PolicyType.AUTOMATIC)
 
         self.filetreeview = Gtk.TreeView.new_with_model(self.file_list)
         self.filetreeview.set_tooltip_text(
             _("A list of files containing fractal formulas"))
-        
+
         sw.add(self.filetreeview)
 
-        renderer = Gtk.CellRendererText ()
-        column = Gtk.TreeViewColumn ('_File', renderer, text=0)
-        
-        self.filetreeview.append_column (column)
+        renderer = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn('_File', renderer, text=0)
+
+        self.filetreeview.append_column(column)
 
         return sw
 
@@ -124,17 +126,17 @@ class BrowserDialog(dialog.T):
         self.file_list.clear()
 
         files = self.model.current.files
-        
+
         current_iter = None
-        index,i = 0,0
+        index, i = 0, 0
         for fname in files:
-            iter = self.file_list.append ()
+            iter = self.file_list.append()
             if fname == self.model.current.fname:
                 current_iter = iter
                 index = i
-            self.file_list.set (iter, 0, fname)
+            self.file_list.set(iter, 0, fname)
             i += 1
-            
+
         # re-select current file, if any
         if current_iter:
             self.filetreeview.scroll_to_cell(index)
@@ -144,10 +146,11 @@ class BrowserDialog(dialog.T):
         else:
             self.formula_list.clear()
             self.formula_selection_changed(None)
-        
-        self.file_selection_changed_spec = sel.connect('changed', self.file_selection_changed)
 
-    def populate_formula_list(self,fname):
+        self.file_selection_changed_spec = sel.connect(
+            'changed', self.file_selection_changed)
+
+    def populate_formula_list(self, fname):
         sel = self.treeview.get_selection()
         if self.formula_selection_changed_spec:
             sel.disconnect(self.formula_selection_changed_spec)
@@ -159,20 +162,21 @@ class BrowserDialog(dialog.T):
         i = 0
         for formula_name in form_names:
             iter = self.formula_list.append()
-            self.formula_list.set(iter,0,formula_name)
+            self.formula_list.set(iter, 0, formula_name)
             if formula_name == self.model.current.formula:
                 self.treeview.get_selection().select_iter(iter)
                 self.treeview.scroll_to_cell(i)
                 self.set_formula(formula_name)
             i += 1
 
-        self.formula_selection_changed_spec = sel.connect('changed', self.formula_selection_changed)
+        self.formula_selection_changed_spec = sel.connect(
+            'changed', self.formula_selection_changed)
 
     def create_formula_list(self):
-        sw = Gtk.ScrolledWindow ()
-        sw.set_shadow_type (Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy (Gtk.PolicyType.NEVER,
-                       Gtk.PolicyType.AUTOMATIC)
+        sw = Gtk.ScrolledWindow()
+        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        sw.set_policy(Gtk.PolicyType.NEVER,
+                      Gtk.PolicyType.AUTOMATIC)
 
         self.treeview = Gtk.TreeView.new_with_model(self.formula_list)
 
@@ -181,23 +185,23 @@ class BrowserDialog(dialog.T):
 
         sw.add(self.treeview)
 
-        renderer = Gtk.CellRendererText ()
-        column = Gtk.TreeViewColumn (_('F_ormula'), renderer, text=0)
-        self.treeview.append_column (column)
+        renderer = Gtk.CellRendererText()
+        column = Gtk.TreeViewColumn(_('F_ormula'), renderer, text=0)
+        self.treeview.append_column(column)
 
         return sw
 
-    def create_scrolled_textview(self,tip):
-        sw = Gtk.ScrolledWindow ()
-        sw.set_shadow_type (Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+    def create_scrolled_textview(self, tip):
+        sw = Gtk.ScrolledWindow()
+        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
+        sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
         textview = Gtk.TextView()
         textview.set_tooltip_text(tip)
         textview.set_editable(False)
-        
+
         sw.add(textview)
-        return (textview,sw)
+        return (textview, sw)
 
     def create_panes(self):
         # option menu for choosing Inner/Outer/Fractal
@@ -208,24 +212,24 @@ class BrowserDialog(dialog.T):
              _("Transform Function"),
              _("Gradient")])
 
-        utils.set_selected(self.funcTypeMenu,self.model.current_type)
-        
+        utils.set_selected(self.funcTypeMenu, self.model.current_type)
+
         self.funcTypeMenu.set_tooltip_text(
             _("Which formula of the current fractal to change"))
 
-        self.funcTypeMenu.connect('changed',self.set_type_cb)
+        self.funcTypeMenu.connect('changed', self.set_type_cb)
 
         # label for the menu
         hbox = Gtk.HBox()
         label = Gtk.Label(label=_("Function _Type to Modify : "))
         label.set_use_underline(True)
         label.set_mnemonic_widget(self.funcTypeMenu)
-        
+
         hbox.pack_start(label, False, False, 0)
-                
+
         hbox.pack_start(self.funcTypeMenu, True, True, 0)
         self.vbox.pack_start(hbox, False, False, 0)
-        
+
         # 3 panes: files, formulas, formula contents
         panes1 = Gtk.HPaned()
         self.vbox.pack_start(panes1, True, True, 0)
@@ -233,7 +237,7 @@ class BrowserDialog(dialog.T):
 
         file_list = self.create_file_list()
         formula_list = self.create_formula_list()
-        
+
         panes2 = Gtk.HPaned()
         # left-hand pane displays file list
         panes2.pack1(file_list, True, False)
@@ -248,11 +252,11 @@ class BrowserDialog(dialog.T):
         label = Gtk.Label(label=_('_Preview'))
         label.set_use_underline(True)
         notebook.append_page(self.preview.widget, label)
-        
+
         # source
-        (self.sourcetext,sw) = self.create_scrolled_textview(
+        (self.sourcetext, sw) = self.create_scrolled_textview(
             _("The contents of the currently selected formula file"))
-        
+
         label = Gtk.Label(label=_('_Source'))
         label.set_use_underline(True)
         notebook.append_page(sw, label)
@@ -260,7 +264,7 @@ class BrowserDialog(dialog.T):
         # messages
         (self.msgtext, sw) = self.create_scrolled_textview(
             _("Any compiler warnings or errors in the current function"))
-        
+
         label = Gtk.Label(label=_('_Messages'))
         label.set_use_underline(True)
         notebook.append_page(sw, label)
@@ -273,42 +277,42 @@ class BrowserDialog(dialog.T):
         self.set_file(fname)
         self.populate_file_list()
 
-    def file_selection_changed(self,selection):
+    def file_selection_changed(self, selection):
         self.model.current.formula = None
-        (model,iter) = selection.get_selected()
+        (model, iter) = selection.get_selected()
         if iter is None:
             return
-        
-        fname = model.get_value(iter,0)
+
+        fname = model.get_value(iter, 0)
         self.set_file(fname)
 
-    def set_file(self,fname):
+    def set_file(self, fname):
         self.model.set_file(fname)
 
     def on_file_changed(self):
         text = self.model.get_contents()
-        
+
         self.display_text(text)
         self.populate_formula_list(self.model.current.fname)
         self.set_apply_sensitivity()
-        
+
     def clear_selection(self):
         self.set_formula(None)
-        
-    def formula_selection_changed(self,selection):
+
+    def formula_selection_changed(self, selection):
         if not selection:
             self.clear_selection()
             return
-        
-        (model,iter) = selection.get_selected()
+
+        (model, iter) = selection.get_selected()
         if iter is None:
             self.clear_selection()
             return
-        
-        form_name = model.get_value(iter,0)
+
+        form_name = model.get_value(iter, 0)
         self.set_formula(form_name)
-        
-    def set_formula(self,form_name):
+
+    def set_formula(self, form_name):
         self.model.set_formula(form_name)
 
     def on_formula_changed(self):
@@ -317,19 +321,19 @@ class BrowserDialog(dialog.T):
 
         if not file:
             return
-        
-        formula = self.compiler.get_parsetree(file,form_name)
+
+        formula = self.compiler.get_parsetree(file, form_name)
 
         if not formula:
             return
-        
+
         # update location of source buffer
         sourcebuffer = self.sourcetext.get_buffer()
-        iter = sourcebuffer.get_iter_at_line(formula.pos-1)
-        self.sourcetext.scroll_to_iter(iter,0.0,True,0.0,0.0)
+        iter = sourcebuffer.get_iter_at_line(formula.pos - 1)
+        self.sourcetext.scroll_to_iter(iter, 0.0, True, 0.0, 0.0)
 
         # update IR tree
-        self.ir = self.compiler.get_formula(file,form_name)
+        self.ir = self.compiler.get_formula(file, form_name)
 
         # update messages
         buffer = self.msgtext.get_buffer()
@@ -340,19 +344,19 @@ class BrowserDialog(dialog.T):
             msg += _("Warnings:\n") + "\n".join(self.ir.warnings)
         if msg == "":
             msg = _("No messages")
-            
-        buffer.set_text(msg,-1)
+
+        buffer.set_text(msg, -1)
 
         self.set_apply_sensitivity()
 
     def set_apply_sensitivity(self):
         can_apply = self.model.current.can_apply
-        self.set_response_sensitive(Gtk.ResponseType.APPLY,can_apply)
-        self.set_response_sensitive(Gtk.ResponseType.OK,can_apply)
+        self.set_response_sensitive(Gtk.ResponseType.APPLY, can_apply)
+        self.set_response_sensitive(Gtk.ResponseType.OK, can_apply)
 
         if can_apply:
             self.model.apply(self.preview)
             self.preview.draw_image(False, False)
-        
-    def display_text(self,text):
+
+    def display_text(self, text):
         self.sourcetext.get_buffer().set_text(text, -1)

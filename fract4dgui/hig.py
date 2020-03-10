@@ -3,6 +3,7 @@
 
 from gi.repository import Gtk, GLib
 
+
 class Alert(Gtk.MessageDialog):
     def __init__(self, **kwds):
         type = kwds.get("type")
@@ -11,7 +12,7 @@ class Alert(Gtk.MessageDialog):
         buttontype = kwds.get("buttontype", Gtk.ButtonsType.NONE)
         buttons = kwds.get("buttons", ())
         transient_for = kwds.get("transient_for")
-        title = kwds.get("title","")
+        title = kwds.get("title", "")
 
         Gtk.MessageDialog.__init__(
             self,
@@ -22,17 +23,19 @@ class Alert(Gtk.MessageDialog):
             title=title,
             text=primary_text,
             buttons=buttontype)
-        
+
         self.add_buttons(*buttons)
         self.format_secondary_text(secondary_text)
-        
+
         self.show_all()
-        
+
+
 class InformationAlert(Alert):
-    def __init__(self,**kwds):
+    def __init__(self, **kwds):
         kwds.setdefault("type", Gtk.MessageType.INFO)
         kwds.setdefault("buttons", (Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
         Alert.__init__(self, **kwds)
+
 
 class ErrorAlert(Alert):
     FIX = 1
@@ -41,7 +44,7 @@ class ErrorAlert(Alert):
         fix_button = kwds.get("fix_button")
 
         # if optional fix button supplied, add to list of buttons
-        buttons = list(kwds.get("buttons",()))
+        buttons = list(kwds.get("buttons", ()))
         if fix_button:
             buttons = [fix_button, ErrorAlert.FIX]
         buttons += [Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT]
@@ -50,6 +53,7 @@ class ErrorAlert(Alert):
         kwds.setdefault("type", Gtk.MessageType.ERROR)
         Alert.__init__(self, **kwds)
         self.set_default_response(Gtk.ResponseType.ACCEPT)
+
 
 class ConfirmationAlert(Alert):
     ALTERNATE = 1
@@ -70,8 +74,9 @@ class ConfirmationAlert(Alert):
         kwds.setdefault("type", Gtk.MessageType.WARNING)
 
         Alert.__init__(self, **kwds)
-        
+
         self.set_default_response(Gtk.ResponseType.CANCEL)
+
 
 def _periodText(seconds):
     if seconds > 86400:
@@ -82,33 +87,39 @@ def _periodText(seconds):
         return "%d minutes" % (seconds // 60)
     else:
         return "%d seconds" % seconds
-    
+
+
 class SaveConfirmationAlert(ConfirmationAlert):
     NOSAVE = ConfirmationAlert.ALTERNATE
 
     def __init__(self, **kwds):
         document_name = kwds["document_name"]
-        time_period = kwds.get("period",-1)
+        time_period = kwds.get("period", -1)
         if time_period == -1:
             text = "If you don't save, changes will be discarded."
         else:
             text = ("If you don't save, changes from the past %s "
                     "will be discarded.") % _periodText(time_period)
 
-        kwds.setdefault("primary",_('Save changes to document "%s" before closing?') % document_name)
+        kwds.setdefault(
+            "primary",
+            _('Save changes to document "%s" before closing?') %
+            document_name)
         kwds.setdefault("secondary", text)
         kwds.setdefault("proceed_button", Gtk.STOCK_SAVE)
-        kwds.setdefault("alternate_button",_("_Close without Saving"))
+        kwds.setdefault("alternate_button", _("_Close without Saving"))
 
-        ConfirmationAlert.__init__(self,**kwds)
+        ConfirmationAlert.__init__(self, **kwds)
 
 
 # global var for testing purposes. If none-zero, dialog will
 # automatically be dismissed after 'timeout' milliseconds
 timeout = 0
 
+
 class MessagePopper:
     "A mixin type for a window which wants to display error messages"
+
     def __init__(self):
         pass
 
@@ -127,7 +138,7 @@ class MessagePopper:
             secondary=extra_message)
 
         return self.do(d)
-        
+
     def ask_question(self, msg, secondary):
         d = ConfirmationAlert(
             transient_for=self,
@@ -136,16 +147,16 @@ class MessagePopper:
             type=Gtk.MessageType.QUESTION,
             proceed_button=Gtk.STOCK_YES,
             cancel_button=Gtk.STOCK_NO)
-        
+
         return self.do(d)
 
-    def do(self,d):
+    def do(self, d):
         if timeout > 0:
             def dismiss():
                 d.response(Gtk.ResponseType.ACCEPT)
                 return False
 
-            GLib.timeout_add(timeout,dismiss)
+            GLib.timeout_add(timeout, dismiss)
 
         response = d.run()
         d.destroy()

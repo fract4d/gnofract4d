@@ -5,8 +5,10 @@ import sys
 
 CONFIG_FILE = "~/.gnofract4d"
 
+
 class T(configparser.ConfigParser):
     "Holds preference data"
+
     def __init__(self, file):
         _shared_formula_dir = T.get_data_path("formulas")
         _shared_map_dir = T.get_data_path("maps")
@@ -50,8 +52,10 @@ class T(configparser.ConfigParser):
              OrderedDict((
                          ("threads", "1"),
                          ("compress_fct", "1"),
-                         ("data_dir", os.path.expandvars("${HOME}/gnofract4d")),
-                         ("cache_dir", os.path.expandvars("${HOME}/.gnofract4d-cache")),
+                         ("data_dir", os.path.expandvars(
+                             "${HOME}/gnofract4d")),
+                         ("cache_dir", os.path.expandvars(
+                             "${HOME}/.gnofract4d-cache")),
                          ))
              ),
             ("user_info",
@@ -67,7 +71,8 @@ class T(configparser.ConfigParser):
              OrderedDict((
                          ("0", "formulas"),
                          ("1", _shared_formula_dir),
-                         ("2", os.path.expandvars("${HOME}/gnofract4d/formulas")),
+                         ("2", os.path.expandvars(
+                             "${HOME}/gnofract4d/formulas")),
                          ))
              ),
             ("map_path",
@@ -94,11 +99,11 @@ class T(configparser.ConfigParser):
         ))
 
         self.image_changed_sections = {
-            "display" : True,
-            "compiler" : True
-            }
+            "display": True,
+            "compiler": True
+        }
 
-        configparser.ConfigParser.__init__(self,interpolation=None)
+        configparser.ConfigParser.__init__(self, interpolation=None)
         self.read_dict(_defaults)
         self.file = os.path.expanduser(file)
         self.read(self.file)
@@ -106,11 +111,11 @@ class T(configparser.ConfigParser):
         self.ensure_contains("formula_path", _shared_formula_dir)
         self.ensure_contains("map_path", _shared_map_dir)
 
-    def ensure_contains(self,section,required_item):
+    def ensure_contains(self, section, required_item):
         l = self.get_list(section)
         if not l.count(required_item):
             l.append(required_item)
-            self.set_list(section,l)
+            self.set_list(section, l)
 
     @staticmethod
     def get_data_path(subpath=""):
@@ -124,7 +129,7 @@ class T(configparser.ConfigParser):
     @staticmethod
     def find_on_path(executable):
         for path in os.environ["PATH"].split(":"):
-            fullname = os.path.join(path,executable)
+            fullname = os.path.join(path, executable)
             if os.path.exists(fullname):
                 return fullname
         return None
@@ -135,7 +140,7 @@ class T(configparser.ConfigParser):
         if os.path.exists(name):
             return name
 
-        local_name = os.path.join(local_dir,name)
+        local_name = os.path.join(local_dir, name)
         if os.path.exists(local_name):
             return local_name
 
@@ -143,7 +148,7 @@ class T(configparser.ConfigParser):
         if os.path.exists(full_name):
             return full_name
 
-        #print "missing resource %s" % full_name
+        # print "missing resource %s" % full_name
         return full_name
 
     def get_default_editor(self):
@@ -159,31 +164,32 @@ class T(configparser.ConfigParser):
         # appears to work for most unixes
         return "-fPIC -DPIC -D_REENTRANT -O2 -shared -ffast-math"
 
-    def set(self,section,key,val):
+    def set(self, section, key, val):
         if self.has_section(section) and \
-           self.has_option(section,key) and \
-           self.get(section,key) == val:
+           self.has_option(section, key) and \
+           self.get(section, key) == val:
             return
 
-        configparser.ConfigParser.set(self,section,key,val)
+        configparser.ConfigParser.set(self, section, key, val)
         self.changed(section)
 
-    def set_size(self,width,height):
-        if self.getint("display","height") == height and \
-           self.getint("display","width") == width:
+    def set_size(self, width, height):
+        if self.getint("display", "height") == height and \
+           self.getint("display", "width") == width:
             return
-        
-        configparser.ConfigParser.set(self,"display","height",str(height))
-        configparser.ConfigParser.set(self,"display","width",str(width))
+
+        configparser.ConfigParser.set(self, "display", "height", str(height))
+        configparser.ConfigParser.set(self, "display", "width", str(width))
         self.changed("display")
 
     def set_main_window_size(self, width, height):
-        if self.getint("main_window","height") == height and \
-           self.getint("main_window","width") == width:
+        if self.getint("main_window", "height") == height and \
+           self.getint("main_window", "width") == width:
             return
-        
-        configparser.ConfigParser.set(self,"main_window","height",str(height))
-        configparser.ConfigParser.set(self,"main_window","width",str(width))
+
+        configparser.ConfigParser.set(
+            self, "main_window", "height", str(height))
+        configparser.ConfigParser.set(self, "main_window", "width", str(width))
         self.changed("main_window")
 
     def get_list(self, name):
@@ -192,14 +198,15 @@ class T(configparser.ConfigParser):
         while(True):
             try:
                 key = "%d" % i
-                val = self.get(name,key)
+                val = self.get(name, key)
                 list.append(val)
                 i += 1
             except configparser.NoOptionError:
                 return list
 
     def remove_section_item(self, section, number):
-        # section is an OrderedDict therefore reuse removed item and delete last
+        # section is an OrderedDict therefore reuse removed item and delete
+        # last
         self[section][str(number)] = ""
         i = 0
         for key in self[section]:
@@ -208,45 +215,46 @@ class T(configparser.ConfigParser):
                 i += 1
         del self[section][key]
 
-    def remove_all_in_list_section(self,name):
+    def remove_all_in_list_section(self, name):
         i = 0
         items_left = True
         while items_left:
-            items_left = self.remove_option(name,"%d" % i)
+            items_left = self.remove_option(name, "%d" % i)
             i += 1
-        
+
     def set_list(self, name, list):
         self.remove_all_in_list_section(name)
 
         i = 0
         for item in list:
-            configparser.ConfigParser.set(self, name,"%d" % i, item)
+            configparser.ConfigParser.set(self, name, "%d" % i, item)
             i += 1
 
         self.changed(name)
 
-    def update_list(self,name,new_entry,maxsize):
+    def update_list(self, name, new_entry, maxsize):
         list = self.get_list(name)
         if list.count(new_entry) == 0:
-            list.insert(0,new_entry)
+            list.insert(0, new_entry)
             list = list[:maxsize]
-            self.set_list(name,list)
+            self.set_list(name, list)
 
         return list
-    
+
     def changed(self, section):
         pass
-            
+
     def save(self):
-        f = open(self.file,"w")
+        f = open(self.file, "w")
         try:
             self.write(f)
         finally:
             f.close()
 
+
 class DarwinConfig(T):
-    def __init__(self,file):
-        T.__init__(self,file)
+    def __init__(self, file):
+        T.__init__(self, file)
 
     def get_default_editor(self):
         # edit file in TextPad
@@ -261,6 +269,7 @@ class DarwinConfig(T):
 
     def get_default_compiler_options(self):
         return "-fPIC -DPIC -D_REENTRANT -O2 -dynamiclib -flat_namespace -undefined suppress -ffast-math"
+
 
 def userConfig():
     if sys.platform[:6] == "darwin":

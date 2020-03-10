@@ -2,6 +2,9 @@
 
 # Setup defaults for GUI tests including temp directory for cache
 
+from fract4d import fractconfig
+from fract4d_compiler import fc
+import gi
 import os.path
 import tempfile
 import unittest
@@ -10,12 +13,9 @@ import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
 
-import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 
-from fract4d_compiler import fc
-from fract4d import fractconfig
 
 class TestCase(unittest.TestCase):
     @classmethod
@@ -28,8 +28,8 @@ class TestCase(unittest.TestCase):
         else:
             cls.userConfig = fractconfig.T("")
 
-        cls.userConfig.set("general","cache_dir", os.path.join(cls.tmpdir.name,
-                           "gnofract4d-cache"))
+        cls.userConfig.set("general", "cache_dir", os.path.join(cls.tmpdir.name,
+                                                                "gnofract4d-cache"))
         cls.userConfig["formula_path"].clear()
         cls.userConfig["map_path"].clear()
         cls.g_comp = fc.Compiler(cls.userConfig)
