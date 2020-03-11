@@ -12,9 +12,7 @@
 #include "../fate.h"
 
 
-void pyimage_delete(PyObject *pyimage);
-void pyimage_writer_delete(PyObject *pyim);
-ImageWriter * image_writer_fromcapsule(PyObject *p);
+
 
 
 namespace images {

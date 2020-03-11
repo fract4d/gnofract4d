@@ -1,13 +1,6 @@
 #ifndef __FDSITE_H_INCLUDED__
 #define __FDSITE_H_INCLUDED__
 
-#include "Python.h"
-
-#include <pthread.h>
-
-#include "../fract_public.h"
-
-
 typedef enum
 {
     ITERS,

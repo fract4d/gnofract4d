@@ -2,11 +2,14 @@
 
 #include "../fract_public.h"
 
+#include "fdsite.h"
+#include "pysite.h"
+
 #include "sites.h"
 #include "common.h"
 
 
-void site_delete(IFractalSite *site);
+
 
 namespace sites {
 

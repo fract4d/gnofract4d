@@ -72,10 +72,6 @@ for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
 else:
     raise SystemExit("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
 
-# use currently specified compilers, not ones from when Python was compiled
-# this is necessary for cross-compilation
-compiler = os.environ.get("CC", "gcc")
-cxxcompiler = os.environ.get("CXX", "g++")
 
 fract4d_sources = [
     'fract4d/c/fract4dmodule.cpp',
@@ -124,33 +120,9 @@ module_fract4dc = Extension(
     #undef_macros = [ 'NDEBUG'],
 )
 
-module_cmap = Extension(
-    'fract4d.fract4d_stdlib',
-    sources=[
-        'fract4d/c/cmap.cpp',
-        'fract4d/c/image.cpp',
-        'fract4d/c/fract_stdlib.cpp'
-    ],
-    include_dirs=['fract4d/c'],
-    libraries=libraries,
-    define_macros=[('_REENTRANT', 1)]
-)
-
-modules = [module_fract4dc, module_cmap]
-
 
 def get_files(dir, ext):
     return [os.path.join(dir, x) for x in os.listdir(dir) if x.endswith(ext)]
-
-
-so_extension = distutils.sysconfig.get_config_var("EXT_SUFFIX")
-
-with open("fract4d/c/cmap_name.h", "w") as fh:
-    fh.write("""
-#ifndef CMAP_NAME
-#define CMAP_NAME "/fract4d_stdlib%s"
-#endif
-""" % so_extension)
 
 setup(
     name='gnofract4d',
@@ -167,7 +139,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     url='http://github.com/edyoung/gnofract4d/',
     packages=['fract4d_compiler', 'fract4d', 'fract4dgui'],
     package_data={'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml']},
-    ext_modules=modules,
+    ext_modules=[module_fract4dc],
     scripts=['gnofract4d'],
     data_files=[
         # style CSS
@@ -230,16 +202,17 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     }
 )
 
+
 # I need to find the file I just built and copy it up out of the build
 # location so it's possible to run without installing. Can't find a good
 # way to extract the actual target directory out of distutils, hence
 # this egregious hack
 
+so_extension = distutils.sysconfig.get_config_var("EXT_SUFFIX")
+
 lib_targets = {
     "fract4dc" + so_extension: "fract4d",
-    "fract4d_stdlib" + so_extension: "fract4d",
 }
-
 
 def copy_libs(root, dirlist, namelist):
     for name in namelist:

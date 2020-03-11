@@ -16,9 +16,6 @@
 #include "../fractFunc.h"
 
 
-void pyff_delete(PyObject *pyff);
-ffHandle * ff_fromcapsule(PyObject *pyff);
-
 namespace functions {
 
     PyObject * ff_create(PyObject *self, PyObject *args)

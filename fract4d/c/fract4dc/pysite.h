@@ -3,8 +3,6 @@
 #define __PYSITE_H_INCLUDED__
 
 
-#include "Python.h"
-
 #include "../fract_public.h"
 
 

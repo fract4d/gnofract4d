@@ -11,7 +11,7 @@
 #include "../fractWorker_public.h"
 
 
-void pyfw_delete(PyObject *pyworker);
+
 
 namespace workers {
 
