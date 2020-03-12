@@ -1,7 +1,5 @@
 #include "Python.h"
 
-#include "../fract_public.h"
-
 #include "pysite.h"
 
 

@@ -6,7 +6,6 @@
 #include "../fractFunc.h"
 
 #include "calcs.h"
-
 #include "loaders.h"
 #include "colormaps.h"
 #include "images.h"

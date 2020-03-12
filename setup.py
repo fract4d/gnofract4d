@@ -85,6 +85,7 @@ fract4d_sources = [
     'fract4d/c/fract4dc/calcs.cpp',
     'fract4d/c/fract4dc/workers.cpp',
     'fract4d/c/fract4dc/functions.cpp',
+    'fract4d/c/fract4dc/arenas.cpp',
 
     'fract4d/c/cmap.cpp',
     'fract4d/c/pointFunc.cpp',

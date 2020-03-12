@@ -8,10 +8,6 @@
 #include "images.h"
 #include "sites.h"
 
-#include "../fractWorker_public.h"
-
-
-
 
 namespace workers {
 

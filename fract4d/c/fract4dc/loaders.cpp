@@ -3,8 +3,6 @@
 #include <dlfcn.h>
 #include "assert.h"
 
-#include "../pf.h"
-
 #include "common.h"
 #include "colormaps.h"
 #include "loaders.h"

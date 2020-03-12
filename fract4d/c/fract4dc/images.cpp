@@ -7,12 +7,8 @@
 #include "images.h"
 #include "common.h"
 
-#include "../image_public.h"
 #include "../image.h"
 #include "../fate.h"
-
-
-
 
 
 namespace images {

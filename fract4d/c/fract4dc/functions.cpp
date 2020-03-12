@@ -13,7 +13,6 @@
 #include "../pf.h"
 #include "../fract_public.h"
 #include "../fractWorker_public.h"
-#include "../fractFunc.h"
 
 
 namespace functions {
