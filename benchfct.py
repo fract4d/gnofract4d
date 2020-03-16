@@ -8,7 +8,7 @@ class Benchmark:
     def __init__(self, command, args):
         self.last_time = None
         self.pos = 0
-        self.args = args        
+        self.args = args
         self.command = command
 
     def build(self):
@@ -43,7 +43,3 @@ for i in range(repeats):
 
 print("stats")
 print("min:(%.4f), max(%.4f), average(%.4f)" % (min(times), max(times), sum(times)/len(times)))
-    
-
-
-

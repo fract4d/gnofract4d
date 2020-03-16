@@ -13,3 +13,6 @@ score=no
 
 [VARIABLES]
 additional-builtins=_
+
+[TYPECHECK]
+ignored-modules=gi,cairo

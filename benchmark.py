@@ -4,21 +4,20 @@ import sys
 import os
 import getopt
 import operator
+import gtk
 from time import time as now
+from fract4d import fractmain, image
+from fract4dgui import main_window
 
 # gettext
 import gettext
 from functools import reduce
 os.environ.setdefault('LANG', 'en')
 if os.path.isdir('po'):
-    gettext.install('gnofract4d','po')
+    gettext.install('gnofract4d', 'po')
 else:
     gettext.install('gnofract4d')
 
-import gtk
-
-from fract4d import fractmain, image
-from fract4dgui import main_window
 
 files = [
     'testdata/std.fct',
@@ -35,18 +34,18 @@ class Benchmark:
         self.useGui = useGui
         self.w = 320
         self.h = 240
-        
+
     def run_gui(self):
 
         window = main_window.MainWindow()
 
-        window.f.set_size(self.w,self.h)
+        window.f.set_size(self.w, self.h)
         window.f.thaw()
 
         times = []
         self.last_time = now()
 
-        def status_changed(f,status):
+        def status_changed(f, status):
             if status == 0:
                 # done
                 new_time = now()
@@ -70,7 +69,7 @@ class Benchmark:
         last_time = now()
         for file in files:
             main.load(file)
-            im = image.T(self.w,self.h)
+            im = image.T(self.w, self.h)
             main.draw(im)
             im.save(file + ".png")
             new_time = now()
@@ -84,10 +83,10 @@ class Benchmark:
         else:
             times = self.run_nogui()
 
-        for (file,time) in zip(files,times):
-            print("%.4f %s" % (time,file))
+        for (file, time) in zip(files, times):
+            print("%.4f %s" % (time, file))
 
-        print(reduce(operator.__add__,times,0))
+        print(reduce(operator.__add__, times, 0))
 
 useGui = True
 repeats = 1
@@ -100,6 +99,3 @@ for arg in sys.argv[1:]:
 for i in range(repeats):
     bench = Benchmark(useGui)
     bench.run()
-
-
-

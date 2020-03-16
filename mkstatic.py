@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 
-# gettext
-import gettext
-os.environ.setdefault('LANG', 'en')
-if os.path.isdir('po'):
-    gettext.install('gnofract4d','po')
-else:
-    gettext.install('gnofract4d')
+import os
 
 # nogui modules
 from fract4d import fractal, fractmain, options
+# gettext
+import gettext
+
+os.environ.setdefault('LANG', 'en')
+if os.path.isdir('po'):
+    gettext.install('gnofract4d', 'po')
+else:
+    gettext.install('gnofract4d')
+
 
 def main(args):
     opts = options.T()
@@ -23,4 +26,3 @@ def main(args):
         return 1
 
     t = fractmain.T()
-    
