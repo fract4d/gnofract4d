@@ -4,7 +4,10 @@ import sys
 import os
 import math
 import re
+import gi
 
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, Gtk
 
 from fract4d_compiler import fc, fracttypes
