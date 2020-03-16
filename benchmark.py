@@ -4,14 +4,16 @@ import sys
 import os
 import getopt
 import operator
-import gtk
+import gettext
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk as gtk
 from time import time as now
 from fract4d import fractmain, image
 from fract4dgui import main_window
-
-# gettext
-import gettext
 from functools import reduce
+from fract4d import fractconfig
+
 os.environ.setdefault('LANG', 'en')
 if os.path.isdir('po'):
     gettext.install('gnofract4d', 'po')
@@ -25,7 +27,9 @@ files = [
     'testdata/valley_test.fct',
     'testdata/trigcentric.fct',
     'testdata/zpower.fct'
-    ]
+]
+userConfig = fractconfig.userConfig()
+
 
 class Benchmark:
     def __init__(self, useGui):
@@ -37,7 +41,7 @@ class Benchmark:
 
     def run_gui(self):
 
-        window = main_window.MainWindow()
+        window = main_window.MainWindow(userConfig)
 
         window.f.set_size(self.w, self.h)
         window.f.thaw()
@@ -60,17 +64,22 @@ class Benchmark:
         window.f.connect('status-changed', status_changed)
         window.load(files[0])
         gtk.main()
+
         return times
 
     def run_nogui(self):
-        main = fractmain.T()
+
+        main = fractmain.T(userConfig)
+        main.f.compile()
+
         print(main.compiler.path_lists)
+
         times = []
         last_time = now()
         for file in files:
             main.load(file)
             im = image.T(self.w, self.h)
-            main.draw(im)
+            main.f.draw(im)
             im.save(file + ".png")
             new_time = now()
             times.append(new_time - last_time)
