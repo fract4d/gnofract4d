@@ -13,11 +13,7 @@
 #include "../pf.h"
 #include "../fract_public.h"
 #include "../fractWorker_public.h"
-#include "../fractFunc.h"
 
-
-void pyff_delete(PyObject *pyff);
-ffHandle * ff_fromcapsule(PyObject *pyff);
 
 namespace functions {
 

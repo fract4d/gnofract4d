@@ -6,12 +6,11 @@
 #include "../fractFunc.h"
 
 #include "calcs.h"
+#include "loaders.h"
 #include "colormaps.h"
 #include "images.h"
 #include "sites.h"
 
-calc_args * parse_calc_args(PyObject *args, PyObject *kwds);
-void * calculation_thread(void *vdata);
 
 namespace calcs {
 
@@ -34,8 +33,6 @@ namespace calcs {
         Py_INCREF(Py_None);
         return Py_None;
     }
-
-
 
     PyObject * pycalc(PyObject *self, PyObject *args, PyObject *kwds)
     {

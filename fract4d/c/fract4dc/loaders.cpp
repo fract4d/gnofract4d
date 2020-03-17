@@ -3,16 +3,9 @@
 #include <dlfcn.h>
 #include "assert.h"
 
-#include "../pf.h"
-
 #include "common.h"
 #include "colormaps.h"
 #include "loaders.h"
-
-
-bool parse_posparams(PyObject *py_posparams, double *pos_params);
-s_param * parse_params(PyObject *pyarray, int *plen);
-PyObject * params_to_python(struct s_param *params, int len);
 
 
 namespace loaders

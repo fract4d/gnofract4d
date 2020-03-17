@@ -1,9 +1,9 @@
 #ifndef __WORKERS_H_INCLUDED__
 #define __WORKERS_H_INCLUDED__
 
-#include "Python.h"
-
 #include "../fractWorker_public.h"
+
+void pyfw_delete(PyObject *pyworker);
 
 namespace workers {
     IFractWorker * fw_fromcapsule(PyObject *capsule);

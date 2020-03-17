@@ -1,9 +1,13 @@
 #ifndef __IMAGES_H_INCLUDED__
 #define __IMAGES_H_INCLUDED__
 
-#include "Python.h"
 
 #include "../image_public.h"
+
+
+void pyimage_delete(PyObject *pyimage);
+void pyimage_writer_delete(PyObject *pyim);
+ImageWriter * image_writer_fromcapsule(PyObject *p);
 
 namespace images {
     IImage * image_fromcapsule(PyObject *pyimage);

@@ -7,14 +7,8 @@
 #include "images.h"
 #include "common.h"
 
-#include "../image_public.h"
 #include "../image.h"
 #include "../fate.h"
-
-
-void pyimage_delete(PyObject *pyimage);
-void pyimage_writer_delete(PyObject *pyim);
-ImageWriter * image_writer_fromcapsule(PyObject *p);
 
 
 namespace images {

@@ -13,25 +13,14 @@
 
 #include "Python.h"
 
-#include <dlfcn.h>
-#include <pthread.h>
-
-#include "assert.h"
-
-#include <new>
-
-#include "fract_stdlib.h"
-#include "pf.h"
-#include "cmap.h"
-#include "fractFunc.h"
-#include "image.h"
-
 #include "cmap_name.h"
+#include <dlfcn.h>
 
 #include "fract4dc/common.h"
 #include "fract4dc/colormaps.h"
 #include "fract4dc/loaders.h"
 #include "fract4dc/sites.h"
+#include "fract4dc/fdsite.h"
 #include "fract4dc/images.h"
 #include "fract4dc/calcs.h"
 #include "fract4dc/workers.h"

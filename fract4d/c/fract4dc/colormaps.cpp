@@ -2,15 +2,9 @@
 
 #include <new>
 
-#include "../cmap.h"
-
 #include "common.h"
 #include "colormaps.h"
 
-
-void * get_double_field(PyObject *pyitem, const char *name, double *pVal);
-void * get_int_field(PyObject *pyitem, const char *name, int *pVal);
-void * get_double_array(PyObject *pyitem, const char *name, double *pVal, int n);
 
 namespace colormaps {
 

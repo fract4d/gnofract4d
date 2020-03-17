@@ -2,8 +2,6 @@
 
 #include <pthread.h>
 
-#include "../fract_public.h"
-
 #include "fdsite.h"
 
 

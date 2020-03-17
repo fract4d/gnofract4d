@@ -1,7 +1,6 @@
 #ifndef __FUNCTIONS_H_INCLUDED__
 #define __FUNCTIONS_H_INCLUDED__
 
-#include "Python.h"
 
 #include "../fractFunc.h"
 
@@ -17,6 +16,11 @@ typedef enum
     DELTA_Y,
     TOPLEFT
 } vec_type_t;
+
+
+void pyff_delete(PyObject *pyff);
+ffHandle * ff_fromcapsule(PyObject *pyff);
+
 
 namespace functions {
     PyObject * ff_create(PyObject *self, PyObject *args);
