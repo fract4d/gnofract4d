@@ -1,0 +1,11 @@
+[MESSAGES CONTROL]
+disable=all
+enable=
+  bad-whitespace,
+  trailing-whitespace,
+  bad-indentation,
+  wrong-import-position,
+  unnecessary-semicolon,
+  trailing-newlines,
+  bare-except
+score=no
