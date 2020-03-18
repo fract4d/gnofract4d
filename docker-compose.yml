@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - .:/root/gnofract
