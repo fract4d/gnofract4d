@@ -1406,9 +1406,6 @@ class MainWindow:
             self.compiler.clear_cache()
         finally:
             Gtk.main_quit()
-            if 'win' == sys.platform[:3]:
-                exit(0)
-#            return False
 
     def apply_options(self, opts):
         "Deal with opts gathered from cmd-line"

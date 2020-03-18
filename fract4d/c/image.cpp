@@ -10,12 +10,8 @@
 #define GREEN 1
 #define BLUE 2
 
-#ifdef WIN32
-#include <float.h>
-#define finite _finite
-#endif
 
-const int 
+const int
 image::N_SUBPIXELS = 4;
 
 #define MAX_RECOLOR_SIZE (1024*768)
@@ -66,7 +62,7 @@ image::alloc_buffers()
 {
     buffer = new(std::nothrow) char[bytes()];
     iter_buf = new(std::nothrow) int[m_Xres * m_Yres];
-    // FIXME remove true 
+    // FIXME remove true
     if(true || m_Xres * m_Yres <= MAX_RECOLOR_SIZE)
     {
 	index_buf = new(std::nothrow) float[m_Xres * m_Yres * N_SUBPIXELS];
@@ -100,7 +96,7 @@ image::bytes() const
     return row_length() * m_Yres;
 }
 
-void 
+void
 image::put(int x, int y, rgba_t pixel)
 {
     int off = x*3 + y * m_Xres * 3;
@@ -111,7 +107,7 @@ image::put(int x, int y, rgba_t pixel)
     start[BLUE] = pixel.b;
 }
 
-rgba_t 
+rgba_t
 image::get(int x, int y) const
 {
     char *start = buffer + x*3 + y * m_Xres * 3;
@@ -124,15 +120,15 @@ image::get(int x, int y) const
     return pixel;
 }
 
-bool 
+bool
 image::set_resolution(int x, int y, int totalx, int totaly)
 {
     totalx = totalx == -1 ? x : totalx;
     totaly = totaly == -1 ? y : totaly;
 
-    if(buffer && 
-       m_Xres == x && m_Yres == y && 
-       m_totalXres == totalx && m_totalYres == totaly) 
+    if(buffer &&
+       m_Xres == x && m_Yres == y &&
+       m_totalXres == totalx && m_totalYres == totaly)
     {
 	// nothing to do
 	return false;
@@ -150,7 +146,7 @@ image::set_resolution(int x, int y, int totalx, int totaly)
 	return true;
     }
 
-    rgba_t pixel = { 
+    rgba_t pixel = {
 	0,0,0,255 // soothing black
     };
 
@@ -183,13 +179,13 @@ image::set_offset(int x, int y)
     return true;
 }
 
-double 
+double
 image::ratio() const
 {
     return ((double)m_Yres / m_Xres);
 }
 
-void 
+void
 image::fill_subpixels(int x, int y)
 {
     fate_t fate = getFate(x,y,0);
@@ -226,7 +222,7 @@ image::getFate(int x, int y, int subpixel) const
     return fate_buf[index_of_subpixel(x,y,subpixel)];
 }
 
-void 
+void
 image::setFate(int x, int y, int subpixel, fate_t fate)
 {
     assert(fate_buf != NULL);
@@ -241,7 +237,7 @@ image::getIndex(int x, int y, int subpixel) const
     return index_buf[index_of_subpixel(x,y,subpixel)];
 }
 
-void 
+void
 image::setIndex(int x, int y, int subpixel, float index)
 {
     assert(index_buf != NULL);
@@ -249,12 +245,12 @@ image::setIndex(int x, int y, int subpixel, float index)
     index_buf[i] = index;
 }
 
-void 
+void
 image::clear()
 {
     int fate_pos = 0;
     // no need to clear image buffer, just iters and fate
-    for(int y = 0; y < m_Yres; ++y) 
+    for(int y = 0; y < m_Yres; ++y)
     {
 	for(int x = 0; x < m_Xres; ++x)
 	{
@@ -272,7 +268,7 @@ absfmod(double x, double range)
 {
     /* return the modulo when x/range, wrap when x < 0 */
     x = fmod(x,range);
-    if(x < 0) 
+    if(x < 0)
     {
 	x += range;
     }
@@ -287,10 +283,10 @@ blend(
     double factor,
     double& rres, double& gres, double& bres)
 {
-    /* blend 2 colors together in ratio given by factor 
+    /* blend 2 colors together in ratio given by factor
        (0.0 = all 1st color, 1.0 = all 2nd color)
     */
-    
+
     double other_factor = 1.0 - factor;
     rres = r1 * other_factor + r2 * factor;
     gres = g1 * other_factor + g2 * factor;
@@ -299,13 +295,13 @@ blend(
     //	   r1,g1,b1, r2,g2,b2, factor, rres,gres,bres);
 }
 
-void 
+void
 blend(
-    rgba_t& p1, rgba_t& p2, 
+    rgba_t& p1, rgba_t& p2,
     double factor,
     double& rres, double& gres, double& bres)
 {
-    blend(p1.r/255.0, 
+    blend(p1.r/255.0,
 	  p1.g/255.0,
 	  p1.b/255.0,
 	  p2.r/255.0,
@@ -345,7 +341,7 @@ image_lookup(void *vim, double x, double y, double *pr, double *pg, double *pb)
     double aspect = ((double)h)/w; // aspect ratio of picture
     double xpos = absfmod(x,1.0) * w; // wrap out-of-bounds points
     double ypos = absfmod(y,aspect) * h;
-    
+
     //printf("aspect, xpos, ypos %g %g %g\n",aspect,xpos,ypos);
 
     /* addresses of 4 pixels bracketing this point */

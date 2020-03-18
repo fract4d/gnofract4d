@@ -71,10 +71,6 @@ typedef struct {
     %(struct_members)s
 } pf_real ;
 
-#ifdef WIN32
-#pragma comment(linker, "/EXPORT:_pf_new")
-#endif
-
 static void pf_init(
     struct s_pf_data *p_stub,
     double *pos_params,

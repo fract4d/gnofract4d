@@ -9,7 +9,4 @@ from fract4d import fract4dc
 
 class gtkio:
     def read(self, fd, len):
-        if 'win' == sys.platform[:3]:
-            return fract4dc.read(fd, len)
-        else:
-            return os.read(fd, len)
+        return os.read(fd, len)

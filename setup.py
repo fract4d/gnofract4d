@@ -72,10 +72,6 @@ for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
 else:
     raise SystemExit("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
 
-# use currently specified compilers, not ones from when Python was compiled
-# this is necessary for cross-compilation
-compiler = os.environ.get("CC", "gcc")
-cxxcompiler = os.environ.get("CXX", "g++")
 
 fract4d_sources = [
     'fract4d/c/fract4dmodule.cpp',
