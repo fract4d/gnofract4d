@@ -20,16 +20,7 @@ class FDSite : public IFractalSite
 public:
     FDSite(int fd_);
 
-    inline void send(msg_type_t type, int size, void *buf)
-    {
-        pthread_mutex_lock(&write_lock);
-
-        write(fd, &type, sizeof(type));
-        write(fd, &size, sizeof(size));
-        write(fd, buf, size);
-
-        pthread_mutex_unlock(&write_lock);
-    }
+    inline void send(msg_type_t type, int size, void *buf);
 
     virtual void iters_changed(int numiters);
     virtual void tolerance_changed(double tolerance);

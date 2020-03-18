@@ -4,6 +4,16 @@
 
 #include "fdsite.h"
 
+inline void FDSite::send(msg_type_t type, int size, void *buf)
+{
+    pthread_mutex_lock(&write_lock);
+
+    write(fd, &type, sizeof(type));
+    write(fd, &size, sizeof(size));
+    write(fd, buf, size);
+
+    pthread_mutex_unlock(&write_lock);
+}
 
 FDSite::FDSite(int fd_) :
     fd(fd_), tid((pthread_t)0), interrupted(false), params(NULL)
