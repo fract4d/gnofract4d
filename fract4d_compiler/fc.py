@@ -421,7 +421,6 @@ class Compiler:
         cmd = "%s \"%s\" %s %s\"%s\"" % \
               (self.compiler_name, cfile, self.flags, self.output_flag, outputfile)
         cmd += " %s" % self.libs
-        print(cmd)
 
         (status, output) = subprocess.getstatusoutput(cmd)
         if status != 0:
