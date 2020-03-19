@@ -1729,14 +1729,6 @@ solids=[
         for val in f.forms[0].formula.symbols.default_params():
             self.assertValidType(val)
 
-    def disabled_testDump(self):
-        # produces distracting output
-        f = fractal.T(Test.g_comp)
-        f.dump["trace"] = True
-        f.compile()
-        im = image.T(4, 3)
-        f.draw(im)
-
     def testJm25(self):
         # regression test for a problem accidentally introduced in
         # private builds of gf4d 3.5
