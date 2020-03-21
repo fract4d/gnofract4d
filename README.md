@@ -42,14 +42,14 @@ Requirements
 
 Gnofract 4D requires these packages to run:
 
-o Python version 3.5 or higher
-o GTK version 3.18 or higher
-o A C++ compiler (used at runtime to compile your fractal formulas)
+- Python version 3.5 or higher
+- GTK version 3.18 or higher
+- A C++ compiler (used at runtime to compile your fractal formulas)
 
 To build from source you also need:
-o headers for libpng and libjpeg
-o Python headers
-o Pkg-Config
+- headers for libpng and libjpeg
+- Python headers
+- Pkg-Config
 
 On Ubuntu, these can be installed with:
 
