@@ -200,7 +200,7 @@ class TestBase(unittest.TestCase):
             if isinstance(stm, ir.Jump) or \
                     isinstance(stm, ir.CJump) or \
                     isinstance(stm, ir.Label):
-                self.fail("%s not allowed mid-basic-block", stm.pretty())
+                self.fail("%s not allowed mid-basic-block" % stm.pretty())
 
     def assertStartsWithLabel(self, block, name=None):
         self.assertTrue(isinstance(block[0], ir.Label))
