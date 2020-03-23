@@ -94,11 +94,7 @@ resultlimit = 40
 
 pickle_protocol = 0            # Protocol to use when writing pickle files
 
-# String type-checking compatibility
-if sys.version_info[0] < 3:
-    string_types = basestring
-else:
-    string_types = str
+string_types = str
 
 MAXINT = sys.maxsize
 
