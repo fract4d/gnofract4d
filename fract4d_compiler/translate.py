@@ -395,7 +395,7 @@ class TBase:
 
         elif node.type == "unop" and node.leaf == "t__neg":
             val = self.const_exp(node.children[0])
-            val.value = -val.value
+            val.value = -val.value # pylint: disable=invalid-unary-operand-type
             return val
         elif node.type == "string":
             return self.string(node)
