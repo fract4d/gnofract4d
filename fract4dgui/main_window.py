@@ -213,16 +213,6 @@ class MainWindow:
 
         chooser.set_filter(all_filter)
 
-    def get_file_open_chooser(self, parent):
-        chooser = Gtk.FileChooserDialog(
-            title, parent, Gtk.FileChooserAction.OPEN,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
-
-        self.add_filters(chooser)
-
-        return chooser
-
     def get_save_as_fs(self):
         if self.saveas_fs is None:
             self.saveas_fs = self.get_file_save_chooser(
