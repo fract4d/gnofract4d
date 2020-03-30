@@ -2,6 +2,9 @@
 
 # a browser to examine fractal functions
 
+import gi
+
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject
 
 from . import dialog, utils, gtkfractal, browser_model

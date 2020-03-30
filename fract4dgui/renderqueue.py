@@ -1,9 +1,10 @@
 # A module which manages a queue of images to render in the background
 # and a UI for the same
 
-
 import copy
+import gi
 
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject
 
 from . import dialog, gtkfractal

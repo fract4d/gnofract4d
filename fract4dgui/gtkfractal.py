@@ -6,8 +6,11 @@ import os
 import struct
 import math
 import copy
-
 import cairo
+import gi
+
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GObject, GdkPixbuf, GLib
 
 from fract4d_compiler import fracttypes, function

@@ -3,12 +3,14 @@
 # create a DocBook XML document documenting the keyboard shortcuts & mouse clicks
 # by interrogating the code
 
-from . import main_window
-import gi
-from xml.sax.saxutils import escape
 import os
 import re
+import gi
+
+from xml.sax.saxutils import escape
 from unittest.mock import patch
+
+from . import main_window
 
 import gettext
 os.environ.setdefault('LANG', 'en')

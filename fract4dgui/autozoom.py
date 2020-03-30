@@ -1,7 +1,9 @@
 # whimsical feature to zoom in search of interesting items
 
 import random
+import gi
 
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 from . import dialog
