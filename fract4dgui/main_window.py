@@ -709,7 +709,7 @@ class MainWindow:
 
     def browser(self, *args):
         """Display formula browser."""
-        dialog = browser.BrowserDialog(self, self.f)
+        dialog = browser.BrowserDialog(self.window, self.f)
         dialog.run()
         dialog.destroy()
 
@@ -1341,7 +1341,7 @@ class MainWindow:
     def load_formula(self, file):
         try:
             self.compiler.load_formula_file(file)
-            dialog = browser.BrowserDialog(self, self.f)
+            dialog = browser.BrowserDialog(self.window, self.f)
             dialog.load_file(file)
             dialog.run()
             dialog.destroy()

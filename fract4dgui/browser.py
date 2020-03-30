@@ -17,7 +17,7 @@ class BrowserDialog(dialog.T):
         dialog.T.__init__(
             self,
             _("Formula Browser"),
-            None,
+            main_window,
             (Gtk.STOCK_REFRESH, BrowserDialog.RESPONSE_REFRESH,
              Gtk.STOCK_APPLY, Gtk.ResponseType.APPLY,
              Gtk.STOCK_OK, Gtk.ResponseType.OK,
@@ -26,7 +26,7 @@ class BrowserDialog(dialog.T):
 
         self.set_default_response(Gtk.ResponseType.OK)
 
-        self.model = browser_model.T(main_window.compiler)
+        self.model = browser_model.T(f.compiler)
         self.model.type_changed += self.on_type_changed
         self.model.file_changed += self.on_file_changed
         self.model.formula_changed += self.on_formula_changed
