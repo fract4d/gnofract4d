@@ -1,12 +1,13 @@
 #include "Python.h"
-
 #include <dlfcn.h>
-#include "assert.h"
+#include <cassert>
 
-#include "common.h"
-#include "colormaps.h"
 #include "loaders.h"
 
+#include "fract4dc/common.h"
+#include "fract4dc/colormaps.h"
+
+#include "pf.h"
 
 namespace loaders
 {

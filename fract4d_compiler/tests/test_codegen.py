@@ -172,8 +172,9 @@ int main()
         #include <stdio.h>
         #include <math.h>
 
-        #include "cmap.cpp"
-        #include "image.cpp"
+        #include "colorutils.cpp"
+        #include "model/image.cpp"
+        #include "model/colormap.cpp"
         #include "fract_stdlib.cpp"
         #include "pf.h"
 

@@ -1,14 +1,17 @@
-#include "fractFunc.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <cassert>
+
+#include "fractfunc.h"
+
+#include "model/image.h"
 
 dmat4 rotated_matrix(double *params)
 {
     d one = d(1.0);
     d zero = d(0.0);
     dmat4 id = identity3D<d>(params[MAGNITUDE], zero);
-
     return id *
            rotXY<d>(params[XYANGLE], one, zero) *
            rotXZ<d>(params[XZANGLE], one, zero) *
@@ -28,8 +31,7 @@ dvec4 test_eye_vector(double *params, double dist)
     return mat[VZ] * -dist;
 }
 
-double
-gettimediff(struct timeval &startTime, struct timeval &endTime)
+double gettimediff(struct timeval &startTime, struct timeval &endTime)
 {
     long int diff_usec = endTime.tv_usec - startTime.tv_usec;
     if (diff_usec < 0)
@@ -64,7 +66,6 @@ fractFunc::fractFunc(
     //printf("render type %d\n", render_type);
     worker = fw;
     params = params_;
-
     eaa = eaa_;
     maxiter = maxiter_;
     nThreads = nThreads_;
@@ -73,7 +74,6 @@ fractFunc::fractFunc(
     period_tolerance = period_tolerance_;
     periodicity = periodicity_;
     warp_param = warp_param_;
-
     set_progress_range(0.0, 1.0);
     /*
     printf("(%d,%d,%d,%d,%d,%d)\n",
@@ -83,7 +83,6 @@ fractFunc::fractFunc(
     dvec4 center = dvec4(
         params[XCENTER], params[YCENTER],
         params[ZCENTER], params[WCENTER]);
-
     rot = rotated_matrix(params);
 
     eye_point = center + rot[VZ] * -10.0; // FIXME add eye distance parameter
@@ -116,10 +115,6 @@ fractFunc::fractFunc(
     worker->set_fractFunc(this);
 
     last_update_y = 0;
-};
-
-fractFunc::~fractFunc()
-{
 }
 
 bool fractFunc::update_image(int i)
@@ -135,7 +130,6 @@ bool fractFunc::update_image(int i)
 }
 
 // see if the image needs more (or less) iterations & tolerance to display properly
-
 int fractFunc::updateiters()
 {
     int flags = 0;
@@ -266,7 +260,7 @@ void fractFunc::draw_all()
     }
     status_changed(GF4D_FRACTAL_CALCULATING);
 
-#if !defined(NO_CALC)
+#ifndef NO_CALC
     // NO_CALC is used to stub out the actual fractal stuff so we can
     // profile & optimize the rest of the code without it confusing matters
 
@@ -414,53 +408,9 @@ dvec4 fractFunc::vec_for_point(double x, double y)
     return vec;
 }
 
-void calc(
-    d *params,
-    int eaa,
-    int maxiter,
-    int nThreads,
-    pf_obj *pfo,
-    ColorMap *cmap,
-    bool auto_deepen,
-    bool auto_tolerance,
-    double tolerance,
-    bool yflip,
-    bool periodicity,
-    bool dirty,
-    int debug_flags,
-    render_type_t render_type,
-    int warp_param,
-    IImage *im,
-    IFractalSite *site)
+void fractFunc::set_progress_range(float min, float max)
 {
-    assert(NULL != im && NULL != site &&
-           NULL != cmap && NULL != pfo && NULL != params);
-    IFractWorker *worker = IFractWorker::create(nThreads, pfo, cmap, im, site);
-
-    if (worker && worker->ok())
-    {
-        fractFunc ff(
-            params,
-            eaa,
-            maxiter,
-            nThreads,
-            auto_deepen,
-            auto_tolerance,
-            tolerance,
-            yflip,
-            periodicity,
-            render_type,
-            warp_param,
-            worker,
-            im,
-            site);
-
-        ff.set_debug_flags(debug_flags);
-        if (dirty)
-        {
-            im->clear();
-        }
-        ff.draw_all();
-    }
-    delete worker;
+    min_progress = min;
+    delta_progress = max - min;
+    assert(delta_progress > 0.0);
 }

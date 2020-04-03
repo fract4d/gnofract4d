@@ -1,7 +1,8 @@
 #ifndef __ARENAS_H_INCLUDED__
 #define __ARENAS_H_INCLUDED__
 
-#include "../fract_stdlib.h"
+typedef struct _object PyObject;
+typedef struct s_arena *arena_t;
 
 arena_t arena_fromcapsule(PyObject *p);
 void pyarena_delete(PyObject *pyarena);

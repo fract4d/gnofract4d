@@ -3,7 +3,8 @@
 #define FRACT_STDLIB_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
     void fract_rand(double *re, double *im);
@@ -15,25 +16,25 @@ extern "C" {
     void arena_delete(arena_t arena);
 
     void *arena_alloc(
-	arena_t arena, 
-	int element_size, 
-	int n_dimensions,
-	int *n_elements);
+        arena_t arena,
+        int element_size,
+        int n_dimensions,
+        int *n_elements);
 
     void array_get_int(
-	void *allocation, int n_dimensions, int *indexes, 
-	int *pRetVal, int *pInBounds);
+        void *allocation, int n_dimensions, int *indexes,
+        int *pRetVal, int *pInBounds);
 
     void array_get_double(
-	void *allocation, int n_dimensions, int *indexes, 
-	double *pRetVal, int *pInBounds);
+        void *allocation, int n_dimensions, int *indexes,
+        double *pRetVal, int *pInBounds);
 
     int array_set_int(
-	void *allocation, int n_dimensions, int *indexes, int val);
+        void *allocation, int n_dimensions, int *indexes, int val);
 
     int array_set_double(
-	void *allocation, int n_dimensions, int *indexes, double val);
-    
+        void *allocation, int n_dimensions, int *indexes, double val);
+
     void *alloc_array1D(arena_t arena, int element_size, int size);
     void *alloc_array2D(arena_t arena, int element_size, int xsize, int ysize);
     void *alloc_array3D(arena_t arena, int element_size, int xsize, int ysize, int zsize);

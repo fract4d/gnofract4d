@@ -1,15 +1,14 @@
-
 #include "Python.h"
-
-#include "assert.h"
+#include <cassert>
 #include <new>
 
 #include "images.h"
-#include "common.h"
 
-#include "../image.h"
-#include "../fate.h"
+#include "fract4dc/common.h"
 
+#include "model/imagereader.h"
+#include "model/imagewriter.h"
+#include "model/image.h"
 
 namespace images {
 

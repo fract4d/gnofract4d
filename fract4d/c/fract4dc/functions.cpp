@@ -1,19 +1,17 @@
 #include "Python.h"
-
 #include "functions.h"
 
-#include "common.h"
+#include "fract4dc/common.h"
+#include "fract4dc/colormaps.h"
+#include "fract4dc/loaders.h"
+#include "fract4dc/images.h"
+#include "fract4dc/sites.h"
+#include "fract4dc/workers.h"
+#include "model/enums.h"
+#include "model/worker.h"
+#include "model/fractfunc.h"
 
-#include "colormaps.h"
-#include "loaders.h"
-#include "images.h"
-#include "sites.h"
-#include "workers.h"
-
-#include "../pf.h"
-#include "../fract_public.h"
-#include "../fractWorker_public.h"
-
+#include "pf.h"
 
 namespace functions {
 
@@ -93,6 +91,7 @@ namespace functions {
 
         PyObject *pyret = PyCapsule_New(ffh, OBTYPE_FFH, pyff_delete);
 
+        // @TODO: why?
         Py_INCREF(pyworker);
 
         return pyret;

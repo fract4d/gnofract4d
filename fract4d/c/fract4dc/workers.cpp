@@ -1,13 +1,16 @@
 #include "Python.h"
-
 #include "workers.h"
-#include "common.h"
 
-#include "colormaps.h"
-#include "loaders.h"
-#include "images.h"
-#include "sites.h"
+#include "fract4dc/common.h"
+#include "fract4dc/colormaps.h"
+#include "fract4dc/loaders.h"
+#include "fract4dc/images.h"
+#include "fract4dc/sites.h"
 
+#include "model/worker.h"
+#include "model/image.h"
+
+#include "vectors.h"
 
 namespace workers {
 

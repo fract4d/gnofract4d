@@ -1,5 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
+from fract4d.options import Arguments
+from fract4dgui import main_window
+from fract4d import fractmain, image, fractconfig
+import gi
 import sys
 import os
 import getopt
@@ -11,14 +15,16 @@ import gettext
 from functools import reduce
 os.environ.setdefault('LANG', 'en')
 if os.path.isdir('po'):
-    gettext.install('gnofract4d','po')
+    gettext.install('gnofract4d', 'po')
 else:
     gettext.install('gnofract4d')
 
-import gtk
-
-from fract4d import fractmain, image
-from fract4dgui import main_window
+gi.require_version('Gtk', '3.0')
+try:
+    from gi.repository import Gtk
+except ImportError as err:
+    print(_("Can't find Gtk. You need to install it before you can run Gnofract 4D."))
+    sys.exit(1)
 
 files = [
     'testdata/std.fct',
@@ -26,7 +32,7 @@ files = [
     'testdata/valley_test.fct',
     'testdata/trigcentric.fct',
     'testdata/zpower.fct'
-    ]
+]
 
 class Benchmark:
     def __init__(self, useGui):
@@ -35,18 +41,19 @@ class Benchmark:
         self.useGui = useGui
         self.w = 320
         self.h = 240
-        
+
     def run_gui(self):
 
-        window = main_window.MainWindow()
+        userConfig = fractconfig.userConfig()
+        window = main_window.MainWindow(userConfig)
 
-        window.f.set_size(self.w,self.h)
+        window.f.set_size(self.w, self.h)
         window.f.thaw()
 
         times = []
         self.last_time = now()
 
-        def status_changed(f,status):
+        def status_changed(f, status):
             if status == 0:
                 # done
                 new_time = now()
@@ -56,23 +63,22 @@ class Benchmark:
                 if self.pos < len(files):
                     window.load(files[self.pos])
                 else:
-                    gtk.main_quit()
+                    Gtk.main_quit()
 
         window.f.connect('status-changed', status_changed)
         window.load(files[0])
-        gtk.main()
+        Gtk.main()
         return times
 
     def run_nogui(self):
-        main = fractmain.T()
-        print(main.compiler.path_lists)
+        userConfig = fractconfig.userConfig()
+        main = fractmain.T(userConfig)
         times = []
         last_time = now()
         for file in files:
             main.load(file)
-            im = image.T(self.w,self.h)
-            main.draw(im)
-            im.save(file + ".png")
+            opts = Arguments().parse_args(sys.argv[1:])
+            main.run(opts)
             new_time = now()
             times.append(new_time - last_time)
 
@@ -84,10 +90,11 @@ class Benchmark:
         else:
             times = self.run_nogui()
 
-        for (file,time) in zip(files,times):
-            print("%.4f %s" % (time,file))
+        for (file, time) in zip(files, times):
+            print("%.4f %s" % (time, file))
 
-        print(reduce(operator.__add__,times,0))
+        print(reduce(operator.__add__, times, 0))
+
 
 useGui = True
 repeats = 1
@@ -100,6 +107,3 @@ for arg in sys.argv[1:]:
 for i in range(repeats):
     bench = Benchmark(useGui)
     bench.run()
-
-
-
