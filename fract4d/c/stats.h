@@ -1,48 +1,52 @@
 
+#ifndef __STATS_H_INCLUDED__
+#define __STATS_H_INCLUDED__
+
+
 #include <string.h>
 
 typedef enum
 {
     // total number of iterations performed
-    ITERATIONS,              
+    ITERATIONS,
 
     // pixels we processed
-    PIXELS,                  
+    PIXELS,
 
     // number of pixels we actually called calc() on
-    PIXELS_CALCULATED,       
+    PIXELS_CALCULATED,
 
     // number of pixels we guessed (calculated + skipped == pixels)
-    PIXELS_SKIPPED,          
+    PIXELS_SKIPPED,
 
     // number of pixels we guessed wrong
     PIXELS_SKIPPED_WRONG,
 
     // number of pixels we guessed right
     PIXELS_SKIPPED_RIGHT,
-    
+
     // pixels which wound up inside
-    PIXELS_INSIDE,           
+    PIXELS_INSIDE,
 
     // pixels which would up outside (inside + outside == pixels)
-    PIXELS_OUTSIDE,          
+    PIXELS_OUTSIDE,
 
-    // pixels which were found to be inside via periodicity 
+    // pixels which were found to be inside via periodicity
     PIXELS_PERIODIC,
 
-    // n pixels correctly classified that would be wrong 
+    // n pixels correctly classified that would be wrong
     // if we calculated half the iterations
     WORSE_DEPTH_PIXELS,
 
-    // n pixels currently misclassified that would be correct 
+    // n pixels currently misclassified that would be correct
     // if we doubled the iterations
     BETTER_DEPTH_PIXELS,
 
-    // n pixels correctly classified that would be wrong 
+    // n pixels correctly classified that would be wrong
     // if we calculated with looser tolerance
     WORSE_TOLERANCE_PIXELS,
 
-    // n pixels currently misclassified that would be correct 
+    // n pixels currently misclassified that would be correct
     // if we tightened the tolerance
     BETTER_TOLERANCE_PIXELS,
 
@@ -70,18 +74,20 @@ struct s_pixel_stat{
 	}
     };
 
-    double worse_depth_ratio() const { 
-	return ((double)s[WORSE_DEPTH_PIXELS])/s[PIXELS]; 
+    double worse_depth_ratio() const {
+	return ((double)s[WORSE_DEPTH_PIXELS])/s[PIXELS];
     }
-    double better_depth_ratio() const { 
-	return ((double)s[BETTER_DEPTH_PIXELS])/s[PIXELS]; 
+    double better_depth_ratio() const {
+	return ((double)s[BETTER_DEPTH_PIXELS])/s[PIXELS];
     }
 
-    double worse_tolerance_ratio() const { 
-	return ((double)s[WORSE_TOLERANCE_PIXELS])/s[PIXELS]; 
+    double worse_tolerance_ratio() const {
+	return ((double)s[WORSE_TOLERANCE_PIXELS])/s[PIXELS];
     }
-    double better_tolerance_ratio() const { 
-	return ((double)s[BETTER_TOLERANCE_PIXELS])/s[PIXELS]; 
+    double better_tolerance_ratio() const {
+	return ((double)s[BETTER_TOLERANCE_PIXELS])/s[PIXELS];
     }
 };
 
+
+#endif

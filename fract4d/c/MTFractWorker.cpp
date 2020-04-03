@@ -1,9 +1,7 @@
-#include "fractWorker.h" 
+#include "fractWorker.h"
 #include "fractFunc.h"
-
-#ifndef WIN32
 #include "unistd.h"
-#endif
+
 
 /* redirect back to a member function */
 void worker(job_info_t& tdata, STFractWorker *pFunc)
@@ -12,7 +10,7 @@ void worker(job_info_t& tdata, STFractWorker *pFunc)
 }
 
 MTFractWorker::MTFractWorker(
-    int n, 
+    int n,
     pf_obj *pfo,
     ColorMap *cmap,
     IImage *im,
@@ -27,8 +25,8 @@ MTFractWorker::MTFractWorker(
     {
         if(!ptf[i].init(pfo,cmap,im,site))
         {
-            // failed to create - mark this dead 
-            m_ok = false;	    
+            // failed to create - mark this dead
+            m_ok = false;
         }
     }
 
@@ -156,7 +154,7 @@ MTFractWorker::send_cmd(job_type_t job, int x, int y, int param)
 {
     job_info_t work;
 
-    work.job = job; 
+    work.job = job;
     work.x = x; work.y = y; work.param = param; work.param2 = 0;
 
     ptp->add_work(worker, work);
@@ -167,7 +165,7 @@ MTFractWorker::send_cmd(job_type_t job, int x, int y, int param, int param2)
 {
     job_info_t work;
 
-    work.job = job; 
+    work.job = job;
     work.x = x; work.y = y; work.param = param; work.param2 = param2;
 
     ptp->add_work(worker, work);
@@ -208,7 +206,7 @@ MTFractWorker::send_row_aa(int x, int y, int w)
     send_cmd(JOB_ROW_AA, x, y, w);
 }
 
-void 
+void
 MTFractWorker::flush()
 {
     if(ptp)
@@ -219,7 +217,7 @@ MTFractWorker::flush()
 
 bool
 MTFractWorker::ok()
-{ 
+{
     return m_ok;
 }
 

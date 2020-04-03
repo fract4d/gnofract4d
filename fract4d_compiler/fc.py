@@ -142,17 +142,12 @@ class Compiler:
         self.lexer = fractlexer.lexer
         self.c_code = ""
         self.path_lists = [[], [], [], []]
-        if 'win' != sys.platform[:3]:
-            self.compiler_name = "gcc"
-            self.flags = "-fPIC -DPIC -g -O3 -shared"
-            self.output_flag = "-o "
-            self.libs = "-lm"
-        else:
-            self.compiler_name = "cl"
-            self.flags = "/EHsc /Gd /nologo /W3 /LD /MT /TP /DWIN32 /DWINDOWS /D_USE_MATH_DEFINES"
-            self.output_flag = "/Fe"
-            # /DELAYLOAD:fract4d_stdlib.pyd DelayImp.lib
-            self.libs = "/link /LIBPATH:\"%s/fract4d\" fract4d_stdlib.lib" % sys.path[0]
+
+        self.compiler_name = "gcc"
+        self.flags = "-fPIC -DPIC -g -O3 -shared"
+        self.output_flag = "-o "
+        self.libs = "-lm"
+
         self.update_from_prefs(userConfig)
         self.cache = cache.T(userConfig.get("general", "cache_dir"))
         self.init_cache()
@@ -417,8 +412,6 @@ class Compiler:
 
         if cfile is None:
             cfile = self.cache.makefilename(hash, ".c")
-            if 'win' in sys.platform:
-                objfile = self.cache.makefilename(hash, ".obj")
 
         f = open(cfile, "w")
         f.write(self.c_code)
@@ -427,10 +420,7 @@ class Compiler:
         # -march=i686 for 10% speed gain
         cmd = "%s \"%s\" %s %s\"%s\"" % \
               (self.compiler_name, cfile, self.flags, self.output_flag, outputfile)
-        if 'win' == sys.platform[:3]:
-            cmd += " /Fo\"%s\"" % objfile
         cmd += " %s" % self.libs
-        # print "cmd: %s" % cmd
 
         (status, output) = subprocess.getstatusoutput(cmd)
         if status != 0:

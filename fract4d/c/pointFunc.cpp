@@ -9,9 +9,7 @@
 #include "pointFunc_public.h"
 #include "fract_public.h"
 
-#ifndef WIN32
 #include <unistd.h>
-#endif
 #include <dlfcn.h>
 #include <stdio.h>
 
@@ -32,7 +30,7 @@ public:
 	pf_obj *pfo,
 	ColorMap *cmap,
 	IFractalSite *site
-	) : 
+	) :
 	m_pfo(pfo), m_cmap(cmap), m_site(site)
 	{
 
@@ -43,7 +41,7 @@ public:
 	}
     virtual void calc(
         // in params
-        const double *params, int nIters, 
+        const double *params, int nIters,
 	// periodicity
 	int min_period_iters, double period_tolerance,
 	// warping
@@ -53,7 +51,7 @@ public:
         // out params
         rgba_t *color, int *pnIters, float *pIndex, fate_t *pFate) const
 	{
-	    double dist = 0.0; 
+	    double dist = 0.0;
 	    int fate = 0;
 	    int solid = 0;
 	    int fUseColors = 0;
@@ -61,8 +59,8 @@ public:
 	    int inside = 0;
 
 	    m_pfo->vtbl->calc(
-		m_pfo, params, 
-		nIters, warp_param, 
+		m_pfo, params,
+		nIters, warp_param,
 		min_period_iters, period_tolerance,
 		x, y, aa,
 		pnIters, &fate, &dist, &solid,
@@ -100,7 +98,7 @@ public:
 		color->r, color->g, color->b, color->a);
 	}
     inline rgba_t recolor(double dist, fate_t fate, rgba_t current) const
-	{	    
+	{
 	    int solid = 0;
 	    int inside = 0;
 	    if(fate & FATE_DIRECT)

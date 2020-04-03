@@ -72,13 +72,22 @@ for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
 else:
     raise SystemExit("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
 
-# use currently specified compilers, not ones from when Python was compiled
-# this is necessary for cross-compilation
-compiler = os.environ.get("CC", "gcc")
-cxxcompiler = os.environ.get("CXX", "g++")
 
 fract4d_sources = [
     'fract4d/c/fract4dmodule.cpp',
+
+    'fract4d/c/fract4dc/colormaps.cpp',
+    'fract4d/c/fract4dc/loaders.cpp',
+    'fract4d/c/fract4dc/pysite.cpp',
+    'fract4d/c/fract4dc/fdsite.cpp',
+    'fract4d/c/fract4dc/sites.cpp',
+    'fract4d/c/fract4dc/images.cpp',
+    'fract4d/c/fract4dc/calcs.cpp',
+    'fract4d/c/fract4dc/workers.cpp',
+    'fract4d/c/fract4dc/functions.cpp',
+    'fract4d/c/fract4dc/arenas.cpp',
+    'fract4d/c/fract4dc/utils.cpp',
+
     'fract4d/c/cmap.cpp',
     'fract4d/c/pointFunc.cpp',
     'fract4d/c/fractFunc.cpp',
@@ -105,7 +114,7 @@ define_macros = defines + extra_macros
 module_fract4dc = Extension(
     name='fract4d.fract4dc',
     sources=fract4d_sources,
-    include_dirs=['fract4d/c'],
+    include_dirs=['fract4d/c', 'fract4d/c/fract4dc'],
     libraries=libraries + jpg_libs,
     extra_compile_args=extra_compile_args,
     extra_link_args=png_libs,
