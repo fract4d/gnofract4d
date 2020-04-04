@@ -1,26 +1,30 @@
 #!/usr/bin/env python
 
-# gettext
+import os
+import sys
 import gettext
+
+from fract4d import fractal, fractmain, fractconfig
+from fract4d.options import Arguments
+
+
 os.environ.setdefault('LANG', 'en')
 if os.path.isdir('po'):
-    gettext.install('gnofract4d','po')
+    gettext.install('gnofract4d', 'po')
 else:
     gettext.install('gnofract4d')
 
-# nogui modules
-from fract4d import fractal, fractmain, options
 
 def main(args):
-    opts = options.T()
+    opts = Arguments()
     try:
-        opts.parse(args)
-    except options.OptionError as err:
-        print(get_version_info())
-        print(opts.help())
-
-        print("Error parsing arguments: %s" % err)
+        opts.parse_args(args)
+    except SystemExit as err:
+        print("Error parsing arguments: %s" % ', '.join(args))
         return 1
 
-    t = fractmain.T()
-    
+    userConfig = fractconfig.userConfig()
+    t = fractmain.T(userConfig)
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

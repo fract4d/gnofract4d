@@ -5,6 +5,7 @@
 MANIFEST
 token
 
+.tox/*
 build/*
 dist/*
 doc/gnofract4d-manual/C/commands.xml

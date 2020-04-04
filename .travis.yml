@@ -10,9 +10,9 @@ before_install:
   sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
 install:
   - python setup.py build
-  - pip install tox-travis pylint
+  - pip install tox-travis pillow pygobject pylint
 script:
-  - ./bin/check-python-code.sh
+  - ./bin/pylint.sh
   - tox
 notifications:
   email: false

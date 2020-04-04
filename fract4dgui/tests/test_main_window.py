@@ -15,9 +15,8 @@ from fract4dgui import main_window
 
 class WrapMainWindow(main_window.MainWindow):
     @patch('fract4d.fractconfig.T.get_data_path')
-    def __init__(self, config, mock_data_path):
+    def __init__(self, config, extra_paths=[]):
         self.errors = []
-        mock_data_path.return_value = "gnofract4d.css"
         main_window.MainWindow.__init__(self, config, ['formulas'])
 
     def show_error_message(self, message, exception):

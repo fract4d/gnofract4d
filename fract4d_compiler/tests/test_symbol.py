@@ -213,7 +213,7 @@ class SymbolTest(unittest.TestCase):
         self.assertEqual(self.t["var_with_name"].cname, "fish")
         self.assertEqual(self.t["cos"][0].cname, "cos")
 
-    def testZ(self):
+    def testZType(self):
         self.assertEqual(self.t["z"].type, Complex)
 
     def testAlias(self):

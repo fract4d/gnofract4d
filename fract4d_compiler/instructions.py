@@ -144,15 +144,15 @@ class Insn:
         try:
             lookup = {}
             i = 0
-            if self.src is not None:
-                for src in self.src:
+            if self.source() is not None:
+                for src in self.source():
                     sname = "s%d" % i
                     lookup[sname] = src.format()
                     i = i + 1
                 i = 0
 
-            if self.dst is not None:
-                for dst in self.dst:
+            if self.dest() is not None:
+                for dst in self.dest():
                     dname = "d%d" % i
                     lookup[dname] = dst.format()
                     i = i + 1

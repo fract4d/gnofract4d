@@ -43,7 +43,7 @@ class TBase:
                 print(k)
                 self.__dict__[k] = 1
 
-    def post_init(self):
+    def post_init(self, f):
         if self.dumpProbs:
             print(self.errors)
             print(self.warnings)
@@ -395,7 +395,7 @@ class TBase:
 
         elif node.type == "unop" and node.leaf == "t__neg":
             val = self.const_exp(node.children[0])
-            val.value = -val.value
+            val.value = -val.value # pylint: disable=invalid-unary-operand-type
             return val
         elif node.type == "string":
             return self.string(node)
@@ -1035,7 +1035,7 @@ class T(TBase):
         except TranslationError as e:
             self.errors.append(e.msg)
 
-        self.post_init()
+        self.post_init(f)
 
     def main(self, f):
         if len(f.children) == 0:
@@ -1131,7 +1131,7 @@ class Transform(TBase):
         except TranslationError as e:
             self.errors.append(e.msg)
 
-        self.post_init()
+        self.post_init(f)
 
     def main(self, f):
         if len(f.children) == 0:
@@ -1243,7 +1243,7 @@ class ColorFunc(TBase):
         except TranslationError as e:
             self.errors.append(e.msg)
 
-        self.post_init()
+        self.post_init(f)
 
     def create_standard_vars(self):
         # magic vars always included in colorfuncs

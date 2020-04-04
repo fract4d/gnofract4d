@@ -220,7 +220,7 @@ class T:
             parser.parse(open(file))
         except Exception as err:
             # retrieve previous__dict__
-            self.__dict__ = odict
+            self.__setstate__(odict)
             raise
 
     def save_animation(self, file):

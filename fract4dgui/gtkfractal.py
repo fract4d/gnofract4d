@@ -6,8 +6,11 @@ import os
 import struct
 import math
 import copy
-
 import cairo
+import gi
+
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GObject, GdkPixbuf, GLib
 
 from fract4d_compiler import fracttypes, function
@@ -519,8 +522,7 @@ class T(Hidden):
         widget.update_function = set_entry
 
         widget.f = self
-        widget.connect('focus-out-event',
-                       set_fractal, form, order)
+        widget.connect('focus-out-event', set_fractal, form, order)
 
         if hasattr(param, "min") and hasattr(param, "max"):
             # add a slider
@@ -580,7 +582,7 @@ class T(Hidden):
             except Exception as err:
                 msg = "error setting bool param: %s" % str(err)
                 print(msg)
-                utils.idle_add(f.warn, msg)
+                #utils.idle_add(f.warn, msg)
 
             return False
 
@@ -991,8 +993,7 @@ class T(Hidden):
                 y = 0.5 + (self.y + self.newy) / 2.0
 
             # with shift held, don't zoom
-            if hasattr(event, "state") and event.get_state(
-            ) & Gdk.ModifierType.SHIFT_MASK:
+            if hasattr(event, "state") and event.get_state() & Gdk.ModifierType.SHIFT_MASK:
                 zoom = 1.0
             self.recenter(x, y, zoom)
 

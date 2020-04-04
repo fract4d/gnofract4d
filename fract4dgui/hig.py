@@ -1,6 +1,9 @@
 # utilities to comply with Gnome Human Interface Guidelines.
 # these are defined at http://developer.gnome.org/projects/gup/hig/2.0/
 
+import gi
+
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib
 
 

@@ -1,11 +1,18 @@
 [MESSAGES CONTROL]
 disable=all
-enable=
+enable=E,
   bad-whitespace,
   trailing-whitespace,
   bad-indentation,
-  wrong-import-position,
   unnecessary-semicolon,
   trailing-newlines,
   bare-except
+
+[REPORTS]
 score=no
+
+[VARIABLES]
+additional-builtins=_
+
+[TYPECHECK]
+ignored-modules=gi,cairo
