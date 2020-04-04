@@ -7,10 +7,14 @@
 import os
 import fnmatch
 import tempfile
+import gi
 
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, Gtk, GObject
 
-from fract4d import animation, fractconfig
+from fract4d_compiler import fc
+from fract4d import animation, fractal, fractconfig
 from . import dialog, hig, PNGGen, AVIGen, DlgAdvOpt, director_prefs
 
 
@@ -793,5 +797,11 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
 if __name__ == "__main__":
     GObject.threads_init()
     Gtk.threads_init()
-    fracwin = DirectorDialog()
+
+    main_window = Gtk.Window()
+    userConfig = fractconfig.userConfig()
+    compiler = fc.Compiler(userConfig)
+    f = fractal.T(compiler)
+    fracwin = DirectorDialog(main_window, f, userConfig)
+
     fracwin.main()

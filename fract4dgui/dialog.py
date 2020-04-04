@@ -1,5 +1,8 @@
 # superclass for dialogs
 
+import gi
+
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 
@@ -17,12 +20,12 @@ def make_label_box(parent, title):
 
 
 class T(Gtk.Dialog):
-    def __init__(self, title=None, parent=None, buttons=None, modal=True):
+    def __init__(self, title=None, parent=None, buttons=None, modal=Gtk.DialogFlags.MODAL):
         Gtk.Dialog.__init__(self,
                             title=title,
                             transient_for=parent,
                             modal=modal,
-                            destroy_with_parent=True)
+                            destroy_with_parent=Gtk.DialogFlags.DESTROY_WITH_PARENT)
 
         if buttons:
             self.add_buttons(*buttons)

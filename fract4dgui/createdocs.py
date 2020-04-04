@@ -3,19 +3,19 @@
 # create a DocBook XML document documenting the keyboard shortcuts & mouse clicks
 # by interrogating the code
 
-from . import main_window
-import gi
-from xml.sax.saxutils import escape
 import os
 import re
+import gi
+
+from xml.sax.saxutils import escape
 from unittest.mock import patch
+from fract4d import fractconfig
+
+from . import main_window
 
 import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
-
-gi.require_version('Gdk', '3.0')
-gi.require_version('Gtk', '3.0')
 
 
 sort_re = re.compile(r'(?P<mod1><.*?>)?(?P<mod2><.*?>)?(?P<key>[^<>]*)')
@@ -95,12 +95,12 @@ class CommandPrinter:
 
 
 @patch('fract4dgui.main_window.MainWindow.__init__')
-def main(outfile, mw_init):
+def main(outfile):
     out = open(outfile, "w")
     printer = CommandPrinter(out)
 
-    mw_init.return_value = None
-    mw = main_window.MainWindow()
+    userConfig = fractconfig.userConfig()
+    mw = main_window.MainWindow(userConfig)
 
     menu_items = mw.get_all_actions()
     for item in menu_items:

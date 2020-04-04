@@ -10,16 +10,9 @@ from fract4d import fractal
 from fract4dgui import browser
 
 
-class MockMainWindow:
-    def __init__(self, compiler):
-        self.window = None
-        self.compiler = compiler
-
-
 class Test(testgui.TestCase):
     def setUp(self):
-        self.mainWindow = MockMainWindow(Test.g_comp)
-        self.f = fractal.T(self.mainWindow.compiler, self)
+        self.f = fractal.T(Test.g_comp, self)
 
     def tearDown(self):
         browser._model = None
@@ -32,17 +25,17 @@ class Test(testgui.TestCase):
             Gtk.main_quit()
 
     def testCreate(self):
-        b = browser.BrowserDialog(self.mainWindow, self.f)
+        b = browser.BrowserDialog(None, self.f)
         self.assertNotEqual(b, None)
 
     def testSetFormula(self):
-        b = browser.BrowserDialog(self.mainWindow, self.f)
+        b = browser.BrowserDialog(None, self.f)
         b.set_file('gf4d.frm')
         b.set_formula('Newton')
         self.assertEqual(b.ir.errors, [])
 
     def testBadFormula(self):
-        b = browser.BrowserDialog(self.mainWindow, self.f)
+        b = browser.BrowserDialog(None, self.f)
         # print b.model.compiler.path_lists[0]
         b.set_file('test.frm')
         b.set_formula('parse_error')
@@ -56,13 +49,13 @@ class Test(testgui.TestCase):
         self.assertEqual(all_text[0:7], "Errors:")
 
     def test_init(self):
-        b = browser.BrowserDialog(self.mainWindow, self.f)
+        b = browser.BrowserDialog(None, self.f)
         m = b.model
         self.assertEqual('gf4d.frm', m.current.fname)
         self.assertEqual('Mandelbrot', m.current.formula)
 
     def testLoadFormula(self):
-        b = browser.BrowserDialog(self.mainWindow, self.f)
+        b = browser.BrowserDialog(None, self.f)
         m = b.model
         # load good formula file
         b.load_file("formulas/fractint.cfrm")

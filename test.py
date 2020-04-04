@@ -19,7 +19,7 @@ class Test(unittest.TestCase):
         doc_re = re.compile(r"gnofract4d_version = '(\S+)'")
         m = doc_re.search(content)
 
-        self.assertTrue(m,"setup.py doesn't specify version")
+        self.assertTrue(m, "setup.py doesn't specify version")
         self.assertEqual(options.VERSION, m.group(1))
 
     def testDocVersionMatches(self):
@@ -30,8 +30,8 @@ class Test(unittest.TestCase):
         doc_re = re.compile(r'\<\!ENTITY version "(\S+)"\>')
 
         m = doc_re.search(content)
-        self.assertTrue(m,"doc doesn't specify version")
-        self.assertEqual(options.VERSION,m.group(1), "Version mismatch")
+        self.assertTrue(m, "doc doesn't specify version")
+        self.assertEqual(options.VERSION, m.group(1), "Version mismatch")
 
     def testWebsiteVersionMatches(self):
         if not os.path.exists("website"):
@@ -43,8 +43,8 @@ class Test(unittest.TestCase):
         ver_re = re.compile(r'text="Version (\S+) released.')
 
         m = ver_re.search(content)
-        self.assertTrue(m,"doc doesn't specify version")
-        self.assertEqual(options.VERSION,m.group(1), "Version mismatch")
+        self.assertTrue(m, "doc doesn't specify version")
+        self.assertEqual(options.VERSION, m.group(1), "Version mismatch")
 
     @pytest.mark.skipif(os.path.expandvars("${HOME}") == "${HOME}",
                         reason="cache_dir requires $HOME to be set")
@@ -58,7 +58,7 @@ class Test(unittest.TestCase):
             self.assertTrue(os.path.exists(test_file))
 
 def suite():
-    return unittest.makeSuite(Test,'test')
+    return unittest.makeSuite(Test, 'test')
 
 def main():
     pytest.main(['fract4d/tests', 'fract4dgui/tests', 'fract4d_compiler/tests'])

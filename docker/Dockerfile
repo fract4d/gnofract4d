@@ -9,7 +9,9 @@ RUN \
     apt-get -y upgrade && \
     apt-get -y install libpng-dev libjpeg-dev python3-dev gtk3.0 libcairo2-dev python3-cairo python3-gi-cairo pkg-config python3-pip xvfb
 
-RUN pip3 install pytest tox
+
+# deps for bin/run_*.sh scripts
+RUN pip3 install pillow pylint pytest tox
 
 # other deps
 RUN apt-get -y install libgirepository1.0-dev gir1.2-gtk-3.0

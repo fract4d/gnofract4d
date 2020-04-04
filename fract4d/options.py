@@ -2,6 +2,7 @@ import argparse
 import collections
 import os.path
 import sys
+from . import fractal
 
 # version of Gnofract 4D
 VERSION = '4.0'

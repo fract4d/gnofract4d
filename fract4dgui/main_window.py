@@ -4,12 +4,14 @@ import sys
 import os
 import math
 import re
+import gi
 
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, Gtk
 
 from fract4d_compiler import fc, fracttypes
 from fract4d import fractal, image, fractconfig
-
 from . import (gtkfractal, model, preferences, autozoom, settings, toolbar,
                browser, fourway, angle, utils, hig, painter, renderqueue, director)
 
@@ -210,16 +212,6 @@ class MainWindow:
         chooser.add_filter(all_filter)
 
         chooser.set_filter(all_filter)
-
-    def get_file_open_chooser(self, parent):
-        chooser = Gtk.FileChooserDialog(
-            title, parent, Gtk.FileChooserAction.OPEN,
-            (Gtk.STOCK_OK, Gtk.ResponseType.OK,
-             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
-
-        self.add_filters(chooser)
-
-        return chooser
 
     def get_save_as_fs(self):
         if self.saveas_fs is None:
@@ -710,7 +702,7 @@ class MainWindow:
 
     def browser(self, *args):
         """Display formula browser."""
-        dialog = browser.BrowserDialog(self, self.f)
+        dialog = browser.BrowserDialog(self.window, self.f)
         dialog.run()
         dialog.destroy()
 
@@ -1342,7 +1334,7 @@ class MainWindow:
     def load_formula(self, file):
         try:
             self.compiler.load_formula_file(file)
-            dialog = browser.BrowserDialog(self, self.f)
+            dialog = browser.BrowserDialog(self.window, self.f)
             dialog.load_file(file)
             dialog.run()
             dialog.destroy()

@@ -13,6 +13,7 @@ from fract4dgui import gtkfractal
 
 class FakeEvent:
     def __init__(self, **kwds):
+        self.state = False
         self.__dict__.update(kwds)
 
     def get_state(self):

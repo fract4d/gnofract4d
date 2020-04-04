@@ -97,7 +97,7 @@ class Segment:
         return Segment(
             self.left, self.left_color[:],
             self.right, self.right_color[:], self.mid,
-            self.blend_mode, self.color_mode)
+            self.bmode, self.cmode)
 
     def __eq__(self, other):
         if other is None:
@@ -738,55 +738,6 @@ class Gradient:
 
         self.segments[i].mid = pos
         return pos
-
-    def broken_move(self, handle, move):
-        seg, side = self.getSegFromHandle(handle)
-        segindex = self.segments.index(seg)
-
-        if (segindex > 0 or side == 'right') and (
-                segindex < len(self.segments) - 1 or side == 'left'):
-            if side == 'left':
-                self.segments[segindex - 1].right.pos += move
-                if self.segments[segindex - 1].right.pos > 1:
-                    self.segments[segindex - 1].right.pos = 1
-                elif self.segments[segindex - 1].right.pos < 0:
-                    self.segments[segindex - 1].right.pos = 0
-
-                seg.left.pos += move
-                if seg.left.pos > 1:
-                    seg.left.pos = 1
-                elif seg.left.pos < 0:
-                    seg.left.pos = 0
-
-                if seg.left.pos > seg.right.pos:
-                    seg.left.pos = seg.right.pos
-                    self.segments[segindex - 1].right.pos = seg.right.pos
-                elif self.segments[segindex - 1].right.pos < self.segments[segindex - 1].left.pos:
-                    self.segments[segindex -
-                                  1].right.pos = self.segments[segindex -
-                                                               1].left.pos
-                    seg.left.pos = self.segments[segindex - 1].left.pos
-            else:
-                self.segments[segindex + 1].left.pos += move
-                if self.segments[segindex + 1].left.pos > 1:
-                    self.segments[segindex + 1].left.pos = 1
-                elif self.segments[segindex + 1].left.pos < 0:
-                    self.segments[segindex + 1].left.pos = 0
-
-                seg.right.pos += move
-                if seg.right.pos > 1:
-                    seg.right.pos = 1
-                elif seg.right.pos < 0:
-                    seg.right.pos = 0
-
-                if seg.left.pos > seg.right.pos:
-                    seg.right.pos = seg.left.pos
-                    self.segments[segindex + 1].left.pos = seg.left.pos
-                elif self.segments[segindex + 1].right.pos < self.segments[segindex + 1].left.pos:
-                    self.segments[segindex +
-                                  1].left.pos = self.segments[segindex +
-                                                              1].right.pos
-                    seg.right.pos = self.segments[segindex + 1].right.pos
 
 # These two are adapted from the algorithms at
 # http://www.cs.rit.edu/~ncs/color/t_convert.html
