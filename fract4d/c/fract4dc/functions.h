@@ -1,8 +1,9 @@
 #ifndef __FUNCTIONS_H_INCLUDED__
 #define __FUNCTIONS_H_INCLUDED__
 
+typedef struct _object PyObject;
 
-#include "../fractFunc.h"
+class fractFunc;
 
 struct ffHandle
 {

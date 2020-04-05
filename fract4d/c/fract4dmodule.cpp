@@ -20,13 +20,14 @@
 #include "fract4dc/colormaps.h"
 #include "fract4dc/loaders.h"
 #include "fract4dc/sites.h"
-#include "fract4dc/fdsite.h"
 #include "fract4dc/images.h"
 #include "fract4dc/calcs.h"
 #include "fract4dc/workers.h"
 #include "fract4dc/functions.h"
 #include "fract4dc/arenas.h"
 #include "fract4dc/utils.h"
+
+#include "model/enums.h"
 
 struct module_state
 {

@@ -1,7 +1,9 @@
 #ifndef __COLORMAPS_H_INCLUDED__
 #define __COLORMAPS_H_INCLUDED__
 
-#include "../cmap.h"
+typedef struct _object PyObject;
+
+class ColorMap;
 
 void * get_double_field(PyObject *pyitem, const char *name, double *pVal);
 void * get_int_field(PyObject *pyitem, const char *name, int *pVal);

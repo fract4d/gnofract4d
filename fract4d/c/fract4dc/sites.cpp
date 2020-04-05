@@ -1,11 +1,8 @@
 #include "Python.h"
-
-#include "fdsite.h"
-#include "pysite.h"
-
 #include "sites.h"
-#include "common.h"
 
+#include "fract4dc/common.h"
+#include "model/site.h"
 
 namespace sites {
 

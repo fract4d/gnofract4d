@@ -1,7 +1,10 @@
 #ifndef __LOADERS_H_INCLUDED__
 #define __LOADERS_H_INCLUDED__
 
-#include "../pf.h"
+typedef struct _object PyObject;
+
+typedef struct s_pf_data pf_obj;
+struct s_param;
 
 struct pfHandle
 {
