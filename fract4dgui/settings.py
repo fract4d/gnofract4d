@@ -697,7 +697,7 @@ class SettingsPane(Gtk.Box):
                 self.update_all_widgets(fractal, widget)  # recurse
 
     def show_browser(self, button, type):
-        dialog = browser.BrowserDialog(self.main_window, self.f, type)
+        dialog = browser.BrowserDialog(self.main_window.window, self.f, type)
         dialog.run()
         dialog.destroy()
 
