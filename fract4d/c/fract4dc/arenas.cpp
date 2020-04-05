@@ -1,8 +1,9 @@
 #include "Python.h"
-
 #include "arenas.h"
-#include "common.h"
 
+#include "fract4dc/common.h"
+
+#include "fract_stdlib.h"
 
 namespace arenas {
 

@@ -1,10 +1,11 @@
 #include "Python.h"
-
 #include <new>
 
-#include "common.h"
 #include "colormaps.h"
 
+#include "fract4dc/common.h"
+#include "model/colormap.h"
+#include "model/color.h"
 
 namespace colormaps {
 

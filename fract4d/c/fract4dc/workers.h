@@ -1,7 +1,9 @@
 #ifndef __WORKERS_H_INCLUDED__
 #define __WORKERS_H_INCLUDED__
 
-#include "../fractWorker_public.h"
+typedef struct _object PyObject;
+
+class IFractWorker;
 
 void pyfw_delete(PyObject *pyworker);
 

@@ -78,8 +78,6 @@ fract4d_sources = [
 
     'fract4d/c/fract4dc/colormaps.cpp',
     'fract4d/c/fract4dc/loaders.cpp',
-    'fract4d/c/fract4dc/pysite.cpp',
-    'fract4d/c/fract4dc/fdsite.cpp',
     'fract4d/c/fract4dc/sites.cpp',
     'fract4d/c/fract4dc/images.cpp',
     'fract4d/c/fract4dc/calcs.cpp',
@@ -88,13 +86,21 @@ fract4d_sources = [
     'fract4d/c/fract4dc/arenas.cpp',
     'fract4d/c/fract4dc/utils.cpp',
 
-    'fract4d/c/cmap.cpp',
-    'fract4d/c/pointFunc.cpp',
-    'fract4d/c/fractFunc.cpp',
-    'fract4d/c/STFractWorker.cpp',
-    'fract4d/c/MTFractWorker.cpp',
-    'fract4d/c/image.cpp',
-    'fract4d/c/imageIO.cpp',
+    'fract4d/c/model/calcargs.cpp',
+    'fract4d/c/model/calcfunc.cpp',
+    'fract4d/c/model/fractfunc.cpp',
+    'fract4d/c/model/site.cpp',
+    'fract4d/c/model/image.cpp',
+    'fract4d/c/model/imagewriter.cpp',
+    'fract4d/c/model/imagereader.cpp',
+    'fract4d/c/model/colormap.cpp',
+    'fract4d/c/model/worker.cpp',
+    'fract4d/c/model/STFractWorker.cpp',
+    'fract4d/c/model/MTFractWorker.cpp',
+    'fract4d/c/model/pointfunc.cpp',
+    'fract4d/c/model/stats.cpp',
+
+    'fract4d/c/colorutils.cpp',
     'fract4d/c/fract_stdlib.cpp'
 ]
 
@@ -114,7 +120,7 @@ define_macros = defines + extra_macros
 module_fract4dc = Extension(
     name='fract4d.fract4dc',
     sources=fract4d_sources,
-    include_dirs=['fract4d/c', 'fract4d/c/fract4dc'],
+    include_dirs=['fract4d/c', 'fract4d/c/fract4dc', 'fract4d/c/model'],
     libraries=libraries + jpg_libs,
     extra_compile_args=extra_compile_args,
     extra_link_args=png_libs,
@@ -125,11 +131,14 @@ module_fract4dc = Extension(
 module_cmap = Extension(
     'fract4d.fract4d_stdlib',
     sources=[
-        'fract4d/c/cmap.cpp',
-        'fract4d/c/image.cpp',
+        'fract4d/c/colorutils.cpp',
+
+        'fract4d/c/model/colormap.cpp',
+        'fract4d/c/model/image.cpp',
+
         'fract4d/c/fract_stdlib.cpp'
     ],
-    include_dirs=['fract4d/c'],
+    include_dirs=['fract4d/c', 'fract4d/c/model'],
     libraries=libraries,
     define_macros=[('_REENTRANT', 1)]
 )

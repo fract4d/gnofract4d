@@ -1,7 +1,9 @@
 #ifndef __SITES_H_INCLUDED__
 #define __SITES_H_INCLUDED__
 
-#include "../fract_public.h"
+typedef struct _object PyObject;
+
+class IFractalSite;
 
 namespace sites {
     void pysite_delete(PyObject *pysite);

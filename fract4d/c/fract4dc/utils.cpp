@@ -1,14 +1,13 @@
 #include "Python.h"
-
 #include "utils.h"
-#include "common.h"
 
-#include "../vectors.h"
-#include "../fract_public.h"
-#include "../fractFunc.h"
+#include "fract4dc/common.h"
+#include "model/fractfunc.h"
 
-#include "../fract_stdlib.h"
-
+#include "colorutils.h"
+#include "vectors.h"
+#include "fract_stdlib.h"
+#include "pf.h"
 
 namespace utils {
 

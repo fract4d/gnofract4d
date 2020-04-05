@@ -1,9 +1,10 @@
 #ifndef __IMAGES_H_INCLUDED__
 #define __IMAGES_H_INCLUDED__
 
+typedef struct _object PyObject;
 
-#include "../image_public.h"
-
+class ImageWriter;
+class IImage;
 
 void pyimage_delete(PyObject *pyimage);
 void pyimage_writer_delete(PyObject *pyim);

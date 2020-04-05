@@ -1,5 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
+from fract4d.options import Arguments
+from fract4dgui import main_window
+from fract4d import fractmain, image, fractconfig
+import gi
 import sys
 import os
 import getopt
@@ -20,6 +24,12 @@ if os.path.isdir('po'):
 else:
     gettext.install('gnofract4d')
 
+gi.require_version('Gtk', '3.0')
+try:
+    from gi.repository import Gtk
+except ImportError as err:
+    print(_("Can't find Gtk. You need to install it before you can run Gnofract 4D."))
+    sys.exit(1)
 
 files = [
     'testdata/std.fct',
@@ -28,8 +38,6 @@ files = [
     'testdata/trigcentric.fct',
     'testdata/zpower.fct'
 ]
-userConfig = fractconfig.userConfig()
-
 
 class Benchmark:
     def __init__(self, useGui):
@@ -41,6 +49,7 @@ class Benchmark:
 
     def run_gui(self):
 
+        userConfig = fractconfig.userConfig()
         window = main_window.MainWindow(userConfig)
 
         window.f.set_size(self.w, self.h)
@@ -59,28 +68,22 @@ class Benchmark:
                 if self.pos < len(files):
                     window.load(files[self.pos])
                 else:
-                    gtk.main_quit()
+                    Gtk.main_quit()
 
         window.f.connect('status-changed', status_changed)
         window.load(files[0])
-        gtk.main()
-
+        Gtk.main()
         return times
 
     def run_nogui(self):
-
+        userConfig = fractconfig.userConfig()
         main = fractmain.T(userConfig)
-        main.f.compile()
-
-        print(main.compiler.path_lists)
-
         times = []
         last_time = now()
         for file in files:
             main.load(file)
-            im = image.T(self.w, self.h)
-            main.f.draw(im)
-            im.save(file + ".png")
+            opts = Arguments().parse_args(sys.argv[1:])
+            main.run(opts)
             new_time = now()
             times.append(new_time - last_time)
 
@@ -96,6 +99,7 @@ class Benchmark:
             print("%.4f %s" % (time, file))
 
         print(reduce(operator.__add__, times, 0))
+
 
 useGui = True
 repeats = 1
