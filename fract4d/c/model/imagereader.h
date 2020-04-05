@@ -31,6 +31,7 @@ protected:
 #ifdef PNG_ENABLED
 extern "C"
 {
+#define PNG_SKIP_SETJMP_CHECK 1
 #include "png.h"
 }
 class png_reader : public image_reader
