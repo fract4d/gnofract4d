@@ -25,17 +25,13 @@ You can then run Gnofract4D in the local directory:
 
 ./gnofract4d
 
-You can also install it (you'll normally need to be root to do this):
+You can also install it:
 
-./setup.py install
+sudo ./setup.py install
 
 You can then run it as:
 
 gnofract4d
-
-You can verify that your installation is working correctly by running
-
-./test.py
 
 Requirements
 ============
@@ -53,7 +49,7 @@ To build from source you also need:
 
 On Ubuntu, these can be installed with:
 
-sudo apt-get install libpng-dev libjpeg-dev python3-dev gtk3.0 cairo python3-cairo python3-gi-cairo pkg-config
+sudo apt-get install libpng-dev libjpeg-dev libcairo2-dev python3-dev gtk3.0 python3-cairo python3-gi-cairo pkg-config libgirepository1.0-dev
 
 If you're not sure if you have these or not, just try running
 "./setup.py build" and see if it complains.
@@ -67,7 +63,11 @@ brew install librsvg python3 pkg-config cairo gtk+3 pygobject3 py3cairo libpng j
 Testing
 =======
 
-Testing requires pytest.
+Testing requires pytest for python3.x. In some distributions, 'pytest' is for python 2.x. Run
+
+sudo pip3 install pytest
+
+To get the latest.
 
 Run individual tests from the top-level directory using pytest, e.g.:
 pytest fract4d/test_absyn.py
