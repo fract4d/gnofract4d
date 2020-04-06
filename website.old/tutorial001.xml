@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<programlisting><phrase><emphasis role="bold">MyFormula {</emphasis></phrase><phrase>
+</phrase><phrase><emphasis>; First example formula - this produces a variant on the Mandelbrot set</emphasis></phrase><phrase>
+</phrase><phrase><emphasis role="bold">init:</emphasis></phrase><phrase>
+</phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase>z</phrase><phrase> </phrase><phrase>=</phrase><phrase> </phrase><phrase><literal>0</literal></phrase><phrase>
+</phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase>c</phrase><phrase> </phrase><phrase>=</phrase><phrase> </phrase><phrase>#pixel</phrase><phrase>
+</phrase><phrase><emphasis role="bold">loop:</emphasis></phrase><phrase>
+</phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase>z</phrase><phrase> </phrase><phrase>=</phrase><phrase> </phrase><phrase>z</phrase><phrase>*</phrase><phrase>z</phrase><phrase>*</phrase><phrase>c</phrase><phrase> </phrase><phrase>+</phrase><phrase> </phrase><phrase>c</phrase><phrase>*</phrase><phrase>c</phrase><phrase>
+</phrase><phrase><emphasis role="bold">bailout:</emphasis></phrase><phrase>
+</phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase>|</phrase><phrase>z</phrase><phrase>|</phrase><phrase> </phrase><phrase>&lt;</phrase><phrase> </phrase><phrase><literal>4.0</literal></phrase><phrase>
+</phrase><phrase>}</phrase><phrase>
+</phrase><phrase>
+</phrase></programlisting>

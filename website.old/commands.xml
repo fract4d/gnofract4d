@@ -1,0 +1,156 @@
+<sect2 id="MouseCommands">
+<title>Mouse Commands</title>
+<para><informaltable>
+<tgroup cols="2">
+<thead><row>
+                    <entry>Button</entry>
+                    <entry>Action</entry>
+                 </row></thead>
+<tbody>
+<row>
+<entry>Left-click</entry>
+<entry>Zoom in</entry>
+</row>
+<row>
+<entry>Left-click and drag</entry>
+<entry>Draw rectangle to zoom into.</entry>
+</row>
+<row>
+<entry>Shift-Left-click</entry>
+<entry>Recenter image on point clicked.</entry>
+</row>
+<row>
+<entry>Middle-click</entry>
+<entry>Flip to Julia set (or back to Mandelbrot).</entry>
+</row>
+<row>
+<entry>Right-click</entry>
+<entry>Zoom out.</entry>
+</row>
+<row>
+<entry>Control-Right-click</entry>
+<entry>Zoom out more quickly.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</para>
+</sect2>
+<sect2 id="KeyboardShortcuts">
+<title>Keyboard Shortcuts</title>
+<para><informaltable>
+<tgroup cols="2">
+<thead><row>
+                    <entry>Key</entry>
+                    <entry>Action</entry>
+                 </row></thead>
+<tbody>
+<row>
+<entry>(arrow)</entry>
+<entry>Pan image in indicated direction.</entry>
+</row>
+<row>
+<entry>Ctrl+(arrow)</entry>
+<entry>Pan more quickly in indicated direction.</entry>
+</row>
+<row>
+<entry>Shift+(arrow)</entry>
+<entry>Mutate image in Z or W directions.</entry>
+</row>
+<row>
+<entry>Shift+Ctrl+(arrow)</entry>
+<entry>Mutate more quickly.</entry>
+</row>
+<row>
+<entry>Ctrl+1</entry>
+<entry>Reset rotation to show the XY (Mandelbrot) plane.</entry>
+</row>
+<row>
+<entry>Ctrl+2</entry>
+<entry>Reset rotation to show the ZW (Julia) plane.</entry>
+</row>
+<row>
+<entry>Ctrl+3</entry>
+<entry>Reset rotation to show the XZ (Oblate) plane.</entry>
+</row>
+<row>
+<entry>Ctrl+4</entry>
+<entry>Reset rotation to show the XW (Parabolic) plane.</entry>
+</row>
+<row>
+<entry>Ctrl+5</entry>
+<entry>Reset rotation to show the YZ (Elliptic) plane.</entry>
+</row>
+<row>
+<entry>Ctrl+6</entry>
+<entry>Reset rotation to show the WY (Rectangular) plane.</entry>
+</row>
+<row>
+<entry>Ctrl+A</entry>
+<entry>Display AutoZoom dialog.</entry>
+</row>
+<row>
+<entry>Ctrl+B</entry>
+<entry>Display formula browser.</entry>
+</row>
+<row>
+<entry>Ctrl+D</entry>
+<entry>Display the Director (animation) window.</entry>
+</row>
+<row>
+<entry>Ctrl+E</entry>
+<entry>Enter (or leave) Explorer mode.</entry>
+</row>
+<row>
+<entry>Escape</entry>
+<entry>Quit full-screen mode.</entry>
+</row>
+<row>
+<entry>Ctrl+F</entry>
+<entry>Show fractal settings controls.</entry>
+</row>
+<row>
+<entry>Home</entry>
+<entry>Reset all numeric parameters to their defaults.</entry>
+</row>
+<row>
+<entry>Ctrl+Home</entry>
+<entry>Reset zoom to default level.</entry>
+</row>
+<row>
+<entry>Ctrl+I</entry>
+<entry>Save the current image to a file.</entry>
+</row>
+<row>
+<entry>Ctrl+Shift+I</entry>
+<entry>Add the current fractal to the render queue.</entry>
+</row>
+<row>
+<entry>Ctrl+R</entry>
+<entry>Create a new random color scheme.</entry>
+</row>
+<row>
+<entry>Ctrl+Shift+S</entry>
+<entry>Save the current parameters into a new file.</entry>
+</row>
+<row>
+<entry>Ctrl+Z</entry>
+<entry>Undo the last operation.</entry>
+</row>
+<row>
+<entry>Ctrl+Shift+Z</entry>
+<entry>Redo an operation after undoing it.</entry>
+</row>
+<row>
+<entry>F1</entry>
+<entry>Show help file contents page.</entry>
+</row>
+<row>
+<entry>F11</entry>
+<entry>Show main window full-screen.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</para>
+</sect2>

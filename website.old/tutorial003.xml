@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<programlisting><phrase><emphasis role="bold">MyFormula {</emphasis></phrase><phrase>
+</phrase><phrase><emphasis>; Third example - add a parameter</emphasis></phrase><phrase>
+</phrase><phrase><emphasis role="bold">init:</emphasis></phrase><phrase>
+</phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase>z</phrase><phrase> </phrase><phrase>=</phrase><phrase> </phrase><phrase>#zwpixel</phrase><phrase>
+</phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase>c</phrase><phrase> </phrase><phrase>=</phrase><phrase> </phrase><phrase>#pixel</phrase><phrase>
+</phrase><phrase><emphasis role="bold">loop:</emphasis></phrase><phrase>
+</phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase>z</phrase><phrase> </phrase><phrase>=</phrase><phrase> </phrase><phrase><emphasis role="bold">@myfunc</emphasis></phrase><phrase>(</phrase><phrase>z</phrase><phrase>*</phrase><phrase>z</phrase><phrase>*</phrase><phrase>c</phrase><phrase>)</phrase><phrase> </phrase><phrase>+</phrase><phrase> </phrase><phrase><emphasis role="bold">@factor</emphasis></phrase><phrase> </phrase><phrase>*</phrase><phrase> </phrase><phrase>z</phrase><phrase> </phrase><phrase>+</phrase><phrase> </phrase><phrase>c</phrase><phrase>*</phrase><phrase>c</phrase><phrase>
+</phrase><phrase><emphasis role="bold">bailout:</emphasis></phrase><phrase>
+</phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase> </phrase><phrase>|</phrase><phrase>z</phrase><phrase>|</phrase><phrase> </phrase><phrase>&lt;</phrase><phrase> </phrase><phrase><literal>4</literal></phrase><phrase>
+</phrase><phrase><emphasis role="bold">default:</emphasis></phrase><phrase>
+</phrase><phrase>param</phrase><phrase> </phrase><phrase>factor</phrase><phrase>
+</phrase><phrase>	</phrase><phrase>default</phrase><phrase> </phrase><phrase>=</phrase><phrase> </phrase><phrase>(</phrase><phrase><literal>1.0</literal></phrase><phrase>,</phrase><phrase><literal>0.5</literal></phrase><phrase>)</phrase><phrase>
+</phrase><phrase>endparam</phrase><phrase>
+</phrase><phrase>}</phrase><phrase>
+</phrase></programlisting>
