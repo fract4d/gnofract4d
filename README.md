@@ -6,9 +6,9 @@ Gnofract 4D is a program for drawing beautiful mathematically-based
 images known as fractals. See the manual for more details.
 
 The most recent version may be obtained from
-http://github.com/edyoung/gnofract4d
+http://github.com/fract4d/gnofract4d
 
-Examples, screenshots etc are at http://edyoung.github.io/gnofract4d
+Examples, screenshots etc are at http://fract4d.github.io/gnofract4d
 
 Basic Installation
 ==================
