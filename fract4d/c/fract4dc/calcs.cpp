@@ -183,6 +183,7 @@ calc_args * parse_calc_args(PyObject *args, PyObject *kwds)
         goto error;
     }
 
+    // todo: code duplicated in loaders.cpp (parse_params function)
     for (int i = 0; i < N_PARAMS; ++i)
     {
         PyObject *elt = PyList_GetItem(pyparams, i);

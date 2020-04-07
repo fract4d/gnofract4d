@@ -47,7 +47,7 @@ public:
     // tell an asynchronous fractal to stop calculating
     virtual void interrupt() = 0;
     // set things up before starting a new calc thread
-    virtual void start(calc_args *params){};
+    virtual void start(calc_args *params){}; // todo: remove this
     // having started it, set the thread id of the calc thread to wait for
     virtual void set_tid(pthread_t tid){};
     // wait for it to finish
@@ -105,7 +105,7 @@ public:
         double dist, int fate, int nIters,
         int r, int g, int b, int a);
     void interrupt();
-    void start(calc_args *params_);
+    void start(calc_args *params_);  // todo: remove this
     void set_tid(pthread_t tid_);
     void wait();
     ~FDSite();
@@ -114,7 +114,7 @@ private:
     int fd;
     pthread_t tid;
     volatile bool interrupted;
-    calc_args *params;
+    calc_args *params;  // todo: remove this
     pthread_mutex_t write_lock;
 };
 
