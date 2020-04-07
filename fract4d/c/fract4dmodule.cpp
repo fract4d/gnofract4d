@@ -27,6 +27,8 @@
 #include "fract4dc/arenas.h"
 #include "fract4dc/utils.h"
 
+#include "fract4dc/controllers.h"
+
 #include "model/enums.h"
 
 struct module_state
@@ -413,7 +415,125 @@ pyarray_set(PyObject *self, PyObject *args)
 }
 
 
+/*
+* new interface
+*/
+
+static PyObject *
+Controller_debug(FractalController *self, PyObject *Py_UNUSED(ignored))
+{
+    return PyUnicode_FromFormat(
+        "result object:%S",
+        self
+    );
+}
+
+static PyObject *
+Controller_set_message_handler(FractalController *self, PyObject *args)
+{
+    PyObject *message_hanlder;
+    if (PyArg_ParseTuple(args, "O", &message_hanlder))
+    {
+        self->set_message_handler(message_hanlder);
+    }
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject *
+Controller_start_calculating(FractalController *self, PyObject *args, PyObject *kwds)
+{
+    static const char *kwlist[] = {
+        "image",
+        "cmap",
+        "params",
+        "antialias",
+        "maxiter",
+        "yflip",
+        "nthreads",
+        "auto_deepen",
+        "periodicity",
+        "render_type",
+        "dirty",
+        "asynchronous",
+        "warp_param",
+        "tolerance",
+        "auto_tolerance",
+        NULL
+    };
+    PyObject *image;
+    PyObject *cmap;
+    PyObject *params;
+    calc_options coptions {};
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "OOO|iiiiiiiiiidi", const_cast<char **>(kwlist),
+        &image,
+        &cmap,
+        &params,
+        &coptions.eaa,
+        &coptions.maxiter,
+        &coptions.yflip,
+        &coptions.nThreads,
+        &coptions.auto_deepen,
+        &coptions.periodicity,
+        &coptions.render_type,
+        &coptions.dirty,
+        &coptions.asynchronous,
+        &coptions.warp_param,
+        &coptions.tolerance,
+        &coptions.auto_tolerance
+        ))
+    {
+        self->start_calculating(image, cmap, params, coptions);
+    }
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyMethodDef Custom_controller_methods[] = {
+    {
+        "debug", (PyCFunction) Controller_debug, METH_NOARGS,
+        "Return the name, combining the first and last name"
+    },
+    {
+        "set_message_handler", (PyCFunction) Controller_set_message_handler, METH_VARARGS,
+        "Return the name, combining the first and last name"
+    },
+    {
+        "start_calculating", (PyCFunction) Controller_start_calculating, METH_VARARGS | METH_KEYWORDS,
+        "Launch calculation task"
+    },
+    {NULL}  /* Sentinel */
+};
+
+static PyTypeObject ControllerType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "fract4dc.Controller",
+    .tp_doc = "Fractal controller",
+    .tp_basicsize = sizeof(FractalController),
+    .tp_itemsize = 0,
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_new = PyType_GenericNew,
+    .tp_methods = Custom_controller_methods,
+};
+
+
+static PyObject *
+create_controller(PyObject *self, PyObject *args)
+{
+    PyTypeObject *type = &ControllerType;
+    FractalController *fc = (FractalController *) type->tp_alloc(type, 0);
+    if (fc != NULL) {
+        controllers::create_controller(self, args, fc);
+    }
+    return (PyObject *) fc;
+    // todo: return NULL if create_controller didnt work well
+}
+
 static PyMethodDef PfMethods[] = {
+    {
+        "create_controller", create_controller, METH_VARARGS, "Create a fractal controller"
+    },
+
     {"pf_load", module_load, METH_VARARGS,
      "Load a new point function shared library"},
     {"pf_create", pf_create, METH_VARARGS,
@@ -543,7 +663,19 @@ static struct PyModuleDef moduledef = {
 extern "C" PyMODINIT_FUNC
 PyInit_fract4dc(void)
 {
+    if (PyType_Ready(&ControllerType) < 0)
+        return NULL;
+
     PyObject *pymod = PyModule_Create(&moduledef);
+    if (pymod == NULL)
+        return NULL;
+
+    Py_INCREF(&ControllerType);
+    if (PyModule_AddObject(pymod, "Controller", (PyObject *) &ControllerType) < 0) {
+        Py_DECREF(&ControllerType);
+        Py_DECREF(pymod);
+        return NULL;
+    }
 
     PyEval_InitThreads();
 
@@ -593,6 +725,8 @@ PyInit_fract4dc(void)
 
     if (!ensure_cmap_loaded(pymod))
     {
+        Py_DECREF(&ControllerType);
+        Py_DECREF(pymod);
         return NULL;
     }
 
