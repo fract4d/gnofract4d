@@ -102,18 +102,21 @@ ensure_cmap_loaded(PyObject *pymod)
  * loaders
  */
 
+// deprecated
 static PyObject *
 module_load(PyObject *self, PyObject *args)
 {
     return loaders::module_load(self, args);
 }
 
+// deprecated
 static PyObject *
 pf_create(PyObject *self, PyObject *args)
 {
     return loaders::pf_create(self, args);
 }
 
+// deprecated
 static PyObject *
 pf_init(PyObject *self, PyObject *args)
 {
@@ -177,11 +180,13 @@ cmap_pylookup_with_flags(PyObject *self, PyObject *args)
 * sites
 */
 
+// deprecated
 static PyObject * pysite_create(PyObject *self, PyObject *args)
 {
     return sites::pysite_create(self, args);
 }
 
+// deprecated
 static PyObject * pyfdsite_create(PyObject *self, PyObject *args)
 {
     return sites::pyfdsite_create(self, args);
@@ -192,12 +197,14 @@ static PyObject * pyfdsite_create(PyObject *self, PyObject *args)
 * calcs
 */
 
+// deprecated
 static PyObject *
 pystop_calc(PyObject *self, PyObject *args)
 {
     return calcs::pystop_calc(self, args);
 }
 
+// deprecated
 static PyObject *
 pycalc(PyObject *self, PyObject *args, PyObject *kwds)
 {
@@ -420,21 +427,24 @@ pyarray_set(PyObject *self, PyObject *args)
 */
 
 static PyObject *
-Controller_debug(FractalController *self, PyObject *Py_UNUSED(ignored))
-{
-    return PyUnicode_FromFormat(
-        "result object:%S",
-        self
-    );
-}
-
-static PyObject *
 Controller_set_message_handler(FractalController *self, PyObject *args)
 {
     PyObject *message_hanlder;
     if (PyArg_ParseTuple(args, "O", &message_hanlder))
     {
         self->set_message_handler(message_hanlder);
+    }
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject *
+Controller_set_fd(FractalController *self, PyObject *args)
+{
+    int fd;
+    if (PyArg_ParseTuple(args, "i", &fd))
+    {
+        self->set_fd(fd);
     }
     Py_INCREF(Py_None);
     return Py_None;
@@ -489,33 +499,37 @@ Controller_start_calculating(FractalController *self, PyObject *args, PyObject *
     return Py_None;
 }
 
+static PyObject *
+Controller_stop_calculating(FractalController *self, PyObject *Py_UNUSED(ignored))
+{
+    self->stop_calculating();
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 static PyMethodDef Custom_controller_methods[] = {
     {
-        "debug", (PyCFunction) Controller_debug, METH_NOARGS,
-        "Return the name, combining the first and last name"
+        "set_message_handler", (PyCFunction) Controller_set_message_handler, METH_VARARGS,
+        "Sets a python object as a the message handler"
     },
     {
-        "set_message_handler", (PyCFunction) Controller_set_message_handler, METH_VARARGS,
-        "Return the name, combining the first and last name"
+        "set_fd", (PyCFunction) Controller_set_fd, METH_VARARGS,
+        "Sets a file descriptior to wirte messages to"
     },
     {
         "start_calculating", (PyCFunction) Controller_start_calculating, METH_VARARGS | METH_KEYWORDS,
         "Launch calculation task"
+    },
+    {
+        "stop_calculating", (PyCFunction) Controller_stop_calculating, METH_NOARGS,
+        "Return the name, combining the first and last name"
     },
     {NULL}  /* Sentinel */
 };
 
 static PyTypeObject ControllerType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "fract4dc.Controller",
-    .tp_doc = "Fractal controller",
-    .tp_basicsize = sizeof(FractalController),
-    .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT,
-    .tp_new = PyType_GenericNew,
-    .tp_methods = Custom_controller_methods,
 };
-
 
 static PyObject *
 create_controller(PyObject *self, PyObject *args)
@@ -663,6 +677,15 @@ static struct PyModuleDef moduledef = {
 extern "C" PyMODINIT_FUNC
 PyInit_fract4dc(void)
 {
+    // had to do this here because some compilers don't support non-trivial designated initializers
+    ControllerType.tp_name = "fract4dc.Controller";
+    ControllerType.tp_doc = "Fractal controller";
+    ControllerType.tp_basicsize = sizeof(FractalController);
+    ControllerType.tp_itemsize = 0;
+    ControllerType.tp_flags = Py_TPFLAGS_DEFAULT;
+    ControllerType.tp_new = PyType_GenericNew;
+    ControllerType.tp_methods = Custom_controller_methods;
+
     if (PyType_Ready(&ControllerType) < 0)
         return NULL;
 

@@ -39,7 +39,9 @@ typedef struct fractal_controller {
     IImage *image;
     PyObject *py_image;
     void set_message_handler(PyObject *message_handler);
+    void set_fd(int fd);
     void start_calculating(PyObject *pyimage, PyObject *pycmap, PyObject *pyparams, calc_options coptions);
+    void stop_calculating();
     ~fractal_controller();
 } FractalController;
 
