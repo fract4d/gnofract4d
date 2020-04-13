@@ -29,20 +29,24 @@ fractal_controller::~fractal_controller() {
     // release others
     delete [] c_pos_params;
     // todo: check this destructor is actually called
+    fprintf(stdout, "controller destroyed");
 }
 
 void fractal_controller::set_message_handler(PyObject *message_handler) {
+    if (site) {
+        delete site;
+    }
     site = new PySite(message_handler);
 }
 
-// todo: implement FDSite version
-// void fractal_controller::set_fd(FILE *fd) {
-//     site = new FDSite(fd);
-// }
+void fractal_controller::set_fd(int fd) {
+    if (site) {
+        delete site;
+    }
+    site = new FDSite(fd);
+}
 
 void fractal_controller::start_calculating(PyObject *pyimage, PyObject *pycmap, PyObject *pyparams, calc_options coptions) {
-    // todo: do we need x_incref over image and cmap
-    // todo: parse params the same way as in create_controller
     c_pos_params = new double[N_PARAMS];
     if (!parse_posparams(pyparams, c_pos_params))
     {
@@ -97,6 +101,12 @@ void fractal_controller::start_calculating(PyObject *pyimage, PyObject *pycmap, 
         Py_BEGIN_ALLOW_THREADS
         calc_fn((void *)this);
         Py_END_ALLOW_THREADS
+    }
+}
+
+void fractal_controller::stop_calculating() {
+    if (site) {
+        site->interrupt();
     }
 }
 
