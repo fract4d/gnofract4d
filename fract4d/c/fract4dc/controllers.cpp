@@ -92,7 +92,7 @@ void fractal_controller::start_calculating(PyObject *pyimage, PyObject *pycmap, 
     if (coptions.asynchronous) {
         site->interrupt();
         site->wait();
-        // site->start(coptions); // todo: this is not needed and IFractalSite->Calc_args relation should be removed
+        site->start();
         pthread_t tid;
         pthread_create(&tid, nullptr, calc_fn, (void *)this);
         assert(tid != 0);
