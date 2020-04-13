@@ -4,6 +4,29 @@
 
 #include "model/stats.h"
 
+IFractalSite::IFractalSite() {
+    tid = (pthread_t)0;
+}
+
+void IFractalSite::set_tid(pthread_t tid_)
+{
+#ifdef DEBUG_THREADS
+    fprintf(stderr, "%p : CA : SET(%p)\n", this, tid_);
+#endif
+    tid = tid_;
+}
+
+void IFractalSite::wait()
+{
+    if (tid != 0)
+    {
+#ifdef DEBUG_THREADS
+        fprintf(stderr, "%p : CA : WAIT(%p)\n", this, tid);
+#endif
+        pthread_join(tid, NULL);
+    }
+}
+
 /*********
 * PySite *
 **********/
@@ -162,15 +185,7 @@ void PySite::interrupt()
     // FIXME? interrupted = true;
 }
 
-void PySite::start(pthread_t tid_)
-{
-    tid = tid_;
-}
-
-void PySite::wait()
-{
-    pthread_join(tid, NULL);
-}
+void PySite::start() {}
 
 PySite::~PySite()
 {
@@ -195,7 +210,7 @@ inline void FDSite::send(msg_type_t type, int size, void *buf)
     pthread_mutex_unlock(&write_lock);
 }
 
-FDSite::FDSite(int fd_) : fd(fd_), tid((pthread_t)0), interrupted(false), params(NULL)
+FDSite::FDSite(int fd_) : fd(fd_), interrupted(false)
 {
 #ifdef DEBUG_CREATION
     fprintf(stderr, "%p : FD : CTOR\n", this);
@@ -276,32 +291,8 @@ void FDSite::interrupt()
     interrupted = true;
 }
 
-void FDSite::start(calc_args *params_)
-{
-#ifdef DEBUG_THREADS
-    fprintf(stderr, "clear interruption\n");
-#endif
+void FDSite::start() {
     interrupted = false;
-    params = params_;
-}
-
-void FDSite::set_tid(pthread_t tid_)
-{
-#ifdef DEBUG_THREADS
-    fprintf(stderr, "%p : CA : SET(%p)\n", this, tid_);
-#endif
-    tid = tid_;
-}
-
-void FDSite::wait()
-{
-    if (tid != 0)
-    {
-#ifdef DEBUG_THREADS
-        fprintf(stderr, "%p : CA : WAIT(%p)\n", this, tid);
-#endif
-        pthread_join(tid, NULL);
-    }
 }
 
 FDSite::~FDSite()

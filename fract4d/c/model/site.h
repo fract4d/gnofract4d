@@ -7,7 +7,6 @@
 
 typedef struct _object PyObject;
 typedef struct s_pixel_stat pixel_stat_t;
-struct calc_args;
 
 // a type which must be implemented by the user of
 // libfract4d. We use this to inform them of the progress
@@ -22,6 +21,7 @@ struct calc_args;
 class IFractalSite
 {
 public:
+    IFractalSite();
     virtual ~IFractalSite(){};
     // the parameters have changed (usually due to auto-deepening)
     virtual void iters_changed(int numiters) = 0;
@@ -46,12 +46,13 @@ public:
     virtual bool is_interrupted() = 0;
     // tell an asynchronous fractal to stop calculating
     virtual void interrupt() = 0;
-    // set things up before starting a new calc thread
-    virtual void start(calc_args *params){}; // todo: remove this
+    virtual void start() = 0;
     // having started it, set the thread id of the calc thread to wait for
-    virtual void set_tid(pthread_t tid){};
+    virtual void set_tid(pthread_t tid);
     // wait for it to finish
-    virtual void wait() = 0;
+    virtual void wait();
+protected:
+    pthread_t tid;
 };
 
 // @TODO: this sub-class should be moved out of this model into the Python interface to keep this module portable
@@ -72,19 +73,12 @@ public:
         double dist, int fate, int nIters,
         int r, int g, int b, int a);
     void interrupt();
-    // remove the warning about overload hidding, since the IFractalSite::start function has different arguments
-    using IFractalSite::start;
-    void start(pthread_t tid_);
-    void wait();
+    void start();
     ~PySite();
-
 private:
     PyObject *site;
     bool has_pixel_changed_method;
-    pthread_t tid;
 };
-
-
 
 // write the callbacks to a file descriptor
 class FDSite : public IFractalSite
@@ -105,16 +99,11 @@ public:
         double dist, int fate, int nIters,
         int r, int g, int b, int a);
     void interrupt();
-    void start(calc_args *params_);  // todo: remove this
-    void set_tid(pthread_t tid_);
-    void wait();
+    void start();
     ~FDSite();
-
 private:
     int fd;
-    pthread_t tid;
     volatile bool interrupted;
-    calc_args *params;  // todo: remove this
     pthread_mutex_t write_lock;
 };
 

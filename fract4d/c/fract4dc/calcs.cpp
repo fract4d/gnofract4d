@@ -48,7 +48,8 @@ namespace calcs {
             cargs->site->interrupt();
             cargs->site->wait();
 
-            cargs->site->start(cargs);
+            // cargs->site->start(cargs);
+            cargs->site->start();
 
             pthread_t tid;
 
