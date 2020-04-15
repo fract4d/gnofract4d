@@ -42,11 +42,12 @@ typedef struct fractal_controller {
     void set_fd(int fd);
     void start_calculating(PyObject *pyimage, PyObject *pycmap, PyObject *pyparams, calc_options coptions);
     void stop_calculating();
+    void free_resources();
     ~fractal_controller();
 } FractalController;
 
 namespace controllers {
-    void create_controller(PyObject *self, PyObject *args, FractalController *fc);
+    bool create_controller(PyObject *self, PyObject *args, FractalController *fc);
 }
 
 #endif

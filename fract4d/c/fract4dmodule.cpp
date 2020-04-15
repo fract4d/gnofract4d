@@ -423,7 +423,7 @@ pyarray_set(PyObject *self, PyObject *args)
 
 
 /*
-* new interface
+* Controller extension type
 */
 
 static PyObject *
@@ -507,10 +507,17 @@ Controller_stop_calculating(FractalController *self, PyObject *Py_UNUSED(ignored
     return Py_None;
 }
 
+static void
+Controller_dealloc(FractalController *self)
+{
+    self->free_resources();
+    Py_TYPE(self)->tp_free((PyObject *) self);
+}
+
 static PyMethodDef Custom_controller_methods[] = {
     {
         "set_message_handler", (PyCFunction) Controller_set_message_handler, METH_VARARGS,
-        "Sets a python object as a the message handler"
+        "Sets a python object as the message handler"
     },
     {
         "set_fd", (PyCFunction) Controller_set_fd, METH_VARARGS,
@@ -522,7 +529,7 @@ static PyMethodDef Custom_controller_methods[] = {
     },
     {
         "stop_calculating", (PyCFunction) Controller_stop_calculating, METH_NOARGS,
-        "Return the name, combining the first and last name"
+        "Gracefully stops calculation task"
     },
     {NULL}  /* Sentinel */
 };
@@ -537,11 +544,17 @@ create_controller(PyObject *self, PyObject *args)
     PyTypeObject *type = &ControllerType;
     FractalController *fc = (FractalController *) type->tp_alloc(type, 0);
     if (fc != NULL) {
-        controllers::create_controller(self, args, fc);
+        if (controllers::create_controller(self, args, fc)) {
+            return (PyObject *) fc;
+        }
+        type->tp_free(fc);
     }
-    return (PyObject *) fc;
-    // todo: return NULL if create_controller didnt work well
+    return NULL;
 }
+
+/*
+* Module definition
+*/
 
 static PyMethodDef PfMethods[] = {
     {
@@ -685,6 +698,7 @@ PyInit_fract4dc(void)
     ControllerType.tp_flags = Py_TPFLAGS_DEFAULT;
     ControllerType.tp_new = PyType_GenericNew;
     ControllerType.tp_methods = Custom_controller_methods;
+    ControllerType.tp_dealloc = (destructor) Controller_dealloc;
 
     if (PyType_Ready(&ControllerType) < 0)
         return NULL;
