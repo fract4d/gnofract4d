@@ -300,5 +300,5 @@ FDSite::~FDSite()
 #ifdef DEBUG_CREATION
     fprintf(stderr, "%p : FD : DTOR\n", this);
 #endif
-    close(fd);
+    // close(fd); // don't close something you didn't open
 }

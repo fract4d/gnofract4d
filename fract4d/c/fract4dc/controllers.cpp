@@ -14,22 +14,23 @@
 #include "fract4dc/colormaps.h"
 #include "fract4dc/images.h"
 
-
-fractal_controller::~fractal_controller() {
+void fractal_controller::free_resources() {
     // free the point function and lib hanlder
     pf_handle->vtbl->kill(pf_handle);
     dlclose(lib_handle);
-    // release allocations
-    if (site) {
-        delete site;
-    }
     // release python objects
     Py_XDECREF(py_cmap);
     Py_XDECREF(py_image);
     // release others
     delete [] c_pos_params;
-    // todo: check this destructor is actually called
-    fprintf(stdout, "controller destroyed");
+    // release allocations
+    if (site) {
+        delete site;
+    }
+}
+
+fractal_controller::~fractal_controller() {
+    free_resources();
 }
 
 void fractal_controller::set_message_handler(PyObject *message_handler) {
@@ -112,7 +113,7 @@ void fractal_controller::stop_calculating() {
 
 namespace controllers
 {
-    void create_controller(PyObject *self, PyObject *args, FractalController *fc)
+    bool create_controller(PyObject *self, PyObject *args, FractalController *fc)
     {
         char *library_file_path;
         PyObject *py_formula_params, *py_location_params;
@@ -123,7 +124,7 @@ namespace controllers
                             &py_location_params))
         {
             PyErr_SetString(PyExc_ValueError, "Wrong parameters");
-            return;
+            return false;
         }
 
         // parse formula and position params
@@ -132,13 +133,13 @@ namespace controllers
         if (!f_params)
         {
             PyErr_SetString(PyExc_ValueError, "bad formula params passed to create_controller");
-            return;
+            return false;
         }
         double pos_params[N_PARAMS];
         if (!parse_posparams(py_location_params, pos_params))
         {
             PyErr_SetString(PyExc_ValueError, "bad arguments passed to create_controller");
-            return;
+            return false;
         }
 
         // load dynamic library
@@ -146,7 +147,7 @@ namespace controllers
         if (NULL == lib_handle)
         {
             PyErr_SetString(PyExc_ValueError, dlerror());
-            return;
+            return false;
         }
 
         // create the point function handler from dynamic library
@@ -156,7 +157,7 @@ namespace controllers
         {
             PyErr_SetString(PyExc_ValueError, dlerror());
             dlclose(lib_handle);
-            return;
+            return false;
         }
         pf_obj *p = pfn();
 
@@ -167,5 +168,7 @@ namespace controllers
         // set the properties of fractal controller
         fc->pf_handle = p;
         fc->lib_handle = lib_handle;
+
+        return true;
     }
 } // namespace controllers
