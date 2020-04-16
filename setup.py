@@ -85,10 +85,11 @@ fract4d_sources = [
     'fract4d/c/fract4dc/functions.cpp',
     'fract4d/c/fract4dc/arenas.cpp',
     'fract4d/c/fract4dc/utils.cpp',
+    'fract4d/c/fract4dc/calcargs.cpp',
+    'fract4d/c/fract4dc/pysite.cpp',
 
     'fract4d/c/fract4dc/controllers.cpp',
 
-    'fract4d/c/model/calcargs.cpp',
     'fract4d/c/model/calcfunc.cpp',
     'fract4d/c/model/fractfunc.cpp',
     'fract4d/c/model/site.cpp',

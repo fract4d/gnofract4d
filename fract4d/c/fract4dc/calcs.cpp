@@ -5,9 +5,9 @@
 
 #include "model/calcfunc.h"
 #include "model/site.h"
-#include "model/calcargs.h"
 #include "model/image.h"
 
+#include "fract4dc/calcargs.h"
 #include "fract4dc/loaders.h"
 #include "fract4dc/colormaps.h"
 #include "fract4dc/images.h"
