@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "stats.h"
 
 s_pixel_stat::s_pixel_stat()

@@ -10,6 +10,7 @@
 #include "model/site.h"
 #include "model/calcfunc.h"
 
+#include "fract4dc/pysite.h"
 #include "fract4dc/loaders.h"
 #include "fract4dc/colormaps.h"
 #include "fract4dc/images.h"

@@ -2,6 +2,7 @@
 #include "sites.h"
 
 #include "fract4dc/common.h"
+#include "fract4dc/pysite.h"
 #include "model/site.h"
 
 namespace sites {

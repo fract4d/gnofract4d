@@ -10,6 +10,7 @@ class IFractalSite;
 class ColorMap;
 class IImage;
 
+// @todo: review C++ standar version support
 struct calc_options
 {
     int

@@ -2,8 +2,6 @@
 #ifndef __STATS_H_INCLUDED__
 #define __STATS_H_INCLUDED__
 
-#include <string.h>
-
 #include "model/enums.h"
 
 typedef struct s_pixel_stat pixel_stat_t;
