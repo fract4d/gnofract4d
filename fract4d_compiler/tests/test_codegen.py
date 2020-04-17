@@ -172,7 +172,7 @@ int main()
         #include <stdio.h>
         #include <math.h>
 
-        #include "colorutils.cpp"
+        #include "model/colorutils.cpp"
         #include "model/image.cpp"
         #include "model/colormap.cpp"
         #include "fract_stdlib.cpp"
