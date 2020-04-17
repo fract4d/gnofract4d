@@ -18,7 +18,7 @@ compiler = fc.Compiler(userConfig)
 # 3rd compile the formula with the inside and outside color transfer algorithms
 formula = compiler.get_formula("gf4d.frm", "Mandelbrot")
 inside_transfer = compiler.get_formula("gf4d.cfrm", "zero", "cf1")
-outside_transfer = compiler.get_formula("gf4d.cfrm", "default", "cf0")
+outside_transfer = compiler.get_formula("gf4d.cfrm", "continuous_potential", "cf0")
 compiled_library = compiler.compile_all(formula, outside_transfer, inside_transfer, [])
 
 # 4th get the formula and transfer algorithms params in a single list

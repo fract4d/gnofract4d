@@ -40,7 +40,7 @@ bool ImageWriter::save()
 
 image_writer::~image_writer()
 {
-    fclose(fp);
+    fclose(fp); // todo: this shouldn't hapen here as this class didn't create it
 }
 
 image_writer::image_writer(FILE *fp_, IImage *image_)
