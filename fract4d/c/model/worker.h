@@ -1,8 +1,7 @@
 #ifndef __WORKER_H_INCLUDED__
 #define __WORKER_H_INCLUDED__
 
-
-#include "vectors.h"
+#include "model/vectors.h"
 #include "model/stats.h"
 
 class fractFunc;

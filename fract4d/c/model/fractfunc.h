@@ -1,8 +1,7 @@
 #ifndef __FRACTFUNC_H_INCLUDED__
 #define __FRACTFUNC_H_INCLUDED__
 
-#include "vectors.h"
-
+#include "model/vectors.h"
 #include "model/worker.h"
 #include "model/site.h"
 #include "model/stats.h"
