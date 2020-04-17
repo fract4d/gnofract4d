@@ -102,8 +102,8 @@ fract4d_sources = [
     'fract4d/c/model/MTFractWorker.cpp',
     'fract4d/c/model/pointfunc.cpp',
     'fract4d/c/model/stats.cpp',
+    'fract4d/c/model/colorutils.cpp',
 
-    'fract4d/c/colorutils.cpp',
     'fract4d/c/fract_stdlib.cpp'
 ]
 
@@ -134,8 +134,7 @@ module_fract4dc = Extension(
 module_cmap = Extension(
     'fract4d.fract4d_stdlib',
     sources=[
-        'fract4d/c/colorutils.cpp',
-
+        'fract4d/c/model/colorutils.cpp',
         'fract4d/c/model/colormap.cpp',
         'fract4d/c/model/image.cpp',
 

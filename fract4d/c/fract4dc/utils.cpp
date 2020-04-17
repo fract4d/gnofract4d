@@ -2,10 +2,11 @@
 #include "utils.h"
 
 #include "fract4dc/common.h"
-#include "model/fractfunc.h"
 
-#include "colorutils.h"
-#include "vectors.h"
+#include "model/fractfunc.h"
+#include "model/colorutils.h"
+#include "model/vectors.h"
+
 #include "fract_stdlib.h"
 #include "pf.h"
 

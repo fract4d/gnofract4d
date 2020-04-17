@@ -9,8 +9,7 @@
 
 #include "model/worker.h"
 #include "model/image.h"
-
-#include "vectors.h"
+#include "model/vectors.h"
 
 namespace workers {
 

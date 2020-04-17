@@ -1,6 +1,6 @@
 #include "colormap.h"
 
-#include "colorutils.h"
+#include "model/colorutils.h"
 
 #include <cassert>
 #include <stdio.h>

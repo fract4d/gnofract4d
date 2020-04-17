@@ -3,9 +3,9 @@
 #include "model/colormap.h"
 #include "model/image.h"
 #include "model/site.h"
+#include "model/threadpool.h"
 
 #include "pf.h"
-#include "threadpool.h"
 
 MTFractWorker::MTFractWorker(
     int n,
