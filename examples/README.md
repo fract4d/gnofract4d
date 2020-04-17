@@ -26,4 +26,4 @@ Execute:
 docker build . -f examples/cpp/Dockerfile -t simple_mandelbrot:1.0.0
 docker run --rm -it simple_mandelbrot:1.0.0
 ```
-Then  you should see a new file `simple_mandelbrot.png` in the project root folder.
+The resulting file is created inside the container. You can can copy using `docker cp` for example.
