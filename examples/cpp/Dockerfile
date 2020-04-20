@@ -8,11 +8,15 @@ RUN apt-get update && \
 
 WORKDIR /src
 
-COPY examples/cpp/CMakeLists.txt examples/cpp/simple_mandelbrot.cpp ./
+ARG main_source
+ARG formula_source
+
+COPY examples/cpp/${main_source} ./main.cpp
+COPY examples/cpp/CMakeLists.txt ./
 COPY fract4d/c/fract_stdlib.cpp fract4d/c/fract_stdlib.h fract4d/c/pf.h  ./
 COPY fract4d/c/model/ ./model
-COPY mandelbrot.c ./
+COPY ${formula_source} ./formula.c
 
 RUN cmake . && make
 
-CMD ["./simple_mandelbrot"]
+CMD ["./example"]
