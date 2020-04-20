@@ -1,5 +1,5 @@
 #!/bin/bash
-pushd ..
+
 rm -rf build
+rm fract4d/*.so
 ./setup.py build
-popd
