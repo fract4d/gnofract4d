@@ -107,7 +107,7 @@ int main() {
     );
 
     // save the image
-    FILE *image_file = fopen("mandelbrot.png", "wb");
+    FILE *image_file = fopen("./output/mandelbrot.png", "wb");
     image_file_t image_file_type = FILE_TYPE_PNG;
     ImageWriter *image_writer = ImageWriter::create(image_file_type, image_file, im);
     if (NULL == image_writer)

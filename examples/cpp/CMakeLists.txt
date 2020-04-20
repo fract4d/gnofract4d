@@ -10,20 +10,20 @@ FILE(GLOB MODELFILES ${PROJECT_SOURCE_DIR}/model/*.cpp)
 
 # MAIN
 
-add_executable(simple_mandelbrot simple_mandelbrot.cpp ${MODELFILES})
+add_executable(example main.cpp ${MODELFILES})
 
 find_package(PNG REQUIRED)
 include_directories(${PNG_INCLUDE_DIR})
-target_link_libraries(simple_mandelbrot ${PNG_LIBRARY})
+target_link_libraries(example ${PNG_LIBRARY})
 
 find_package(JPEG REQUIRED)
 include_directories(${JPEG_INCLUDE_DIR})
-target_link_libraries(simple_mandelbrot ${JPEG_LIBRARY})
+target_link_libraries(example ${JPEG_LIBRARY})
 
 find_package(Threads REQUIRED)
-target_link_libraries(simple_mandelbrot ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(example ${CMAKE_THREAD_LIBS_INIT})
 
-target_link_libraries(simple_mandelbrot ${CMAKE_DL_LIBS})
+target_link_libraries(example ${CMAKE_DL_LIBS})
 
 add_definitions(-DTHREADS -D_REENTRANT -DPNG_ENABLED -DJPG_ENABLED)
 
@@ -41,6 +41,6 @@ set_target_properties(fract_stdlib PROPERTIES SUFFIX ".so")
 # MANDELBROT FORMULA LIB
 
 add_library(mandelbrot SHARED
-    ${PROJECT_SOURCE_DIR}/mandelbrot.c)
+    ${PROJECT_SOURCE_DIR}/formula.c)
 set_target_properties(mandelbrot PROPERTIES SUFFIX ".so")
 set_target_properties(mandelbrot PROPERTIES PREFIX "")

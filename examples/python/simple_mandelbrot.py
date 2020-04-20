@@ -69,6 +69,6 @@ controller.start_calculating(
 
 # 11th the the job is done and save the image
 if (message_handler.status_list[-1] == 0):
-    im.save("simple_mandelbrot.png")
+    im.save("examples/output/mandelbrot.png")
 else:
     print("something went wrong")
