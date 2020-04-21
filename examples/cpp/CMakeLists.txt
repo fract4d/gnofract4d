@@ -38,9 +38,9 @@ add_library(fract_stdlib SHARED
 set_target_properties(fract_stdlib PROPERTIES PREFIX "")
 set_target_properties(fract_stdlib PROPERTIES SUFFIX ".so")
 
-# MANDELBROT FORMULA LIB
+# FORMULA LIB
 
-add_library(mandelbrot SHARED
+add_library(formula SHARED
     ${PROJECT_SOURCE_DIR}/formula.c)
-set_target_properties(mandelbrot PROPERTIES SUFFIX ".so")
-set_target_properties(mandelbrot PROPERTIES PREFIX "")
+set_target_properties(formula PROPERTIES SUFFIX ".so")
+set_target_properties(formula PROPERTIES PREFIX "")
