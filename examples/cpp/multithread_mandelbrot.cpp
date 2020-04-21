@@ -4,6 +4,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <new>
+#include <pthread.h>
+#include <thread>
 
 #include "pf.h"
 
@@ -13,6 +15,61 @@
 #include "model/calcfunc.h"
 #include "model/enums.h"
 #include "model/imagewriter.h"
+
+struct calcargs {
+    pf_obj *pf_handle;
+    double *pos_params;
+    IFractalSite *site;
+    ColorMap *cmap;
+    IImage *im;
+};
+
+void * calculation_thread(void *vdata) {
+    const auto processor_count = std::thread::hardware_concurrency();
+    fprintf(stdout, "Running with %d threads\n", processor_count);
+    calcargs *args = (calcargs *)vdata;
+    calc(
+        args->pos_params,
+        0, // antialiasing
+        100, // max iterations
+        processor_count, // number of threads
+        args->pf_handle,
+        args->cmap,
+        0, // auto deepen
+        0, // auto tolerance
+        1.0E-9, // tolerance
+        0, // y flip
+        1, // periodicity
+        1, // dirty
+        0, // debug flags
+        RENDER_TWO_D, // render type
+        -1, // wrap param
+        args->im,
+        args->site
+    );
+    delete args;
+}
+
+void * watching_thread(void *vdata) {
+    int file = *((int *)vdata);
+    // todo: we're doing unsafe read here, but it's ok for a quick example
+    while(true) {
+        msg_type_t message_type;
+        read(file, &message_type, sizeof(message_type));
+        int message_size;
+        read(file, &message_size, sizeof(message_size));
+        fprintf(stdout, "Message read: message_type: %d, size: %d\n", message_type, message_size);
+        void *message;
+        read(file, message, message_size);
+        if (message_type == STATUS) {
+            calc_state_t status = *((calc_state_t *)message);
+            if (status == GF4D_FRACTAL_DONE) {
+                fprintf(stdout, "Calculation finished\n");
+                break;
+            }
+        }
+    }
+}
 
 int main() {
     // initial setup: load fract4_stdlib globally so the loaded formula has access to it
@@ -67,12 +124,13 @@ int main() {
     pf_handle->vtbl->init(pf_handle, pos_params, params, param_len);
 
     // create the site instance (message handler)
-    int fd = open("./output.txt", O_RDWR | O_CREAT);
-    if (fd == -1) {
-        fprintf(stderr, "Cannot open the file output.txt");
-        return -1;
+    int messages_pipe[2];
+    pipe(messages_pipe);
+    if (pipe (messages_pipe)) {
+        fprintf (stderr, "Pipe failed.\n");
+        return EXIT_FAILURE;
     }
-    IFractalSite *site = new FDSite(fd);
+    IFractalSite *site = new FDSite(messages_pipe[1]);
 
     // create the colormap with 3 colors
     ListColorMap *cmap = new (std::nothrow) ListColorMap();
@@ -85,26 +143,16 @@ int main() {
     IImage *im = new image();
     im->set_resolution(640, 480, -1, -1);
 
+    // Launch a thread to read from fd being written from the calculation thread
+    pthread_t tid_read;
+    pthread_create(&tid_read, nullptr, watching_thread, (void *)&messages_pipe[0]);
     // LAUNCH CALCULATION
-    calc(
-        pos_params,
-        0, // antialiasing
-        100, // max iterations
-        1, // number of threads
-        pf_handle,
-        cmap,
-        0, // auto deepen
-        0, // auto tolerance
-        1.0E-9, // tolerance
-        0, // y flip
-        1, // periodicity
-        1, // dirty
-        0, // debug flags
-        RENDER_TWO_D, // render type
-        -1, // wrap param
-        im,
-        site
-    );
+    calcargs *args = new calcargs {pf_handle, pos_params, site, cmap, im};
+    pthread_t tid;
+    pthread_create(&tid, nullptr, calculation_thread, (void *)args);
+    site->set_tid(tid);
+    site->wait();
+    pthread_join(tid_read, NULL);
 
     // save the image
     FILE *image_file = fopen("./output/mandelbrot.png", "wb");
@@ -124,7 +172,10 @@ int main() {
     delete im;
     delete cmap;
     delete site;
-    close(fd);
+    // close(fd);
+    close(messages_pipe[0]);
+    close(messages_pipe[1]);
+
     pf_handle->vtbl->kill(pf_handle);
     dlclose(lib_handle);
     dlclose(fract_stdlib_handle);
