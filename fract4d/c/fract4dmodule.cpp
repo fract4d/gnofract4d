@@ -429,10 +429,10 @@ pyarray_set(PyObject *self, PyObject *args)
 static PyObject *
 Controller_set_message_handler(FractalController *self, PyObject *args)
 {
-    PyObject *message_hanlder;
-    if (PyArg_ParseTuple(args, "O", &message_hanlder))
+    PyObject *message_handler;
+    if (PyArg_ParseTuple(args, "O", &message_handler))
     {
-        self->set_message_handler(message_hanlder);
+        self->set_message_handler(message_handler);
     }
     Py_INCREF(Py_None);
     return Py_None;
