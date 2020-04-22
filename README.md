@@ -76,3 +76,18 @@ Optionally, install tox and test with all supported Python versions by running:
 tox
 
 On MacOS you might find an error regarding the number of opened files, you can increase the system limit with `ulimit -Sn 10000`
+
+Linting
+=======
+
+Pylint is being used to detect code that doesn't follow the [PEP8 style](https://www.python.org/dev/peps/pep-0008/) guide and potentially erroneus code in Python.
+You can run it in two ways:
+ - Directly (firstly you should install pylint throw pip3):
+```
+$ sudo pip3 install pylint
+$ ./bin/pylint.sh
+```
+ - Using docker (same enviorment than pipeline):
+```
+$ ./docker/bin/run_lint.sh
+```
