@@ -31,3 +31,11 @@ Execute:
 examples/cpp/multithread_mandelbrot.sh
 ```
 Then you should see a new file under `examples/output`.
+
+### Creating a simple mandelbrot using no high level model entities (fractfunc, workers, pointfunc)
+In this example we use the compiled formula directly to calculate the fractal with no postprocessing (antialiasing) or improvements (ie. autodeepen)
+Execute:
+```
+examples/cpp/raw_mandelbrot.sh
+```
+Then you should see a new file under `examples/output`.
