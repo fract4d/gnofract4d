@@ -74,21 +74,21 @@ void * watching_thread(void *vdata) {
 int main() {
     // initial setup: load fract4_stdlib globally so the loaded formula has access to it
     void *fract_stdlib_handle = dlopen("./fract_stdlib.so", RTLD_GLOBAL | RTLD_NOW);
-    if (NULL == fract_stdlib_handle) {
+    if (!fract_stdlib_handle) {
         fprintf(stderr, "Error loading libfract_stdlib: %s", dlerror());
         return -1;
     }
 
     // load formula lib
     void *lib_handle = dlopen("./formula.so", RTLD_NOW);
-    if (NULL == lib_handle)
+    if (!lib_handle)
     {
         fprintf(stderr, "Error loading formula: %s", dlerror());
         return -1;
     }
     pf_obj *(*pfn)(void);
     pfn = (pf_obj * (*)(void)) dlsym(lib_handle, "pf_new");
-    if (NULL == pfn)
+    if (!pfn)
     {
         fprintf(stderr, "Error loading formula symbols: %s", dlerror());
         dlclose(lib_handle);

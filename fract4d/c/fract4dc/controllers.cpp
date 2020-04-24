@@ -145,7 +145,7 @@ namespace controllers
 
         // load dynamic library
         void *lib_handle = dlopen(library_file_path, RTLD_NOW);
-        if (NULL == lib_handle)
+        if (!lib_handle)
         {
             PyErr_SetString(PyExc_ValueError, dlerror());
             return false;
@@ -154,7 +154,7 @@ namespace controllers
         // create the point function handler from dynamic library
         pf_obj *(*pfn)(void);
         pfn = (pf_obj * (*)(void)) dlsym(lib_handle, "pf_new");
-        if (NULL == pfn)
+        if (!pfn)
         {
             PyErr_SetString(PyExc_ValueError, dlerror());
             dlclose(lib_handle);
