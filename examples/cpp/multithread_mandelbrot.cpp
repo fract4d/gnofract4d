@@ -17,6 +17,14 @@
 #include "model/enums.h"
 #include "model/imagewriter.h"
 
+#define MAX_ITERATIONS 100
+
+static double pos_params[N_PARAMS] {
+    0.0, 0.0, 0.0, 0.0, // X Y Z W
+    4.0, // Size or zoom
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0 // XY XZ XW YZ YW ZW planes (4D stuff)
+};
+
 struct calcargs {
     pf_obj *pf_handle;
     double *pos_params;
@@ -32,7 +40,7 @@ void * calculation_thread(void *vdata) {
     calc(
         args->pos_params,
         0, // antialiasing
-        100, // max iterations
+        MAX_ITERATIONS,
         processor_count, // number of threads
         args->pf_handle,
         args->cmap,
@@ -114,12 +122,6 @@ int main() {
     params[5].doubleval = 0.0;
     params[6].t = FLOAT;
     params[6].doubleval = 1.0;
-    // position params
-    double pos_params[N_PARAMS] {
-        0.0, 0.0, 0.0, 0.0, // X Y Z W
-        4.0, // Size or zoom
-        0.0, 0.0, 0.0, 0.0, 0.0, 0.0 // XY XZ XW YZ YW ZW planes (4D stuff)
-    };
 
     // initialize the point function with the params
     pf_handle->vtbl->init(pf_handle, pos_params, params, param_len);
