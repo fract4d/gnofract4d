@@ -38,7 +38,7 @@ bool ImageReader::read()
 
 image_reader::~image_reader()
 {
-    fclose(fp); // todo: this shouldn't hapen here as this class didn't create it
+    std::fclose(fp); // todo: this shouldn't hapen here as this class didn't create it
 }
 
 image_reader::image_reader(FILE *fp_, IImage *image_)

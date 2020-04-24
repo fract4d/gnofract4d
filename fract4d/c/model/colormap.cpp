@@ -3,8 +3,8 @@
 #include "model/colorutils.h"
 
 #include <cassert>
-#include <stdio.h>
-#include <math.h>
+#include <cstdio>
+#include <cmath>
 #include <new>
 
 #define EPSILON 1.0e-10
@@ -272,31 +272,31 @@ static double calc_curved_factor(double middle, double pos)
 {
     if (middle < EPSILON)
         middle = EPSILON;
-    return pow(pos, log(0.5) / log(middle));
+    return std::pow(pos, std::log(0.5) / std::log(middle));
 }
 
 static double calc_sine_factor(double middle, double pos)
 {
     pos = calc_linear_factor(middle, pos);
-    return (sin((-M_PI / 2.0) + M_PI * pos) + 1.0) / 2.0;
+    return (std::sin((-M_PI / 2.0) + M_PI * pos) + 1.0) / 2.0;
 }
 
 static double calc_sphere_increasing_factor(double middle, double pos)
 {
     pos = calc_linear_factor(middle, pos) - 1.0;
-    return sqrt(1.0 - pos * pos);
+    return std::sqrt(1.0 - pos * pos);
 }
 
 static double calc_sphere_decreasing_factor(double middle, double pos)
 {
     pos = calc_linear_factor(middle, pos);
-    return 1.0 - sqrt(1.0 - pos * pos);
+    return 1.0 - std::sqrt(1.0 - pos * pos);
 }
 
 rgba_t GradientColorMap::lookup(double input_index) const
 {
     assert(canary == 0xfeeefeee);
-    double index = input_index == 1.0 ? 1.0 : fmod(input_index, 1.0);
+    double index = input_index == 1.0 ? 1.0 : std::fmod(input_index, 1.0);
     if (index < 0.0 || index > 1.0 || index != index)
     {
         // must be infinite or NaN

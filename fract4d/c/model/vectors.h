@@ -4,7 +4,7 @@
 #ifndef _VECTORS_H_
 #define _VECTORS_H_
 
-#include <math.h>
+#include <cmath>
 // forward declarations
 template <class T>
 class vec4;
@@ -391,7 +391,7 @@ mat4<T> perspective3D(const T &d);
 template <class T>
 mat4<T> rotXY(const T &theta, T one = 1.0, T zero = 0.0)
 {
-	T c = cos((T)theta), s = sin((T)theta);
+	T c = std::cos((T)theta), s = std::sin((T)theta);
 	return mat4<T>(
 		vec4<T>(c, -s, zero, zero),
 		vec4<T>(s, c, zero, zero),
@@ -402,7 +402,7 @@ mat4<T> rotXY(const T &theta, T one = 1.0, T zero = 0.0)
 template <class T>
 mat4<T> rotXZ(const T &theta, T one = 1.0, T zero = 0.0)
 {
-	T c = cos(theta), s = sin(theta);
+	T c = std::cos(theta), s = std::sin(theta);
 	return mat4<T>(
 		vec4<T>(c, zero, s, zero),
 		vec4<T>(zero, one, zero, zero),
@@ -413,7 +413,7 @@ mat4<T> rotXZ(const T &theta, T one = 1.0, T zero = 0.0)
 template <class T>
 mat4<T> rotXW(const T &theta, T one = 1.0, T zero = 0.0)
 {
-	T c = cos(theta), s = sin(theta);
+	T c = std::cos(theta), s = std::sin(theta);
 	return mat4<T>(
 		vec4<T>(c, zero, zero, s),
 		vec4<T>(zero, one, zero, zero),
@@ -424,7 +424,7 @@ mat4<T> rotXW(const T &theta, T one = 1.0, T zero = 0.0)
 template <class T>
 mat4<T> rotYZ(const T &theta, T one = 1.0, T zero = 0.0)
 {
-	T c = cos(theta), s = sin(theta);
+	T c = std::cos(theta), s = std::sin(theta);
 	return mat4<T>(
 		vec4<T>(one, zero, zero, zero),
 		vec4<T>(zero, c, -s, zero),
@@ -435,7 +435,7 @@ mat4<T> rotYZ(const T &theta, T one = 1.0, T zero = 0.0)
 template <class T>
 mat4<T> rotYW(const T &theta, T one = 1.0, T zero = 0.0)
 {
-	T c = cos(theta), s = sin(theta);
+	T c = cos(theta), s = std::sin(theta);
 	return mat4<T>(
 		vec4<T>(one, zero, zero, zero),
 		vec4<T>(zero, c, zero, s),
@@ -446,7 +446,7 @@ mat4<T> rotYW(const T &theta, T one = 1.0, T zero = 0.0)
 template <class T>
 mat4<T> rotZW(const T &theta, T one = 1.0, T zero = 0.0)
 {
-	T c = cos(theta), s = sin(theta);
+	T c = std::cos(theta), s = std::sin(theta);
 	return mat4<T>(
 		vec4<T>(one, zero, zero, zero),
 		vec4<T>(zero, one, zero, zero),

@@ -1,4 +1,4 @@
-#include <string.h>
+#include <cstring>
 
 #include "stats.h"
 
@@ -9,7 +9,7 @@ s_pixel_stat::s_pixel_stat()
 
 void s_pixel_stat::reset()
 {
-    memset(&s, 0, sizeof(s));
+    std::memset(&s, 0, sizeof(s));
 }
 
 void s_pixel_stat::add(const pixel_stat_t &other)

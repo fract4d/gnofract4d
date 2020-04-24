@@ -1,5 +1,5 @@
-#include "math.h"
-#include "stdlib.h"
+#include <cmath>
+#include <cstdlib>
 #include <new>
 #include <algorithm>
 
@@ -11,7 +11,7 @@
 // Code adapted from Fractint.
 // I'm a bit suspicious of the RNG here, but compatibility is God.
 
-#define rand15() (rand() & 0x7FFF)
+#define rand15() (std::rand() & 0x7FFF)
 
 static unsigned long RandNum; // FIXME: not thread-safe
 

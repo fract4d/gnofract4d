@@ -3,7 +3,7 @@
 #endif
 #include <unistd.h>
 #include <dlfcn.h>
-#include <stdio.h>
+#include <cstdio>
 
 #include "pointfunc.h"
 
