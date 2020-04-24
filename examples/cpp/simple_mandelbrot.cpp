@@ -15,6 +15,14 @@
 #include "model/enums.h"
 #include "model/imagewriter.h"
 
+#define MAX_ITERATIONS 100
+
+static double pos_params[N_PARAMS] {
+    0.0, 0.0, 0.0, 0.0, // X Y Z W
+    4.0, // Size or zoom
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0 // XY XZ XW YZ YW ZW planes (4D stuff)
+};
+
 int main() {
     // initial setup: load fract4_stdlib globally so the loaded formula has access to it
     void *fract_stdlib_handle = dlopen("./fract_stdlib.so", RTLD_GLOBAL | RTLD_NOW);
@@ -57,12 +65,6 @@ int main() {
     params[5].doubleval = 0.0;
     params[6].t = FLOAT;
     params[6].doubleval = 1.0;
-    // position params
-    double pos_params[N_PARAMS] {
-        0.0, 0.0, 0.0, 0.0, // X Y Z W
-        4.0, // Size or zoom
-        0.0, 0.0, 0.0, 0.0, 0.0, 0.0 // XY XZ XW YZ YW ZW planes (4D stuff)
-    };
 
     // initialize the point function with the params
     pf_handle->vtbl->init(pf_handle, pos_params, params, param_len);
@@ -90,7 +92,7 @@ int main() {
     calc(
         pos_params,
         0, // antialiasing
-        100, // max iterations
+        MAX_ITERATIONS,
         1, // number of threads
         pf_handle,
         cmap.get(),

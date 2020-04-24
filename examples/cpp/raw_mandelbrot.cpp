@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <new>
 #include <memory>
+#include <algorithm>
 
 #include "pf.h"
 
@@ -16,6 +17,13 @@
 #include "model/fractfunc.h"
 #include "model/vectors.h"
 
+#define MAX_ITERATIONS 100
+
+static double pos_params[N_PARAMS] {
+    0.0, 0.0, 0.0, 0.0, // X Y Z W
+    4.0, // Size or zoom
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0 // XY XZ XW YZ YW ZW planes (4D stuff)
+};
 
 int main() {
     // initial setup: load fract4_stdlib globally so the loaded formula has access to it
@@ -59,12 +67,6 @@ int main() {
     params[5].doubleval = 0.0;
     params[6].t = FLOAT;
     params[6].doubleval = 1.0;
-    // position params
-    double pos_params[N_PARAMS] {
-        0.0, 0.0, 0.0, 0.0, // X Y Z W
-        4.0, // Size or zoom
-        0.0, 0.0, 0.0, 0.0, 0.0, 0.0 // XY XZ XW YZ YW ZW planes (4D stuff)
-    };
 
     // initialize the point function with the params
     pf_handle->vtbl->init(pf_handle, pos_params, params, param_len);
@@ -94,8 +96,8 @@ int main() {
     dvec4 topleft = center - deltax * im->totalXres() / 2.0 - deltay * im->totalYres() / 2.0;
     topleft += delta_aa_x + delta_aa_y;
 
-    int w = im->Xres();
-    int h = im->Yres();
+    const auto w = im->Xres();
+    const auto h = im->Yres();
     // we put these variables out of the loop scope to use its previous value
     int iters_taken = 0;
     int min_period_iters = 0;
@@ -114,20 +116,20 @@ int main() {
             if (iters_taken == -1) { // we got inside the last time so we'll probably do it again
                 min_period_iters = 0;
             } else {
-                min_period_iters += 10;
+                min_period_iters = std::min(min_period_iters + 10, MAX_ITERATIONS);
             }
             pf_handle->vtbl->calc(
                 pf_handle,
                 pos.n,
-                100, // max iters
+                MAX_ITERATIONS,
                 -1, // wrap param
-                min_period_iters, // min period iters (half the max)
+                min_period_iters,
                 1.0E-9, // period tolerance
                 x, y, 0, // x, y and aa: these values are not needed in the formula but required as arguments for debugging purposes
                 &iters_taken, &fate, &dist, &solid,
                 &direct_color, &colors[0]);
             // process the formula output and get the value from colormap
-            rgba_t color;
+            rgba_t color{};
             if (fate & FATE_INSIDE) {
                 iters_taken = -1;
                 inside = 1;
