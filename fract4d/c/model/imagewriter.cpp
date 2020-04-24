@@ -40,7 +40,7 @@ bool ImageWriter::save()
 
 image_writer::~image_writer()
 {
-    fclose(fp); // todo: this shouldn't hapen here as this class didn't create it
+    std::fclose(fp); // todo: this shouldn't hapen here as this class didn't create it
 }
 
 image_writer::image_writer(FILE *fp_, IImage *image_)
@@ -85,9 +85,9 @@ bool tga_writer::save_tile()
         for (int x = 0; x < im->Xres(); x++)
         {
             rgba_t pixel = im->get(x, y);
-            fputc(pixel.b, fp);
-            fputc(pixel.g, fp);
-            fputc(pixel.r, fp);
+            std::fputc(pixel.b, fp);
+            std::fputc(pixel.g, fp);
+            std::fputc(pixel.r, fp);
         }
     }
     return true;

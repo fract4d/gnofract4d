@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/time.h>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
 #include <cassert>
 
 #include "fractfunc.h"
@@ -253,10 +253,10 @@ void fractFunc::clear_in_fates()
 
 void fractFunc::draw_all()
 {
-    struct timeval startTime, endTime;
+    std::time_t startTime, endTime;
     if (debug_flags & DEBUG_TIMING)
     {
-        gettimeofday(&startTime, NULL);
+        std::time(&startTime);
     }
     status_changed(GF4D_FRACTAL_CALCULATING);
 
@@ -323,9 +323,8 @@ void fractFunc::draw_all()
 
     if (debug_flags & DEBUG_TIMING)
     {
-        gettimeofday(&endTime, NULL);
-
-        double diff = gettimediff(startTime, endTime);
+        std::time(&endTime);
+        double diff = std::difftime(startTime, endTime);
         printf("time:%g\n", diff);
     }
 }
@@ -340,9 +339,9 @@ void fractFunc::draw(
     reset_counts();
 
     // init RNG based on time before generating image
-    time_t now;
-    time(&now);
-    srand((unsigned int)now);
+    std::time_t now;
+    std::time(&now);
+    std::srand((unsigned int)now);
 
     int y;
     int w = im->Xres();

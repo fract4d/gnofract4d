@@ -1,7 +1,7 @@
 #include <cassert>
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cmath>
 #include <new>
 
 #include "image.h"
@@ -281,7 +281,7 @@ void image::clear()
 double absfmod(double x, double range)
 {
     /* return the modulo when x/range, wrap when x < 0 */
-    x = fmod(x, range);
+    x = std::fmod(x, range);
     if (x < 0)
     {
         x += range;
@@ -332,7 +332,7 @@ void blend(
 
 void image_lookup(void *vim, double x, double y, double *pr, double *pg, double *pb)
 {
-    if (NULL == vim || !finite(x) || !finite(y)) // check for no image or NaN
+    if (!vim || !std::isfinite(x) || !std::isfinite(y)) // check for no image or NaN
     {
         *pr = 0.0;
         *pb = 0.0;
@@ -351,14 +351,14 @@ void image_lookup(void *vim, double x, double y, double *pr, double *pg, double 
     double ypos = absfmod(y, aspect) * h;
     //printf("aspect, xpos, ypos %g %g %g\n",aspect,xpos,ypos);
     /* addresses of 4 pixels bracketing this point */
-    int lowx = int(floor(xpos - 0.5));
+    int lowx = int(std::floor(xpos - 0.5));
     if (lowx < 0)
         lowx += w;
     int highx = (lowx + 1);
     if (highx >= w)
         highx -= w;
 
-    int lowy = int(floor(ypos - 0.5));
+    int lowy = int(std::floor(ypos - 0.5));
     if (lowy < 0)
         lowy += h;
     int highy = (lowy + 1);

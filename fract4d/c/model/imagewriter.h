@@ -1,7 +1,7 @@
 #ifndef __IMAGEWRITER_H_INCLUDED__
 #define __IMAGEWRITER_H_INCLUDED__
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "model/enums.h"
 

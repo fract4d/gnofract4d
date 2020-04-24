@@ -1,6 +1,6 @@
-#include <stdlib.h>
+#include <cstdlib>
 #include <dlfcn.h>
-#include <stdio.h>
+#include <cstdio>
 #include <fcntl.h>
 #include <unistd.h>
 #include <new>
@@ -41,7 +41,7 @@ int main() {
 
     // formula params: [0, 4.0, 0.0, 1.0, 4.0, 0.0, 1.0]
     int param_len = 7;
-    struct s_param *params = (struct s_param *)malloc(param_len * sizeof(struct s_param));
+    struct s_param *params = (struct s_param *)std::malloc(param_len * sizeof(struct s_param));
     params[0].t = INT;
     params[0].intval = 0;
     params[1].t = FLOAT;
@@ -128,6 +128,6 @@ int main() {
     pf_handle->vtbl->kill(pf_handle);
     dlclose(lib_handle);
     dlclose(fract_stdlib_handle);
-    free(params);
+    std::free(params);
     return 0;
 }

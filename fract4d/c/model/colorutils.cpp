@@ -1,8 +1,8 @@
+#include <cmath>
+
 #include "colorutils.h"
 #include "model/colormap.h"
 #include "model/color.h"
-
-#include <math.h>
 
 /* Convert from rgb colorspace to hsv and hsl
    all components in [0,1] except hue in [0,6]
@@ -146,7 +146,7 @@ void hsv_to_rgb(
         *r = *g = *b = v;
         return;
     }
-    h = fmod(h, 6.0);
+    h = std::fmod(h, 6.0);
     if (h < 0)
     {
         h += 6.0;

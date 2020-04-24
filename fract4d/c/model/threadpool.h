@@ -11,9 +11,9 @@
 #define _THREADPOOL_H_
 
 #include "pthread.h"
-#include <signal.h>
+#include <csignal>
 #include <cassert>
-#include <limits.h>
+#include <climits>
 #include <iostream>
 
 /* one unit of work */
