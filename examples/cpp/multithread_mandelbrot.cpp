@@ -6,6 +6,7 @@
 #include <new>
 #include <pthread.h>
 #include <thread>
+#include <memory>
 
 #include "pf.h"
 
@@ -130,24 +131,24 @@ int main() {
         fprintf (stderr, "Pipe failed.\n");
         return EXIT_FAILURE;
     }
-    IFractalSite *site = new FDSite(messages_pipe[1]);
+    auto site{std::make_unique<FDSite>(messages_pipe[1])};
 
     // create the colormap with 3 colors
-    ListColorMap *cmap = new (std::nothrow) ListColorMap();
+    std::unique_ptr<ListColorMap> cmap{new (std::nothrow) ListColorMap{}};
     cmap->init(3);
     cmap->set(0, 0.0, 0, 0, 0, 255);
     cmap->set(1, 0.004, 255, 255, 255, 255);
     cmap->set(2, 1.0, 255, 255, 255, 255);
 
     // create the image (logic representation)
-    IImage *im = new image();
+    auto im{std::make_unique<image>()};
     im->set_resolution(640, 480, -1, -1);
 
     // Launch a thread to read from fd being written from the calculation thread
     pthread_t tid_read;
     pthread_create(&tid_read, nullptr, watching_thread, (void *)&messages_pipe[0]);
     // LAUNCH CALCULATION
-    calcargs *args = new calcargs {pf_handle, pos_params, site, cmap, im};
+    calcargs *args = new calcargs {pf_handle, pos_params, site.get(), cmap.get(), im.get()};
     pthread_t tid;
     pthread_create(&tid, nullptr, calculation_thread, (void *)args);
     site->set_tid(tid);
@@ -157,7 +158,7 @@ int main() {
     // save the image
     FILE *image_file = fopen("./output/mandelbrot.png", "wb");
     image_file_t image_file_type = FILE_TYPE_PNG;
-    ImageWriter *image_writer = ImageWriter::create(image_file_type, image_file, im);
+    std::unique_ptr<ImageWriter> image_writer{ImageWriter::create(image_file_type, image_file, im.get())};
     if (NULL == image_writer)
     {
         fprintf(stderr, "Cannot save the image");
@@ -168,10 +169,6 @@ int main() {
     image_writer->save_footer();
 
     // free resources
-    delete image_writer;
-    delete im;
-    delete cmap;
-    delete site;
     close(messages_pipe[0]);
     close(messages_pipe[1]);
     pf_handle->vtbl->kill(pf_handle);

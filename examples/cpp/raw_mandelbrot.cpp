@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <new>
+#include <memory>
 
 #include "pf.h"
 
@@ -69,14 +70,14 @@ int main() {
     pf_handle->vtbl->init(pf_handle, pos_params, params, param_len);
 
     // create the colormap with 3 colors
-    ListColorMap *cmap = new (std::nothrow) ListColorMap();
+    std::unique_ptr<ListColorMap> cmap{new (std::nothrow) ListColorMap{}};
     cmap->init(3);
     cmap->set(0, 0.0, 0, 0, 0, 255);
     cmap->set(1, 0.004, 255, 255, 255, 255);
     cmap->set(2, 1.0, 255, 255, 255, 255);
 
     // create the image (logic representation)
-    IImage *im = new image();
+    auto im{std::make_unique<image>()};
     im->set_resolution(640, 480, -1, -1);
 
     // calculate the 4D vectors: topleft and deltas (x, y)
@@ -153,7 +154,7 @@ int main() {
     // save the image
     FILE *image_file = fopen("./output/mandelbrot.png", "wb");
     image_file_t image_file_type = FILE_TYPE_PNG;
-    ImageWriter *image_writer = ImageWriter::create(image_file_type, image_file, im);
+    std::unique_ptr<ImageWriter> image_writer{ImageWriter::create(image_file_type, image_file, im.get())};
     if (NULL == image_writer)
     {
         fprintf(stderr, "Cannot save the image");
@@ -164,9 +165,6 @@ int main() {
     image_writer->save_footer();
 
     // free resources
-    delete image_writer;
-    delete im;
-    delete cmap;
     pf_handle->vtbl->kill(pf_handle);
     dlclose(lib_handle);
     dlclose(fract_stdlib_handle);
