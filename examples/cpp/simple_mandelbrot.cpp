@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <new>
+#include <memory>
 
 #include "pf.h"
 
@@ -67,22 +68,22 @@ int main() {
     pf_handle->vtbl->init(pf_handle, pos_params, params, param_len);
 
     // create the site instance (message handler)
-    int fd = open("./output.txt", O_RDWR | O_CREAT);
+    int fd = open("./output/messages.txt", O_RDWR | O_CREAT);
     if (fd == -1) {
         fprintf(stderr, "Cannot open the file output.txt");
         return -1;
     }
-    IFractalSite *site = new FDSite(fd);
+    auto site{std::make_unique<FDSite>(fd)};
 
     // create the colormap with 3 colors
-    ListColorMap *cmap = new (std::nothrow) ListColorMap();
+    std::unique_ptr<ListColorMap> cmap{new (std::nothrow) ListColorMap{}};
     cmap->init(3);
     cmap->set(0, 0.0, 0, 0, 0, 255);
     cmap->set(1, 0.004, 255, 255, 255, 255);
     cmap->set(2, 1.0, 255, 255, 255, 255);
 
     // create the image (logic representation)
-    IImage *im = new image();
+    auto im{std::make_unique<image>()};
     im->set_resolution(640, 480, -1, -1);
 
     // LAUNCH CALCULATION
@@ -92,7 +93,7 @@ int main() {
         100, // max iterations
         1, // number of threads
         pf_handle,
-        cmap,
+        cmap.get(),
         0, // auto deepen
         0, // auto tolerance
         1.0E-9, // tolerance
@@ -102,14 +103,14 @@ int main() {
         0, // debug flags
         RENDER_TWO_D, // render type
         -1, // wrap param
-        im,
-        site
+        im.get(),
+        site.get()
     );
 
     // save the image
     FILE *image_file = fopen("./output/mandelbrot.png", "wb");
     image_file_t image_file_type = FILE_TYPE_PNG;
-    ImageWriter *image_writer = ImageWriter::create(image_file_type, image_file, im);
+    std::unique_ptr<ImageWriter> image_writer{ImageWriter::create(image_file_type, image_file, im.get())};
     if (NULL == image_writer)
     {
         fprintf(stderr, "Cannot save the image");
@@ -120,10 +121,6 @@ int main() {
     image_writer->save_footer();
 
     // free resources
-    delete image_writer;
-    delete im;
-    delete cmap;
-    delete site;
     close(fd);
     pf_handle->vtbl->kill(pf_handle);
     dlclose(lib_handle);
