@@ -17,7 +17,7 @@
 
 #define MAX_ITERATIONS 100
 
-static double pos_params[N_PARAMS] {
+constexpr double pos_params[N_PARAMS] {
     0.0, 0.0, 0.0, 0.0, // X Y Z W
     4.0, // Size or zoom
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0 // XY XZ XW YZ YW ZW planes (4D stuff)
@@ -50,7 +50,7 @@ int main() {
 
     // formula params: [0, 4.0, 0.0, 1.0, 4.0, 0.0, 1.0]
     int param_len = 7;
-    struct s_param *params = (struct s_param *)std::malloc(param_len * sizeof(struct s_param));
+    auto params{std::make_unique<s_param []>(param_len)};
     params[0].t = INT;
     params[0].intval = 0;
     params[1].t = FLOAT;
@@ -67,12 +67,12 @@ int main() {
     params[6].doubleval = 1.0;
 
     // initialize the point function with the params
-    pf_handle->vtbl->init(pf_handle, pos_params, params, param_len);
+    pf_handle->vtbl->init(pf_handle, const_cast<double *>(pos_params), params.get(), param_len);
 
     // create the site instance (message handler)
-    int fd = open("./output/messages.txt", O_RDWR | O_CREAT);
+    int fd = open("./output.txt", O_RDWR | O_CREAT);
     if (fd == -1) {
-        fprintf(stderr, "Cannot open the file output.txt");
+        fprintf(stderr, "Cannot open the output file");
         return -1;
     }
     auto site{std::make_unique<FDSite>(fd)};
@@ -90,7 +90,7 @@ int main() {
 
     // LAUNCH CALCULATION
     calc(
-        pos_params,
+        const_cast<double *>(pos_params),
         0, // antialiasing
         MAX_ITERATIONS,
         1, // number of threads
@@ -113,20 +113,16 @@ int main() {
     FILE *image_file = fopen("./output/mandelbrot.png", "wb");
     image_file_t image_file_type = FILE_TYPE_PNG;
     std::unique_ptr<ImageWriter> image_writer{ImageWriter::create(image_file_type, image_file, im.get())};
-    if (NULL == image_writer)
+    if (!image_writer || !image_writer->save())
     {
         fprintf(stderr, "Cannot save the image");
         return -1;
     }
-    image_writer->save_header();
-    image_writer->save_tile();
-    image_writer->save_footer();
 
     // free resources
     close(fd);
     pf_handle->vtbl->kill(pf_handle);
     dlclose(lib_handle);
     dlclose(fract_stdlib_handle);
-    std::free(params);
     return 0;
 }
