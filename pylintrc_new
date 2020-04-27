@@ -1,0 +1,14 @@
+[MASTER]
+extension-pkg-whitelist=fract4d.fract4dc
+
+[MESSAGES CONTROL]
+disable=missing-docstring
+
+[REPORTS]
+score=no
+
+[VARIABLES]
+additional-builtins=_
+
+[TYPECHECK]
+ignored-modules=gi,cairo,PIL
