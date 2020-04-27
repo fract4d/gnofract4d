@@ -262,6 +262,7 @@ class ClassSetup(TestBase):
 
     @classmethod
     def tearDownClass(cls):
+        del cls.g_comp
         cls.tmpdir.cleanup()
 
 
