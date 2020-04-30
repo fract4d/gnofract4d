@@ -8,6 +8,8 @@ include_directories(${PROJECT_SOURCE_DIR}/model)
 
 FILE(GLOB MODELFILES ${PROJECT_SOURCE_DIR}/model/*.cpp)
 
+set(CMAKE_CXX_FLAGS "-ffast-math")
+
 # MAIN
 
 add_executable(example main.cpp ${MODELFILES})
