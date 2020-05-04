@@ -62,7 +62,7 @@ namespace loaders
         }
 
         dlHandle = module_fromcapsule(pyobj);
-        pfn = (pf_obj * (*)(void)) dlsym(dlHandle, "pf_new");
+        pfn = reinterpret_cast<pf_obj * (*)(void)>(dlsym(dlHandle, "pf_new"));
         if (NULL == pfn)
         {
             PyErr_SetString(PyExc_ValueError, dlerror());
