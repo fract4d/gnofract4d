@@ -153,7 +153,7 @@ namespace controllers
 
         // create the point function handler from dynamic library
         pf_obj *(*pfn)(void);
-        pfn = (pf_obj * (*)(void)) dlsym(lib_handle, "pf_new");
+        pfn = reinterpret_cast<pf_obj * (*)(void)>(dlsym(lib_handle, "pf_new"));
         if (!pfn)
         {
             PyErr_SetString(PyExc_ValueError, dlerror());
