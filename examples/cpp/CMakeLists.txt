@@ -42,7 +42,9 @@ set_target_properties(fract_stdlib PROPERTIES SUFFIX ".so")
 
 # FORMULA LIB
 
+get_filename_component(FORMULA_FILE $ENV{formula_source} NAME)
+
 add_library(formula SHARED
-    ${PROJECT_SOURCE_DIR}/formula.c)
+    ${PROJECT_SOURCE_DIR}/${FORMULA_FILE})
 set_target_properties(formula PROPERTIES SUFFIX ".so")
 set_target_properties(formula PROPERTIES PREFIX "")

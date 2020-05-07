@@ -15,7 +15,9 @@ COPY examples/cpp/${main_source} ./main.cpp
 COPY examples/cpp/CMakeLists.txt ./
 COPY fract4d/c/fract_stdlib.cpp fract4d/c/fract_stdlib.h fract4d/c/pf.h  ./
 COPY fract4d/c/model/ ./model
-COPY ${formula_source} ./formula.c
+COPY ${formula_source} ./
+
+ENV formula_source=$formula_source
 
 RUN cmake . && make
 
