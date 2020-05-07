@@ -114,7 +114,7 @@ defines = [
 ]
 
 libraries = ['stdc++']
-extra_compile_args = ['-Wall', '-O0'] + png_flags
+extra_compile_args = ['-Wall', '-O0', '-std=c++17'] + png_flags
 define_macros = defines + extra_macros
 
 module_fract4dc = Extension(
