@@ -5,11 +5,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
 	apt-get install -y build-essential git cmake autoconf libtool pkg-config libpng-dev libjpeg-dev
+RUN apt-get install -y libmpfr-dev libgmp-dev
 
 WORKDIR /src
 
 ARG main_source
 ARG formula_source
+ARG gmp_support
 
 COPY examples/cpp/${main_source} ./main.cpp
 COPY examples/cpp/CMakeLists.txt ./
@@ -18,6 +20,8 @@ COPY fract4d/c/model/ ./model
 COPY ${formula_source} ./
 
 ENV formula_source=$formula_source
+ENV gmp_support=$gmp_support
+COPY examples/cpp/mp_double.h ./mp_double.h
 
 RUN cmake . && make
 

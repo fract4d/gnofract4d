@@ -45,6 +45,27 @@ set_target_properties(fract_stdlib PROPERTIES SUFFIX ".so")
 get_filename_component(FORMULA_FILE $ENV{formula_source} NAME)
 
 add_library(formula SHARED
-    ${PROJECT_SOURCE_DIR}/${FORMULA_FILE})
+        ${PROJECT_SOURCE_DIR}/${FORMULA_FILE})
+
+if("$ENV{gmp_support}" STREQUAL "1")
+    message("gmp support enabled")
+
+    # https://github.com/symengine/symengine/blob/master/cmake/LibFindMacros.cmake
+    find_library(MPFR_LIBRARIES NAMES mpfr)
+    find_library(GMP_LIBRARIES NAMES gmpxx)
+
+    find_path(MPFR_INCLUDES NAMES mpfr.h)
+    find_path(GMP_INCLUDE_DIR NAMES gmpxx.h)
+
+    include_directories(${GMP_INCLUDE_DIR})
+    target_link_libraries(formula ${GMP_LIBRARIES})
+    include_directories(${MPFR_INCLUDES})
+    target_link_libraries(formula ${MPFR_LIBRARIES})
+
+else()
+    message("gmp support disabled")
+
+endif()
+
 set_target_properties(formula PROPERTIES SUFFIX ".so")
 set_target_properties(formula PROPERTIES PREFIX "")
