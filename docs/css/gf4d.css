@@ -8,7 +8,7 @@ body {
 }
 
 .banner {
-    background: #10507e url('fragment002.png') no-repeat;
+    background: #10507e url('../fragment002.png') no-repeat;
     font-size:90;
     color: white;
     height: 400;
