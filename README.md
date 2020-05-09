@@ -87,7 +87,7 @@ You can run it in two ways:
 $ sudo pip3 install pylint
 $ ./bin/pylint.sh
 ```
- - Using docker (same enviorment than pipeline):
+ - Using docker (same enviorment as pipeline):
 ```
 $ ./docker/bin/run_lint.sh
 ```

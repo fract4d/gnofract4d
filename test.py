@@ -37,10 +37,10 @@ class Test(unittest.TestCase):
         if not os.path.exists("website"):
             # not included in source dist
             return
-        mkweb = open("website/mkweb.py")
+        mkweb = open("website/content/_index.md")
         content = mkweb.read()
         mkweb.close()
-        ver_re = re.compile(r'text="Version (\S+) released.')
+        ver_re = re.compile(r'latest: "(\S+)"')
 
         m = ver_re.search(content)
         self.assertTrue(m, "doc doesn't specify version")
@@ -60,11 +60,5 @@ class Test(unittest.TestCase):
 def suite():
     return unittest.makeSuite(Test, 'test')
 
-def main():
-    pytest.main(['fract4d/tests', 'fract4dgui/tests', 'fract4d_compiler/tests'])
-
-
 if __name__ == '__main__':
-    if len(sys.argv) == 1 or sys.argv[1] != "--thisonly":
-        main()
     unittest.main(defaultTest='suite')

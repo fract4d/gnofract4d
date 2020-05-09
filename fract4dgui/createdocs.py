@@ -94,7 +94,7 @@ class CommandPrinter:
         print('</sect2>', file=self.f)
 
 
-@patch('fract4dgui.main_window.MainWindow.__init__')
+# @patch('fract4dgui.main_window.MainWindow.__init__')
 def main(outfile):
     out = open(outfile, "w")
     printer = CommandPrinter(out)
