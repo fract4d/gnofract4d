@@ -1,7 +1,7 @@
 ---
 title: "Innumerable Options"
 date: 2020-04-12T14:18:51-07:00
-draft: true
+draft: false
 type: "feature"
 image: "double_exposure.jpg"
 weight: 20

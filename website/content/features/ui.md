@@ -1,7 +1,7 @@
 ---
 title: "Fast, Polished User Interface"
 date: 2020-05-08T16:12:01-07:00
-draft: true
+draft: false
 weight: 5
 image: "thumbnail_main_screenshot.png"
 ---
