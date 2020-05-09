@@ -6,7 +6,7 @@ image: "quadrants2.jpg"
 weight: 10
 ---
 
-Most fractal programs provide a fixed set of formulas. Gnofract 4D's formula compiler allows you to use any function you can think of. It also supports Fractint and UltraFractal formulas and coloring algorithms so you can use the many thousands of formulas written for those packages. This image is generated from the formula
+Most fractal programs provide a fixed set of formulas. Gnofract 4D's formula compiler allows you to use any function you can think of. It also supports Fractint and UltraFractal formulas and coloring algorithms so you can use the many thousands of formulas written for those packages. This image is generated from the simple formula below.
 
 ```
 Jm_25 {
