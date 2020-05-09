@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Front Page on My New Hugo Site</title>
+    <link>http://example.org/</link>
+    <description>Recent content in Front Page on My New Hugo Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 12 Apr 2020 08:55:54 -0700</lastBuildDate>
+    
+	<atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Fast, Polished User Interface</title>
+      <link>http://example.org/features/ui/</link>
+      <pubDate>Fri, 08 May 2020 16:12:01 -0700</pubDate>
+      
+      <guid>http://example.org/features/ui/</guid>
+      <description>Modern interface (using the GTK toolkit) with unlimited undo, full-screen mode, simple interaction, and quick previews. Explorer Mode and AutoZoom help you find interesting parts of the fractal automatically. Since all formulas are compiled to machine code before being run, you get snappy calculations even on complex custom formulas. Gnofract 4D will take full advantage of multi-core computers for even faster rendering.</description>
+    </item>
+    
+    <item>
+      <title>Unlimited Variety</title>
+      <link>http://example.org/features/variety/</link>
+      <pubDate>Sun, 12 Apr 2020 08:41:59 -0700</pubDate>
+      
+      <guid>http://example.org/features/variety/</guid>
+      <description>Most fractal programs provide a fixed set of formulas. Gnofract 4D&amp;rsquo;s formula compiler allows you to use any function you can think of. It also supports Fractint and UltraFractal formulas and coloring algorithms so you can use the many thousands of formulas written for those packages. This image is generated from the simple formula below.
+Jm_25 { z=#zwpixel,t=p1+4: z=fn1(z*fn2(z)) + pixel |z|&amp;lt;=t } </description>
+    </item>
+    
+    <item>
+      <title>Innumerable Options</title>
+      <link>http://example.org/features/options/</link>
+      <pubDate>Sun, 12 Apr 2020 14:18:51 -0700</pubDate>
+      
+      <guid>http://example.org/features/options/</guid>
+      <description>Each base fractal can be displayed in millions of ways, using many coloring algorithms, including old favorites like biomorph, powerful options like Orbit Traps, and unique methods like Hot and Cold. Display multiple fixed points, critical values, or other regions using the &amp;ldquo;fate&amp;rdquo; option. This image shows the two basins of attraction of the Cubic Mandelbrot.</description>
+    </item>
+    
+    <item>
+      <title>Four Dimensions</title>
+      <link>http://example.org/features/fourd/</link>
+      <pubDate>Fri, 08 May 2020 14:43:09 -0700</pubDate>
+      
+      <guid>http://example.org/features/fourd/</guid>
+      <description>What sets it apart from other fractal programs (and makes it &amp;ldquo;4D&amp;rdquo;) is the way that it treats the Mandelbrot and Julia sets as different views of the same four-dimensional fractal object. This allows you to create images which are a cross between the two sets and explore their inter-relationships.</description>
+    </item>
+    
+  </channel>
+</rss>
