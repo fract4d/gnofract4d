@@ -3,6 +3,7 @@
 # Generate C code from a linearized IR trace
 
 import re
+import os
 
 from . import absyn, fracttypes, ir, optimize
 from .fracttypes import Bool, Int, Float, Complex, Hyper, Color, IntArray, FloatArray, ComplexArray, VoidArray
@@ -61,8 +62,8 @@ class T:
 #include <stdlib.h>
 #include <math.h>
 
-%(fract_stdlib)s
-%(pf)s
+#include "fract_stdlib.h"
+#include "pf.h"
 
 typedef struct {
     pf_obj parent;
@@ -238,10 +239,6 @@ pf_obj *pf_new()
 
 %(main_inserts)s
 '''
-        # we insert pf.h so C compiler doesn't have to find it
-        # this needs to be updated each time pf.h changes
-        self.pf_header = open('fract4d/c/pf.h').read()
-        self.fract_stdlib_header = open('fract4d/c/fract_stdlib.h').read()
 
     def emit_binop(self, op, srcs, type):
         dst = self.newTemp(type)
@@ -480,8 +477,6 @@ pf_obj *pf_new()
 
     def output_c(self, t, inserts={}, output_template=None):
         inserts["bailout_var"] = self.get_bailout_var(t)
-        inserts["pf"] = self.pf_header
-        inserts["fract_stdlib"] = self.fract_stdlib_header
         inserts["dca_init"] = "%d" % self.is_direct()
 
         if self.is_direct():

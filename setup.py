@@ -127,8 +127,7 @@ module_fract4dc = Extension(
     libraries=libraries + jpg_libs,
     extra_compile_args=extra_compile_args,
     extra_link_args=png_libs,
-    define_macros=define_macros,
-    #undef_macros = [ 'NDEBUG'],
+    define_macros=define_macros
 )
 
 module_cmap = Extension(
@@ -175,7 +174,10 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     keywords="edwin@bathysphere.org",
     url='http://github.com/edyoung/gnofract4d/',
     packages=['fract4d_compiler', 'fract4d', 'fract4dgui'],
-    package_data={'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml']},
+    package_data={
+        'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml'],
+        'fract4d': ['c/pf.h', 'c/fract_stdlib.h']
+    },
     ext_modules=modules,
     scripts=['gnofract4d'],
     data_files=[
@@ -232,7 +234,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
         # MIME type registration
         ('share/mime/packages', ['gnofract4d-mime.xml']),
         # doc files
-        ('share/doc/gnofract4d/', ['LICENSE', 'README.md']),
+        ('share/doc/gnofract4d/', ['LICENSE', 'README.md'])
     ],
     cmdclass={
         "install_lib": my_install_lib.my_install_lib
