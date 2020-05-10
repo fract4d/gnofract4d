@@ -2,7 +2,6 @@
 
 ## Introduction
 
-
 > There is no excellent beauty which hath not some strangeness in the
 > proportion.  -- _Francis Bacon_
 
@@ -535,264 +534,164 @@ A collection of about 25,000 Fractint formula files by many authors,
 originally compiled by George C. Martin and currently maintained by
 Paul N. Lee. Indispensable. </listitem>
 
-<listitem> <ulink
-url="http://formulas.ultrafractal.com/">UltraFractal public formula
-database</ulink> Many thousands of formulas by users of
-UltraFractal. Most of these will work with Gnofract 4D. Let me know of
-any issues, since I aim to improve compatibility further in future
-releases. </listitem>
+- [UltraFractal public formula database](http://formulas.ultrafractal.com/)
+Many thousands of formulas by users of
+UltraFractal. Some of the coloring algorithms and forumlas will work with Gnofract 4D. 
+Please report issues, since I aim to improve compatibility further in future
+releases. 
 
-</itemizedlist>
-
-
-<sect2 id="frm_tutorial">
-<title>Writing Your First Formula</title>
-
+### Writing Your First Formula
 
 This section steps you through the creation of a new fractal
 formula. By the way, the formulas for each of these steps can also be
 found in the file `formulas/tutorial.frm`.
 
-<orderedlist numeration="arabic"> 
-
-<listitem>
-
-Create a new file called '`example.frm`' (the
+1. Using a text editor, Create a new file called `example.frm` (the
 extension is important - Gnofract 4D uses this to decide whether the file
 is a formula or a coloring function).
 
-</listitem>
+1. Enter the following in `example.frm`.
+```
+MyFormula1 {
+; First example formula - this produces a variant on the Mandelbrot set
+init:
+    z = 0
+    c = #pixel
+loop:
+    z = z*z*c + c*c
+bailout:
+    |z| < 4.0
+}
+```
 
-<listitem>
-
-Enter the following in `example.frm`.
-&tutorial001;
-
-</listitem>
-
-<listitem>
-
-Start Gnofract 4D, choose **File | Open Formula
+3. Start Gnofract 4D, choose **File | Open Formula
 File**, and open example.frm. You should see MyFormula in
 the list of formulas to choose from. Select it and click Apply. You
 should see an image like this:
 
+![Example 1](tutorial001.png)
 
-<graphic format="PNG"
-fileref="figures/tutorial001.png"/> 
-
-
-
-A few things to note about the formula. It's divided into named
+4.  A few things to note about the formula. It's divided into named
 sections, marked with a colon: "init", "loop". and "bailout". The
 compiler uses these to supply some of the standard scaffolding for a
 fractal function so you don't have to. The "loop" statement is the
 heart of the formula - this is the statement which is run repeatedly
 and which defines the shape of your fractal.
 
-</listitem>
-
-<listitem>
-
-
-At this point, the widgets for rotating the image in 4D will be
+5. At this point, the widgets for rotating the image in 4D will be
 disabled, because your formula doesn't use any of the 4D
 options. Let's turn those on. Edit your formula so it reads:
-&tutorial002;
 
+```
+MyFormula2 {
+; Second example - introduce 4D
+init:
+    z = #zwpixel ; take initial value from 4D position
+    c = #pixel
+loop:
+    z = z*z*c + c*c
+bailout:
+    |z| < 4.0
+}
+```
 
-
-Then hit **Refresh** on the Formula Browser window. You 
+6. Then hit **Refresh** on the Formula Browser window. You 
 should now find that all the options are enabled. This is because the image now depends on all 4 components of the 4D space, via #pixel and #zwpixel.
 
-</listitem>
+7. Next let's add some parameters to our function:
 
-<listitem>
+```
+MyFormula3 {
+; Third example - add a parameter
+init:
+    z = #zwpixel
+    c = #pixel
+loop:
+    z = @myfunc(z*z*c) + @factor * z + c*c
+bailout:
+    |z| < 4
+default:
+param factor
+	default = (1.0,0.5)
+endparam
+}
+```
 
-Next let's add some parameters to our function:
-&tutorial003;
-
-
-
-Hit **Refresh** again, then **Edit |
-Fractal Settings** to show the formula settings. You
+8. Hit **Refresh** again, then **Edit > Fractal Settings** to show the formula settings. You
 should two extra parameters in addition to the standard "Max
 Iterations" option: **myfunc**, with a drop-down list
 of functions, and **fac** (or Factor) with a
 draggable 4-way widget and 2 edit boxes. If you set myfunc to
 **sqr** and set factor to (-1,0.5) you should see:
 
-
-
-<graphic format="PNG"
-fileref="figures/tutorial002.png"/>
-
-
+![Tutorial 2](tutorial002.png)
  
-Parameters like this are a quick way to add more options to your
+9. Parameters like this are a quick way to add more options to your
 fractal. Listing them in the "default" section is optional but
 provides a way to pre-populate your formula with values that work
 well. If you leave the default out Gnofract 4D will use "ident" for
 functions and 0 for numeric ones.
 
-
-</listitem>
-
-</orderedlist> 
-
-</sect2>
-
-</sect1>
-
-<sect1 id="formref">
-<title>Formula Language Reference</title>
+## Formula Language Reference
 
 &stdlib;
-</sect1>
 
-<sect1 id="internals">
-<title>Gnofract 4D Internals</title>
-
+## Gnofract 4D Internals
 
 This section explains how Gnofract 4D is structured. You don't need to know
 any of this to use the program, but it may come in handy if you want
 to change it or contribute to its development (which you're heartily
-encouraged to do).
-
-
-
+encouraged to do!).
 
 Gnofract 4D is implemented primarily in Python, with some C++
 extensions. Extensive use
 is made of Python unittest framework to keep everything working - each
 Python file `foo.py` is accompanied by
-`test_foo.py`, which contains unit tests for that
+`tests/test_foo.py`, which contains unit tests for that
 file's features. 'test.py' for each folder runs all of the tests.
 
-
-<sect2 id="layout">
-<title>Source Code Layout</title>
-
+### Source Code Layout
 
 The important directories in the source are:
 
-<informaltable>
-<tgroup cols="2">
+Directory | Contents
+--- | ---
+`fract4d` | This contains all the non-GUI-related, relatively platform-independent parts of the code. This is in case it ever needs to be ported to another environment (eg run on a server without a GUI as part of a cluster). The main class which represents a fractal is in `fractal.py`. This holds references to the compiled code, the formula and colorfunc definitions, the parameters and the colormap. It also handles loading and saving information from a `.fct` file, and provides wrappers for some of the gnarlier C++ extension functions. 
+`fract4d_compiler` | This contains all the files of the compiler (see below). The main class is `fc.py`
+`fract4d/c` | This contains the C++ extension code which is compiled to produce `fract4dc.so`. This is divided into a set of classes which communicate primaily via interfaces. The main responsibility of this code is to call the 'pointFunc' (the function which calculates a single pixel) once for each point on the image. This code also does the bulk of the '4D' manipulation -`vectors.h` contains code for 4-vectors and 4x4 matrix math. This library also handles multi-threaded calculations, parcelling out the work to multiple MTFractWorkers via the queue in `threadpool.h` 
+`fract4dgui` | This contains the python code which implements the GUI. It uses PyGTK3 as the GUI toolkit. Basically there's one class per dialog or custom control, and a few other for utility purposes. The central class is `gtkfractal`, which wraps a `fractal` and displays the results of the calculation in a window. 
 
-<thead><row>
-<entry>Directory</entry>
-<entry>Contents</entry>
-</row></thead>
-<tbody>
-
-<row>
-<entry>`fract4d`</entry>
-
-<entry> This contains all the non-GUI-related, relatively
-platform-independent parts of the code. This is in case it ever needs
-to be ported to another environment (eg run on a server without a GUI
-as part of a cluster). The main class which represents a fractal is in
-`fractal.py`. This holds references to the compiled
-code, the formula and colorfunc definitions, the parameters and the
-colormap. It also handles loading and saving information from a
-`.fct` file, and provides
-wrappers for some of the gnarlier C++ extension functions. 
-</entry>
-
-</row>
-
-<row>
-<entry>
-    `fract4d_compiler`
-</entry>
-<entry>
-    
-    This contains all the files of the compiler (see below).
-    The main class is `fc.py`
-    
-</entry>
-</row>
-
-<row>
-<entry>`fract4d/c`</entry>
-
-<entry> This contains the C++ extension code which is compiled
-to produce `fract4dc.so`. This is divided into a
-set of classes which communicate primaily via interfaces. The main
-responsibility of this code is to call the 'pointFunc' (the function
-which calculates a single pixel) once for each point on the
-image. This code also does the bulk of the '4D' manipulation -
-`vectors.h` contains code for 4-vectors and 4x4
-matrix math. This library also handles multi-threaded calculations,
-parcelling out the work to multiple MTFractWorkers via the queue in
-`threadpool.h` </entry>
-
-</row>
-
-<row>
-<entry>`fract4dgui`</entry>
-
-<entry> This contains the python code which implements the
-GUI. It uses PyGTK as the GUI toolkit. The earliest PyGTK we support
-is 1.99, which has some annoying incompatibilities with newer PyGTK's
-like 2.4. I need to work out whether to ditch the older library
-altogether or try to come up with some wrappers to hide the
-differences. Basically there's one class per dialog or custom control,
-and a few other for utility purposes. The central class is
-<classname>gtkfractal</classname>, which wraps a
-<classname>fractal</classname> and displays the results of the
-calculation in a window.  </entry>
-
-</row>
-
-</tbody>
-</tgroup>
-</informaltable>
-
-
-
-</sect2>
-
-<sect2 id="compiler_internals">
-<title>Compiler</title> 
+### Compiler
 
 The most complicated part of Gnofract 4D is the compiler. This takes
 as input an UltraFractal or Fractint formula file, and produces C
 code. We then invoke a C compiler (eg gcc) to produce a shared library
 containing code to generate the fractal which we dynamically load.
 
-
-
 The UltraFractal manual is the best current description of the formula
 file format, though there are some UltraFractal features which are not
-yet supported. You can download it from <ulink
-url="http://www.ultrafractal.com/uf3-manual.zip">here</ulink>.
+yet supported. You can download it from https://www.ultrafractal.com/download/uf6-manual.pdf
 
-
-
-The implementation is based on the outline in <citetitle
-pubwork="book">Modern Compiler Implementation in ML: basic
-techniques</citetitle> (Appel 1997, Cambridge). It doesn't do any
+The implementation is based on the outline in "Modern Compiler Implementation in ML: basic
+techniques" (Appel 1997, Cambridge). It doesn't do any
 optimization at this point, leaving that to the C compiler used as a
 back-end. It would be worthwhile to do some simple optimization (eg
 constant-folding, removing multiplication by 1.0) because the C
 compiler refuses to do this to floating point numbers.
 
-
-Overall structure: The <ulink
-url="http://www.dabeaz.com/ply/ply.html">PLY</ulink> package
+Overall structure: The [PLY](http://www.dabeaz.com/ply/ply.html) package
 is used to do lexing and SLR parsing - it's in
 `lex.py` and
 `yacc.py`. `fractlexer.py` and
 `fractparser.py` are the lexer and parser
 definitions, respectively. They produce as output an abstract syntax
-tree (defined in the <classname>Absyn</classname> module). The
-<classname>Translate</classname> module type-checks the code,
+tree (defined in the `Absyn` module). The
+`Translate` module type-checks the code,
 maintains the symbol table (`symbol.py`) and
 converts it into an intermediate form (`ir.py`).
-<classname>Canon</classname> performs several simplifying passes on
+`Canon` performs several simplifying passes on
 the IR to make it easier to deal with, then
-<classname>codegen</classname> converts it into a linear sequence of
+`codegen` converts it into a linear sequence of
 simple C instructions. `stdlib.py` contains the
 'standard library' of mathematical functions, like cosh(z). It's at
 this point that complex and hypercomplex variables are expanded out
@@ -808,8 +707,6 @@ only generated just before the fractal is drawn. This phase is
 repeated whenever the function parameters are changed (eg @fn1 is set
 to 'cosh').
 
-
-
 Probably the ugliest part of the code is the handling of
 parameters. Numeric parameters like floats are passed in as an array,
 and the C++ code and Python code need to collaborate to work out which
@@ -817,11 +714,7 @@ indices into this array correspond to which params- this is done by
 sorting them into alphabetic order. In general this area is a bit of a
 mess.
 
-</sect2>
-
-<sect2 id="threading">
-<title>Threading</title>
-
+### Threading
 
 One of the weirder parts of the code is how we deal with
 threading. Basically we want the calculation of the fractal to happen
@@ -830,13 +723,11 @@ so you can interrupt at any point. This is complicated by the fact
 that Python only allows a single thread in the Global Interpreter
 Lock, and that PyGTK is often compiled by Linux distribution vendors
 without thread support, meaning this lock is not released when running
-the GTK main loop.
-
-
+the GTK main loop. (This last is probably nottrue any more, but I haven't checked.)
 
 The way out of this is that the additional threads live only in the
 C++ code, where they are invisible to the Python code and GTK. When
-<function>pycalc</function> is called with asynchronous=True, it spawns a
+`pycalc` is called with asynchronous=True, it spawns a
 thread to do the calculation, which may in turn spawn more workers if
 we want multiple threads. These all write to the image buffer and
 report back what they're doing by writing messages into a pipe. This
@@ -846,107 +737,56 @@ code, interleaved with the normal GTK events. We can interrupt a
 calculation in progress by setting a var which the calculation threads
 check frequently - they then abandon their work and quit.  
 
-<warning>  Multiple threads and C++ exceptions do not coexist
-well, at least on some of the libstdc++'s that Gnofract 4D runs with. So the
-C++ code can't throw exceptions or very odd things including crashes
-will happen.  </warning>
+> Warning: Multiple threads and C++ exceptions do not coexist
+well on some libstdc++'s. Gnofract 4D was originally written not to use exceptions 
+as a result. This may no longer be an issue but I haven't tried it.
 
-</sect2>
+## Bugs and Known Issues
 
-</sect1>
+Please report any bugs you encounter, via <ulink>https://github.com/fract4d/gnofract4d/issues</ulink>
 
-<sect1 id="bugs">
-<title>Bugs and Known Issues</title>
+## About Gnofract 4D
 
-<sect2 id="reporting">
+This is Gnofract 4D version 4.1.1. You can find the most recent version of
+Gnofract 4D from https://github.com/edyoung/gnofract4d
 
-<title>Reporting Bugs</title> 
+## Credits and copyright
 
-
-  Please report any bugs you encounter, via <ulink>https://github.com/edyoung/gnofract4d/issues</ulink>
-
-
-</sect2>
-
-</sect1>
-
-<sect1 id="about">
-<title>About Gnofract 4D</title>
-
-
-This is Gnofract 4D version &version;. You can find the most recent version of
-Gnofract 4D from <ulink url="https://github.com/edyoung/gnofract4d">
-https://github.com/edyoung/gnofract4d</ulink>. 
-
-<sect2 id="credits">
-<title>Credits and copyright</title>
-
-
-Gnofract 4D is Copyright 1999-2018 Edwin Young <ulink
-url="mailto:edwin@bathysphere.org">(edwin@bathysphere.org)
-</ulink>
+Gnofract 4D is Copyright 1999-2020 Edwin Young
+[edwin@bathysphere.org](mailto:edwin@bathysphere.org)
 , and is distributed under the **BSD
-license**.  See the file "COPYING" for details. 
+license**.  See the file "LICENSE" for details. 
 
-
-
-Gnofract 4D was originally based on Gnofract, written by Aurelien Alleaume
-<ulink url="mailto:manchot@club-internet.fr">(manchot@club-internet.fr)
-</ulink>,
+Gnofract 4D was originally based on a program called Gnofract, written by Aurelien Alleaume
 though none of the original code remains in the current version.
-Gnofract could once be obtained from
-<ulink url="http://www.multimania.com/mason/">
-http://www.multimania.com/mason/</ulink> but this no longer appears to
-work. 
+Gnofract could once be obtained from http://www.multimania.com/mason
+but this no longer appears to work. 
 
-
-
-Branko Kokanovic developed and contributed the animation
-feature. Chris Le Sueur provided parts of the gradient editing
-feature. Henryk Trappmann provided HSV gradient support. 
-The man page was contributed by Aleksander Adamowski.
-Rachel Mant maintained the project for several years and provided many useful updates.
-Chris Mayo modernized a lot of code and made the Python 3 update possible.
-
-
+**Branko Kokanovic** developed and contributed the animation feature. 
+**Chris Le Sueur** provided parts of the gradient editing feature. 
+**Henryk Trappmann** provided HSV gradient support. 
+The man page was contributed by **Aleksander Adamowski**.
+**Rachel Mant** maintained the project for several years and provided many useful updates.
+**Chris Mayo** modernized a lot of code and made the Python 3 update possible.
+**Alberto Gonzalez** and **Guanchor Ojeda Hernández** have refactored and improved the code considerably.
 
 The formula language which Gnofract 4D uses originated in Fractint and
 was substantially enhanced in UltraFractal. However the compiler
 implementation does not share any code with those programs.
 
-
-
 The Gnofract 4D distribution contains palette (.map) files by a number of
-authors which were originally distributed with <ulink
-url="https://fractint.org/">Fractint</ulink> under somewhat murky
+authors which were originally distributed with 
+[Fractint](https://fractint.org/) under somewhat murky
 licensing conditions. It also contains a copy of "standard.ucl",
-originally distributed with <ulink
-url="http://www.ultrafractal.com/">UltraFractal</ulink>, by kind
+originally distributed with [UltraFractal](https://www.ultrafractal.com), by kind
 permission of Frederik Slijkerman, Damien Jones, and Kerry Mitchell.
-"blatte1.ugr" and "blatte2.ugr" are included by kind permission of 
-<ulink url="http://exoteric.roach.org/">'Blatte'</ulink>. The formulas
+`blatte1.ugr` and `blatte2.ugr` are included by kind permission of 
+['Blatte'](http://exoteric.roach.org/). The formulas
 in Sterling2.frm are translations of formulas originally created by
 Tad Boniecki for use with the SterlingWare 2 fractal program.
-
-
-
-
-`gmpy.c` and `gmpy.h` are from
-the GMPY package (http://gmpy.sf.net), and are distributed under the
-LGPL license.  
-
 
 `lex.py` and `yacc.py` come from
 the PLY package, and are distributed under the BSD license.
 
-
 Some of the menu icons are taken or adapted from
 the <ulink url="http://tango.freedesktop.org">Tango icon set</ulink>.
-
-
-</sect2>
-
-</sect1>
-
-</article>
-
