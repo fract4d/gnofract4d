@@ -1244,12 +1244,6 @@ in Sterling2.frm are translations of formulas originally created by
 Tad Boniecki for use with the SterlingWare 2 fractal program.
 </para>
 
-
-<para>
-<filename>gmpy.c</filename> and <filename>gmpy.h</filename> are from
-the GMPY package (http://gmpy.sf.net), and are distributed under the
-LGPL license.  </para>
-
 <para>
 <filename>lex.py</filename> and <filename>yacc.py</filename> come from
 the PLY package, and are distributed under the BSD license.</para>
