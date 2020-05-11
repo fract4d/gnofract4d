@@ -5,12 +5,10 @@
 
 import os
 import re
-import gi
-
-from xml.sax.saxutils import escape
 from unittest.mock import patch
-from fract4d import fractconfig
+from xml.sax.saxutils import escape
 
+from fract4d import fractconfig
 from . import main_window
 
 import gettext
