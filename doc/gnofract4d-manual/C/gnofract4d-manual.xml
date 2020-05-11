@@ -1051,14 +1051,10 @@ parcelling out the work to multiple MTFractWorkers via the queue in
 <row>
 <entry><para><filename>fract4dgui</filename></para></entry>
 
-<entry> <para>This contains the python code which implements the
-GUI. It uses PyGTK as the GUI toolkit. The earliest PyGTK we support
-is 1.99, which has some annoying incompatibilities with newer PyGTK's
-like 2.4. I need to work out whether to ditch the older library
-altogether or try to come up with some wrappers to hide the
-differences. Basically there's one class per dialog or custom control,
-and a few other for utility purposes. The central class is
-<classname>gtkfractal</classname>, which wraps a
+<entry> <para>This contains the python code which implements the GUI.
+It uses GTK as the GUI toolkit. Basically there's one class per dialog
+or custom control, and a few other for utility purposes. The central
+class is <classname>gtkfractal</classname>, which wraps a
 <classname>fractal</classname> and displays the results of the
 calculation in a window. </para> </entry>
 
@@ -1205,7 +1201,7 @@ https://github.com/edyoung/gnofract4d</ulink>.
 url="mailto:edwin@bathysphere.org">(edwin@bathysphere.org)
 </ulink>
 , and is distributed under the <emphasis>BSD
-license</emphasis>.  See the file "COPYING" for details. 
+license</emphasis>.  See the file "LICENSE" for details. 
 </para>
 
 <para>
