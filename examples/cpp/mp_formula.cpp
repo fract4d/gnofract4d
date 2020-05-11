@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <cmath>
+#include <new>
 
 #include "pf.h"
 #include "mp_double.h"
@@ -58,14 +59,14 @@ static void pf_calc(
     MpDouble t__h_zwpixel_im = t__params[3];
 
     // set some initial values (fate, color ...)
-    MpDouble t__h_index = 0.0;
+    MpDouble t__h_index {0.0};
     int t__h_solid = 0;
     int t__h_fate = 0;
     int t__h_inside = 0;
-    MpDouble t__h_color_re = 0.0;
-    MpDouble t__h_color_i = 0.0;
-    MpDouble t__h_color_j = 0.0;
-    MpDouble t__h_color_k = 0.0;
+    MpDouble t__h_color_re {0.0};
+    MpDouble t__h_color_i {0.0};
+    MpDouble t__h_color_j {0.0};
+    MpDouble t__h_color_k {0.0};
 
     // you could use direct color when using a #color variable in the function
     *t__p_pDirectColorFlag = 0;
@@ -84,17 +85,17 @@ static void pf_calc(
     void *t__a__gradient = t__pfo->p[0].gradient;
     MpDouble t__a_fbailout = t__pfo->p[1].doubleval;
 
-    MpDouble z_re = 0.00000000000000000;
-    MpDouble z_im = 0.00000000000000000;
+    MpDouble z_re {0.0};
+    MpDouble z_im {0.0};
 
     // those temporaries we need to keep them
-    MpDouble t__f5 = 0.00000000000000000;
-    MpDouble t__f6 = 0.00000000000000000;
+    MpDouble t__f5 {0.0};
+    MpDouble t__f6 {0.0};
 
     MpDouble t__a_cf0_offset = t__pfo->p[2].doubleval;
     MpDouble t__a_cf0_density = t__pfo->p[3].doubleval;
     MpDouble t__a_cf0bailout = t__pfo->p[4].doubleval;
-    MpDouble cf0ed = 0.00000000000000000;
+    MpDouble cf0ed {0.0};
 
     MpDouble t__a_cf1_offset = t__pfo->p[5].doubleval;
     MpDouble t__a_cf1_density = t__pfo->p[6].doubleval;
@@ -226,7 +227,7 @@ static void pf_kill(
     struct s_pf_data *p_stub)
 {
     MpDouble::cleanUp();
-    free(p_stub);
+    delete p_stub;
 }
 
 static struct s_pf_vtable vtbl =
@@ -240,7 +241,7 @@ static struct s_pf_vtable vtbl =
 pf_obj *pf_new()
 {
     MpDouble::setPreccisionInBits(432);
-    pf_real *p = (pf_real *)malloc(sizeof(pf_real));
+    pf_real *p = new (std::nothrow) pf_real;
     if (!p)
         return NULL;
     p->parent.vtbl = &vtbl;
