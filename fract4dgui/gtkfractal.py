@@ -17,7 +17,6 @@ from fract4d_compiler import fracttypes, function
 from fract4d import fractal, fract4dc, image, messages
 
 from . import utils, fourway
-from .gtkio import gtkio
 
 
 class Hidden(GObject.GObject):
@@ -79,7 +78,6 @@ class Hidden(GObject.GObject):
             self.width, self.height, total_width, total_height)
 
         self.msgbuf = b""
-        self.io_subsys = gtkio()
 
     def try_init_fractal(self):
         f = fractal.T(self.compiler, self.site)
@@ -169,7 +167,7 @@ class Hidden(GObject.GObject):
 
     def onData(self, fd, condition):
         self.msgbuf = self.msgbuf + \
-            self.io_subsys.read(fd, 8 - len(self.msgbuf))
+            os.read(fd, 8 - len(self.msgbuf))
 
         if len(self.msgbuf) < 8:
             # print "incomplete message: %s" % list(self.msgbuf)
@@ -177,7 +175,7 @@ class Hidden(GObject.GObject):
 
         (t, size) = struct.unpack("2i", self.msgbuf)
         self.msgbuf = b""
-        bytes = self.io_subsys.read(fd, size)
+        bytes = os.read(fd, size)
         if len(bytes) < size:
             print(
                 "not enough bytes, got %d instead of %d" %
