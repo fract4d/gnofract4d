@@ -94,11 +94,14 @@ class CommandPrinter:
         print('</sect2>', file=self.f)
 
 
-# @patch('fract4dgui.main_window.MainWindow.__init__')
-def main(outfile):
+# MainWindow.__init__() is disabled to avoid initialising GTK,
+# allowing the documentation to be created in a non-graphical environment
+@patch('fract4dgui.main_window.MainWindow.__init__')
+def main(outfile, mw_init):
     out = open(outfile, "w")
     printer = CommandPrinter(out)
 
+    mw_init.return_value = None
     userConfig = fractconfig.userConfig()
     mw = main_window.MainWindow(userConfig)
 
@@ -136,4 +139,4 @@ def main(outfile):
 
 
 if __name__ == '__main__':
-    main('../doc/gnofract4d-manual/C/commands.xml')
+    main('../doc/gnofract4d-manual/C/commands.xml')  # pylint: disable=no-value-for-parameter

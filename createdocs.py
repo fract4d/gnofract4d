@@ -20,7 +20,7 @@ def create_stdlib_docs():
 
         # create list of mouse and GUI commands
         import fract4dgui.createdocs
-        fract4dgui.createdocs.main("doc/gnofract4d-manual/C/commands.xml")
+        fract4dgui.createdocs.main("doc/gnofract4d-manual/C/commands.xml")  # pylint: disable=no-value-for-parameter
 
         # create HTML version of docs for them as don't have yelp
         os.chdir("doc/gnofract4d-manual/C")
