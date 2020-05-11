@@ -1264,7 +1264,7 @@ class MainWindow:
             self.display_help("cmdref")
 
     def report_bug(self, *args):
-        url = "https://github.com/edyoung/gnofract4d/issues"
+        url = "https://github.com/fract4d/gnofract4d/issues"
         utils.launch_browser(
             self.userPrefs,
             url,
