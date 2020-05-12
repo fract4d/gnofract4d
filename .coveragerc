@@ -1,0 +1,5 @@
+[run]
+omit =
+	*/tests/*
+	fract4d_compiler/lex.py
+	fract4d_compiler/yacc.py
