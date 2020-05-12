@@ -4,7 +4,7 @@ import os
 import sys
 import gettext
 
-from fract4d import fractal, fractmain, fractconfig
+from fract4d import fractmain, fractconfig
 from fract4d.options import Arguments
 
 
