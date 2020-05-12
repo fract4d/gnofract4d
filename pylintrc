@@ -6,7 +6,8 @@ enable=E,
   bad-indentation,
   unnecessary-semicolon,
   trailing-newlines,
-  bare-except
+  bare-except,
+  unused-import
 
 [REPORTS]
 score=no
