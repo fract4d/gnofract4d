@@ -3,6 +3,12 @@ project(simple_mandelbrot)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# add some debug information: elapsed time and compiler information
+set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
+set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CMAKE_COMMAND} -E time")
+set(CMAKE_VERBOSE_MAKEFILE on)
+message("Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/model)
 
