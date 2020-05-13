@@ -244,10 +244,10 @@ int main()
         oFileName = str(Path(cFile.name).with_suffix(".so"))
         import sys
         if sys.platform[:6] == "darwin":
-            cmd = "gcc -Wall -fPIC -DPIC -shared %s -o %s -lm -flat_namespace -undefined suppress" % (
+            cmd = "gcc -Wall -fPIC -DPIC -Ifract4d/c -shared %s -o %s -lm -flat_namespace -undefined suppress" % (
                 cFile.name, oFileName)
         else:
-            cmd = "gcc -Wall -fPIC -DPIC -shared %s -o %s -lm" % (
+            cmd = "gcc -Wall -fPIC -DPIC -Ifract4d/c -shared %s -o %s -lm" % (
                 cFile.name, oFileName)
         status, output = subprocess.getstatusoutput(cmd)
         self.assertEqual(status, 0, "C error:\n%s\nProgram:\n%s\n" %
@@ -299,20 +299,6 @@ int main()
         self.assertEqual(1, len(self.codegen.out))
         move = self.codegen.out[0]
         # print move.format()
-
-    def testPFHeader(self):
-        'Check inline copy of pf.h is up-to-date'
-        pfh = open('fract4d/c/pf.h')
-        header_contents = pfh.read()
-        pfh.close()
-        self.assertEqual(header_contents, self.codegen.pf_header)
-
-    def testStdlibHeader(self):
-        'Check inline copy of fract_stdlib.h is up-to-date'
-        header = open('fract4d/c/fract_stdlib.h')
-        header_contents = header.read()
-        header.close()
-        self.assertEqual(header_contents, self.codegen.fract_stdlib_header)
 
     def testMatching(self):
         'test tree matching works'

@@ -31,6 +31,7 @@ import hashlib
 import re
 import copy
 
+import fract4d
 from fract4d import gradient, fractconfig
 from . import (fractparser, fractlexer, translate, codegen, fracttypes, absyn,
                preprocessor, cache)
@@ -144,6 +145,8 @@ class Compiler:
         self.path_lists = [[], [], [], []]
 
         self.compiler_name = "gcc"
+
+        self.include_path = "-I%s/c/" % os.path.dirname(fract4d.__file__)
         self.flags = "-fPIC -DPIC -g -O3 -shared"
         self.output_flag = "-o "
         self.libs = "-lm"
@@ -418,8 +421,8 @@ class Compiler:
         f.close()
 
         # -march=i686 for 10% speed gain
-        cmd = "%s \"%s\" %s %s\"%s\"" % \
-              (self.compiler_name, cfile, self.flags, self.output_flag, outputfile)
+        cmd = "%s \"%s\" %s %s %s\"%s\"" % \
+              (self.compiler_name, cfile, self.flags, self.include_path, self.output_flag, outputfile)
         cmd += " %s" % self.libs
 
         (status, output) = subprocess.getstatusoutput(cmd)
