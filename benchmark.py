@@ -1,22 +1,11 @@
 #!/usr/bin/env python3
 
-from fract4d.options import Arguments
-from fract4dgui import main_window
-from fract4d import fractmain, image, fractconfig
-import gi
-import sys
-import os
-import getopt
-import operator
 import gettext
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk as gtk
-from time import time as now
-from fract4d import fractmain, image
-from fract4dgui import main_window
+import operator
+import os
+import sys
 from functools import reduce
-from fract4d import fractconfig
+from time import time as now
 
 os.environ.setdefault('LANG', 'en')
 if os.path.isdir('po'):
@@ -24,12 +13,17 @@ if os.path.isdir('po'):
 else:
     gettext.install('gnofract4d')
 
+import gi
 gi.require_version('Gtk', '3.0')
 try:
     from gi.repository import Gtk
-except ImportError as err:
+except ImportError:
     print(_("Can't find Gtk. You need to install it before you can run Gnofract 4D."))
     sys.exit(1)
+
+from fract4d import fractmain, fractconfig
+from fract4d.options import Arguments
+from fract4dgui import main_window
 
 files = [
     'testdata/std.fct',

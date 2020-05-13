@@ -5,10 +5,11 @@
 
 # this requires the Python Imaging Library to run.
 
-import os
 import operator
-from PIL import Image, ImageChops, ImageFilter, ImageStat
+import os
 from functools import reduce
+
+from PIL import Image, ImageChops, ImageStat
 
 good_files = [
     # look ok
