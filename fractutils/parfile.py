@@ -9,7 +9,8 @@
 
 import math
 
-from fract4d import fractconfig, preprocessor
+from fract4d import fractconfig
+from fract4d_compiler import preprocessor
 
 def parse(file,f):
     # reset the fractal to have defaults closer to Fractint
@@ -200,11 +201,12 @@ def colorRange(s):
 
 if __name__ == "__main__":
     import sys
+    from fract4d import fractal
     from fract4d_compiler import fc
-    import fractal
     
     g_comp = fc.Compiler(fractconfig.userConfig())
     g_comp.add_func_path("../formulas")
+    g_comp.add_func_path("../testdata/formulas")
     g_comp.load_formula_file("gf4d.frm")
     g_comp.load_formula_file("test.frm")
     g_comp.load_formula_file("gf4d.cfrm")
