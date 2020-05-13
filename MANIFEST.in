@@ -35,6 +35,9 @@ include formulas/test_bad_pp.frm
 include fract4d/c/*.h
 include fract4d/c/fract4dc/*.h
 include fract4d/c/model/*.h
+include fract4d/tests/*.py
+include fract4d_compiler/tests/*.py
+include fract4dgui/tests/*.py
 include fract4dgui/ui.xml
 include gnofract4d
 include gnofract4d-mime.xml
@@ -51,6 +54,9 @@ include testdata/collapsar.fct
 include testdata/director*.fct
 include testdata/elfglow.fct
 include testdata/example_formula_db.txt
+include testdata/formulas/test.cfrm
+include testdata/formulas/test.frm
+include testdata/formulas/test_bad_pp.frm
 include testdata/gradient_func.fct
 include testdata/julfn.fct
 include testdata/test.cs
