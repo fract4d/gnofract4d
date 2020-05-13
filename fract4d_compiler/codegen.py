@@ -3,7 +3,6 @@
 # Generate C code from a linearized IR trace
 
 import re
-import os
 
 from . import absyn, fracttypes, ir, optimize
 from .fracttypes import Bool, Int, Float, Complex, Hyper, Color, IntArray, FloatArray, ComplexArray, VoidArray
