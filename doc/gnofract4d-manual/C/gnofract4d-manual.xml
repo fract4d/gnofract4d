@@ -1051,14 +1051,10 @@ parcelling out the work to multiple MTFractWorkers via the queue in
 <row>
 <entry><para><filename>fract4dgui</filename></para></entry>
 
-<entry> <para>This contains the python code which implements the
-GUI. It uses PyGTK as the GUI toolkit. The earliest PyGTK we support
-is 1.99, which has some annoying incompatibilities with newer PyGTK's
-like 2.4. I need to work out whether to ditch the older library
-altogether or try to come up with some wrappers to hide the
-differences. Basically there's one class per dialog or custom control,
-and a few other for utility purposes. The central class is
-<classname>gtkfractal</classname>, which wraps a
+<entry> <para>This contains the python code which implements the GUI.
+It uses GTK as the GUI toolkit. Basically there's one class per dialog
+or custom control, and a few other for utility purposes. The central
+class is <classname>gtkfractal</classname>, which wraps a
 <classname>fractal</classname> and displays the results of the
 calculation in a window. </para> </entry>
 
@@ -1182,7 +1178,7 @@ will happen. </para> </warning>
 <title>Reporting Bugs</title> 
 
 <para>
-  Please report any bugs you encounter, via <ulink>https://github.com/edyoung/gnofract4d/issues</ulink>
+  Please report any bugs you encounter, via <ulink>https://github.com/fract4d/gnofract4d/issues</ulink>
 </para>
 
 </sect2>
@@ -1194,8 +1190,8 @@ will happen. </para> </warning>
 <para>
 
 This is &gf4d; version &version;. You can find the most recent version of
-&gf4d; from <ulink url="https://github.com/edyoung/gnofract4d">
-https://github.com/edyoung/gnofract4d</ulink>. 
+&gf4d; from <ulink url="https://github.com/fract4d/gnofract4d">
+https://github.com/fract4d/gnofract4d</ulink>. 
 </para>
 <sect2 id="credits">
 <title>Credits and copyright</title>
@@ -1205,7 +1201,7 @@ https://github.com/edyoung/gnofract4d</ulink>.
 url="mailto:edwin@bathysphere.org">(edwin@bathysphere.org)
 </ulink>
 , and is distributed under the <emphasis>BSD
-license</emphasis>.  See the file "COPYING" for details. 
+license</emphasis>.  See the file "LICENSE" for details. 
 </para>
 
 <para>
@@ -1247,12 +1243,6 @@ permission of Frederik Slijkerman, Damien Jones, and Kerry Mitchell.
 in Sterling2.frm are translations of formulas originally created by
 Tad Boniecki for use with the SterlingWare 2 fractal program.
 </para>
-
-
-<para>
-<filename>gmpy.c</filename> and <filename>gmpy.h</filename> are from
-the GMPY package (http://gmpy.sf.net), and are distributed under the
-LGPL license.  </para>
 
 <para>
 <filename>lex.py</filename> and <filename>yacc.py</filename> come from
