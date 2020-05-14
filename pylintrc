@@ -9,6 +9,8 @@ enable=E,
   bare-except,
   unused-import
 
+ignore=parsetab.py,lextab.py
+
 [REPORTS]
 score=no
 
