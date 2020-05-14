@@ -13,12 +13,6 @@
 #include "model/site.h"
 #include "model/color.h"
 
-/* only here so it's visible to debugger */
-typedef struct
-{
-    pf_obj parent;
-    struct s_param p[PF_MAXPARAMS];
-} pf_real;
 
 pointFunc *pointFunc::create(
     pf_obj *pfo,
