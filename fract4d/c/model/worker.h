@@ -1,6 +1,9 @@
 #ifndef __WORKER_H_INCLUDED__
 #define __WORKER_H_INCLUDED__
 
+#include <memory>
+#include <vector>
+
 #include "model/vectors.h"
 #include "model/stats.h"
 
@@ -67,20 +70,15 @@ public:
 };
 
 /* per-worker-thread fractal info */
-class STFractWorker : public IFractWorker
+class STFractWorker final: public IFractWorker
 {
 public:
-    void set_fractFunc(fractFunc *ff);
-    /* pointers to data also held in fractFunc */
-    IImage *im;
-    /* not a ctor because we always create a whole array then init them */
-    bool init(pf_obj *pfo, ColorMap *cmap, IImage *im, IFractalSite *site);
+    STFractWorker(pf_obj *, ColorMap *, IImage *, IFractalSite *) noexcept;
+    // needed because having unique_ptr member deletes copy ctor
+    STFractWorker(STFractWorker&&) noexcept;
     ~STFractWorker();
-    STFractWorker()
-    {
-        reset_counts();
-        lastIter = 0;
-    }
+
+    void set_fractFunc(fractFunc *ff);
     // heuristic to see if we should use periodicity checking for next point
     inline int periodGuess();
     // periodicity guesser for when we have the last count to hand
@@ -146,22 +144,25 @@ private:
     void compute_stats(const dvec4 &pos, int iter, fate_t fate, int x, int y);
     void compute_auto_deepen_stats(const dvec4 &pos, int iter, int x, int y);
     void compute_auto_tolerance_stats(const dvec4 &pos, int iter, int x, int y);
+    // return true if this pixel needs recalc in AA pass
+    bool needs_aa_calc(int x, int y);
+
     fractFunc *ff;
+    /* pointers to data also held in fractFunc */
+    IImage *im;
     // function object which calculates the colors of points
     // this is per-thread-func so it doesn't have to be re-entrant
     // and can have member vars
-    pointFunc *pf;
+    std::unique_ptr<pointFunc> pf;
     pixel_stat_t stats;
     // period guessing
     int lastIter; // how many iterations did last pixel take?
-    // return true if this pixel needs recalc in AA pass
-    bool needs_aa_calc(int x, int y);
     bool m_ok;
 };
 
 // a composite subclass which holds an array of STFractWorkers and
 // divides the work among them
-class MTFractWorker : public IFractWorker
+class MTFractWorker final: public IFractWorker
 {
 public:
     MTFractWorker(int n,
@@ -172,19 +173,18 @@ public:
     ~MTFractWorker();
     void set_fractFunc(fractFunc *ff);
     // operations
-    virtual void row_aa(int x, int y, int n);
-    virtual void row(int x, int y, int n);
-    virtual void box(int x, int y, int rsize);
-    virtual void qbox_row(int w, int y, int rsize, int drawsize);
-    virtual void box_row(int w, int y, int rsize);
-    virtual void pixel(int x, int y, int h, int w);
-    virtual void pixel_aa(int x, int y);
+    void row_aa(int x, int y, int n);
+    void row(int x, int y, int n);
+    void box(int x, int y, int rsize);
+    void qbox_row(int w, int y, int rsize, int drawsize);
+    void box_row(int w, int y, int rsize);
+    void pixel(int x, int y, int h, int w);
+    void pixel_aa(int x, int y);
     // record keeping
-    virtual void reset_counts();
+    void reset_counts();
     const pixel_stat_t &get_stats() const;
-    virtual void flush();
-    virtual bool ok();
-    int nWorkers;
+    void flush();
+    bool ok();
     bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root);
 private:
     /* wait for a ready thread then give it some work */
@@ -196,8 +196,10 @@ private:
     void send_row_aa(int x, int y, int n);
     void send_box_row(int w, int y, int rsize);
     void send_qbox_row(int w, int y, int rsize, int drawsize);
-    STFractWorker *ptf;
-    tpool<job_info_t, STFractWorker> *ptp;
+
+    int nWorkers;
+    std::vector<STFractWorker> ptf;
+    std::unique_ptr<tpool<job_info_t, STFractWorker>> ptp;
     bool m_ok;
     mutable pixel_stat_t stats;
 };

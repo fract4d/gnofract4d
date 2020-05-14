@@ -16,10 +16,6 @@ IFractWorker *IFractWorker::create(
     }
     else
     {
-        STFractWorker *w = new STFractWorker();
-        if (!w)
-            return w;
-        w->init(pfo, cmap, im_, site);
-        return w;
+        return new STFractWorker(pfo, cmap, im_, site);
     }
 }

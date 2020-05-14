@@ -13,33 +13,26 @@ MTFractWorker::MTFractWorker(
     ColorMap *cmap,
     IImage *im,
     IFractalSite *site)
+    : nWorkers{n > 1 ? n + 1 : 1}, ptf(), m_ok{true}
 {
-    m_ok = true;
     /* 0'th ftf is in this thread for calculations we don't want to offload */
-    nWorkers = n > 1 ? n + 1 : 1;
-    ptf = new STFractWorker[nWorkers];
+    ptf.reserve(nWorkers);
     for (int i = 0; i < nWorkers; ++i)
     {
-        if (!ptf[i].init(pfo, cmap, im, site))
+        STFractWorker &stfw = ptf.emplace_back(pfo, cmap, im, site);
+        if (!stfw.ok())
         {
-            // failed to create - mark this dead
             m_ok = false;
         }
     }
     if (n > 1)
     {
-        ptp = new tpool<job_info_t, STFractWorker>(n, 1000, ptf);
-    }
-    else
-    {
-        ptp = NULL;
+        ptp = std::make_unique<tpool<job_info_t, STFractWorker>>(n, 1000, &ptf[0]);
     }
 }
 
 MTFractWorker::~MTFractWorker()
 {
-    delete ptp;
-    delete[] ptf;
 }
 
 void MTFractWorker::set_fractFunc(fractFunc *ff_)
@@ -58,7 +51,7 @@ void MTFractWorker::row_aa(int x, int y, int n)
     }
     else
     {
-        ptf->row_aa(x, y, n);
+        ptf[0].row_aa(x, y, n);
     }
 }
 
@@ -70,13 +63,13 @@ void MTFractWorker::row(int x, int y, int n)
     }
     else
     {
-        ptf->row(x, y, n);
+        ptf[0].row(x, y, n);
     }
 }
 
 void MTFractWorker::box(int x, int y, int rsize)
 {
-    ptf->box(x, y, rsize);
+    ptf[0].box(x, y, rsize);
 }
 
 void MTFractWorker::box_row(int w, int y, int rsize)
@@ -87,7 +80,7 @@ void MTFractWorker::box_row(int w, int y, int rsize)
     }
     else
     {
-        ptf->box_row(w, y, rsize);
+        ptf[0].box_row(w, y, rsize);
     }
 }
 
@@ -99,14 +92,14 @@ void MTFractWorker::qbox_row(int w, int y, int rsize, int drawsize)
     }
     else
     {
-        ptf->qbox_row(w, y, rsize, drawsize);
+        ptf[0].qbox_row(w, y, rsize, drawsize);
     }
 }
 
 void MTFractWorker::pixel(int x, int y, int w, int h)
 {
     //assert(0 && "unexpected");
-    ptf->pixel(x, y, w, h);
+    ptf[0].pixel(x, y, w, h);
 }
 
 void MTFractWorker::pixel_aa(int x, int y)
@@ -201,5 +194,5 @@ bool MTFractWorker::ok()
 
 bool MTFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
 {
-    return ptf->find_root(eye, look, root);
+    return ptf[0].find_root(eye, look, root);
 }

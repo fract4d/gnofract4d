@@ -1,4 +1,5 @@
 #include <cassert>
+#include <memory>
 
 #include "calcfunc.h"
 
@@ -25,10 +26,9 @@ void calc(
     IImage *im,
     IFractalSite *site)
 {
-    assert(NULL != im && NULL != site &&
-           NULL != cmap && NULL != pfo && NULL != params);
-    IFractWorker *worker = IFractWorker::create(nThreads, pfo, cmap, im, site);
+    assert(im && site && cmap && pfo && params);
 
+    std::unique_ptr<IFractWorker> worker {IFractWorker::create(nThreads, pfo, cmap, im, site)};
     if (worker && worker->ok())
     {
         fractFunc ff(
@@ -43,7 +43,7 @@ void calc(
             periodicity,
             render_type,
             warp_param,
-            worker,
+            worker.get(),
             im,
             site);
 
@@ -54,5 +54,4 @@ void calc(
         }
         ff.draw_all();
     }
-    delete worker;
 }

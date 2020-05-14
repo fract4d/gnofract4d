@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdlib>
+#include <utility>
 
 #include "model/worker.h"
 
@@ -11,24 +12,24 @@
 
 #include "pf.h"
 
-bool STFractWorker::init(
-    pf_obj *pfo, ColorMap *cmap, IImage *im_, IFractalSite *site)
+STFractWorker::STFractWorker(pf_obj *pfo, ColorMap *cmap, IImage *im_, IFractalSite *site) noexcept:
+    ff{nullptr}, im{im_}, lastIter{0}, m_ok{true}
 {
-    ff = NULL;
-    im = im_;
-    m_ok = true;
-
-    pf = pointFunc::create(pfo, cmap, site);
-    if (NULL == pf)
+    pf = std::unique_ptr<pointFunc>(pointFunc::create(pfo, cmap, site));
+    if (!pf)
     {
         m_ok = false;
     }
-    return m_ok;
+}
+
+STFractWorker::STFractWorker(STFractWorker &&original) noexcept:
+    ff{original.ff}, im{original.im}, pf{std::move(original.pf)},
+    stats{original.stats}, lastIter{original.lastIter}, m_ok{original.m_ok}
+{
 }
 
 STFractWorker::~STFractWorker()
 {
-    delete pf;
 }
 
 void STFractWorker::set_fractFunc(fractFunc *ff_)
@@ -415,7 +416,7 @@ void STFractWorker::pixel(int x, int y, int w, int h)
 {
     assert(pf != NULL && m_ok == true);
     rgba_t pixel;
-    float index;
+    float index {0};
     fate_t fate = im->getFate(x, y, 0);
     if (fate == FATE_UNKNOWN)
     {
