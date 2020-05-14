@@ -1,4 +1,3 @@
-include buildtools/*.py
 include COPYING
 include PKG-INFO
 include createdocs.py

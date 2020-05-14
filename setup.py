@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from buildtools import my_install_lib
 from distutils.core import setup, Extension
 import distutils.sysconfig
 import os
@@ -236,9 +235,6 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
         # doc files
         ('share/doc/gnofract4d/', ['LICENSE', 'README.md'])
     ],
-    cmdclass={
-        "install_lib": my_install_lib.my_install_lib
-    }
 )
 
 # I need to find the file I just built and copy it up out of the build
