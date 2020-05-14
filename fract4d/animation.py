@@ -211,7 +211,6 @@ class T:
     def load_animation(self, file):
         # save __dict__ if there was error
         odict = self.__dict__.copy()
-        import traceback
         try:
             self.keyframes = []
             parser = make_parser()
