@@ -100,7 +100,7 @@ public:
     void box(int x, int y, int rsize);
     // does the point at (x,y) have the same colour & iteration count
     // as the target?
-    inline bool isTheSame(bool bFlat, int targetIter, int targetCol, int x, int y);
+    inline bool isTheSame(int targetIter, int targetCol, int x, int y);
     // is the square with its top-left corner at (x,y) close-enough to flat
     // that we could interpolate & get a decent-looking image?
     bool isNearlyFlat(int x, int y, int rsize);

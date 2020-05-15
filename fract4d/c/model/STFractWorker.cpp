@@ -183,18 +183,14 @@ inline int STFractWorker::Pixel2INT(rgba_t pixel)
     return ret;
 }
 
-inline bool STFractWorker::isTheSame(
-    bool bFlat, int targetIter, int targetCol, int x, int y)
+inline bool STFractWorker::isTheSame(int targetIter, int targetCol, int x, int y)
 {
-    if (!bFlat)
-        return false;
     // does this point have the target # of iterations?
-    if (im->getIter(x, y) != targetIter)
-        return false;
     // does it have the same colour too?
-    if (RGB2INT(x, y) != targetCol)
-        return false;
-    return true;
+    if ((im->getIter(x, y) == targetIter) && (RGB2INT(x, y) == targetCol)) {
+        return true;
+    }
+    return false;
 }
 
 rgba_t STFractWorker::antialias(int x, int y)
@@ -536,17 +532,12 @@ void STFractWorker::pixel_aa(int x, int y)
     {
         // check to see if this point is surrounded by others of the same colour
         // if so, don't bother recalculating
-        int pcol = RGB2INT(x, y);
-        bool bFlat = true;
-        // this could go a lot faster if we cached some of this info
-        //bFlat = isTheSame(bFlat,iter,pcol,x-1,y-1);
-        bFlat = isTheSame(bFlat, iter, pcol, x, y - 1);
-        //bFlat = isTheSame(bFlat,iter,pcol,x+1,y-1);
-        bFlat = isTheSame(bFlat, iter, pcol, x - 1, y);
-        bFlat = isTheSame(bFlat, iter, pcol, x + 1, y);
-        //bFlat = isTheSame(bFlat,iter,pcol,x-1,y+1);
-        bFlat = isTheSame(bFlat, iter, pcol, x, y + 1);
-        //bFlat = isTheSame(bFlat,iter,pcol,x+1,y+1);
+        const int pcol = RGB2INT(x, y);
+        const bool bFlat =
+            isTheSame(iter, pcol, x, y - 1) &&
+            isTheSame(iter, pcol, x - 1, y) &&
+            isTheSame(iter, pcol, x + 1, y) &&
+            isTheSame(iter, pcol, x, y + 1);
         if (bFlat)
         {
             if (ff->debug_flags & DEBUG_DRAWING_STATS)
@@ -702,23 +693,23 @@ void STFractWorker::box(int x, int y, int rsize)
     // if they are, we assume that the box is a solid colour and
     // don't calculate the interior points
     bool bFlat = true;
-    int iter = im->getIter(x, y);
-    int pcol = RGB2INT(x, y);
+    const int iter = im->getIter(x, y);
+    const int pcol = RGB2INT(x, y);
     // calculate top and bottom of box & check for flatness
     for (int x2 = x; x2 < x + rsize; ++x2)
     {
         pixel(x2, y, 1, 1);
-        bFlat = isTheSame(bFlat, iter, pcol, x2, y);
+        bFlat = bFlat && isTheSame(iter, pcol, x2, y);
         pixel(x2, y + rsize - 1, 1, 1);
-        bFlat = isTheSame(bFlat, iter, pcol, x2, y + rsize - 1);
+        bFlat = bFlat && isTheSame(iter, pcol, x2, y + rsize - 1);
     }
     // calc left and right of box & check for flatness
     for (int y2 = y; y2 < y + rsize; ++y2)
     {
         pixel(x, y2, 1, 1);
-        bFlat = isTheSame(bFlat, iter, pcol, x, y2);
+        bFlat = bFlat && isTheSame(iter, pcol, x, y2);
         pixel(x + rsize - 1, y2, 1, 1);
-        bFlat = isTheSame(bFlat, iter, pcol, x + rsize - 1, y2);
+        bFlat = bFlat && isTheSame(iter, pcol, x + rsize - 1, y2);
     }
 
     if (bFlat)
