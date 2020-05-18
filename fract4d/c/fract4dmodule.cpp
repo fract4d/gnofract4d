@@ -687,7 +687,7 @@ static struct PyModuleDef moduledef = {
     NULL, // extension_clear
     NULL};
 
-extern "C" PyMODINIT_FUNC
+PyMODINIT_FUNC
 PyInit_fract4dc(void)
 {
     // had to do this here because some compilers don't support non-trivial designated initializers
