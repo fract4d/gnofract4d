@@ -31,17 +31,6 @@ dvec4 test_eye_vector(double *params, double dist)
     return mat[VZ] * -dist;
 }
 
-double gettimediff(struct timeval &startTime, struct timeval &endTime)
-{
-    long int diff_usec = endTime.tv_usec - startTime.tv_usec;
-    if (diff_usec < 0)
-    {
-        endTime.tv_sec -= 1;
-        diff_usec = 1000000 + diff_usec;
-    }
-    return (double)(endTime.tv_sec - startTime.tv_sec) + (double)diff_usec / 1000000.0;
-}
-
 fractFunc::fractFunc(
     d *params_,
     int eaa_,
@@ -58,12 +47,12 @@ fractFunc::fractFunc(
     IImage *im_,
     IFractalSite *site_)
 {
+
     site = site_;
     im = im_;
     ok = true;
     debug_flags = 0;
     render_type = render_type_;
-    //printf("render type %d\n", render_type);
     worker = fw;
     params = params_;
     eaa = eaa_;
@@ -74,12 +63,9 @@ fractFunc::fractFunc(
     period_tolerance = period_tolerance_;
     periodicity = periodicity_;
     warp_param = warp_param_;
+
     set_progress_range(0.0, 1.0);
-    /*
-    printf("(%d,%d,%d,%d,%d,%d)\n",
-	   im->Xres(), im->Yres(), im->totalXres(), im->totalYres(),
-	   im->Xoffset(), im->Yoffset());
-    */
+
     dvec4 center = dvec4(
         params[XCENTER], params[YCENTER],
         params[ZCENTER], params[WCENTER]);
@@ -267,7 +253,6 @@ void fractFunc::draw_all()
     float minp = 0.0, maxp = 0.3;
     draw(16, 16, minp, maxp);
 
-    minp = 0.5;
     maxp = (eaa == AA_NONE ? 0.9 : 0.5);
     int improvement_flags;
     while ((improvement_flags = updateiters()) & SHOULD_IMPROVE)
@@ -324,8 +309,7 @@ void fractFunc::draw_all()
     if (debug_flags & DEBUG_TIMING)
     {
         std::time(&endTime);
-        double diff = std::difftime(startTime, endTime);
-        printf("time:%g\n", diff);
+        printf("time:%g\n", std::difftime(startTime, endTime));
     }
 }
 

@@ -5,7 +5,6 @@
 
 typedef struct _object PyObject;
 
-// @TODO: this sub-class should be moved out of this model into the Python interface to keep this module portable
 class PySite : public IFractalSite
 {
 public:

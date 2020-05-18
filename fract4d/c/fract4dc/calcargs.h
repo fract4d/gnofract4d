@@ -29,7 +29,6 @@ struct calc_args
 
     calc_args();
 
-    // @TODO: remove PyObject from this interface for the model classes to be portable
     // possible solution: create a subclass in the python module interface that get's the real object inside this capsules
     void set_cmap(PyObject *pycmap_);
     void set_pfo(PyObject *pypfo_);

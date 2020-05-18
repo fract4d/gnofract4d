@@ -2,7 +2,6 @@
 
 #include "calcargs.h"
 
-// @TODO: create a subclass for python interfaces and remove these
 #include "fract4dc/colormaps.h"
 #include "fract4dc/sites.h"
 #include "fract4dc/loaders.h"
