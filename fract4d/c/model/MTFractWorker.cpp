@@ -3,7 +3,6 @@
 #include "model/colormap.h"
 #include "model/image.h"
 #include "model/site.h"
-#include "model/threadpool.h"
 
 #include "pf.h"
 
@@ -13,7 +12,7 @@ MTFractWorker::MTFractWorker(
     ColorMap *cmap,
     IImage *im,
     IFractalSite *site)
-    : nWorkers{n > 1 ? n + 1 : 1}, ptf(), m_ok{true}
+    : nWorkers{n > 1 ? n + 1 : 1}, ptf()
 {
     /* 0'th ftf is in this thread for calculations we don't want to offload */
     ptf.reserve(nWorkers);
@@ -29,10 +28,6 @@ MTFractWorker::MTFractWorker(
     {
         ptp = std::make_unique<tpool<job_info_t, STFractWorker>>(n, 1000, &ptf[0]);
     }
-}
-
-MTFractWorker::~MTFractWorker()
-{
 }
 
 void MTFractWorker::set_fractFunc(fractFunc *ff_)
@@ -185,11 +180,6 @@ void MTFractWorker::flush()
     {
         ptp->flush();
     }
-}
-
-bool MTFractWorker::ok()
-{
-    return m_ok;
 }
 
 bool MTFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)

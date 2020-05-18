@@ -6,17 +6,16 @@
 
 #include "model/vectors.h"
 #include "model/stats.h"
+#include "model/pointfunc.h"
+#include "model/threadpool.h"
 
 class fractFunc;
-class pointFunc;
 class ColorMap;
 class IImage;
 class IFractalSite;
 typedef struct s_rgba rgba_t;
 typedef unsigned char fate_t;
 typedef struct s_pf_data pf_obj;
-template <class work_t, class threadInfo>
-class tpool;
 
 /* enum for jobs */
 typedef enum
@@ -66,7 +65,10 @@ public:
     virtual bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root) = 0;
     virtual ~IFractWorker(){};
     virtual void flush() = 0;
-    virtual bool ok() = 0;
+    bool ok() const { return m_ok; }
+protected:
+    bool m_ok = true;
+    mutable pixel_stat_t stats;
 };
 
 /* per-worker-thread fractal info */
@@ -76,7 +78,7 @@ public:
     STFractWorker(pf_obj *, ColorMap *, IImage *, IFractalSite *) noexcept;
     // needed because having unique_ptr member deletes copy ctor
     STFractWorker(STFractWorker&&) noexcept;
-    ~STFractWorker();
+    ~STFractWorker(){};
 
     void set_fractFunc(fractFunc *ff);
     // heuristic to see if we should use periodicity checking for next point
@@ -137,7 +139,6 @@ public:
     void reset_counts();
     const pixel_stat_t &get_stats() const;
     void flush(){};
-    bool ok() { return m_ok; }
     // ray-tracing machinery
     bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root);
 private:
@@ -154,10 +155,8 @@ private:
     // this is per-thread-func so it doesn't have to be re-entrant
     // and can have member vars
     std::unique_ptr<pointFunc> pf;
-    pixel_stat_t stats;
     // period guessing
     int lastIter; // how many iterations did last pixel take?
-    bool m_ok;
 };
 
 // a composite subclass which holds an array of STFractWorkers and
@@ -170,7 +169,7 @@ public:
                   ColorMap *cmap,
                   IImage *im,
                   IFractalSite *site);
-    ~MTFractWorker();
+    ~MTFractWorker(){};
     void set_fractFunc(fractFunc *ff);
     // operations
     void row_aa(int x, int y, int n);
@@ -184,7 +183,7 @@ public:
     void reset_counts();
     const pixel_stat_t &get_stats() const;
     void flush();
-    bool ok();
+
     bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root);
 private:
     /* wait for a ready thread then give it some work */
@@ -200,8 +199,6 @@ private:
     int nWorkers;
     std::vector<STFractWorker> ptf;
     std::unique_ptr<tpool<job_info_t, STFractWorker>> ptp;
-    bool m_ok;
-    mutable pixel_stat_t stats;
 };
 
 #endif

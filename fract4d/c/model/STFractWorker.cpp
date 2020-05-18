@@ -7,13 +7,12 @@
 #include "model/colormap.h"
 #include "model/image.h"
 #include "model/site.h"
-#include "model/pointfunc.h"
 #include "model/fractfunc.h"
 
 #include "pf.h"
 
 STFractWorker::STFractWorker(pf_obj *pfo, ColorMap *cmap, IImage *im_, IFractalSite *site) noexcept:
-    ff{nullptr}, im{im_}, lastIter{0}, m_ok{true}
+    ff{nullptr}, im{im_}, lastIter{0}
 {
     pf = std::unique_ptr<pointFunc>(pointFunc::create(pfo, cmap, site));
     if (!pf)
@@ -23,13 +22,10 @@ STFractWorker::STFractWorker(pf_obj *pfo, ColorMap *cmap, IImage *im_, IFractalS
 }
 
 STFractWorker::STFractWorker(STFractWorker &&original) noexcept:
-    ff{original.ff}, im{original.im}, pf{std::move(original.pf)},
-    stats{original.stats}, lastIter{original.lastIter}, m_ok{original.m_ok}
+    ff{original.ff}, im{original.im}, pf{std::move(original.pf)}, lastIter{original.lastIter}
 {
-}
-
-STFractWorker::~STFractWorker()
-{
+    this->m_ok = original.m_ok;
+    this->stats = original.stats;
 }
 
 void STFractWorker::set_fractFunc(fractFunc *ff_)
