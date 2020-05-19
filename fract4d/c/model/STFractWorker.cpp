@@ -11,10 +11,10 @@
 
 #include "pf.h"
 
-STFractWorker::STFractWorker(pf_obj *pfo, ColorMap *cmap, IImage *im_, IFractalSite *site) noexcept:
-    ff{nullptr}, im{im_}, lastIter{0}
+STFractWorker::STFractWorker(pf_obj *pfo, ColorMap *cmap, IImage *im_, IFractalSite *site_) noexcept:
+    site{site_}, ff{nullptr}, im{im_}, lastIter{0}
 {
-    pf = std::unique_ptr<pointFunc>(pointFunc::create(pfo, cmap, site));
+    pf = std::unique_ptr<pointFunc>(pointFunc::create(pfo, cmap));
     if (!pf)
     {
         m_ok = false;
@@ -421,13 +421,21 @@ void STFractWorker::pixel(int x, int y, int w, int h)
             dvec4 pos = ff->topleft + x * ff->deltax + y * ff->deltay;
             //printf("(%d,%d -> %g,%g,%g,%g) [%x]\n",
             //	   x,y,pos[VX],pos[VY],pos[VZ],pos[VW], (unsigned int)pthread_self());
+            const int min_period_iters = periodGuess();
             pf->calc(
                 pos.n, ff->maxiter,
-                periodGuess(), ff->period_tolerance,
+                min_period_iters, ff->period_tolerance,
                 ff->warp_param,
                 x, y, 0,
                 &pixel, &iter, &index, &fate);
             compute_stats(pos, iter, fate, x, y);
+
+            const int color_iters = (fate & FATE_INSIDE) ? -1 : iter;
+            site->pixel_changed(
+                pos.n, ff->maxiter, min_period_iters,
+                x, y, 0,
+                index, fate, color_iters,
+                pixel.r, pixel.g, pixel.b, pixel.a);
         }
         break;
         case RENDER_LANDSCAPE:

@@ -148,6 +148,7 @@ private:
     // return true if this pixel needs recalc in AA pass
     bool needs_aa_calc(int x, int y);
 
+    IFractalSite *site;
     fractFunc *ff;
     /* pointers to data also held in fractFunc */
     IImage *im;

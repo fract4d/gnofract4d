@@ -6,24 +6,20 @@
 #include <cstdio>
 
 #include "pointfunc.h"
-
 #include "pf.h"
-
 #include "model/colormap.h"
-#include "model/site.h"
 #include "model/color.h"
 
 
 pointFunc *pointFunc::create(
     pf_obj *pfo,
-    ColorMap *cmap,
-    IFractalSite *site)
+    ColorMap *cmap)
 {
     if (NULL == pfo || NULL == cmap)
     {
         return NULL;
     }
-    return new pf_wrapper(pfo, cmap, site);
+    return new pf_wrapper(pfo, cmap);
 }
 
 void pf_wrapper::calc(
@@ -71,12 +67,6 @@ void pf_wrapper::calc(
     }
     *pFate = (fate_t)fate;
     *pIndex = (float)dist;
-    int color_iters = (fate & FATE_INSIDE) ? -1 : *pnIters;
-    m_site->pixel_changed(
-        params, nIters, min_period_iters,
-        x, y, aa,
-        dist, fate, color_iters,
-        color->r, color->g, color->b, color->a);
 }
 
 inline rgba_t pf_wrapper::recolor(double dist, fate_t fate, rgba_t current) const

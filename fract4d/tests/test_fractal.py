@@ -1307,7 +1307,6 @@ The image may not display correctly. Please upgrade to version 99.9 or higher.''
 
     def testDiagonalWithColorFuncs(self):
         f = fractal.T(Test.g_comp)
-        #f.pixel_changed = f._pixel_changed
         f.set_formula("test.frm", "test_simpleshape")
         f.set_inner("test.cfrm", "flat")
         f.set_outer("test.cfrm", "flat")
