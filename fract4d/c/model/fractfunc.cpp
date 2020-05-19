@@ -4,9 +4,9 @@
 #include <cassert>
 
 #include "fractfunc.h"
-
 #include "model/image.h"
 
+// produces the scaled rotation matrix from the params
 dmat4 rotated_matrix(double *params)
 {
     d one = d(1.0);
@@ -24,7 +24,6 @@ dmat4 rotated_matrix(double *params)
 // The eye vector is the line between the center of the screen and the
 // point where the user's eye is deemed to be. It's effectively the line
 // perpendicular to the screen in the -Z direction, scaled by the "eye distance"
-
 dvec4 test_eye_vector(double *params, double dist)
 {
     dmat4 mat = rotated_matrix(params);
@@ -45,31 +44,17 @@ fractFunc::fractFunc(
     int warp_param_,
     IFractWorker *fw,
     IImage *im_,
-    IFractalSite *site_)
+    IFractalSite *site_):
+    eaa{eaa_}, maxiter{maxiter_}, nThreads{nThreads_}, auto_deepen{auto_deepen_},
+    auto_tolerance{auto_tolerance_}, periodicity{periodicity_}, period_tolerance{period_tolerance_},
+    debug_flags{0}, render_type{render_type_}, warp_param{warp_param_}, params{params_},
+    im{im_}, worker{fw}, site{site_}, last_update_y{0}, min_progress{0.0f}, delta_progress{1.0f}
 {
-
-    site = site_;
-    im = im_;
-    ok = true;
-    debug_flags = 0;
-    render_type = render_type_;
-    worker = fw;
-    params = params_;
-    eaa = eaa_;
-    maxiter = maxiter_;
-    nThreads = nThreads_;
-    auto_deepen = auto_deepen_;
-    auto_tolerance = auto_tolerance_;
-    period_tolerance = period_tolerance_;
-    periodicity = periodicity_;
-    warp_param = warp_param_;
-
-    set_progress_range(0.0, 1.0);
-
     dvec4 center = dvec4(
         params[XCENTER], params[YCENTER],
         params[ZCENTER], params[WCENTER]);
-    rot = rotated_matrix(params);
+
+    dmat4 rot = rotated_matrix(params);
 
     eye_point = center + rot[VZ] * -10.0; // FIXME add eye distance parameter
 
@@ -99,8 +84,6 @@ fractFunc::fractFunc(
     aa_topleft = topleft - (delta_aa_y + delta_aa_x) / 2.0;
 
     worker->set_fractFunc(this);
-
-    last_update_y = 0;
 }
 
 bool fractFunc::update_image(int i)

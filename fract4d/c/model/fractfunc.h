@@ -48,9 +48,7 @@ public:
     // additional flags controlling debugging & profiling options
     void set_debug_flags(int debug_flags);
     void draw_all();
-    void draw(int rsize, int drawsize, float min_progress, float max_progress);
-    void draw_aa(float min_progress, float max_progress);
-    int updateiters();
+
     // a vector from the eye through the pixel at (x,y)
     dvec4 vec_for_point(double x, double y);
     // @TODO: review the need of having this coupling
@@ -87,7 +85,6 @@ public:
         return site->is_interrupted();
     }
     // used for calculating (x,y,z,w) pixel coords
-    dmat4 rot;                    // scaled rotation matrix
     dvec4 deltax, deltay;         // step from 1 pixel to the next in x,y directions
     dvec4 delta_aa_x, delta_aa_y; // offset between subpixels
     dvec4 topleft;                // top left corner of screen
@@ -95,10 +92,7 @@ public:
     dvec4 eye_point;              // where user's eye is (for 3d mode)
 
 private:
-    // MEMBER VARS
-    bool ok; // did this instance get constructed ok?
-    // (* this should really be done with exns but they are unreliable
-    //  * in the presence of pthreads - grrr *)
+
     // do every nth pixel twice as deep as the others to
     // see if we need to auto-deepen
     enum
@@ -116,6 +110,7 @@ private:
         SHOULD_IMPROVE = (SHOULD_DEEPEN | SHOULD_TIGHTEN),
         SHOULD_RELAX = (SHOULD_SHALLOWEN | SHOULD_LOOSEN)
     };
+
     // params from ctor
     int eaa;
     int maxiter;
@@ -137,6 +132,10 @@ private:
     float min_progress;
     float delta_progress;
     pixel_stat_t stats;
+
+    void draw(int rsize, int drawsize, float min_progress, float max_progress);
+    void draw_aa(float min_progress, float max_progress);
+    int updateiters();
     void set_progress_range(float min, float max);
     // private drawing methods
     void send_quit();
