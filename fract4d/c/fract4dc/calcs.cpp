@@ -43,7 +43,7 @@ namespace calcs {
             return NULL;
         }
 
-        if (cargs->asynchronous)
+        if (cargs->options.asynchronous)
         {
             cargs->site->interrupt();
             cargs->site->wait();
@@ -70,23 +70,15 @@ namespace calcs {
         {
             Py_BEGIN_ALLOW_THREADS
                 // synchronous
-                calc(cargs->params,
-                    cargs->eaa,
-                    cargs->maxiter,
-                    cargs->nThreads,
+                calc(
+                    cargs->options,
+                    cargs->params,
                     cargs->pfo,
                     cargs->cmap,
-                    cargs->auto_deepen,
-                    cargs->auto_tolerance,
-                    cargs->tolerance,
-                    cargs->yflip,
-                    cargs->periodicity,
-                    cargs->dirty,
-                    0, // debug_flags
-                    cargs->render_type,
-                    cargs->warp_param,
+                    cargs->site,
                     cargs->im,
-                    cargs->site);
+                    0 // debug_flags
+                );
 
             delete cargs;
             Py_END_ALLOW_THREADS
@@ -107,16 +99,15 @@ void * calculation_thread(void *vdata)
     fprintf(stderr, "%p : CA : CALC(%d)\n", args, pthread_self());
 #endif
 
-    calc(args->params, args->eaa, args->maxiter,
-         args->nThreads, args->pfo, args->cmap,
-         args->auto_deepen,
-         args->auto_tolerance,
-         args->tolerance,
-         args->yflip, args->periodicity, args->dirty,
-         0, // debug_flags
-         args->render_type,
-         args->warp_param,
-         args->im, args->site);
+    calc(
+        args->options,
+        args->params,
+        args->pfo,
+        args->cmap,
+        args->site,
+        args->im,
+        0 // debug_flags
+    );
 
 #ifdef DEBUG_THREADS
     fprintf(stderr, "%p : CA : ENDCALC(%d)\n", args, pthread_self());
@@ -161,18 +152,18 @@ calc_args * parse_calc_args(PyObject *args, PyObject *kwds)
             &pyim, &pysite,
             &pypfo, &pycmap,
             &pyparams,
-            &cargs->eaa,
-            &cargs->maxiter,
-            &cargs->yflip,
-            &cargs->nThreads,
-            &cargs->auto_deepen,
-            &cargs->periodicity,
-            &cargs->render_type,
-            &cargs->dirty,
-            &cargs->asynchronous,
-            &cargs->warp_param,
-            &cargs->tolerance,
-            &cargs->auto_tolerance))
+            &cargs->options.eaa,
+            &cargs->options.maxiter,
+            &cargs->options.yflip,
+            &cargs->options.nThreads,
+            &cargs->options.auto_deepen,
+            &cargs->options.periodicity,
+            &cargs->options.render_type,
+            &cargs->options.dirty,
+            &cargs->options.asynchronous,
+            &cargs->options.warp_param,
+            &cargs->options.period_tolerance,
+            &cargs->options.auto_tolerance))
     {
         goto error;
     }

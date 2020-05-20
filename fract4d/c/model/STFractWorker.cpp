@@ -12,7 +12,7 @@
 #include "pf.h"
 
 STFractWorker::STFractWorker(pf_obj *pfo, ColorMap *cmap, IImage *im_, IFractalSite *site_) noexcept:
-    site{site_}, ff{nullptr}, im{im_}, lastIter{0}
+    options{nullptr}, site{site_}, ff{nullptr}, im{im_}, lastIter{0}
 {
     pf = std::unique_ptr<pointFunc>(pointFunc::create(pfo, cmap));
     if (!pf)
@@ -22,7 +22,7 @@ STFractWorker::STFractWorker(pf_obj *pfo, ColorMap *cmap, IImage *im_, IFractalS
 }
 
 STFractWorker::STFractWorker(STFractWorker &&original) noexcept:
-    ff{original.ff}, im{original.im}, pf{std::move(original.pf)}, lastIter{original.lastIter}
+    options{original.options}, ff{original.ff}, im{original.im}, pf{std::move(original.pf)}, lastIter{original.lastIter}
 {
     this->m_ok = original.m_ok;
     this->stats = original.stats;
@@ -31,6 +31,7 @@ STFractWorker::STFractWorker(STFractWorker &&original) noexcept:
 void STFractWorker::set_fractFunc(fractFunc *ff_)
 {
     ff = ff_;
+    this->options = &ff_->options;
 }
 
 /* we're in a worker thread */
@@ -93,9 +94,9 @@ void STFractWorker::row_aa(int x, int y, int w)
 
 inline int STFractWorker::periodGuess()
 {
-    if (!ff->periodicity)
+    if (!options->periodicity)
     {
-        return ff->maxiter;
+        return options->maxiter;
     }
     if (lastIter == -1)
     {
@@ -123,9 +124,9 @@ inline int STFractWorker::periodGuess(int x, int y)
 
 inline int STFractWorker::periodGuess(int last)
 {
-    if (!ff->periodicity)
+    if (!options->periodicity)
     {
-        return ff->maxiter;
+        return options->maxiter;
     }
     if (last == -1)
     {
@@ -210,9 +211,9 @@ rgba_t STFractWorker::antialias(int x, int y)
     if (im->hasUnknownSubpixels(x, y))
     {
         pf->calc(
-            pos.n, ff->maxiter,
-            checkPeriod, ff->period_tolerance,
-            ff->warp_param,
+            pos.n, options->maxiter,
+            checkPeriod, options->period_tolerance,
+            options->warp_param,
             x, y, 1,
             &ptmp, &p, &index, &fate);
         im->setFate(x, y, 0, fate);
@@ -231,9 +232,9 @@ rgba_t STFractWorker::antialias(int x, int y)
     {
         pos += ff->delta_aa_x;
         pf->calc(
-            pos.n, ff->maxiter,
-            checkPeriod, ff->period_tolerance,
-            ff->warp_param,
+            pos.n, options->maxiter,
+            checkPeriod, options->period_tolerance,
+            options->warp_param,
             x, y, 2,
             &ptmp, &p, &index, &fate);
         im->setFate(x, y, 1, fate);
@@ -252,9 +253,9 @@ rgba_t STFractWorker::antialias(int x, int y)
     {
         pos = topleft + ff->delta_aa_y;
         pf->calc(
-            pos.n, ff->maxiter,
-            checkPeriod, ff->period_tolerance,
-            ff->warp_param,
+            pos.n, options->maxiter,
+            checkPeriod, options->period_tolerance,
+            options->warp_param,
             x, y, 3,
             &ptmp, &p, &index, &fate);
         im->setFate(x, y, 2, fate);
@@ -273,9 +274,9 @@ rgba_t STFractWorker::antialias(int x, int y)
     {
         pos = topleft + ff->delta_aa_y + ff->delta_aa_x;
         pf->calc(
-            pos.n, ff->maxiter,
-            checkPeriod, ff->period_tolerance,
-            ff->warp_param,
+            pos.n, options->maxiter,
+            checkPeriod, options->period_tolerance,
+            options->warp_param,
             x, y, 4,
             &ptmp, &p, &index, &fate);
         im->setFate(x, y, 3, fate);
@@ -302,7 +303,7 @@ void STFractWorker::compute_stats(const dvec4 &pos, int iter, fate_t fate, int x
     if (fate & FATE_INSIDE)
     {
         stats.s[PIXELS_INSIDE]++;
-        if (iter < ff->maxiter - 1)
+        if (iter < options->maxiter - 1)
         {
             stats.s[PIXELS_PERIODIC]++;
         }
@@ -311,11 +312,11 @@ void STFractWorker::compute_stats(const dvec4 &pos, int iter, fate_t fate, int x
     {
         stats.s[PIXELS_OUTSIDE]++;
     }
-    if (ff->auto_deepen && stats.s[PIXELS] % ff->AUTO_DEEPEN_FREQUENCY == 0)
+    if (options->auto_deepen && stats.s[PIXELS] % ff->AUTO_DEEPEN_FREQUENCY == 0)
     {
         compute_auto_deepen_stats(pos, iter, x, y);
     }
-    if (ff->periodicity && ff->auto_tolerance &&
+    if (options->periodicity && options->auto_tolerance &&
         stats.s[PIXELS] % ff->AUTO_TOLERANCE_FREQUENCY == 0)
     {
         compute_auto_tolerance_stats(pos, iter, x, y);
@@ -335,9 +336,9 @@ void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int
         int temp_iter;
         /* try again with 10x tighter tolerance */
         pf->calc(
-            pos.n, ff->maxiter,
-            0, ff->period_tolerance / 10.0,
-            ff->warp_param,
+            pos.n, options->maxiter,
+            0, options->period_tolerance / 10.0,
+            options->warp_param,
             x, y, -1,
             &temp_pixel, &temp_iter, &temp_index, &temp_fate);
 
@@ -359,9 +360,9 @@ void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int
         int temp_iter;
         /* try again with 10x looser tolerance */
         pf->calc(
-            pos.n, ff->maxiter,
-            0, ff->period_tolerance * 10.0,
-            ff->warp_param,
+            pos.n, options->maxiter,
+            0, options->period_tolerance * 10.0,
+            options->warp_param,
             x, y, -1,
             &temp_pixel, &temp_iter, &temp_index, &temp_fate);
 
@@ -375,7 +376,7 @@ void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int
 
 void STFractWorker::compute_auto_deepen_stats(const dvec4 &pos, int iter, int x, int y)
 {
-    if (iter > ff->maxiter / 2)
+    if (iter > options->maxiter / 2)
     {
         /* we would have got this wrong if we used
 	    * half as many iterations */
@@ -389,9 +390,9 @@ void STFractWorker::compute_auto_deepen_stats(const dvec4 &pos, int iter, int x,
         int temp_iter;
         /* didn't bail out, try again with 2x as many iterations */
         pf->calc(
-            pos.n, ff->maxiter * 2,
-            periodGuess(), ff->period_tolerance,
-            ff->warp_param,
+            pos.n, options->maxiter * 2,
+            periodGuess(), options->period_tolerance,
+            options->warp_param,
             x, y, -1,
             &temp_pixel, &temp_iter, &temp_index, &temp_fate);
 
@@ -413,7 +414,7 @@ void STFractWorker::pixel(int x, int y, int w, int h)
     if (fate == FATE_UNKNOWN)
     {
         int iter = 0;
-        switch (ff->render_type)
+        switch (options->render_type)
         {
         case RENDER_TWO_D:
         {
@@ -423,16 +424,16 @@ void STFractWorker::pixel(int x, int y, int w, int h)
             //	   x,y,pos[VX],pos[VY],pos[VZ],pos[VW], (unsigned int)pthread_self());
             const int min_period_iters = periodGuess();
             pf->calc(
-                pos.n, ff->maxiter,
-                min_period_iters, ff->period_tolerance,
-                ff->warp_param,
+                pos.n, options->maxiter,
+                min_period_iters, options->period_tolerance,
+                options->warp_param,
                 x, y, 0,
                 &pixel, &iter, &index, &fate);
             compute_stats(pos, iter, fate, x, y);
 
             const int color_iters = (fate & FATE_INSIDE) ? -1 : iter;
             site->pixel_changed(
-                pos.n, ff->maxiter, min_period_iters,
+                pos.n, options->maxiter, min_period_iters,
                 x, y, 0,
                 index, fate, color_iters,
                 pixel.r, pixel.g, pixel.b, pixel.a);
@@ -531,7 +532,7 @@ void STFractWorker::pixel_aa(int x, int y)
     rgba_t pixel;
     int iter = im->getIter(x, y);
     // if aa type is fast, short-circuit some points
-    if (ff->eaa == AA_FAST &&
+    if (options->eaa == AA_FAST &&
         x > 0 && x < im->Xres() - 1 && y > 0 && y < im->Yres() - 1)
     {
         // check to see if this point is surrounded by others of the same colour
@@ -780,9 +781,9 @@ inline void STFractWorker::check_guess(int x, int y, rgba_t pixel, fate_t fate, 
         float tindex;
         fate_t tfate;
         pf->calc(
-            pos.n, ff->maxiter,
-            periodGuess(), ff->period_tolerance,
-            ff->warp_param,
+            pos.n, options->maxiter,
+            periodGuess(), options->period_tolerance,
+            options->warp_param,
             x, y, 0,
             &tpixel, &titer, &tindex, &tfate);
         if (Pixel2INT(tpixel) == Pixel2INT(pixel))
@@ -847,9 +848,9 @@ bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
         pos = eye + dist * look;
         //printf("%g %g %g %g\n", pos[0], pos[1], pos[2], pos[3]);
         pf->calc(
-            pos.n, ff->maxiter,
-            periodGuess(), ff->period_tolerance,
-            ff->warp_param,
+            pos.n, options->maxiter,
+            periodGuess(), options->period_tolerance,
+            options->warp_param,
             x, y, 0,
             &pixel, &iter, &index, &fate);
         steps += 1;
@@ -870,9 +871,9 @@ bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
     {
         d mid = (lastdist + dist) / 2.0;
         pos = eye + mid * look;
-        pf->calc(pos.n, ff->maxiter,
-                 periodGuess(), ff->period_tolerance,
-                 ff->warp_param,
+        pf->calc(pos.n, options->maxiter,
+                 periodGuess(), options->period_tolerance,
+                 options->warp_param,
                  x, y, 0,
                  &pixel, &iter, &index, &fate);
         if (fate != 0) // FIXME

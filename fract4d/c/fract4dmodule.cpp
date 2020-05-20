@@ -30,6 +30,7 @@
 #include "fract4dc/controllers.h"
 
 #include "model/enums.h"
+#include "model/calcoptions.h"
 
 struct module_state
 {
@@ -489,7 +490,7 @@ Controller_start_calculating(FractalController *self, PyObject *args, PyObject *
         &coptions.dirty,
         &coptions.asynchronous,
         &coptions.warp_param,
-        &coptions.tolerance,
+        &coptions.period_tolerance,
         &coptions.auto_tolerance
         ))
     {

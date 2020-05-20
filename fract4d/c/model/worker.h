@@ -8,6 +8,7 @@
 #include "model/stats.h"
 #include "model/pointfunc.h"
 #include "model/threadpool.h"
+#include "model/calcoptions.h"
 
 class fractFunc;
 class ColorMap;
@@ -42,8 +43,8 @@ class IFractWorker
 {
 public:
     static IFractWorker *create(
-        int nThreads, pf_obj *pfo, ColorMap *cmap, IImage *im_, IFractalSite *site);
-    virtual void set_fractFunc(fractFunc *ff_) = 0;
+        int nThreads, pf_obj *, ColorMap *, IImage *, IFractalSite *);
+    virtual void set_fractFunc(fractFunc *) = 0;
     // calculate a row of antialiased pixels
     virtual void row_aa(int x, int y, int n) = 0;
     // calculate a row of pixels
@@ -148,6 +149,7 @@ private:
     // return true if this pixel needs recalc in AA pass
     bool needs_aa_calc(int x, int y);
 
+    calc_options *options;
     IFractalSite *site;
     fractFunc *ff;
     /* pointers to data also held in fractFunc */
@@ -165,11 +167,13 @@ private:
 class MTFractWorker final: public IFractWorker
 {
 public:
-    MTFractWorker(int n,
-                  pf_obj *obj,
-                  ColorMap *cmap,
-                  IImage *im,
-                  IFractalSite *site);
+    MTFractWorker(
+        int n,
+        pf_obj *,
+        ColorMap *,
+        IImage *,
+        IFractalSite *
+    );
     ~MTFractWorker(){};
     void set_fractFunc(fractFunc *ff);
     // operations

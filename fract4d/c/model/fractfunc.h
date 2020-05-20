@@ -6,6 +6,7 @@
 #include "model/site.h"
 #include "model/stats.h"
 #include "model/enums.h"
+#include "model/calcoptions.h"
 
 class IImage;
 
@@ -30,23 +31,14 @@ class fractFunc
 {
 public:
     fractFunc(
+        calc_options,
         d *params,
-        int eaa,
-        int maxiter,
-        int nThreads_,
-        bool auto_deepen,
-        bool auto_tolerance,
-        double period_tolerance,
-        bool yflip,
-        bool periodicity,
-        render_type_t render_type,
-        int warp_param,
-        IFractWorker *fw,
-        IImage *_im,
-        IFractalSite *_site);
+        IFractWorker *,
+        IImage *,
+        IFractalSite *);
     ~fractFunc(){};
     // additional flags controlling debugging & profiling options
-    void set_debug_flags(int debug_flags);
+    void set_debug_flags(int);
     void draw_all();
 
     // a vector from the eye through the pixel at (x,y)
@@ -112,16 +104,8 @@ private:
     };
 
     // params from ctor
-    int eaa;
-    int maxiter;
-    int nThreads;
-    bool auto_deepen;
-    bool auto_tolerance;
-    bool periodicity;
-    double period_tolerance;
     int debug_flags;
-    render_type_t render_type;
-    int warp_param;
+    calc_options options;
     d *params;
     IImage *im;
     IFractWorker *worker;

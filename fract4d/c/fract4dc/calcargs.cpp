@@ -14,18 +14,6 @@ calc_args::calc_args()
 #ifdef DEBUG_CREATION
     fprintf(stderr, "%p : CA : CTOR\n", this);
 #endif
-    dirty = 1;
-    periodicity = true;
-    yflip = false;
-    auto_deepen = false;
-    auto_tolerance = false;
-    tolerance = 1.0E-9;
-    eaa = AA_NONE;
-    maxiter = 1024;
-    nThreads = 1;
-    render_type = RENDER_TWO_D;
-    asynchronous = false;
-    warp_param = -1;
     params = new double[N_PARAMS];
 }
 

@@ -7,48 +7,31 @@
 #include "model/fractfunc.h"
 #include "model/image.h"
 
+
 void calc(
+    calc_options options,
     d *params,
-    int eaa,
-    int maxiter,
-    int nThreads,
     pf_obj *pfo,
     ColorMap *cmap,
-    bool auto_deepen,
-    bool auto_tolerance,
-    double tolerance,
-    bool yflip,
-    bool periodicity,
-    bool dirty,
-    int debug_flags,
-    render_type_t render_type,
-    int warp_param,
+    IFractalSite *site,
     IImage *im,
-    IFractalSite *site)
+    int debug_flags)
 {
     assert(im && site && cmap && pfo && params);
 
-    std::unique_ptr<IFractWorker> worker {IFractWorker::create(nThreads, pfo, cmap, im, site)};
+    std::unique_ptr<IFractWorker> worker {IFractWorker::create(options.nThreads, pfo, cmap, im, site)};
     if (worker && worker->ok())
     {
         fractFunc ff(
+            options,
             params,
-            eaa,
-            maxiter,
-            nThreads,
-            auto_deepen,
-            auto_tolerance,
-            tolerance,
-            yflip,
-            periodicity,
-            render_type,
-            warp_param,
             worker.get(),
             im,
-            site);
+            site
+        );
 
         ff.set_debug_flags(debug_flags);
-        if (dirty)
+        if (options.dirty)
         {
             im->clear();
         }

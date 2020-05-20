@@ -16,6 +16,7 @@
 #include "model/calcfunc.h"
 #include "model/enums.h"
 #include "model/imagewriter.h"
+#include "model/calcoptions.h"
 
 #define MAX_ITERATIONS 100
 
@@ -31,30 +32,22 @@ struct calcargs {
     IFractalSite *site;
     ColorMap *cmap;
     IImage *im;
+    calc_options options;
 };
 
 void * calculation_thread(void *vdata) {
     const auto processor_count = std::thread::hardware_concurrency();
     fprintf(stdout, "Running with %d threads\n", processor_count);
     calcargs *args = (calcargs *)vdata;
+    args->options.nThreads = processor_count;
     calc(
+        args->options,
         args->pos_params,
-        0, // antialiasing
-        MAX_ITERATIONS,
-        processor_count, // number of threads
         args->pf_handle,
         args->cmap,
-        0, // auto deepen
-        0, // auto tolerance
-        1.0E-9, // tolerance
-        0, // y flip
-        1, // periodicity
-        1, // dirty
-        0, // debug flags
-        RENDER_TWO_D, // render type
-        -1, // wrap param
+        args->site,
         args->im,
-        args->site
+        0 // debug flags
     );
     delete args;
 }
@@ -151,6 +144,7 @@ int main() {
     pthread_create(&tid_read, nullptr, watching_thread, (void *)&messages_pipe[0]);
     // LAUNCH CALCULATION
     calcargs *args = new calcargs {pf_handle, const_cast<double *>(pos_params), site.get(), cmap.get(), im.get()};
+    args->options.maxiter = MAX_ITERATIONS;
     pthread_t tid;
     pthread_create(&tid, nullptr, calculation_thread, (void *)args);
     site->set_tid(tid);

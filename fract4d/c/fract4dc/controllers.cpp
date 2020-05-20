@@ -70,23 +70,13 @@ void fractal_controller::start_calculating(PyObject *pyimage, PyObject *pycmap, 
     auto calc_fn = [](void *data) mutable -> void* {
         fractal_controller *fc = (fractal_controller *)data;
         calc(
+            fc->c_options,
             fc->c_pos_params,
-            fc->c_options.eaa,
-            fc->c_options.maxiter,
-            fc->c_options.nThreads,
             fc->pf_handle,
             fc->cmap,
-            fc->c_options.auto_deepen,
-            fc->c_options.auto_tolerance,
-            fc->c_options.tolerance,
-            fc->c_options.yflip,
-            fc->c_options.periodicity,
-            fc->c_options.dirty,
-            0,
-            fc->c_options.render_type,
-            fc->c_options.warp_param,
+            fc->site,
             fc->image,
-            fc->site
+            0
         );
         return nullptr;
     };

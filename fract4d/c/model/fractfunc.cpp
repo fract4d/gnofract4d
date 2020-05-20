@@ -31,24 +31,15 @@ dvec4 test_eye_vector(double *params, double dist)
 }
 
 fractFunc::fractFunc(
+    calc_options options_,
     d *params_,
-    int eaa_,
-    int maxiter_,
-    int nThreads_,
-    bool auto_deepen_,
-    bool auto_tolerance_,
-    double period_tolerance_,
-    bool yflip,
-    bool periodicity_,
-    render_type_t render_type_,
-    int warp_param_,
     IFractWorker *fw,
     IImage *im_,
     IFractalSite *site_):
-    eaa{eaa_}, maxiter{maxiter_}, nThreads{nThreads_}, auto_deepen{auto_deepen_},
-    auto_tolerance{auto_tolerance_}, periodicity{periodicity_}, period_tolerance{period_tolerance_},
-    debug_flags{0}, render_type{render_type_}, warp_param{warp_param_}, params{params_},
-    im{im_}, worker{fw}, site{site_}, last_update_y{0}, min_progress{0.0f}, delta_progress{1.0f}
+    debug_flags{0},
+    options{options_}, params{params_},
+    im{im_}, worker{fw}, site{site_},
+    last_update_y{0}, min_progress{0.0f}, delta_progress{1.0f}
 {
     dvec4 center = dvec4(
         params[XCENTER], params[YCENTER],
@@ -62,7 +53,7 @@ fractFunc::fractFunc(
     // distance to jump for one pixel down or across
     deltax = rot[VX];
     // if yflip, draw Y axis down, otherwise up
-    deltay = yflip ? rot[VY] : -rot[VY];
+    deltay = options.yflip ? rot[VY] : -rot[VY];
 
     // half that distance
     delta_aa_x = deltax / 2.0;
@@ -105,7 +96,7 @@ int fractFunc::updateiters()
     // add up all the subtotals
     const pixel_stat_t &stats = worker->get_stats();
 
-    if (auto_deepen)
+    if (options.auto_deepen)
     {
         double doublepercent = stats.better_depth_ratio() * AUTO_DEEPEN_FREQUENCY * 100;
         double halfpercent = stats.worse_depth_ratio() * AUTO_DEEPEN_FREQUENCY * 100;
@@ -117,7 +108,7 @@ int fractFunc::updateiters()
             flags |= SHOULD_DEEPEN;
         }
         else if (doublepercent == 0.0 && halfpercent < 0.5 &&
-                 maxiter > 32)
+                 options.maxiter > 32)
         {
             // less than .5% would be wrong if we used half as many iters
             // therefore we are working too hard!
@@ -125,7 +116,7 @@ int fractFunc::updateiters()
         }
     }
 
-    if (!auto_tolerance)
+    if (!options.auto_tolerance)
     {
         // otherwise we might loosen without having gathered any stats
         return flags;
@@ -140,7 +131,7 @@ int fractFunc::updateiters()
         flags |= SHOULD_TIGHTEN;
     }
     else if (tightenpercent == 0.0 && loosenpercent < 0.5 &&
-             period_tolerance < 1.0E-4)
+             options.period_tolerance < 1.0E-4)
     {
         //printf("relaxing\n");
         flags |= SHOULD_LOOSEN;
@@ -236,7 +227,7 @@ void fractFunc::draw_all()
     float minp = 0.0, maxp = 0.3;
     draw(16, 16, minp, maxp);
 
-    maxp = (eaa == AA_NONE ? 0.9 : 0.5);
+    maxp = (options.eaa == AA_NONE ? 0.9 : 0.5);
     int improvement_flags;
     while ((improvement_flags = updateiters()) & SHOULD_IMPROVE)
     {
@@ -246,22 +237,22 @@ void fractFunc::draw_all()
 
         if (improvement_flags & SHOULD_DEEPEN)
         {
-            maxiter *= 2;
-            iters_changed(maxiter);
+            options.maxiter *= 2;
+            iters_changed(options.maxiter);
             status_changed(GF4D_FRACTAL_DEEPENING);
             clear_in_fates();
         }
         if (improvement_flags & SHOULD_TIGHTEN)
         {
-            period_tolerance /= 10.0;
-            tolerance_changed(period_tolerance);
+            options.period_tolerance /= 10.0;
+            tolerance_changed(options.period_tolerance);
             status_changed(GF4D_FRACTAL_TIGHTENING);
             clear_in_fates();
         }
         draw(16, 1, minp, maxp);
     }
 
-    if (eaa > AA_NONE)
+    if (options.eaa > AA_NONE)
     {
         status_changed(GF4D_FRACTAL_ANTIALIASING);
         draw_aa(maxp, 1.0);
@@ -276,13 +267,13 @@ void fractFunc::draw_all()
     // aa pass makes the image shallower, which is distracting
     if (improvement_flags & SHOULD_SHALLOWEN)
     {
-        maxiter /= 2;
-        iters_changed(maxiter);
+        options.maxiter /= 2;
+        iters_changed(options.maxiter);
     }
     if (improvement_flags & SHOULD_LOOSEN)
     {
-        period_tolerance *= 10.0;
-        tolerance_changed(period_tolerance);
+        options.period_tolerance *= 10.0;
+        tolerance_changed(options.period_tolerance);
     }
 #endif
 
@@ -301,7 +292,7 @@ void fractFunc::draw(
 {
     if (debug_flags & DEBUG_QUICK_TRACE)
     {
-        printf("drawing: %d\n", render_type);
+        printf("drawing: %d\n", options.render_type);
     }
     reset_counts();
 
