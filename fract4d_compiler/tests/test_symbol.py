@@ -32,7 +32,7 @@ class SymbolTest(unittest.TestCase):
 
         self.assertEqual(c["foo"].value, 4)
         self.assertEqual(c["@fn1"][0].cname, "sin")
-        self.assertTrue(c[name].is_temp == True)
+        self.assertTrue(c[name].is_temp)
 
     def testParamSlots(self):
         t = fsymbol.T("boo")
@@ -279,7 +279,7 @@ class SymbolTest(unittest.TestCase):
 
     def testTemps(self):
         name = self.t.newTemp(Float)
-        self.assertTrue(self.t[name].is_temp == True)
+        self.assertTrue(self.t[name].is_temp)
 
     def assertIsValidVar(self, val):
         if isinstance(val, Var):
