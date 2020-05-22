@@ -192,8 +192,7 @@ public:
     bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root);
 private:
     /* wait for a ready thread then give it some work */
-    void send_cmd(job_type_t job, int x, int y, int param);
-    void send_cmd(job_type_t job, int x, int y, int param, int param2);
+    void send_cmd(job_type_t job, int x, int y, int param, int param2 = 0);
     void send_quit();
     void send_box(int x, int y, int rsize);
     void send_row(int x, int y, int n);

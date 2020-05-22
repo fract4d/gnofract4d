@@ -122,17 +122,6 @@ const pixel_stat_t &MTFractWorker::get_stats() const
     return stats;
 }
 
-void MTFractWorker::send_cmd(job_type_t job, int x, int y, int param)
-{
-    job_info_t work;
-    work.job = job;
-    work.x = x;
-    work.y = y;
-    work.param = param;
-    work.param2 = 0;
-    ptp->add_work(worker, work);
-}
-
 void MTFractWorker::send_cmd(job_type_t job, int x, int y, int param, int param2)
 {
     job_info_t work;
