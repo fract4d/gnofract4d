@@ -240,7 +240,7 @@ static struct s_pf_vtable vtbl =
 
 pf_obj *pf_new()
 {
-    MpDouble::setPreccisionInBits(432);
+    MpDouble::setPrecisionInBits(432);
     pf_real *p = new (std::nothrow) pf_real;
     if (!p)
         return NULL;
