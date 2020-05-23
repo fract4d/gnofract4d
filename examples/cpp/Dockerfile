@@ -9,6 +9,14 @@ RUN apt-get install -y libmpfr-dev libgmp-dev
 
 WORKDIR /src
 
+# set up benchmark library
+RUN git clone https://github.com/google/benchmark.git && \
+	git clone https://github.com/google/googletest.git benchmark/googletest && \
+	cd benchmark && \
+	mkdir build && cd build && \
+	cmake ../ && make
+
+
 ARG main_source
 ARG formula_source
 ARG gmp_support
