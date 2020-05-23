@@ -153,3 +153,12 @@ Execute:
 examples/cpp/custom_formula.sh
 ```
 Then you should see a new file under `examples/output`.
+
+### Creating a simple mandelbrot using a custom formula with MPFR
+In this example we did an experiment using [mpfr library](https://www.mpfr.org/). We replaced the double types in the formula from the previos example with a custom type with operator overloading using a multiple precision support from mpfr.
+Of course this is not changing much the final result as for that we'd need to change the fract4dc engine (sources under /model) to support multiple precision. It's just an experiment about one possible approach to tackle the arbitrary precision support which would also need to change the compiler, among many other parts of the program.
+Execute:
+```
+examples/cpp/mp_mandelbrot.sh
+```
+Then you should see a new file under `examples/output`.
