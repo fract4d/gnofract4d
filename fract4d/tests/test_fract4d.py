@@ -3,6 +3,7 @@
 import os.path
 import struct
 import math
+import select
 
 from . import testbase
 
@@ -539,9 +540,10 @@ class Test(testbase.ClassSetup):
 
         file = self.compileColorMandel()
 
+        handle = fract4dc.pf_load(file)
+        pfunc = fract4dc.pf_create(handle)
+
         for x in range(2):
-            handle = fract4dc.pf_load(file)
-            pfunc = fract4dc.pf_create(handle)
             fract4dc.pf_init(pfunc, pos_params, self.color_mandel_params)
             cmap = fract4dc.cmap_create(
                 [(0.0, 0, 0, 0, 255),
@@ -565,37 +567,37 @@ class Test(testbase.ClassSetup):
                 site=site,
                 asynchronous=True)
 
-            nrecved = 0
             while True:
-                if nrecved == x:
-                    # print "hit message count"
-                    fract4dc.interrupt(site)
-
+                # read message type and size
+                # we use a buffer here like in gtkfractal.py "onData"
                 nb = 2 * 4
-                bytes = os.read(rfd, nb)
-                if len(bytes) < nb:
-                    self.fail(
-                        "bad message with length %s, value %s" %
-                        (len(bytes), bytes))
-                    break
-
+                bytes = b""
+                while True:
+                    # wait up to 1 sec until we can read, otherwise we assume the counterpart is gone (an error ocurred on the C++ layer)
+                    r, w, e = select.select([rfd], [], [], 1)
+                    if rfd in r:
+                        temp = os.read(rfd, nb)
+                    else:
+                        self.fail("no one on the other side")
+                    bytes = bytes + temp
+                    if (len(bytes) == nb):
+                        break
+                    elif temp == '':
+                        self.fail(
+                            "bad message with length %s, value %s" %
+                            (len(bytes), bytes))
                 (t, size) = struct.unpack("2i", bytes)
-                # print "read %d, len %d" % (t,size)
 
-                # read the rest of the message
+                # read the actual message
                 bytes = os.read(rfd, size)
                 if len(bytes) < size:
                     self.fail("bad message")
                     break
-
                 msg = messages.parse(t, bytes)
-                # print "msg: %s" % msg.show()
+                # if the fractal is done
                 if msg.name == "Status" and msg.status == 0:
-                    # done
-                    # print "done"
+                    # fract4dc.interrupt(site)
                     break
-
-                nrecved += 1
 
     def testDirtyFlagFullRender(self):
         '''Render the same image 2x with different colormaps.
