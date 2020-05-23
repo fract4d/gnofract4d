@@ -178,8 +178,7 @@ static void BM_fractal(benchmark::State& state) {
     }
 }
 
-BENCHMARK(BM_fractal);
-BENCHMARK(BM_fractal)->Unit(benchmark::kSecond); // report time in seconds
-BENCHMARK(BM_fractal)->MinTime(120.0); // run for at least 2 minutes
+// run for at least 2 minutes, report time per iteration in milliseconds
+BENCHMARK(BM_fractal)->Unit(benchmark::kMillisecond)->MinTime(120.0); 
 
 BENCHMARK_MAIN();
