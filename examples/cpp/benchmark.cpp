@@ -28,31 +28,38 @@ constexpr double pos_params[N_PARAMS] {
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0 // XY XZ XW YZ YW ZW planes (4D stuff)
 };
 
-static void inner_fractal() {
-    // initial setup: load fract4_stdlib globally so the loaded formula has access to it
-    void *fract_stdlib_handle = dlopen("./fract_stdlib.so", RTLD_GLOBAL | RTLD_NOW);
-    if (!fract_stdlib_handle) {
-        fprintf(stderr, "Error loading libfract_stdlib: %s", dlerror());
-        return;
-    }
+// So that we don't do a bunch of file I/O during the benchmark, load the 
+// formula and other objects first and cache them across multiple calls.
+// NB: we don't free them at all, and this is not thread-safe.
+static pf_obj * GetPointFunc() {
+    static pf_obj *instance;
+    if(!instance) {
+        void *fract_stdlib_handle = dlopen("./fract_stdlib.so", RTLD_GLOBAL | RTLD_NOW);
+        if (!fract_stdlib_handle) {                    
+            fprintf(stderr, "Error loading libfract_stdlib: %s", dlerror());
+            throw std::exception();
+        }
 
-    // load formula lib
-    void *lib_handle = dlopen("./formula.so", RTLD_NOW);
-    if (!lib_handle)
-    {
-        fprintf(stderr, "Error loading formula: %s", dlerror());
-        return;
+        // load formula lib
+        void *lib_handle = dlopen("./formula.so", RTLD_NOW);
+        if (!lib_handle)
+        {
+            fprintf(stderr, "Error loading formula: %s", dlerror());
+            throw std::exception();
+        }
+        pf_obj *(*pfn)(void);
+        pfn = reinterpret_cast<pf_obj * (*)(void)>(dlsym(lib_handle, "pf_new"));
+        if (!pfn)
+        {
+            fprintf(stderr, "Error loading formula symbols: %s", dlerror());
+            throw std::exception();
+        }
+        instance = pfn();
     }
-    pf_obj *(*pfn)(void);
-    pfn = reinterpret_cast<pf_obj * (*)(void)>(dlsym(lib_handle, "pf_new"));
-    if (!pfn)
-    {
-        fprintf(stderr, "Error loading formula symbols: %s", dlerror());
-        dlclose(lib_handle);
-        return;
-    }
-    pf_obj *pf_handle = pfn();
+    return instance;
+}
 
+static void inner_fractal(pf_obj *pf_handle) {    
     // formula params: [0, 4.0, 0.0, 1.0, 4.0, 0.0, 1.0]
     int param_len = 7;
     auto params{std::make_unique<s_param []>(param_len)};
@@ -155,30 +162,20 @@ static void inner_fractal() {
             im->put(x, y, color);
         }
     }
-
-    // save the image
-    FILE *image_file = fopen("./output/mandelbrot.png", "wb");
-    image_file_t image_file_type = FILE_TYPE_PNG;
-    std::unique_ptr<ImageWriter> image_writer{ImageWriter::create(image_file_type, image_file, im.get())};
-    if (!image_writer || !image_writer->save())
-    {
-        fprintf(stderr, "Cannot save the image");
-        return;
-    }
-
-    // free resources
-    pf_handle->vtbl->kill(pf_handle);
-    dlclose(lib_handle);
-    dlclose(fract_stdlib_handle);
 }
 
 static void BM_fractal(benchmark::State& state) {
+    pf_obj *pf_handle = GetPointFunc();
+
     for (auto _ : state) {
-        inner_fractal();
+        inner_fractal(pf_handle);
     }
 }
 
-// run for at least 2 minutes, report time per iteration in milliseconds
-BENCHMARK(BM_fractal)->Unit(benchmark::kMillisecond)->MinTime(120.0); 
+// run benchmark
+// - report time per iteration in milliseconds
+// - for at least 2 minutes
+// - measure real time not CPU time for main thread
+BENCHMARK(BM_fractal)->Unit(benchmark::kMillisecond)->MinTime(120.0)->UseRealTime(); 
 
 BENCHMARK_MAIN();

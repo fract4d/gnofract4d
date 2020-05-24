@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 docker build . -f examples/cpp/Dockerfile -t mp_mandelbrot:1.0.0 \
     --build-arg main_source=benchmark.cpp \
     --build-arg formula_source=examples/cpp/mp_formula.cpp \
