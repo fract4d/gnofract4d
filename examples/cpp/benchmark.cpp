@@ -20,7 +20,7 @@
 
 #include "benchmark/benchmark.h"
 
-#define MAX_ITERATIONS 100
+#define MAX_ITERATIONS 1000
 
 constexpr double pos_params[N_PARAMS] {
     0.0, 0.0, 0.0, 0.0, // X Y Z W
@@ -59,9 +59,9 @@ static pf_obj * GetPointFunc() {
     return instance;
 }
 
-static void inner_fractal(pf_obj *pf_handle) {    
-    // formula params: [0, 4.0, 0.0, 1.0, 4.0, 0.0, 1.0]
-    int param_len = 7;
+static void inner_fractal(pf_obj *pf_handle, int precision) {    
+    // formula params: [0, 4.0, 0.0, 1.0, 4.0, 0.0, 1.0, precision]
+    int param_len = 8;
     auto params{std::make_unique<s_param []>(param_len)};
     params[0].t = INT;
     params[0].intval = 0;
@@ -77,6 +77,8 @@ static void inner_fractal(pf_obj *pf_handle) {
     params[5].doubleval = 0.0;
     params[6].t = FLOAT;
     params[6].doubleval = 1.0;
+    params[7].t = INT;
+    params[7].intval = precision;
 
     // initialize the point function with the params
     pf_handle->vtbl->init(pf_handle, const_cast<double *>(pos_params), params.get(), param_len);
@@ -168,7 +170,7 @@ static void BM_fractal(benchmark::State& state) {
     pf_obj *pf_handle = GetPointFunc();
 
     for (auto _ : state) {
-        inner_fractal(pf_handle);
+        inner_fractal(pf_handle, state.range(0));
     }
 }
 
@@ -176,6 +178,6 @@ static void BM_fractal(benchmark::State& state) {
 // - report time per iteration in milliseconds
 // - for at least 2 minutes
 // - measure real time not CPU time for main thread
-BENCHMARK(BM_fractal)->Unit(benchmark::kMillisecond)->MinTime(120.0)->UseRealTime(); 
+BENCHMARK(BM_fractal)->Arg(64)->Arg(128)->Arg(432)->Unit(benchmark::kMillisecond)->MinTime(120.0)->UseRealTime(); 
 
 BENCHMARK_MAIN();
