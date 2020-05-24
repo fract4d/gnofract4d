@@ -162,3 +162,25 @@ Execute:
 examples/cpp/mp_mandelbrot.sh
 ```
 Then you should see a new file under `examples/output`.
+
+### Benchmark: Creating a simple mandelbrot using a custom formula with MPFR
+In this example we use [google microbenchmark support library] to get some feedback about calculations performance with [mpfr library](https://www.mpfr.org/).
+Execute:
+```
+examples/cpp/mp_benchmark.sh
+```
+Check the output, it should be something like:
+```shell
+Run on (4 X 2300 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x4)
+  L1 Instruction 32 KiB (x4)
+  L2 Unified 256 KiB (x4)
+  L3 Unified 6144 KiB (x4)
+Load Average: 1.02, 0.55, 0.38
+***WARNING*** Library was built as DEBUG. Timings may be affected.
+----------------------------------------------------------------------
+Benchmark                            Time             CPU   Iterations
+----------------------------------------------------------------------
+BM_fractal/min_time:120.000       5414 ms         5396 ms           31
+```
