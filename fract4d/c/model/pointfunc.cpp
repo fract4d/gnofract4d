@@ -1,28 +1,6 @@
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include <unistd.h>
-#include <dlfcn.h>
-#include <cstdio>
-
 #include "pointfunc.h"
-#include "pf.h"
-#include "model/colormap.h"
-#include "model/color.h"
 
-
-pointFunc *pointFunc::create(
-    pf_obj *pfo,
-    ColorMap *cmap)
-{
-    if (NULL == pfo || NULL == cmap)
-    {
-        return NULL;
-    }
-    return new pf_wrapper(pfo, cmap);
-}
-
-void pf_wrapper::calc(
+void pointFunc::calc(
     // in params
     const double *params, int nIters,
     // periodicity
@@ -67,23 +45,4 @@ void pf_wrapper::calc(
     }
     *pFate = (fate_t)fate;
     *pIndex = (float)dist;
-}
-
-inline rgba_t pf_wrapper::recolor(double dist, fate_t fate, rgba_t current) const
-{
-    int solid = 0;
-    int inside = 0;
-    if (fate & FATE_DIRECT)
-    {
-        return current;
-    }
-    if (fate & FATE_SOLID)
-    {
-        solid = 1;
-    }
-    if (fate & FATE_INSIDE)
-    {
-        inside = 1;
-    }
-    return m_cmap->lookup_with_transfer(dist, solid, inside);
 }

@@ -12,15 +12,6 @@
 
 #include "pf.h"
 
-STFractWorker::STFractWorker(pf_obj *pfo, ColorMap *cmap, IImage *im, IFractalSite *site) noexcept:
-    m_site{site}, m_im{im}, m_lastPointIters{0}
-{
-    m_pf = std::unique_ptr<pointFunc>(pointFunc::create(pfo, cmap));
-    if (!m_pf)
-    {
-        m_ok = false;
-    }
-}
 
 void STFractWorker::set_fractFunc(fractFunc *ff_)
 {
@@ -193,7 +184,7 @@ rgba_t STFractWorker::antialias(int x, int y)
     fate = m_im->getFate(x, y, 0);
     if (m_im->hasUnknownSubpixels(x, y))
     {
-        m_pf->calc(
+        m_pf.calc(
             pos.n, m_options->maxiter,
             checkPeriod, m_options->period_tolerance,
             m_options->warp_param,
@@ -204,7 +195,7 @@ rgba_t STFractWorker::antialias(int x, int y)
     }
     else
     {
-        ptmp = m_pf->recolor(m_im->getIndex(x, y, 0), fate, last);
+        ptmp = m_pf.recolor(m_im->getIndex(x, y, 0), fate, last);
     }
     pixel_r_val += ptmp.r;
     pixel_g_val += ptmp.g;
@@ -214,7 +205,7 @@ rgba_t STFractWorker::antialias(int x, int y)
     if (fate == FATE_UNKNOWN)
     {
         pos += m_ff->delta_aa_x;
-        m_pf->calc(
+        m_pf.calc(
             pos.n, m_options->maxiter,
             checkPeriod, m_options->period_tolerance,
             m_options->warp_param,
@@ -225,7 +216,7 @@ rgba_t STFractWorker::antialias(int x, int y)
     }
     else
     {
-        ptmp = m_pf->recolor(m_im->getIndex(x, y, 1), fate, last);
+        ptmp = m_pf.recolor(m_im->getIndex(x, y, 1), fate, last);
     }
     pixel_r_val += ptmp.r;
     pixel_g_val += ptmp.g;
@@ -235,7 +226,7 @@ rgba_t STFractWorker::antialias(int x, int y)
     if (fate == FATE_UNKNOWN)
     {
         pos = topleft + m_ff->delta_aa_y;
-        m_pf->calc(
+        m_pf.calc(
             pos.n, m_options->maxiter,
             checkPeriod, m_options->period_tolerance,
             m_options->warp_param,
@@ -246,7 +237,7 @@ rgba_t STFractWorker::antialias(int x, int y)
     }
     else
     {
-        ptmp = m_pf->recolor(m_im->getIndex(x, y, 2), fate, last);
+        ptmp = m_pf.recolor(m_im->getIndex(x, y, 2), fate, last);
     }
     pixel_r_val += ptmp.r;
     pixel_g_val += ptmp.g;
@@ -256,7 +247,7 @@ rgba_t STFractWorker::antialias(int x, int y)
     if (fate == FATE_UNKNOWN)
     {
         pos = topleft + m_ff->delta_aa_y + m_ff->delta_aa_x;
-        m_pf->calc(
+        m_pf.calc(
             pos.n, m_options->maxiter,
             checkPeriod, m_options->period_tolerance,
             m_options->warp_param,
@@ -267,7 +258,7 @@ rgba_t STFractWorker::antialias(int x, int y)
     }
     else
     {
-        ptmp = m_pf->recolor(m_im->getIndex(x, y, 3), fate, last);
+        ptmp = m_pf.recolor(m_im->getIndex(x, y, 3), fate, last);
     }
     pixel_r_val += ptmp.r;
     pixel_g_val += ptmp.g;
@@ -318,7 +309,7 @@ void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int
         fate_t temp_fate;
         int temp_iter;
         /* try again with 10x tighter tolerance */
-        m_pf->calc(
+        m_pf.calc(
             pos.n, m_options->maxiter,
             0, m_options->period_tolerance / 10.0,
             m_options->warp_param,
@@ -342,7 +333,7 @@ void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int
         fate_t temp_fate;
         int temp_iter;
         /* try again with 10x looser tolerance */
-        m_pf->calc(
+        m_pf.calc(
             pos.n, m_options->maxiter,
             0, m_options->period_tolerance * 10.0,
             m_options->warp_param,
@@ -372,7 +363,7 @@ void STFractWorker::compute_auto_deepen_stats(const dvec4 &pos, int iter, int x,
         fate_t temp_fate;
         int temp_iter;
         /* didn't bail out, try again with 2x as many iterations */
-        m_pf->calc(
+        m_pf.calc(
             pos.n, m_options->maxiter * 2,
             periodGuess(), m_options->period_tolerance,
             m_options->warp_param,
@@ -390,7 +381,6 @@ void STFractWorker::compute_auto_deepen_stats(const dvec4 &pos, int iter, int x,
 
 void STFractWorker::pixel(int x, int y, int w, int h)
 {
-    assert(m_pf != NULL && m_ok == true);
     rgba_t pixel;
     float index {0};
     fate_t fate = m_im->getFate(x, y, 0);
@@ -406,7 +396,7 @@ void STFractWorker::pixel(int x, int y, int w, int h)
             //printf("(%d,%d -> %g,%g,%g,%g) [%x]\n",
             //	   x,y,pos[VX],pos[VY],pos[VZ],pos[VW], (unsigned int)pthread_self());
             const int min_period_iters = periodGuess();
-            m_pf->calc(
+            m_pf.calc(
                 pos.n, m_options->maxiter,
                 min_period_iters, m_options->period_tolerance,
                 m_options->warp_param,
@@ -462,7 +452,7 @@ void STFractWorker::pixel(int x, int y, int w, int h)
     }
     else
     {
-        pixel = m_pf->recolor(m_im->getIndex(x, y, 0), fate, m_im->get(x, y));
+        pixel = m_pf.recolor(m_im->getIndex(x, y, 0), fate, m_im->get(x, y));
         rectangle(pixel, x, y, w, h);
     }
 }
@@ -763,7 +753,7 @@ inline void STFractWorker::check_guess(int x, int y, rgba_t pixel, fate_t fate, 
         int titer;
         float tindex;
         fate_t tfate;
-        m_pf->calc(
+        m_pf.calc(
             pos.n, m_options->maxiter,
             periodGuess(), m_options->period_tolerance,
             m_options->warp_param,
@@ -830,7 +820,7 @@ bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
 
         pos = eye + dist * look;
         //printf("%g %g %g %g\n", pos[0], pos[1], pos[2], pos[3]);
-        m_pf->calc(
+        m_pf.calc(
             pos.n, m_options->maxiter,
             periodGuess(), m_options->period_tolerance,
             m_options->warp_param,
@@ -854,7 +844,7 @@ bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
     {
         d mid = (lastdist + dist) / 2.0;
         pos = eye + mid * look;
-        m_pf->calc(pos.n, m_options->maxiter,
+        m_pf.calc(pos.n, m_options->maxiter,
                  periodGuess(), m_options->period_tolerance,
                  m_options->warp_param,
                  x, y, 0,

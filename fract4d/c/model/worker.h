@@ -76,7 +76,8 @@ protected:
 class STFractWorker final: public IFractWorker
 {
 public:
-    STFractWorker(pf_obj *, ColorMap *, IImage *, IFractalSite *) noexcept;
+    STFractWorker(pf_obj *pfo, ColorMap *cmap, IImage *im, IFractalSite *site) noexcept:
+        m_site{site}, m_im{im}, m_pf{pfo, cmap}, m_lastPointIters{0} { }
 
     void set_fractFunc(fractFunc *ff);
     // heuristic to see if we should use periodicity checking for next point
@@ -153,7 +154,7 @@ private:
     // function object which calculates the colors of points
     // this is per-thread-func so it doesn't have to be re-entrant
     // and can have member vars
-    std::unique_ptr<pointFunc> m_pf;
+    pointFunc m_pf;
     // period guessing
     int m_lastPointIters; // how many iterations did last pixel take?
 };
