@@ -77,9 +77,6 @@ class STFractWorker final: public IFractWorker
 {
 public:
     STFractWorker(pf_obj *, ColorMap *, IImage *, IFractalSite *) noexcept;
-    // needed because having unique_ptr member deletes copy ctor
-    STFractWorker(STFractWorker&&) noexcept;
-    ~STFractWorker(){};
 
     void set_fractFunc(fractFunc *ff);
     // heuristic to see if we should use periodicity checking for next point
@@ -173,7 +170,6 @@ public:
         IImage *,
         IFractalSite *
     );
-    ~MTFractWorker(){};
     void set_fractFunc(fractFunc *ff);
     // operations
     void row_aa(int x, int y, int n);

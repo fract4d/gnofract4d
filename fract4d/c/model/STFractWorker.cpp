@@ -22,14 +22,6 @@ STFractWorker::STFractWorker(pf_obj *pfo, ColorMap *cmap, IImage *im, IFractalSi
     }
 }
 
-STFractWorker::STFractWorker(STFractWorker &&original) noexcept:
-    m_options{original.m_options}, m_ff{original.m_ff},
-    m_im{original.m_im}, m_pf{std::move(original.m_pf)}, m_lastPointIters{original.m_lastPointIters}
-{
-    m_ok = original.m_ok;
-    m_stats = original.m_stats;
-}
-
 void STFractWorker::set_fractFunc(fractFunc *ff_)
 {
     m_ff = ff_;
