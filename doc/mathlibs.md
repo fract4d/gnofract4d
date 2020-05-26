@@ -29,6 +29,12 @@ I went through the list of all arbitrary precision math libs at https://en.wikip
 
 
 
+# Boost
+
+Boost seems a strong contender. It provides a whole set of different math libraries via
+a family of templated types, including a 'quad' type (2x a regular double) and more. Since the number of bits is part of the template we have to recompile in order to go deeper but that doesn't seem too hard. Installation is a bit of an issue - either we have to redist the relevant headers or require users to install libbost-all-dev in 
+order to run.
+
 
 
 
