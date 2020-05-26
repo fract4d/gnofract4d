@@ -7,12 +7,12 @@ void worker(job_info_t& tdata, STFractWorker *pFunc)
 }
 
 IFractWorker *IFractWorker::create(
-    int nThreads, pf_obj *pfo, ColorMap *cmap, IImage *im_, IFractalSite *site)
+    int numThreads, pf_obj *pfo, ColorMap *cmap, IImage *im_, IFractalSite *site)
 {
     // can IFDEF here if threads are not available
-    if (nThreads > 1)
+    if (numThreads > 1)
     {
-        return new MTFractWorker(nThreads, pfo, cmap, im_, site);
+        return new MTFractWorker(numThreads, pfo, cmap, im_, site);
     }
     else
     {

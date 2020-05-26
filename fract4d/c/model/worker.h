@@ -43,7 +43,7 @@ class IFractWorker
 {
 public:
     static IFractWorker *create(
-        int nThreads, pf_obj *, ColorMap *, IImage *, IFractalSite *);
+        int numThreads, pf_obj *, ColorMap *, IImage *, IFractalSite *);
     virtual void set_fractFunc(fractFunc *) = 0;
     // calculate a row of antialiased pixels
     virtual void row_aa(int x, int y, int n) = 0;
@@ -69,7 +69,7 @@ public:
     bool ok() const { return m_ok; }
 protected:
     bool m_ok = true;
-    mutable pixel_stat_t stats;
+    mutable pixel_stat_t m_stats;
 };
 
 /* per-worker-thread fractal info */
@@ -148,17 +148,17 @@ private:
     // return true if this pixel needs recalc in AA pass
     bool needs_aa_calc(int x, int y);
 
-    calc_options *options;
-    IFractalSite *site;
-    fractFunc *ff;
+    calc_options *m_options;
+    IFractalSite *m_site;
+    fractFunc *m_ff;
     /* pointers to data also held in fractFunc */
-    IImage *im;
+    IImage *m_im;
     // function object which calculates the colors of points
     // this is per-thread-func so it doesn't have to be re-entrant
     // and can have member vars
-    std::unique_ptr<pointFunc> pf;
+    std::unique_ptr<pointFunc> m_pf;
     // period guessing
-    int lastIter; // how many iterations did last pixel take?
+    int m_lastPointIters; // how many iterations did last pixel take?
 };
 
 // a composite subclass which holds an array of STFractWorkers and
@@ -167,7 +167,7 @@ class MTFractWorker final: public IFractWorker
 {
 public:
     MTFractWorker(
-        int n,
+        int numThreads,
         pf_obj *,
         ColorMap *,
         IImage *,
@@ -199,9 +199,8 @@ private:
     void send_box_row(int w, int y, int rsize);
     void send_qbox_row(int w, int y, int rsize, int drawsize);
 
-    int nWorkers;
-    std::vector<STFractWorker> ptf;
-    std::unique_ptr<tpool<job_info_t, STFractWorker>> ptp;
+    std::vector<STFractWorker> m_workers;
+    std::unique_ptr<tpool<job_info_t, STFractWorker>> m_threads;
 };
 
 #endif
