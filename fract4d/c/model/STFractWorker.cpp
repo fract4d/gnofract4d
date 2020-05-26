@@ -37,51 +37,47 @@ void STFractWorker::set_fractFunc(fractFunc *ff_)
 /* we're in a worker thread */
 void STFractWorker::work(job_info_t &tdata)
 {
-    int nRows = 0;
-    int x = tdata.x;
-    int y = tdata.y;
-    int param = tdata.param;
-    int param2 = tdata.param2;
-    job_type_t job = tdata.job;
     if (ff->try_finished_cond())
     {
         // interrupted - just return without doing anything
         // this is less efficient than clearing the queue but easier
         return;
     }
+    int nRows = 0;
     /* carry them out */
-    switch (job)
+    switch (tdata.job)
     {
     case JOB_BOX:
         //printf("BOX(%d,%d,%d) [%x]\n",x,y,param,(unsigned int)pthread_self());
-        box(x, y, param);
-        nRows = param;
+        box(tdata.x, tdata.y, tdata.param);
+        nRows = tdata.param;
         break;
     case JOB_ROW:
         //printf("ROW(%d,%d,%d) [%x]\n",x,y,param,(unsigned int)pthread_self());
-        row(x, y, param);
+        row(tdata.x, tdata.y, tdata.param);
         nRows = 1;
         break;
     case JOB_BOX_ROW:
         //printf("BXR(%d,%d,%d) [%x]\n",x,y,param,(unsigned int)pthread_self());
-        box_row(x, y, param);
-        nRows = param;
+        box_row(tdata.x, tdata.y, tdata.param);
+        nRows = tdata.param;
         break;
     case JOB_ROW_AA:
         //printf("RAA(%d,%d,%d) [%x]\n",x,y,param,(unsigned int)pthread_self());
-        row_aa(x, y, param);
+        row_aa(tdata.x, tdata.y, tdata.param);
         nRows = 1;
         break;
     case JOB_QBOX_ROW:
         //printf("QBR(%d,%d,%d,%d) [%x]\n",x,y,param,param2,(unsigned int)pthread_self());
-        qbox_row(x, y, param, param2);
-        nRows = param;
+        qbox_row(tdata.x, tdata.y, tdata.param, tdata.param2);
+        nRows = tdata.param;
         break;
     default:
-        printf("Unknown job id %d ignored\n", (int)job);
+        printf("Unknown job id %d ignored\n", static_cast<int>(tdata.job));
     }
-    ff->image_changed(0, y, im->Xres(), y + nRows);
-    ff->progress_changed((float)y / (float)im->Yres());
+    ff->image_changed(0, tdata.y, im->Xres(), tdata.y + nRows);
+    const float new_progress = static_cast<float>(tdata.y) / static_cast<float>(im->Yres());
+    ff->progress_changed(new_progress);
 }
 
 void STFractWorker::row_aa(int x, int y, int w)
