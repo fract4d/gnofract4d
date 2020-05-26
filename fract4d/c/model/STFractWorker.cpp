@@ -168,23 +168,16 @@ const pixel_stat_t &STFractWorker::get_stats() const
     return stats;
 }
 
-inline int STFractWorker::RGB2INT(int x, int y)
+inline int STFractWorker::Pixel2INT(int x, int y)
 {
-    rgba_t pixel = im->get(x, y);
-    return Pixel2INT(pixel);
-}
-
-inline int STFractWorker::Pixel2INT(rgba_t pixel)
-{
-    int ret = (pixel.r << 16) | (pixel.g << 8) | pixel.b;
-    return ret;
+    return static_cast<int>(im->get(x, y));
 }
 
 inline bool STFractWorker::isTheSame(int targetIter, int targetCol, int x, int y)
 {
     // does this point have the target # of iterations?
     // does it have the same colour too?
-    if ((im->getIter(x, y) == targetIter) && (RGB2INT(x, y) == targetCol)) {
+    if ((im->getIter(x, y) == targetIter) && (Pixel2INT(x, y) == targetCol)) {
         return true;
     }
     return false;
@@ -537,7 +530,7 @@ void STFractWorker::pixel_aa(int x, int y)
     {
         // check to see if this point is surrounded by others of the same colour
         // if so, don't bother recalculating
-        const int pcol = RGB2INT(x, y);
+        const int pcol = Pixel2INT(x, y);
         const bool bFlat =
             isTheSame(iter, pcol, x, y - 1) &&
             isTheSame(iter, pcol, x - 1, y) &&
@@ -699,7 +692,7 @@ void STFractWorker::box(int x, int y, int rsize)
     // don't calculate the interior points
     bool bFlat = true;
     const int iter = im->getIter(x, y);
-    const int pcol = RGB2INT(x, y);
+    const int pcol = Pixel2INT(x, y);
     // calculate top and bottom of box & check for flatness
     for (int x2 = x; x2 < x + rsize; ++x2)
     {
@@ -786,7 +779,7 @@ inline void STFractWorker::check_guess(int x, int y, rgba_t pixel, fate_t fate, 
             options->warp_param,
             x, y, 0,
             &tpixel, &titer, &tindex, &tfate);
-        if (Pixel2INT(tpixel) == Pixel2INT(pixel))
+        if (tpixel == pixel)
         //	    fate == tfate &&
         //	    iter == titer &&
         //	    fabs(index-tindex) < 1.0e-2)

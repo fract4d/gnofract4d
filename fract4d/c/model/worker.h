@@ -114,8 +114,7 @@ public:
     // sum squared differences between components of 2 colors
     int diff_colors(rgba_t a, rgba_t b);
     // make an int corresponding to an RGB triple
-    inline int RGB2INT(int x, int y);
-    inline int Pixel2INT(rgba_t pixel);
+    inline int Pixel2INT(int x, int y);
     // calculate a row of boxes
     void box_row(int w, int y, int rsize);
     // calculate a row of boxes, quickly
