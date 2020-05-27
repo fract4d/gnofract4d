@@ -41,7 +41,7 @@ fractFunc::fractFunc(
     im{im_}, worker{fw}, site{site_},
     last_update_y{0}, min_progress{0.0f}, delta_progress{1.0f}
 {
-    dvec4 center = dvec4(
+    const dvec4 center = dvec4(
         params[XCENTER], params[YCENTER],
         params[ZCENTER], params[WCENTER]);
 
@@ -79,11 +79,11 @@ fractFunc::fractFunc(
 
 bool fractFunc::update_image(int i)
 {
-    bool done = try_finished_cond();
+    const auto done = try_finished_cond();
     if (!done)
     {
         image_changed(0, last_update_y, im->Xres(), i);
-        progress_changed((float)i / (float)im->Yres());
+        progress_changed(static_cast<float>(i) / static_cast<float>(im->Yres()));
     }
     last_update_y = i;
     return done;
@@ -95,58 +95,47 @@ int fractFunc::updateiters()
     int flags = 0;
     // add up all the subtotals
     const pixel_stat_t &stats = worker->get_stats();
-
     if (options.auto_deepen)
     {
-        double doublepercent = stats.better_depth_ratio() * AUTO_DEEPEN_FREQUENCY * 100;
-        double halfpercent = stats.worse_depth_ratio() * AUTO_DEEPEN_FREQUENCY * 100;
-
+        const double doublepercent = stats.better_depth_ratio() * AUTO_DEEPEN_FREQUENCY * 100;
+        const double halfpercent = stats.worse_depth_ratio() * AUTO_DEEPEN_FREQUENCY * 100;
         if (doublepercent > 1.0)
         {
             // more than 1% of pixels are the wrong colour!
             // quelle horreur!
             flags |= SHOULD_DEEPEN;
         }
-        else if (doublepercent == 0.0 && halfpercent < 0.5 &&
-                 options.maxiter > 32)
+        else if (doublepercent == 0.0 && halfpercent < 0.5 && options.maxiter > 32)
         {
             // less than .5% would be wrong if we used half as many iters
             // therefore we are working too hard!
             flags |= SHOULD_SHALLOWEN;
         }
     }
-
-    if (!options.auto_tolerance)
+    if (options.auto_tolerance)
     {
-        // otherwise we might loosen without having gathered any stats
-        return flags;
-    }
-
-    double tightenpercent = stats.better_tolerance_ratio() * AUTO_DEEPEN_FREQUENCY * 100;
-    double loosenpercent = stats.worse_tolerance_ratio() * AUTO_DEEPEN_FREQUENCY * 100;
-
-    if (tightenpercent > 0.1)
-    {
-        //printf("tightening\n");
-        flags |= SHOULD_TIGHTEN;
-    }
-    else if (tightenpercent == 0.0 && loosenpercent < 0.5 &&
-             options.period_tolerance < 1.0E-4)
-    {
-        //printf("relaxing\n");
-        flags |= SHOULD_LOOSEN;
+        const double tightenpercent = stats.better_tolerance_ratio() * AUTO_DEEPEN_FREQUENCY * 100;
+        const double loosenpercent = stats.worse_tolerance_ratio() * AUTO_DEEPEN_FREQUENCY * 100;
+        if (tightenpercent > 0.1)
+        {
+            flags |= SHOULD_TIGHTEN;
+        }
+        else if (tightenpercent == 0.0 && loosenpercent < 0.5 && options.period_tolerance < 1.0E-4)
+        {
+            flags |= SHOULD_LOOSEN;
+        }
     }
     return flags;
 }
 
 void fractFunc::draw_aa(float min_progress, float max_progress)
 {
-    int w = im->Xres();
-    int h = im->Yres();
+    const auto w = im->Xres();
+    const auto h = im->Yres();
 
     reset_counts();
 
-    float delta = (max_progress - min_progress) / 2.0;
+    const float delta = (max_progress - min_progress) / 2.0;
 
     // if we have multiple threads, make sure they don't modify
     // pixels the other thread will look at - that wouldn't be
@@ -154,7 +143,7 @@ void fractFunc::draw_aa(float min_progress, float max_progress)
     // which I'm trying to avoid
     // We do this by drawing every even line, then every odd one.
 
-    for (int i = 0; i < 2; ++i)
+    for (auto i = 0; i < 2; ++i)
     {
         set_progress_range(
             min_progress + delta * i,
@@ -192,17 +181,16 @@ void fractFunc::reset_progress(float progress)
 // image got deeper
 void fractFunc::clear_in_fates()
 {
-    int w = im->Xres();
-    int h = im->Yres();
+    const auto w = im->Xres();
+    const auto h = im->Yres();
     // FIXME can end up with some subpixels known and some unknown
-    for (int y = 0; y < h; ++y)
+    for (auto y = 0; y < h; ++y)
     {
-        for (int x = 0; x < w; ++x)
+        for (auto x = 0; x < w; ++x)
         {
-            for (int n = 0; n < im->getNSubPixels(); ++n)
+            for (auto n = 0; n < im->getNSubPixels(); ++n)
             {
-                fate_t f = im->getFate(x, y, n);
-                if (f & FATE_INSIDE)
+                if (im->getFate(x, y, n) & FATE_INSIDE)
                 {
                     im->setFate(x, y, n, FATE_UNKNOWN);
                 }
@@ -218,6 +206,7 @@ void fractFunc::draw_all()
     {
         std::time(&startTime);
     }
+
     status_changed(GF4D_FRACTAL_CALCULATING);
 
 #ifndef NO_CALC
@@ -227,7 +216,7 @@ void fractFunc::draw_all()
     float minp = 0.0, maxp = 0.3;
     draw(16, 16, minp, maxp);
 
-    maxp = (options.eaa == AA_NONE ? 0.9 : 0.5);
+    maxp = options.eaa == AA_NONE ? 0.9 : 0.5;
     int improvement_flags;
     while ((improvement_flags = updateiters()) & SHOULD_IMPROVE)
     {
@@ -287,8 +276,7 @@ void fractFunc::draw_all()
     }
 }
 
-void fractFunc::draw(
-    int rsize, int drawsize, float min_progress, float max_progress)
+void fractFunc::draw(int rsize, int drawsize, float min_progress, float max_progress)
 {
     if (debug_flags & DEBUG_QUICK_TRACE)
     {
@@ -297,56 +285,45 @@ void fractFunc::draw(
     reset_counts();
 
     // init RNG based on time before generating image
-    std::time_t now;
-    std::time(&now);
-    std::srand((unsigned int)now);
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    int y;
-    int w = im->Xres();
-    int h = im->Yres();
+    const auto w = im->Xres();
+    const auto h = im->Yres();
 
     /* reset progress indicator & clear screen */
     last_update_y = 0;
     reset_progress(min_progress);
-
     float mid_progress = (max_progress + min_progress) / 2.0;
     set_progress_range(min_progress, mid_progress);
 
     // first pass - big blocks and edges
-    for (y = 0; y < h - rsize; y += rsize)
-    {
-        worker->qbox_row(w, y, rsize, drawsize);
-        if (update_image(y))
-        {
-            goto done;
+    int y = 0;
+    while(y < h) {
+        if ((h - y) > rsize) {
+            worker->qbox_row(w, y, rsize, drawsize);
+            y += rsize;
+        } else {
+            worker->row(0, y, w);
+            y++;
+        }
+        if (update_image(y)) {
+            break;
         }
     }
-
-    // remaining lines
-    for (; y < h; y++)
-    {
-        worker->row(0, y, w);
-        if (update_image(y))
-        {
-            goto done;
-        }
-    }
-
     last_update_y = 0;
     reset_progress(0.0);
     set_progress_range(mid_progress, max_progress);
 
     // fill in gaps in the rsize-blocks
-    for (y = 0; y < h - rsize; y += rsize)
+    for (auto y = 0; y < h - rsize; y += rsize)
     {
         worker->box_row(w, y, rsize);
         if (update_image(y))
         {
-            goto done;
+            break;
         }
     }
 
-done:
     /* refresh entire image & reset progress bar */
     reset_progress(1.0);
     stats_changed();
@@ -359,7 +336,7 @@ void fractFunc::set_debug_flags(int debug_flags)
 
 dvec4 fractFunc::vec_for_point(double x, double y)
 {
-    dvec4 point = topleft + x * deltax + y * deltay;
+    const dvec4 point = topleft + x * deltax + y * deltay;
     dvec4 vec = point - eye_point;
     vec.norm();
     return vec;
