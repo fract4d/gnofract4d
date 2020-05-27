@@ -16,7 +16,7 @@
 void STFractWorker::set_fractFunc(fractFunc *ff_)
 {
     m_ff = ff_;
-    m_options = &ff_->options;
+    m_options = &ff_->m_options;
 }
 
 /* we're in a worker thread */
@@ -175,7 +175,7 @@ rgba_t STFractWorker::antialias(int x, int y)
     fate_t fate;
     int single_iters = m_im->getIter(x, y);
     int checkPeriod = periodGuess(single_iters);
-    if (m_ff->debug_flags & DEBUG_DRAWING_STATS)
+    if (m_ff->m_debug_flags & DEBUG_DRAWING_STATS)
     {
         printf("doaa %d %d\n", x, y);
     }
@@ -440,7 +440,7 @@ void STFractWorker::pixel(int x, int y, int w, int h)
         break;
         }
         periodSet(&iter);
-        if (m_ff->debug_flags & DEBUG_DRAWING_STATS)
+        if (m_ff->m_debug_flags & DEBUG_DRAWING_STATS)
         {
             printf("pixel %d %d %d %d\n", x, y, fate, iter);
         }
@@ -518,7 +518,7 @@ void STFractWorker::pixel_aa(int x, int y)
             isTheSame(iter, pcol, x, y + 1);
         if (bFlat)
         {
-            if (m_ff->debug_flags & DEBUG_DRAWING_STATS)
+            if (m_ff->m_debug_flags & DEBUG_DRAWING_STATS)
             {
                 printf("noaa %d %d\n", x, y);
             }
@@ -781,7 +781,7 @@ inline void STFractWorker::rectangle_with_iter(
     {
         for (int j = x; j < x + w; j++)
         {
-            if (m_ff->debug_flags & DEBUG_DRAWING_STATS)
+            if (m_ff->m_debug_flags & DEBUG_DRAWING_STATS)
             {
                 printf("guess %d %d %d %d\n", j, i, fate, iter);
             }

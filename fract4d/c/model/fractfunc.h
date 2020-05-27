@@ -48,33 +48,33 @@ public:
     // callback wrappers
     inline void iters_changed(int iters)
     {
-        site->iters_changed(iters);
+        m_site->iters_changed(iters);
     }
     inline void tolerance_changed(double tolerance)
     {
-        site->tolerance_changed(tolerance);
+        m_site->tolerance_changed(tolerance);
     }
     inline void image_changed(int x1, int x2, int y1, int y2)
     {
-        site->image_changed(x1, x2, y1, y2);
+        m_site->image_changed(x1, x2, y1, y2);
     }
     inline void progress_changed(float progress)
     {
-        float adjusted_progress = min_progress + progress * delta_progress;
-        site->progress_changed(adjusted_progress);
+        const float adjusted_progress = m_min_progress + progress * m_delta_progress;
+        m_site->progress_changed(adjusted_progress);
     }
     inline void stats_changed()
     {
-        stats.add(worker->get_stats());
-        site->stats_changed(stats);
+        m_stats.add(m_worker->get_stats());
+        m_site->stats_changed(m_stats);
     }
     inline void status_changed(int status_val)
     {
-        site->status_changed(status_val);
+        m_site->status_changed(status_val);
     }
     inline bool try_finished_cond()
     {
-        return site->is_interrupted();
+        return m_site->is_interrupted();
     }
     // used for calculating (x,y,z,w) pixel coords
     dvec4 deltax, deltay;         // step from 1 pixel to the next in x,y directions
@@ -103,26 +103,22 @@ private:
         SHOULD_RELAX = (SHOULD_SHALLOWEN | SHOULD_LOOSEN)
     };
 
-    // params from ctor
-    int debug_flags;
-    calc_options options;
-    d *params;
-    IImage *im;
-    IFractWorker *worker;
-    // for callbacks
-    IFractalSite *site;
+    int m_debug_flags;
+    calc_options m_options;
+    d *m_params;
+    IImage *m_im;
+    IFractWorker *m_worker;
+    IFractalSite *m_site;
     // last time we redrew the image to this line
-    int last_update_y;
-    float min_progress;
-    float delta_progress;
-    pixel_stat_t stats;
+    int m_last_update_y;
+    float m_min_progress;
+    float m_delta_progress;
+    pixel_stat_t m_stats;
 
     void draw(int rsize, int drawsize, float min_progress, float max_progress);
     void draw_aa(float min_progress, float max_progress);
     int updateiters();
     void set_progress_range(float min, float max);
-    // private drawing methods
-    void send_quit();
     // redraw the image to this line
     // also checks for interruptions & returns true if we should stop
     bool update_image(int i);
