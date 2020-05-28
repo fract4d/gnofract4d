@@ -9,6 +9,7 @@
 #include "model/image.h"
 #include "model/site.h"
 #include "model/fractfunc.h"
+#include "model/calcoptions.h"
 
 #include "pf.h"
 
