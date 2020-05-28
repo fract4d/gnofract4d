@@ -220,24 +220,22 @@ void fractFunc::draw_all()
     int improvement_flags;
     while ((improvement_flags = updateiters()) & SHOULD_IMPROVE)
     {
-        float delta = (1.0 - maxp) / 3.0;
+        const float delta = (1.0 - maxp) / 3.0;
         minp = maxp;
         maxp = maxp + delta;
-
         if (improvement_flags & SHOULD_DEEPEN)
         {
             m_options.maxiter *= 2;
             iters_changed(m_options.maxiter);
             status_changed(GF4D_FRACTAL_DEEPENING);
-            clear_in_fates();
         }
         if (improvement_flags & SHOULD_TIGHTEN)
         {
             m_options.period_tolerance /= 10.0;
             tolerance_changed(m_options.period_tolerance);
             status_changed(GF4D_FRACTAL_TIGHTENING);
-            clear_in_fates();
         }
+        clear_in_fates();
         draw(16, 1, minp, maxp);
     }
 
