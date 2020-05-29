@@ -102,8 +102,6 @@ private:
     void compute_stats(const dvec4 &pos, int iter, fate_t, int x, int y);
     void compute_auto_deepen_stats(const dvec4 &pos, int iter, int x, int y);
     void compute_auto_tolerance_stats(const dvec4 &pos, int iter, int x, int y);
-    // return true if this pixel needs recalc in AA pass
-    bool needs_aa_calc(int x, int y);
     // does the point at (x,y) have the same colour & iteration count as the target?
     bool isTheSame(int targetIter, int targetCol, int x, int y);
     // calculate this point using antialiasing
@@ -116,9 +114,9 @@ private:
     // (as for antialias pass)
     int periodGuess(int last);
     // update whether last pixel bailed
-    void periodSet(int *ppos);
+    void periodSet(int ppos);
     // draw a rectangle of this colour
-    void rectangle(rgba_t, int x, int y, int w, int h, bool force = false);
+    void rectangle(rgba_t, int x, int y, int w, int h);
     void rectangle_with_iter(rgba_t, fate_t, int iter, float index, int x, int y, int w, int h);
 
     // EXPERIMENTAL (not in use)
@@ -133,10 +131,6 @@ private:
     void interpolate_row(int x, int y, int rsize);
     // compare a prediction against the real answer & update stats
     void check_guess(int x, int y, rgba_t pixel, fate_t fate, int iter, float index);
-    // periodicity guesser to look up nearby points & guess based on that
-    int periodGuess(int x, int y);
-    // calculate a column of pixels
-    void col(int x, int y, int n);
     // sum squared differences between components of 2 colors
     int diff_colors(rgba_t a, rgba_t b);
 
