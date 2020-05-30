@@ -171,7 +171,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     maintainer='Edwin Young',
     maintainer_email='edwin@bathysphere.org',
     keywords="edwin@bathysphere.org",
-    url='http://github.com/fract4d/gnofract4d/',
+    url='https://github.com/fract4d/gnofract4d/',
     packages=['fract4d_compiler', 'fract4d', 'fract4dgui'],
     package_data={
         'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml'],
