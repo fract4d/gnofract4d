@@ -320,8 +320,7 @@ see weird effects unless you disable periodicity checking.
 
 ## Command Reference
 
-<!-- pull in auto-generated list of keyboard and mouse commands -->
-TBD
+{{commands.html}}
 
 ## About the math
 
@@ -634,7 +633,7 @@ functions and 0 for numeric ones.
 
 ## Formula Language Reference
 
-&stdlib;
+{{stdlib.html}}
 
 ## Gnofract 4D Internals
 
