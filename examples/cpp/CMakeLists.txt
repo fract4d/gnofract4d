@@ -35,6 +35,9 @@ target_link_libraries(example ${CMAKE_DL_LIBS})
 
 add_definitions(-DTHREADS -D_REENTRANT -DPNG_ENABLED -DJPG_ENABLED)
 
+find_package(benchmark REQUIRED)
+target_link_libraries(example benchmark::benchmark)
+
 # FRACT_STDLIB
 
 add_library(fract_stdlib SHARED

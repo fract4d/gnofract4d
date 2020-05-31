@@ -39,7 +39,7 @@ public:
         mpfr_clear(value);
     }
 
-    static void setPreccisionInBits(int bits) {
+    static void setPrecisionInBits(int bits) {
         mpfr_set_default_prec(bits);
     }
 

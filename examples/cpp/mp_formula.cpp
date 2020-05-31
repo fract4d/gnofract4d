@@ -27,14 +27,20 @@ static void pf_init(
     int nparams)
 {
     pf_real *pfo = (pf_real *)p_stub;
-    if (nparams > PF_MAXPARAMS)
-    {
+    if (nparams > PF_MAXPARAMS) {
         nparams = PF_MAXPARAMS;
     }
-    for (int i = 0; i < nparams; ++i)
-    {
+    for (int i = 0; i < nparams; ++i) {
         pfo->p[i] = params[i];
     }
+
+    if(nparams > 7) {
+        // HACK: set the desired precision to parameter 7 for benchmarking
+        MpDouble::setPrecisionInBits(params[7].intval);
+    } else {
+        MpDouble::setPrecisionInBits(432);
+    }
+    
 }
 
 static void pf_calc(
@@ -240,7 +246,6 @@ static struct s_pf_vtable vtbl =
 
 pf_obj *pf_new()
 {
-    MpDouble::setPreccisionInBits(432);
     pf_real *p = new (std::nothrow) pf_real;
     if (!p)
         return NULL;
