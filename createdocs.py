@@ -12,33 +12,16 @@ import sys
 import os
 import re
 
-def insert_docs(infile,outfile):
-    'look through infile for {{filename}} and insert the contents of filename in output'
-    inputdir = os.path.dirname(infile)
-    insert = re.compile(r'{{(.+)}}')
-    with open(outfile, "w") as output:
-        with open(infile, "r") as input:
-            for line in input:
-                m = insert.match(line)
-                if m:
-                    file_to_insert = os.path.join(inputdir, m.group(1))
-                    with open(file_to_insert, "r") as insertfile:
-                        for l in insertfile:
-                            print(l, file=output,end='')
-                else:
-                    print(line, file=output, end='')
-
-
 def create_stdlib_docs():
     'Autogenerate docs'
     try:
         # create list of stdlib functions
         from fract4d import createdocs as cd1
-        cd1.main("doc/stdlib.html")
+        cd1.main("manual/content/stdlib.html")
 
         # create list of mouse and GUI commands
         import fract4dgui.createdocs
-        fract4dgui.createdocs.main("doc/commands.html")  # pylint: disable=no-value-for-parameter
+        fract4dgui.createdocs.main("manual/content/commands.html")  # pylint: disable=no-value-for-parameter
 
 
     except Exception as err:
@@ -47,4 +30,3 @@ def create_stdlib_docs():
         sys.exit(1)
 
 create_stdlib_docs()
-insert_docs("doc/manual.md","doc/fuil-manual.md")
