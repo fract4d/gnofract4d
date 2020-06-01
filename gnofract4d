@@ -10,7 +10,7 @@ import os
 import gettext
 os.environ.setdefault('LANG', 'en')
 if os.path.isdir('po'):
-    gettext.install('gnofract4d','po')
+    gettext.install('gnofract4d', 'po')
 else:
     gettext.install('gnofract4d')
 
@@ -60,10 +60,10 @@ def gtkmain(userConfig, options):
     If you haven't set up Gnofract 4D yet, run './setup.py build'
     Error was: '%s' ''') % err)
         sys.exit(1)
-    
+
     mainWindow = main_window.MainWindow(userConfig)
     mainWindow.apply_options(options)
-    
+
     if mainWindow.f.thaw():
         gi.require_version('GLib', '2.0')
         from gi.repository import GLib

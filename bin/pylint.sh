@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pylint --rcfile pylintrc *.py fract4d fract4d_compiler fract4dgui
+pylint --rcfile pylintrc *.py gnofract4d fract4d fract4d_compiler fract4dgui
 if [[ $? > 0 ]]
 then
   exit 1
