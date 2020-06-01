@@ -48,7 +48,10 @@ void fractal_controller::set_fd(int fd) {
     site = new FDSite(fd);
 }
 
-void fractal_controller::start_calculating(PyObject *pyimage, PyObject *pycmap, PyObject *pyparams, calc_options coptions) {
+void fractal_controller::start_calculating(
+    PyObject *pyimage, PyObject *pycmap, PyObject *pyparams,
+    calc_options coptions, bool asynchronous
+    ) {
     c_pos_params = new double[N_PARAMS];
     if (!parse_posparams(pyparams, c_pos_params))
     {
@@ -81,7 +84,7 @@ void fractal_controller::start_calculating(PyObject *pyimage, PyObject *pycmap, 
         return nullptr;
     };
 
-    if (coptions.asynchronous) {
+    if (asynchronous) {
         site->interrupt();
         site->wait();
         site->start();

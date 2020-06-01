@@ -78,7 +78,7 @@ namespace functions {
 
         PyObject *pyret = PyCapsule_New(ffh, OBTYPE_FFH, pyff_delete);
 
-        // @TODO: why?
+        // refcount worker so it can't be unloaded before funct is gone
         Py_INCREF(pyworker);
 
         return pyret;

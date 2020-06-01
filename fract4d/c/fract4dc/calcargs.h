@@ -12,6 +12,7 @@ class IFractalSite;
 
 struct calc_args
 {
+    int asynchronous = false;
     calc_options options;
 
     double *params;

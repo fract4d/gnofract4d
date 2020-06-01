@@ -476,6 +476,7 @@ Controller_start_calculating(FractalController *self, PyObject *args, PyObject *
     PyObject *cmap;
     PyObject *params;
     calc_options coptions {};
+    int asynchronous = false;
     if (PyArg_ParseTupleAndKeywords(args, kwds, "OOO|iiiiiiiiiidi", const_cast<char **>(kwlist),
         &image,
         &cmap,
@@ -488,13 +489,13 @@ Controller_start_calculating(FractalController *self, PyObject *args, PyObject *
         &coptions.periodicity,
         &coptions.render_type,
         &coptions.dirty,
-        &coptions.asynchronous,
+        &asynchronous,
         &coptions.warp_param,
         &coptions.period_tolerance,
         &coptions.auto_tolerance
         ))
     {
-        self->start_calculating(image, cmap, params, coptions);
+        self->start_calculating(image, cmap, params, coptions, asynchronous);
     }
     Py_INCREF(Py_None);
     return Py_None;

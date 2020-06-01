@@ -43,7 +43,7 @@ namespace calcs {
             return NULL;
         }
 
-        if (cargs->options.asynchronous)
+        if (cargs->asynchronous)
         {
             cargs->site->interrupt();
             cargs->site->wait();
@@ -160,7 +160,7 @@ calc_args * parse_calc_args(PyObject *args, PyObject *kwds)
             &cargs->options.periodicity,
             &cargs->options.render_type,
             &cargs->options.dirty,
-            &cargs->options.asynchronous,
+            &cargs->asynchronous,
             &cargs->options.warp_param,
             &cargs->options.period_tolerance,
             &cargs->options.auto_tolerance))
