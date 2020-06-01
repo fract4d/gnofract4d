@@ -36,10 +36,13 @@ fractFunc::fractFunc(
     IFractWorker *fw,
     IImage *im,
     IFractalSite *site):
+    m_debug_flags{0},
     m_options{options},
     m_params{params},
     m_im{im}, m_worker{fw}, m_site{site},
-    m_delta_progress{1.0f}
+    m_last_update_y{0},
+    m_min_progress{0.0f}, m_delta_progress{1.0f},
+    m_stats{}
 {
     const dvec4 center = dvec4(
         params[XCENTER], params[YCENTER],
