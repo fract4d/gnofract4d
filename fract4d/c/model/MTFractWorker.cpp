@@ -21,10 +21,6 @@ MTFractWorker::MTFractWorker(
     for (int i = 0; i < numWorkers; ++i)
     {
         STFractWorker &stfw = m_workers.emplace_back(pfo, cmap, im, site);
-        if (!stfw.ok())
-        {
-            m_ok = false;
-        }
     }
     if (numThreads > 1)
     {

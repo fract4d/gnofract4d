@@ -50,7 +50,7 @@ namespace workers {
 
         IFractWorker *worker = IFractWorker::create(nThreads, pfo, cmap, im, site);
 
-        if (!worker->ok())
+        if (!worker)
         {
             PyErr_SetString(PyExc_ValueError, "Error creating worker");
             delete worker;

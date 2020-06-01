@@ -45,6 +45,8 @@ public:
     static IFractWorker *create(
         int numThreads, pf_obj *, ColorMap *, IImage *, IFractalSite *);
 
+    IFractWorker(): m_stats{} {}
+
     virtual void set_fractFunc(fractFunc *) = 0;
     // calculate a row of antialiased pixels
     virtual void row_aa(int x, int y, int n) = 0;
@@ -68,9 +70,7 @@ public:
     virtual void flush() = 0;
 
     virtual ~IFractWorker(){};
-    bool ok() const { return m_ok; }
 protected:
-    bool m_ok = true;
     mutable pixel_stat_t m_stats;
 };
 

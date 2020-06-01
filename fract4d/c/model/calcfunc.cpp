@@ -20,7 +20,7 @@ void calc(
     assert(im && site && cmap && pfo && params);
 
     std::unique_ptr<IFractWorker> worker {IFractWorker::create(options.nThreads, pfo, cmap, im, site)};
-    if (worker && worker->ok())
+    if (worker)
     {
         fractFunc ff(
             options,
