@@ -69,7 +69,7 @@ public:
     virtual bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root) = 0;
     virtual void flush() = 0;
 
-    virtual ~IFractWorker(){};
+    virtual ~IFractWorker() = default;
 protected:
     mutable pixel_stat_t m_stats;
 };

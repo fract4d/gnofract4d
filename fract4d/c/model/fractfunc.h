@@ -36,15 +36,16 @@ public:
         IFractWorker *,
         IImage *,
         IFractalSite *);
-    ~fractFunc(){};
-    // additional flags controlling debugging & profiling options
-    void set_debug_flags(int);
-    void draw_all();
+    ~fractFunc() = default;
 
-    // a vector from the eye through the pixel at (x,y)
-    dvec4 vec_for_point(double x, double y);
     // @TODO: review the need of having this coupling
     friend class STFractWorker;
+
+    // additional flags controlling debugging & profiling options
+    void set_debug_flags(int);
+
+    void draw_all();
+
     // callback wrappers
     inline void iters_changed(int iters)
     {
@@ -76,6 +77,10 @@ public:
     {
         return m_site->is_interrupted();
     }
+
+    // a vector from the eye through the pixel at (x,y)
+    dvec4 vec_for_point(double x, double y);
+
     // used for calculating (x,y,z,w) pixel coords
     dvec4 deltax, deltay;         // step from 1 pixel to the next in x,y directions
     dvec4 delta_aa_x, delta_aa_y; // offset between subpixels
@@ -105,7 +110,6 @@ private:
 
     int m_debug_flags;
     calc_options m_options;
-    d *m_params;
     IImage *m_im;
     IFractWorker *m_worker;
     IFractalSite *m_site;
@@ -117,16 +121,20 @@ private:
 
     void draw(int rsize, int drawsize, float min_progress, float max_progress);
     void draw_aa(float min_progress, float max_progress);
-    int updateiters();
-    void set_progress_range(float min, float max);
+
     // redraw the image to this line
     // also checks for interruptions & returns true if we should stop
     bool update_image(int i);
+
     // prepare for deepening by clearing 'in'-fated pixels
     void clear_in_fates();
+
     // clear auto-deepen and last_update
     void reset_counts();
+    int updateiters();
+
     void reset_progress(float progress);
+    void set_progress_range(float min, float max);
 };
 
 #endif /* _FRACTFUNC_H_ */

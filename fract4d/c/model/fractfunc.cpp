@@ -38,7 +38,6 @@ fractFunc::fractFunc(
     IFractalSite *site):
     m_debug_flags{0},
     m_options{options},
-    m_params{params},
     m_im{im}, m_worker{fw}, m_site{site},
     m_last_update_y{0},
     m_min_progress{0.0f}, m_delta_progress{1.0f},
