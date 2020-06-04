@@ -149,6 +149,12 @@ modules = [module_fract4dc, module_cmap]
 def get_files(dir, ext):
     return [os.path.join(dir, x) for x in os.listdir(dir) if x.endswith(ext)]
 
+def get_icons():
+    icons = []
+    for size in 16, 32, 48, 64, 128, 256:
+        icons.append(('share/icons/hicolor/{0}x{0}/apps'.format(size),
+            ['pixmaps/logo/{0}x{0}/gnofract4d.png'.format(size)]))
+    return icons
 
 so_extension = distutils.sysconfig.get_config_var("EXT_SUFFIX")
 
@@ -227,7 +233,9 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
             ]
         ),
         # icon
-        ('share/pixmaps', ['pixmaps/gnofract4d-logo.png']),
+        ('share/pixmaps', ['pixmaps/logo/48x48/gnofract4d.png']),
+        # theme icons
+        *get_icons(),
         # .desktop file
         ('share/applications', ['gnofract4d.desktop']),
         # MIME type registration
