@@ -6,13 +6,15 @@ python:
   - "3.5"
   - "3.6"
   - "3.7"
+jobs:
+  include:
+    - env: TOXENV=pylint
 before_install:
   sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
 install:
   - python setup.py build
-  - pip install tox-travis pylint
+  - pip install tox-travis
 script:
-  - ./bin/pylint.sh || travis_terminate 1;
   - tox
 notifications:
   email: false
