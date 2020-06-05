@@ -113,13 +113,13 @@ namespace functions {
         switch (vec_type)
         {
         case DELTA_X:
-            vec = ff->deltax;
+            vec = ff->get_geometry().deltax;
             break;
         case DELTA_Y:
-            vec = ff->deltay;
+            vec = ff->get_geometry().deltay;
             break;
         case TOPLEFT:
-            vec = ff->topleft;
+            vec = ff->get_geometry().topleft;
             break;
         default:
             PyErr_SetString(PyExc_ValueError, "Unknown vector requested");
@@ -157,7 +157,7 @@ namespace functions {
             return NULL;
         }
 
-        dvec4 lookvec = ff->vec_for_point(x, y);
+        dvec4 lookvec = ff->get_geometry().vec_for_point_3d(x, y);
 
         return Py_BuildValue(
             "(dddd)",

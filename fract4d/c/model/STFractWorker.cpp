@@ -8,22 +8,20 @@
 #include "model/colormap.h"
 #include "model/image.h"
 #include "model/site.h"
-#include "model/fractfunc.h"
 #include "model/calcoptions.h"
 
 #include "pf.h"
 
 
-void STFractWorker::set_fractFunc(fractFunc *ff_)
+void STFractWorker::set_context(IWorkerContext *context)
 {
-    m_ff = ff_;
-    m_options = &ff_->m_options;
+    m_context = context;
 }
 
 /* we're in a worker thread */
 void STFractWorker::work(job_info_t &tdata)
 {
-    if (m_ff->try_finished_cond())
+    if (m_context->try_finished_cond())
     {
         // interrupted - just return without doing anything
         // this is less efficient than clearing the queue but easier
@@ -61,9 +59,9 @@ void STFractWorker::work(job_info_t &tdata)
     default:
         printf("Unknown job id %d ignored\n", static_cast<int>(tdata.job));
     }
-    m_ff->image_changed(0, tdata.y, m_im->Xres(), tdata.y + nRows);
+    m_context->image_changed(0, tdata.y, m_im->Xres(), tdata.y + nRows);
     const float new_progress = static_cast<float>(tdata.y) / static_cast<float>(m_im->Yres());
-    m_ff->progress_changed(new_progress);
+    m_context->progress_changed(new_progress);
 }
 
 void STFractWorker::row_aa(int x, int y, int w)
@@ -81,9 +79,10 @@ inline int STFractWorker::periodGuess()
 
 inline int STFractWorker::periodGuess(int last)
 {
-    if (!m_options->periodicity)
+    const calc_options &options = m_context->get_options();
+    if (!options.periodicity)
     {
-        return m_options->maxiter;
+        return options.maxiter;
     }
     if (last == -1)
     {
@@ -134,7 +133,9 @@ inline bool STFractWorker::isTheSame(int targetIter, int targetCol, int x, int y
 
 rgba_t STFractWorker::antialias(int x, int y)
 {
-    const dvec4 topleft = m_ff->aa_topleft + x * m_ff->deltax + y * m_ff->deltay;
+    const calc_options &options = m_context->get_options();
+    const fract_geometry &geometry = m_context->get_geometry();
+    const dvec4 topleft = geometry.vec_for_point_2d_aa(x, y);
     dvec4 pos = topleft;
     rgba_t ptmp;
     unsigned int pixel_r_val = 0, pixel_g_val = 0, pixel_b_val = 0;
@@ -142,7 +143,7 @@ rgba_t STFractWorker::antialias(int x, int y)
     float index;
     fate_t fate;
     const int checkPeriod = periodGuess(m_im->getIter(x, y));
-    if (m_ff->m_debug_flags & DEBUG_DRAWING_STATS)
+    if (m_context->get_debug_flags() & DEBUG_DRAWING_STATS)
     {
         printf("doaa %d %d\n", x, y);
     }
@@ -156,9 +157,9 @@ rgba_t STFractWorker::antialias(int x, int y)
     if (m_im->hasUnknownSubpixels(x, y))
     {
         m_pf.calc(
-            pos.n, m_options->maxiter,
-            checkPeriod, m_options->period_tolerance,
-            m_options->warp_param,
+            pos.n, options.maxiter,
+            checkPeriod, options.period_tolerance,
+            options.warp_param,
             x, y, 1,
             &ptmp, &p, &index, &fate);
         m_im->setFate(x, y, 0, fate);
@@ -176,11 +177,11 @@ rgba_t STFractWorker::antialias(int x, int y)
     fate = m_im->getFate(x, y, 1);
     if (fate == FATE_UNKNOWN)
     {
-        pos += m_ff->delta_aa_x;
+        pos += geometry.delta_aa_x;
         m_pf.calc(
-            pos.n, m_options->maxiter,
-            checkPeriod, m_options->period_tolerance,
-            m_options->warp_param,
+            pos.n, options.maxiter,
+            checkPeriod, options.period_tolerance,
+            options.warp_param,
             x, y, 2,
             &ptmp, &p, &index, &fate);
         m_im->setFate(x, y, 1, fate);
@@ -197,11 +198,11 @@ rgba_t STFractWorker::antialias(int x, int y)
     fate = m_im->getFate(x, y, 2);
     if (fate == FATE_UNKNOWN)
     {
-        pos = topleft + m_ff->delta_aa_y;
+        pos = topleft + geometry.delta_aa_y;
         m_pf.calc(
-            pos.n, m_options->maxiter,
-            checkPeriod, m_options->period_tolerance,
-            m_options->warp_param,
+            pos.n, options.maxiter,
+            checkPeriod, options.period_tolerance,
+            options.warp_param,
             x, y, 3,
             &ptmp, &p, &index, &fate);
         m_im->setFate(x, y, 2, fate);
@@ -218,11 +219,11 @@ rgba_t STFractWorker::antialias(int x, int y)
     fate = m_im->getFate(x, y, 3);
     if (fate == FATE_UNKNOWN)
     {
-        pos = topleft + m_ff->delta_aa_y + m_ff->delta_aa_x;
+        pos = topleft + geometry.delta_aa_y + geometry.delta_aa_x;
         m_pf.calc(
-            pos.n, m_options->maxiter,
-            checkPeriod, m_options->period_tolerance,
-            m_options->warp_param,
+            pos.n, options.maxiter,
+            checkPeriod, options.period_tolerance,
+            options.warp_param,
             x, y, 4,
             &ptmp, &p, &index, &fate);
         m_im->setFate(x, y, 3, fate);
@@ -243,13 +244,14 @@ rgba_t STFractWorker::antialias(int x, int y)
 
 void STFractWorker::compute_stats(const dvec4 &pos, int iter, fate_t fate, int x, int y)
 {
+    const calc_options &options = m_context->get_options();
     m_stats.s[ITERATIONS] += iter;
     m_stats.s[PIXELS]++;
     m_stats.s[PIXELS_CALCULATED]++;
     if (fate & FATE_INSIDE)
     {
         m_stats.s[PIXELS_INSIDE]++;
-        if (iter < m_options->maxiter - 1)
+        if (iter < options.maxiter - 1)
         {
             m_stats.s[PIXELS_PERIODIC]++;
         }
@@ -258,12 +260,12 @@ void STFractWorker::compute_stats(const dvec4 &pos, int iter, fate_t fate, int x
     {
         m_stats.s[PIXELS_OUTSIDE]++;
     }
-    if (m_options->auto_deepen && m_stats.s[PIXELS] % m_ff->AUTO_DEEPEN_FREQUENCY == 0)
+    if (options.auto_deepen && m_stats.s[PIXELS] % AUTO_DEEPEN_FREQUENCY == 0)
     {
         compute_auto_deepen_stats(pos, iter, x, y);
     }
-    if (m_options->periodicity && m_options->auto_tolerance &&
-        m_stats.s[PIXELS] % m_ff->AUTO_TOLERANCE_FREQUENCY == 0)
+    if (options.periodicity && options.auto_tolerance &&
+        m_stats.s[PIXELS] % AUTO_TOLERANCE_FREQUENCY == 0)
     {
         compute_auto_tolerance_stats(pos, iter, x, y);
     }
@@ -271,6 +273,7 @@ void STFractWorker::compute_stats(const dvec4 &pos, int iter, fate_t fate, int x
 
 void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int x, int y)
 {
+    const calc_options &options = m_context->get_options();
     if (iter == -1)
     {
         // currently inside
@@ -283,10 +286,10 @@ void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int
         /* try again with 10x tighter tolerance */
         m_pf.calc(
             pos.n,
-            m_options->maxiter,
+            options.maxiter,
             0,
-            m_options->period_tolerance / 10.0,
-            m_options->warp_param,
+            options.period_tolerance / 10.0,
+            options.warp_param,
             x, y, -1,
             &temp_pixel, &temp_iter, &temp_index, &temp_fate);
 
@@ -309,10 +312,10 @@ void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int
         /* try again with 10x looser tolerance */
         m_pf.calc(
             pos.n,
-            m_options->maxiter,
+            options.maxiter,
             0,
-            m_options->period_tolerance * 10.0,
-            m_options->warp_param,
+            options.period_tolerance * 10.0,
+            options.warp_param,
             x, y, -1,
             &temp_pixel, &temp_iter, &temp_index, &temp_fate);
 
@@ -326,7 +329,8 @@ void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int
 
 void STFractWorker::compute_auto_deepen_stats(const dvec4 &pos, int iter, int x, int y)
 {
-    if (iter > m_options->maxiter / 2)
+    const calc_options &options = m_context->get_options();
+    if (iter > options.maxiter / 2)
     {
         /* we would have got this wrong if we used
 	    * half as many iterations */
@@ -341,10 +345,10 @@ void STFractWorker::compute_auto_deepen_stats(const dvec4 &pos, int iter, int x,
         /* didn't bail out, try again with 2x as many iterations */
         m_pf.calc(
             pos.n,
-            m_options->maxiter * 2,
+            options.maxiter * 2,
             periodGuess(),
-            m_options->period_tolerance,
-            m_options->warp_param,
+            options.period_tolerance,
+            options.warp_param,
             x, y, -1,
             &temp_pixel, &temp_iter, &temp_index, &temp_fate);
 
@@ -358,30 +362,32 @@ void STFractWorker::compute_auto_deepen_stats(const dvec4 &pos, int iter, int x,
 
 void STFractWorker::pixel(int x, int y, int w, int h)
 {
+    const calc_options &options = m_context->get_options();
+    const fract_geometry &geometry = m_context->get_geometry();
     rgba_t pixel;
     float index {0};
     fate_t fate = m_im->getFate(x, y, 0);
     if (fate == FATE_UNKNOWN)
     {
         int iter = 0;
-        switch (m_options->render_type) {
+        switch (options.render_type) {
         case RENDER_TWO_D:
         {
             // calculate coords of this point
-            const dvec4 pos = m_ff->topleft + x * m_ff->deltax + y * m_ff->deltay;
+            const dvec4 pos =  geometry.vec_for_point_2d(x, y); //m_ff->topleft + x * m_ff->deltax + y * m_ff->deltay;
             const int min_period_iters = periodGuess();
             m_pf.calc(
                 pos.n,
-                m_options->maxiter,
+                options.maxiter,
                 min_period_iters,
-                m_options->period_tolerance,
-                m_options->warp_param,
+                options.period_tolerance,
+                options.warp_param,
                 x, y, 0,
                 &pixel, &iter, &index, &fate);
             compute_stats(pos, iter, fate, x, y);
             const int color_iters = (fate & FATE_INSIDE) ? -1 : iter;
             m_site->pixel_changed(
-                pos.n, m_options->maxiter, min_period_iters,
+                pos.n, options.maxiter, min_period_iters,
                 x, y, 0,
                 index, fate, color_iters,
                 pixel.r, pixel.g, pixel.b, pixel.a);
@@ -392,9 +398,9 @@ void STFractWorker::pixel(int x, int y, int w, int h)
             break;
         case RENDER_THREE_D:
         {
-            const dvec4 look = m_ff->vec_for_point(x, y);
+            const dvec4 look = geometry.vec_for_point_3d(x, y);
             dvec4 root;
-            bool found = find_root(m_ff->eye_point, look, root);
+            bool found = find_root(geometry.eye_point, look, root);
             if (found)
             {
                 // intersected
@@ -415,7 +421,7 @@ void STFractWorker::pixel(int x, int y, int w, int h)
         break;
         }
         periodSet(iter);
-        if (m_ff->m_debug_flags & DEBUG_DRAWING_STATS)
+        if (m_context->get_debug_flags() & DEBUG_DRAWING_STATS)
         {
             printf("pixel %d %d %d %d\n", x, y, fate, iter);
         }
@@ -467,7 +473,7 @@ void STFractWorker::pixel_aa(int x, int y)
 {
     const int iter = m_im->getIter(x, y);
     // if aa type is fast, short-circuit some points
-    if (m_options->eaa == AA_FAST &&
+    if (m_context->get_options().eaa == AA_FAST &&
         x > 0 && x < m_im->Xres() - 1 && y > 0 && y < m_im->Yres() - 1)
     {
         // check to see if this point is surrounded by others of the same colour
@@ -480,7 +486,7 @@ void STFractWorker::pixel_aa(int x, int y)
             isTheSame(iter, pcol, x, y + 1);
         if (bFlat)
         {
-            if (m_ff->m_debug_flags & DEBUG_DRAWING_STATS)
+            if (m_context->get_debug_flags() & DEBUG_DRAWING_STATS)
             {
                 printf("noaa %d %d\n", x, y);
             }
@@ -712,17 +718,18 @@ inline void STFractWorker::rectangle(rgba_t pixel, int x, int y, int w, int h)
 // EXPERIMENTAL (not in use)
 inline void STFractWorker::check_guess(int x, int y, rgba_t pixel, fate_t fate, int iter, float index)
 {
-    const dvec4 pos = m_ff->topleft + x * m_ff->deltax + y * m_ff->deltay;
+    const calc_options &options = m_context->get_options();
+    const dvec4 pos = m_context->get_geometry().vec_for_point_2d(x, y); // m_ff->topleft + x * m_ff->deltax + y * m_ff->deltay;
     rgba_t tpixel;
     int titer;
     float tindex;
     fate_t tfate;
     m_pf.calc(
         pos.n,
-        m_options->maxiter,
+        options.maxiter,
         periodGuess(),
-        m_options->period_tolerance,
-        m_options->warp_param,
+        options.period_tolerance,
+        options.warp_param,
         x, y, 0,
         &tpixel, &titer, &tindex, &tfate);
     if (tpixel == pixel)
@@ -746,7 +753,7 @@ inline void STFractWorker::rectangle_with_iter(
     {
         for (auto j = x; j < x + w; j++)
         {
-            if (m_ff->m_debug_flags & DEBUG_DRAWING_STATS)
+            if (m_context->get_debug_flags() & DEBUG_DRAWING_STATS)
             {
                 printf("guess %d %d %d %d\n", j, i, fate, iter);
             }
@@ -764,6 +771,7 @@ inline void STFractWorker::rectangle_with_iter(
 // @TODO: this is used for RENDER_THREE_D mode and seems to be unfinished or at leats worth to review
 bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
 {
+    const calc_options &options = m_context->get_options();
     d dist = 0.0;
     rgba_t pixel;
     float index;
@@ -787,10 +795,10 @@ bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
         pos = eye + dist * look;
         m_pf.calc(
             pos.n,
-            m_options->maxiter,
+            options.maxiter,
             periodGuess(),
-            m_options->period_tolerance,
-            m_options->warp_param,
+            options.period_tolerance,
+            options.warp_param,
             x, y, 0,
             &pixel, &iter, &index, &fate);
         steps++;
@@ -812,10 +820,10 @@ bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
         d mid = (lastdist + dist) / 2.0;
         pos = eye + mid * look;
         m_pf.calc(pos.n,
-            m_options->maxiter,
+            options.maxiter,
             periodGuess(),
-            m_options->period_tolerance,
-            m_options->warp_param,
+            options.period_tolerance,
+            options.warp_param,
             x, y, 0,
             &pixel, &iter, &index, &fate);
         if (fate != 0) // FIXME

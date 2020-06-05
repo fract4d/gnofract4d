@@ -6,77 +6,28 @@
 #include "fractfunc.h"
 #include "model/image.h"
 
-// produces the scaled rotation matrix from the params
-dmat4 rotated_matrix(double *params)
-{
-    d one = d(1.0);
-    d zero = d(0.0);
-    dmat4 id = identity3D<d>(params[MAGNITUDE], zero);
-    return id *
-           rotXY<d>(params[XYANGLE], one, zero) *
-           rotXZ<d>(params[XZANGLE], one, zero) *
-           rotXW<d>(params[XWANGLE], one, zero) *
-           rotYZ<d>(params[YZANGLE], one, zero) *
-           rotYW<d>(params[YWANGLE], one, zero) *
-           rotZW<d>(params[ZWANGLE], one, zero);
-}
-
-// The eye vector is the line between the center of the screen and the
-// point where the user's eye is deemed to be. It's effectively the line
-// perpendicular to the screen in the -Z direction, scaled by the "eye distance"
-dvec4 test_eye_vector(double *params, double dist)
-{
-    dmat4 mat = rotated_matrix(params);
-    return mat[VZ] * -dist;
-}
-
 fractFunc::fractFunc(
     calc_options options,
-    d *params,
+    d *location_params,
     IFractWorker *fw,
     IImage *im,
     IFractalSite *site):
     m_debug_flags{0},
     m_options{options},
+    m_geometry {
+        location_params,
+        static_cast<bool>(options.yflip),
+        im->totalXres(),
+        im->totalYres(),
+        im->Xoffset(),
+        im->Yoffset()
+    },
     m_im{im}, m_worker{fw}, m_site{site},
     m_last_update_y{0},
     m_min_progress{0.0f}, m_delta_progress{1.0f},
     m_stats{}
 {
-    const dvec4 center = dvec4(
-        params[XCENTER], params[YCENTER],
-        params[ZCENTER], params[WCENTER]);
-
-    dmat4 rot = rotated_matrix(params);
-
-    eye_point = center + rot[VZ] * -10.0; // FIXME add eye distance parameter
-
-    rot = rot / im->totalXres();
-    // distance to jump for one pixel down or across
-    deltax = rot[VX];
-    // if yflip, draw Y axis down, otherwise up
-    deltay = options.yflip ? rot[VY] : -rot[VY];
-
-    // half that distance
-    delta_aa_x = deltax / 2.0;
-    delta_aa_y = deltay / 2.0;
-
-    // topleft is now top left corner of top left pixel...
-    topleft = center -
-              deltax * im->totalXres() / 2.0 -
-              deltay * im->totalYres() / 2.0;
-
-    // offset to account for tiling, if any
-    topleft += im->Xoffset() * deltax;
-    topleft += im->Yoffset() * deltay;
-
-    // .. then offset to center of pixel
-    topleft += delta_aa_x + delta_aa_y;
-
-    // antialias: offset to middle of top left quadrant of pixel
-    aa_topleft = topleft - (delta_aa_y + delta_aa_x) / 2.0;
-
-    m_worker->set_fractFunc(this);
+    m_worker->set_context(this);
 }
 
 bool fractFunc::update_image(int i)
@@ -332,14 +283,6 @@ void fractFunc::draw(int rsize, int drawsize, float min_progress, float max_prog
 void fractFunc::set_debug_flags(int debug_flags)
 {
     m_debug_flags = debug_flags;
-}
-
-dvec4 fractFunc::vec_for_point(double x, double y)
-{
-    const dvec4 point = topleft + x * deltax + y * deltay;
-    dvec4 vec = point - eye_point;
-    vec.norm();
-    return vec;
 }
 
 void fractFunc::set_progress_range(float min, float max)

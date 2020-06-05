@@ -28,11 +28,11 @@ MTFractWorker::MTFractWorker(
     }
 }
 
-void MTFractWorker::set_fractFunc(fractFunc *ff_)
+void MTFractWorker::set_context(IWorkerContext *context)
 {
     for (auto& worker: m_workers)
     {
-        worker.set_fractFunc(ff_);
+        worker.set_context(context);
     }
 }
 
