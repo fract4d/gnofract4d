@@ -14,6 +14,7 @@
 #include "model/calcfunc.h"
 #include "model/enums.h"
 #include "model/imagewriter.h"
+#include "model/calcoptions.h"
 
 #define MAX_ITERATIONS 100
 
@@ -88,25 +89,18 @@ int main() {
     auto im{std::make_unique<image>()};
     im->set_resolution(640, 480, -1, -1);
 
+    calc_options options;
+    options.maxiter = MAX_ITERATIONS;
+
     // LAUNCH CALCULATION
     calc(
+        options,
         const_cast<double *>(pos_params),
-        0, // antialiasing
-        MAX_ITERATIONS,
-        1, // number of threads
         pf_handle,
         cmap.get(),
-        0, // auto deepen
-        0, // auto tolerance
-        1.0E-9, // tolerance
-        0, // y flip
-        1, // periodicity
-        1, // dirty
-        0, // debug flags
-        RENDER_TWO_D, // render type
-        -1, // wrap param
+        site.get(),
         im.get(),
-        site.get()
+        0 // debug flags
     );
 
     // save the image

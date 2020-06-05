@@ -3,30 +3,12 @@
 
 #include "Python.h"
 
-#include "model/enums.h"
+#include "model/calcoptions.h"
 
 typedef struct s_pf_data pf_obj;
 class IFractalSite;
 class ColorMap;
 class IImage;
-
-// @todo: review C++ standar version support
-struct calc_options
-{
-    int
-        eaa = AA_NONE,
-        maxiter =  1024,
-        nThreads = 1,
-        auto_deepen = false,
-        yflip = false,
-        periodicity = true,
-        dirty = 1,
-        auto_tolerance = false,
-        asynchronous = false,
-        warp_param = -1;
-    double tolerance = 1.0E-9;
-    render_type_t render_type = RENDER_TWO_D;
-};
 
 typedef struct fractal_controller {
     PyObject_HEAD
@@ -41,7 +23,7 @@ typedef struct fractal_controller {
     PyObject *py_image;
     void set_message_handler(PyObject *message_handler);
     void set_fd(int fd);
-    void start_calculating(PyObject *pyimage, PyObject *pycmap, PyObject *pyparams, calc_options coptions);
+    void start_calculating(PyObject *pyimage, PyObject *pycmap, PyObject *pyparams, calc_options coptions, bool asynchronous);
     void stop_calculating();
     void free_resources();
     ~fractal_controller();

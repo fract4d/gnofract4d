@@ -30,6 +30,7 @@
 #include "fract4dc/controllers.h"
 
 #include "model/enums.h"
+#include "model/calcoptions.h"
 
 struct module_state
 {
@@ -475,6 +476,7 @@ Controller_start_calculating(FractalController *self, PyObject *args, PyObject *
     PyObject *cmap;
     PyObject *params;
     calc_options coptions {};
+    int asynchronous = false;
     if (PyArg_ParseTupleAndKeywords(args, kwds, "OOO|iiiiiiiiiidi", const_cast<char **>(kwlist),
         &image,
         &cmap,
@@ -487,13 +489,13 @@ Controller_start_calculating(FractalController *self, PyObject *args, PyObject *
         &coptions.periodicity,
         &coptions.render_type,
         &coptions.dirty,
-        &coptions.asynchronous,
+        &asynchronous,
         &coptions.warp_param,
-        &coptions.tolerance,
+        &coptions.period_tolerance,
         &coptions.auto_tolerance
         ))
     {
-        self->start_calculating(image, cmap, params, coptions);
+        self->start_calculating(image, cmap, params, coptions, asynchronous);
     }
     Py_INCREF(Py_None);
     return Py_None;
@@ -687,7 +689,7 @@ static struct PyModuleDef moduledef = {
     NULL, // extension_clear
     NULL};
 
-extern "C" PyMODINIT_FUNC
+PyMODINIT_FUNC
 PyInit_fract4dc(void)
 {
     // had to do this here because some compilers don't support non-trivial designated initializers

@@ -758,6 +758,7 @@ class T(fctutils.T):
     def image_changed(self, x1, y1, x2, y2):
         pass
 
+    # you need to rename this to pixel_changed to get pixel debug info
     def _pixel_changed(self, params, x, y, aa, maxIters,
                        nNoPeriodIters, dist, fate, nIters, r, g, b, a):
         # remove underscore to debug fractal generation

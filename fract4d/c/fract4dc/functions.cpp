@@ -10,6 +10,7 @@
 #include "model/enums.h"
 #include "model/worker.h"
 #include "model/fractfunc.h"
+#include "model/calcoptions.h"
 
 #include "pf.h"
 
@@ -19,17 +20,12 @@ namespace functions {
     {
         PyObject *pypfo, *pycmap, *pyim, *pysite, *pyworker;
         double params[N_PARAMS];
-        int eaa = -7, maxiter = -8, nThreads = -9;
-        int auto_deepen, periodicity;
-        int yflip;
-        render_type_t render_type;
         pf_obj *pfo;
         ColorMap *cmap;
         IImage *im;
         IFractalSite *site;
         IFractWorker *worker;
-        int auto_tolerance;
-        double tolerance;
+        calc_options options;
 
         if (!PyArg_ParseTuple(
                 args,
@@ -37,14 +33,14 @@ namespace functions {
                 &params[0], &params[1], &params[2], &params[3],
                 &params[4], &params[5], &params[6], &params[7],
                 &params[8], &params[9], &params[10],
-                &eaa, &maxiter, &yflip, &nThreads,
+                &options.eaa, &options.maxiter, &options.yflip, &options.nThreads,
                 &pypfo, &pycmap,
-                &auto_deepen,
-                &periodicity,
-                &render_type,
+                &options.auto_deepen,
+                &options.periodicity,
+                &options.render_type,
                 &pyim, &pysite,
                 &pyworker,
-                &auto_tolerance, &tolerance))
+                &options.auto_tolerance, &options.period_tolerance))
         {
             return NULL;
         }
@@ -61,17 +57,8 @@ namespace functions {
         }
 
         fractFunc *ff = new fractFunc(
+            options,
             params,
-            eaa,
-            maxiter,
-            nThreads,
-            auto_deepen,
-            auto_tolerance,
-            tolerance,
-            yflip,
-            periodicity,
-            render_type,
-            -1, // warp_param
             worker,
             im,
             site);
@@ -91,7 +78,7 @@ namespace functions {
 
         PyObject *pyret = PyCapsule_New(ffh, OBTYPE_FFH, pyff_delete);
 
-        // @TODO: why?
+        // refcount worker so it can't be unloaded before funct is gone
         Py_INCREF(pyworker);
 
         return pyret;

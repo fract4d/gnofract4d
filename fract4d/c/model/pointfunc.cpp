@@ -1,38 +1,6 @@
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include <unistd.h>
-#include <dlfcn.h>
-#include <cstdio>
-
 #include "pointfunc.h"
 
-#include "pf.h"
-
-#include "model/colormap.h"
-#include "model/site.h"
-#include "model/color.h"
-
-/* only here so it's visible to debugger */
-typedef struct
-{
-    pf_obj parent;
-    struct s_param p[PF_MAXPARAMS];
-} pf_real;
-
-pointFunc *pointFunc::create(
-    pf_obj *pfo,
-    ColorMap *cmap,
-    IFractalSite *site)
-{
-    if (NULL == pfo || NULL == cmap)
-    {
-        return NULL;
-    }
-    return new pf_wrapper(pfo, cmap, site);
-}
-
-void pf_wrapper::calc(
+void pointFunc::calc(
     // in params
     const double *params, int nIters,
     // periodicity
@@ -77,29 +45,4 @@ void pf_wrapper::calc(
     }
     *pFate = (fate_t)fate;
     *pIndex = (float)dist;
-    int color_iters = (fate & FATE_INSIDE) ? -1 : *pnIters;
-    m_site->pixel_changed(
-        params, nIters, min_period_iters,
-        x, y, aa,
-        dist, fate, color_iters,
-        color->r, color->g, color->b, color->a);
-}
-
-inline rgba_t pf_wrapper::recolor(double dist, fate_t fate, rgba_t current) const
-{
-    int solid = 0;
-    int inside = 0;
-    if (fate & FATE_DIRECT)
-    {
-        return current;
-    }
-    if (fate & FATE_SOLID)
-    {
-        solid = 1;
-    }
-    if (fate & FATE_INSIDE)
-    {
-        inside = 1;
-    }
-    return m_cmap->lookup_with_transfer(dist, solid, inside);
 }
