@@ -17,6 +17,7 @@
 
 #include "model/fractfunc.h"
 #include "model/vectors.h"
+#include "model/fractgeometry.h"
 
 #include "benchmark/benchmark.h"
 
@@ -28,14 +29,14 @@ constexpr double pos_params[N_PARAMS] {
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0 // XY XZ XW YZ YW ZW planes (4D stuff)
 };
 
-// So that we don't do a bunch of file I/O during the benchmark, load the 
+// So that we don't do a bunch of file I/O during the benchmark, load the
 // formula and other objects first and cache them across multiple calls.
 // NB: we don't free them at all, and this is not thread-safe.
 static pf_obj * GetPointFunc() {
     static pf_obj *instance;
     if(!instance) {
         void *fract_stdlib_handle = dlopen("./fract_stdlib.so", RTLD_GLOBAL | RTLD_NOW);
-        if (!fract_stdlib_handle) {                    
+        if (!fract_stdlib_handle) {
             fprintf(stderr, "Error loading libfract_stdlib: %s", dlerror());
             throw std::exception();
         }
@@ -59,7 +60,7 @@ static pf_obj * GetPointFunc() {
     return instance;
 }
 
-static void inner_fractal(pf_obj *pf_handle, int precision) {    
+static void inner_fractal(pf_obj *pf_handle, int precision) {
     // formula params: [0, 4.0, 0.0, 1.0, 4.0, 0.0, 1.0, precision]
     int param_len = 8;
     auto params{std::make_unique<s_param []>(param_len)};
@@ -94,22 +95,12 @@ static void inner_fractal(pf_obj *pf_handle, int precision) {
     auto im{std::make_unique<image>()};
     im->set_resolution(640, 480, -1, -1);
 
-    // calculate the 4D vectors: topleft and deltas (x, y)
-    dvec4 center = dvec4(
-        pos_params[XCENTER], pos_params[YCENTER],
-        pos_params[ZCENTER], pos_params[WCENTER]
-    );
-    dmat4 rot_matrix = rotated_matrix(const_cast<double *>(pos_params));
-    rot_matrix = rot_matrix / im->totalXres();
-    dvec4 deltax = rot_matrix[VX];
-    dvec4 deltay = rot_matrix[VY];
-    dvec4 delta_aa_x = deltax / 2.0;
-    dvec4 delta_aa_y = deltay / 2.0;
-    dvec4 topleft = center - deltax * im->totalXres() / 2.0 - deltay * im->totalYres() / 2.0;
-    topleft += delta_aa_x + delta_aa_y;
-
     const auto w = im->Xres();
     const auto h = im->Yres();
+
+    // calculate the 4D vectors: topleft and deltas (x, y)
+    fract_geometry geometry { const_cast<double *>(pos_params), false, w, h, 0, 0 };
+
     // we put these variables out of the loop scope to use its previous value
     int iters_taken = 0;
     int min_period_iters = 0;
@@ -117,7 +108,7 @@ static void inner_fractal(pf_obj *pf_handle, int precision) {
     for (auto x = 0; x < w; x++) {
         for (auto y = 0; y < h; y++) {
             // calculate the position in 4D (x, y, z, w)
-            dvec4 pos = topleft + x * deltax + y * deltay;
+            dvec4 pos = geometry.vec_for_point_2d(x, y);
             // run the formula
             double dist = 0.0;
             int fate = 0;
@@ -178,6 +169,6 @@ static void BM_fractal(benchmark::State& state) {
 // - report time per iteration in milliseconds
 // - for at least 2 minutes
 // - measure real time not CPU time for main thread
-BENCHMARK(BM_fractal)->Arg(64)->Arg(128)->Arg(432)->Unit(benchmark::kMillisecond)->MinTime(120.0)->UseRealTime(); 
+BENCHMARK(BM_fractal)->Arg(64)->Arg(128)->Arg(432)->Unit(benchmark::kMillisecond)->MinTime(120.0)->UseRealTime();
 
 BENCHMARK_MAIN();

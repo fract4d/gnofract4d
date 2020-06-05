@@ -7,6 +7,7 @@
 #include "model/stats.h"
 #include "model/enums.h"
 #include "model/calcoptions.h"
+#include "model/fractgeometry.h"
 
 class IImage;
 
@@ -16,30 +17,16 @@ class IImage;
    parcels up the work which is actually performed by the fractThreadFuncs
  */
 
-// geometry utilities
-dmat4 rotated_matrix(double *params);
-dvec4 test_eye_vector(double *params, double dist);
-
-enum
-{
-    DEBUG_QUICK_TRACE = 1,
-    DEBUG_DRAWING_STATS = 2,
-    DEBUG_TIMING = 4
-};
-
-class fractFunc
+class fractFunc final: public IWorkerContext
 {
 public:
     fractFunc(
         calc_options,
-        d *params,
+        d *location_params,
         IFractWorker *,
         IImage *,
         IFractalSite *);
     ~fractFunc() = default;
-
-    // @TODO: review the need of having this coupling
-    friend class STFractWorker;
 
     // additional flags controlling debugging & profiling options
     void set_debug_flags(int);
@@ -55,15 +42,6 @@ public:
     {
         m_site->tolerance_changed(tolerance);
     }
-    inline void image_changed(int x1, int x2, int y1, int y2)
-    {
-        m_site->image_changed(x1, x2, y1, y2);
-    }
-    inline void progress_changed(float progress)
-    {
-        const float adjusted_progress = m_min_progress + progress * m_delta_progress;
-        m_site->progress_changed(adjusted_progress);
-    }
     inline void stats_changed()
     {
         m_stats.add(m_worker->get_stats());
@@ -73,30 +51,33 @@ public:
     {
         m_site->status_changed(status_val);
     }
-    inline bool try_finished_cond()
+
+    // IWorkerContext
+    inline void image_changed(int x1, int x2, int y1, int y2) const
+    {
+        m_site->image_changed(x1, x2, y1, y2);
+    }
+    inline void progress_changed(float progress) const
+    {
+        const float adjusted_progress = m_min_progress + progress * m_delta_progress;
+        m_site->progress_changed(adjusted_progress);
+    }
+    inline bool try_finished_cond() const
     {
         return m_site->is_interrupted();
     }
-
-    // a vector from the eye through the pixel at (x,y)
-    dvec4 vec_for_point(double x, double y);
-
-    // used for calculating (x,y,z,w) pixel coords
-    dvec4 deltax, deltay;         // step from 1 pixel to the next in x,y directions
-    dvec4 delta_aa_x, delta_aa_y; // offset between subpixels
-    dvec4 topleft;                // top left corner of screen
-    dvec4 aa_topleft;             // topleft - offset to 1st subpixel to draw
-    dvec4 eye_point;              // where user's eye is (for 3d mode)
+    inline int get_debug_flags() const {
+        return m_debug_flags;
+    }
+    inline const fract_geometry& get_geometry() const {
+        return m_geometry;
+    }
+    inline const calc_options& get_options() const {
+        return m_options;
+    }
 
 private:
 
-    // do every nth pixel twice as deep as the others to
-    // see if we need to auto-deepen
-    enum
-    {
-        AUTO_DEEPEN_FREQUENCY = 30,
-        AUTO_TOLERANCE_FREQUENCY = 30
-    };
     // flags for controlling auto-improvement
     enum
     {
@@ -110,6 +91,7 @@ private:
 
     int m_debug_flags;
     calc_options m_options;
+    fract_geometry m_geometry;
     IImage *m_im;
     IFractWorker *m_worker;
     IFractalSite *m_site;

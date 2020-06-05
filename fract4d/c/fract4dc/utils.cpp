@@ -6,6 +6,7 @@
 #include "model/fractfunc.h"
 #include "model/colorutils.h"
 #include "model/vectors.h"
+#include "model/fractgeometry.h"
 
 #include "fract_stdlib.h"
 #include "pf.h"
@@ -26,7 +27,7 @@ namespace utils {
             return NULL;
         }
 
-        dmat4 rot = rotated_matrix(params);
+        dmat4 rot = fract_geometry::rotated_matrix(params);
 
         return Py_BuildValue(
             "((dddd)(dddd)(dddd)(dddd))",
@@ -51,7 +52,7 @@ namespace utils {
             return NULL;
         }
 
-        dvec4 eyevec = test_eye_vector(params, dist);
+        dvec4 eyevec = fract_geometry::eye_vector(params, dist);
 
         return Py_BuildValue(
             "(dddd)",

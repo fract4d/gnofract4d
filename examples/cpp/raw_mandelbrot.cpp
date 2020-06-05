@@ -16,6 +16,7 @@
 
 #include "model/fractfunc.h"
 #include "model/vectors.h"
+#include "model/fractgeometry.h"
 
 #define MAX_ITERATIONS 100
 
@@ -82,22 +83,11 @@ int main() {
     auto im{std::make_unique<image>()};
     im->set_resolution(640, 480, -1, -1);
 
-    // calculate the 4D vectors: topleft and deltas (x, y)
-    dvec4 center = dvec4(
-        pos_params[XCENTER], pos_params[YCENTER],
-        pos_params[ZCENTER], pos_params[WCENTER]
-    );
-    dmat4 rot_matrix = rotated_matrix(const_cast<double *>(pos_params));
-    rot_matrix = rot_matrix / im->totalXres();
-    dvec4 deltax = rot_matrix[VX];
-    dvec4 deltay = rot_matrix[VY];
-    dvec4 delta_aa_x = deltax / 2.0;
-    dvec4 delta_aa_y = deltay / 2.0;
-    dvec4 topleft = center - deltax * im->totalXres() / 2.0 - deltay * im->totalYres() / 2.0;
-    topleft += delta_aa_x + delta_aa_y;
-
     const auto w = im->Xres();
     const auto h = im->Yres();
+    // calculate the 4D vectors: topleft and deltas (x, y)
+    fract_geometry geometry { const_cast<double *>(pos_params), false, w, h, 0, 0 };
+
     // we put these variables out of the loop scope to use its previous value
     int iters_taken = 0;
     int min_period_iters = 0;
@@ -105,7 +95,7 @@ int main() {
     for (auto x = 0; x < w; x++) {
         for (auto y = 0; y < h; y++) {
             // calculate the position in 4D (x, y, z, w)
-            dvec4 pos = topleft + x * deltax + y * deltay;
+            dvec4 pos = geometry.vec_for_point_2d(x, y);
             // run the formula
             double dist = 0.0;
             int fate = 0;

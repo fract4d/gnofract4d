@@ -8,8 +8,8 @@
 #include "model/stats.h"
 #include "model/pointfunc.h"
 #include "model/threadpool.h"
+#include "model/fractgeometry.h"
 
-class fractFunc;
 class ColorMap;
 class IImage;
 class IFractalSite;
@@ -39,15 +39,39 @@ typedef struct
 class STFractWorker;
 void worker(job_info_t &tdata, STFractWorker *pFunc);
 
+enum
+{
+    DEBUG_QUICK_TRACE = 1,
+    DEBUG_DRAWING_STATS = 2,
+    DEBUG_TIMING = 4
+};
+
+// do every nth pixel twice as deep as the others to see if we need to auto-deepen
+enum
+{
+    AUTO_DEEPEN_FREQUENCY = 30,
+    AUTO_TOLERANCE_FREQUENCY = 30
+};
+
+class IWorkerContext {
+public:
+    virtual const fract_geometry& get_geometry() const = 0;
+    virtual const calc_options& get_options() const = 0;
+    virtual bool try_finished_cond() const = 0;
+    virtual int get_debug_flags() const = 0;
+    virtual void image_changed(int x1, int x2, int y1, int y2) const = 0;
+    virtual void progress_changed(float progress) const = 0;
+};
+
 class IFractWorker
 {
 public:
     static IFractWorker *create(
         int numThreads, pf_obj *, ColorMap *, IImage *, IFractalSite *);
 
-    IFractWorker(): m_stats{} {}
+    IFractWorker() = default;
 
-    virtual void set_fractFunc(fractFunc *) = 0;
+    virtual void set_context(IWorkerContext *) = 0;
     // calculate a row of antialiased pixels
     virtual void row_aa(int x, int y, int n) = 0;
     // calculate a row of pixels
@@ -72,6 +96,7 @@ public:
     virtual ~IFractWorker() = default;
 protected:
     mutable pixel_stat_t m_stats;
+    IWorkerContext *context;
 };
 
 /* per-worker-thread fractal info */
@@ -85,7 +110,8 @@ public:
     void work(job_info_t &tdata);
 
     // IFractWorker interface
-    void set_fractFunc(fractFunc *ff);
+    void set_context(IWorkerContext *);
+
     void row_aa(int x, int y, int n);
     void row(int x, int y, int n);
     void box(int x, int y, int rsize);
@@ -134,9 +160,9 @@ private:
     // sum squared differences between components of 2 colors
     int diff_colors(rgba_t a, rgba_t b);
 
-    calc_options *m_options;
+    // @TODO: move m_site and m_im dependencies to IWorkerContext
     IFractalSite *m_site;
-    fractFunc *m_ff;
+    IWorkerContext *m_context;
     /* pointers to data also held in fractFunc */
     IImage *m_im;
     // function object which calculates the colors of points
@@ -161,7 +187,7 @@ public:
     );
 
     // IFractWorker interface
-    void set_fractFunc(fractFunc *ff);
+    void set_context(IWorkerContext *);
     void row_aa(int x, int y, int n);
     void row(int x, int y, int n);
     void box(int x, int y, int rsize);
