@@ -71,7 +71,7 @@ class CommandPrinter:
 
     def output_table(self, commands, name, type):
         nospacename = name.replace(' ', '')
-        print('<h2 id="%s">%s</h2>' % (nospacename,name), file=self.f)
+        print('<h2 id="%s">%s</h2>' % (nospacename, name), file=self.f)
         print('<table>', file=self.f)
         print('''<th><tr>
                     <td>%s</td>

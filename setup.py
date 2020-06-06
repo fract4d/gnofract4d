@@ -71,6 +71,25 @@ for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
 else:
     raise SystemExit("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
 
+def create_stdlib_docs():
+    'Autogenerate docs'
+    try:
+        # create list of stdlib functions
+        from fract4d import createdocs as cd1
+        cd1.main("manual/content/stdlib.html")
+
+        # create list of mouse and GUI commands
+        import fract4dgui.createdocs
+        fract4dgui.createdocs.main("manual/content/commands.html")  # pylint: disable=no-value-for-parameter
+
+
+    except Exception as err:
+        print("Problem creating docs. Online help will be incomplete.", file=sys.stderr)
+        print(err, file=sys.stderr)
+        sys.exit(1)
+
+create_stdlib_docs()
+
 def generate_docs():
     '''generate the manual'''
     try:
