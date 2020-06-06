@@ -752,7 +752,7 @@ Please report any bugs you encounter, via <ulink>https://github.com/fract4d/gnof
 
 ## About Gnofract 4D
 
-This is Gnofract 4D version 4.1.1. You can find the most recent version of
+This is Gnofract 4D version {{< param version >}}. You can find the most recent version of
 Gnofract 4D from https://github.com/edyoung/gnofract4d
 
 ## Credits and copyright
