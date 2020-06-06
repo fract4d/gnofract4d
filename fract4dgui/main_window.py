@@ -12,6 +12,7 @@ from gi.repository import Gdk, Gtk
 
 from fract4d_compiler import fc, fracttypes
 from fract4d import fractal, image, fractconfig
+from fract4d.options import VERSION
 from . import (gtkfractal, model, preferences, autozoom, settings, toolbar,
                browser, fourway, angle, utils, hig, painter, renderqueue, director)
 
@@ -1378,7 +1379,22 @@ class MainWindow:
         return True
 
     def about(self, *args):
-        self.display_help("about")
+        aboutDialog = Gtk.AboutDialog.new()
+        aboutDialog.set_transient_for(self.window)
+        aboutDialog.set_modal(True)
+        aboutDialog.set_comments(_("Easy to use fractal image generator"
+                                   " supporting multiple views of a"
+                                   " four‑dimensional object"))
+        aboutDialog.set_copyright(_("Copyright © 1999-2020, Edwin Young\n"
+                                    "All rights reserved.\n"
+                                    "Distributed under the BSD license."
+                                    ' See the file "LICENSE" for details.'))
+        aboutDialog.set_logo_icon_name("gnofract4d")
+        aboutDialog.set_program_name("Gnofract 4D")
+        aboutDialog.set_version(VERSION)
+        aboutDialog.set_website("https://fract4d.github.io/gnofract4d/")
+        aboutDialog.set_website_label("fract4d.github.io/gnofract4d")
+        aboutDialog.show()
 
     def quit(self, action, widget=None):
         """Quit Gnofract 4D."""
