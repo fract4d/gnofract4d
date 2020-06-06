@@ -85,7 +85,8 @@ def generate_docs():
         return
       
     if result.returncode != 0:
-        print("Error generating docs: %d\n%s" % (result.returncode, result.stderr.decode('utf-8')))
+        print("Error generating docs: %d\nStderr\n%s\nStdout\n%s" % 
+            (result.returncode, result.stderr.decode('ascii'), result.stdout.decode('ascii')))
 
 generate_docs()
 
