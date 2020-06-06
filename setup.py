@@ -78,7 +78,8 @@ def generate_docs():
         result = subprocess.run(["hugo", "-b", ""], cwd="manual", stdout=subprocess.PIPE)
     except FileNotFoundError:
         print("Unable to generate manual, hugo not installed", file=sys.stderr)
-
+        return
+      
     if result.returncode != 0:
         print("Error generating docs")
 
