@@ -30,3 +30,4 @@ def create_stdlib_docs():
         sys.exit(1)
 
 create_stdlib_docs()
+insert_docs("doc/manual.md","doc/fuil-manual.md")
