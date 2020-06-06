@@ -148,7 +148,7 @@ class T(configparser.ConfigParser):
         if os.path.exists(full_name):
             return full_name
 
-        # print "missing resource %s" % full_name
+        #print("missing resource %s" % full_name)
         return full_name
 
     def get_default_editor(self):
