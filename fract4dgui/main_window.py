@@ -1261,7 +1261,7 @@ class MainWindow:
         if self.shortcuts_window:
             self.shortcuts_window.show_all()
         else:
-            self.display_help("cmdref")
+            self.display_help("command-reference")
 
     def report_bug(self, *args):
         url = "https://github.com/fract4d/gnofract4d/issues"
@@ -1271,16 +1271,15 @@ class MainWindow:
             self.window)
 
     def display_help(self, section=None):
-        base_help_file = "gnofract4d-manual.html"
-
-        loc = "C"  # FIXME
+        base_help_file = "index.html"
 
         # look locally first to support run-before-install
-        local_dir = "doc/gnofract4d-manual/%s/" % loc
-        install_dir = "../../share/gnome/help/gnofract4d/%s/" % loc
+        local_dir = "manual/public/"
+        install_dir = "../../share/gnome/help/gnofract4d/C/"
 
         helpfile = fractconfig.T.find_resource(
             base_help_file, local_dir, install_dir)
+
         abs_file = os.path.abspath(helpfile)
 
         if not os.path.isfile(abs_file):
@@ -1378,7 +1377,7 @@ class MainWindow:
         return True
 
     def about(self, *args):
-        self.display_help("about")
+        self.display_help("about-gnofract-4d")
 
     def quit(self, action, widget=None):
         """Quit Gnofract 4D."""

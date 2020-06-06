@@ -71,6 +71,18 @@ for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
 else:
     raise SystemExit("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
 
+def generate_docs():
+    '''generate the manual'''
+    try:
+        print("Generating docs")
+        result = subprocess.run(["hugo", "-b", ""], cwd="manual", stdout=subprocess.PIPE)
+    except FileNotFoundError:
+        print("Unable to generate manual, hugo not installed", file=sys.stderr)
+
+    if result.returncode != 0:
+        print("Error generating docs")
+
+generate_docs()
 
 fract4d_sources = [
     'fract4d/c/fract4dmodule.cpp',
@@ -176,8 +188,8 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     author_email='edwin@bathysphere.org',
     maintainer='Edwin Young',
     maintainer_email='edwin@bathysphere.org',
-    keywords="edwin@bathysphere.org",
-    url='https://github.com/fract4d/gnofract4d/',
+    keywords="fractal mandelbrot julia",
+    url='http://github.com/fract4d/gnofract4d/',
     packages=['fract4d_compiler', 'fract4d', 'fract4dgui'],
     package_data={
         'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml'],
@@ -186,8 +198,6 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     ext_modules=modules,
     scripts=['gnofract4d'],
     data_files=[
-        # style CSS
-        ('share/gnofract4d', ['gnofract4d.css']),
         # color maps
         (
             'share/gnofract4d/maps',
@@ -205,19 +215,9 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
         # documentation
         (
             'share/gnome/help/gnofract4d/C',
-            get_files("doc/gnofract4d-manual/C", "xml")
-        ),
-        (
-            'share/gnome/help/gnofract4d/C/figures',
-            get_files("doc/gnofract4d-manual/C/figures", ".png")
-        ),
-        (
-            'share/gnome/help/gnofract4d/C',
-            get_files("doc/gnofract4d-manual/C", "html")
-        ),
-        (
-            'share/gnome/help/gnofract4d/C',
-            get_files("doc/gnofract4d-manual/C", ".css")
+            get_files("manual/public", "html") +
+            get_files("manual/public", "png") +
+            get_files("manual/public", "css")
         ),
         # internal pixmaps
         (
