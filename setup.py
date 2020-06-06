@@ -75,13 +75,17 @@ def generate_docs():
     '''generate the manual'''
     try:
         print("Generating docs")
-        result = subprocess.run(["hugo", "-b", ""], cwd="manual", stdout=subprocess.PIPE)
+        result = subprocess.run(
+            ["hugo", "-b", ""], 
+            cwd="manual", 
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
     except FileNotFoundError:
         print("Unable to generate manual, hugo not installed", file=sys.stderr)
         return
       
     if result.returncode != 0:
-        print("Error generating docs")
+        print("Error generating docs: %d\n%s" % (result.returncode, result.stderr.decode('utf-8')))
 
 generate_docs()
 
