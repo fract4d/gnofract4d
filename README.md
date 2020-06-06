@@ -17,10 +17,6 @@ Run:
 
  ./setup.py build
 
-If you would like a copy of the manual:
-
-./createdocs.py
-
 You can then run Gnofract4D in the local directory:
 
 ./gnofract4d
@@ -87,7 +83,7 @@ You can run it in two ways:
 $ sudo pip3 install pylint
 $ ./bin/pylint.sh
 ```
- - Using docker (same enviorment as pipeline):
+ - Using docker (same environment as pipeline):
 ```
 $ ./docker/bin/run_lint.sh
 ```
