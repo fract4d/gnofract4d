@@ -24,3 +24,11 @@ result = subprocess.run(
 if result.returncode != 0:
     raise RuntimeError("Error generating docs: %d\nStderr\n%s\nStdout\n%s" %
         (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
+
+# fix the link to the stylesheet
+# When we render the manual HTML so it looks ok locally, we need
+# <link rel="stylesheet" href="./1234.css" >
+# so we look in the same directory as the html file.
+
+re = re.compile("stylesheet\" href=\"")
+#with f = open("../docs/manual/index.html"):

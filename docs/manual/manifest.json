@@ -1,0 +1,15 @@
+{
+  "name": "Gnofract 4D Manual",
+  "short_name": "Gnofract 4D Manual",
+  "start_url": "/gnofract4d/manual/",
+  "scope": "/gnofract4d/manual/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/gnofract4d/manual/favicon.svg",
+      "sizes": "512x512"
+    }
+  ]
+}
