@@ -108,6 +108,47 @@ for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
 else:
     raise SystemExit("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
 
+<<<<<<< HEAD
+=======
+def create_stdlib_docs():
+    'Autogenerate docs'
+    try:
+        # create list of stdlib functions
+        from fract4d import createdocs as cd1
+        cd1.main("manual/content/stdlib.html")
+
+        # create list of mouse and GUI commands
+        import fract4dgui.createdocs
+        fract4dgui.createdocs.main("manual/content/commands.html")  # pylint: disable=no-value-for-parameter
+
+
+    except Exception as err:
+        print("Problem creating docs. Online help will be incomplete.", file=sys.stderr)
+        print(err, file=sys.stderr)
+        sys.exit(1)
+
+create_stdlib_docs()
+
+def generate_docs():
+    '''generate the manual'''
+    try:
+        print("Generating docs")
+        result = subprocess.run(
+            ["hugo", "-b", ""],
+            cwd="manual",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+    except FileNotFoundError:
+        print("Unable to generate manual, hugo not installed", file=sys.stderr)
+        return
+
+    if result.returncode != 0:
+        print("Error generating docs: %d\nStderr\n%s\nStdout\n%s" %
+            (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
+
+generate_docs()
+
+>>>>>>> 64d8458ae9cd5e23839cf54cd6f9528b2824b5b1
 fract4d_sources = [
     'fract4d/c/fract4dmodule.cpp',
 
@@ -213,9 +254,12 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     maintainer_email='edwin@bathysphere.org',
     keywords="fractal mandelbrot julia",
     url='http://github.com/fract4d/gnofract4d/',
+<<<<<<< HEAD
     cmdclass={
         'build_py' : CustomBuildCommand
     },
+=======
+>>>>>>> 64d8458ae9cd5e23839cf54cd6f9528b2824b5b1
     packages=['fract4d_compiler', 'fract4d', 'fract4dgui'],
     package_data={
         'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml'],
