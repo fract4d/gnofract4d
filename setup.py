@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-from distutils.core import setup, Extension
-import distutils.sysconfig
+from setuptools import setup, Extension
+import setuptools.command.build_py
+import sysconfig
 import os
 import shutil
 import subprocess
@@ -14,7 +15,7 @@ if sys.version_info < (3, 5):
     print("You have version %s. Please upgrade." % sys.version)
     sys.exit(1)
 
-if not os.path.exists(os.path.join(distutils.sysconfig.get_python_inc(), "Python.h")):
+if not os.path.exists(os.path.join(sysconfig.get_config_var("INCLUDEPY"), "Python.h")):
     print("Python header files are required.")
     print("Please install libpython3-dev")
     sys.exit(1)
@@ -22,11 +23,47 @@ if not os.path.exists(os.path.join(distutils.sysconfig.get_python_inc(), "Python
 # by default python uses all the args which were used to compile it. But Python is C and some
 # extension files are C++, resulting in annoying '-Wstrict-prototypes is not supported' messages.
 # tweak the cflags to override
-os.environ["CFLAGS"] = distutils.sysconfig.get_config_var(
+os.environ["CFLAGS"] = sysconfig.get_config_var(
     "CFLAGS").replace("-Wstrict-prototypes", "")
-os.environ["OPT"] = distutils.sysconfig.get_config_var(
+os.environ["OPT"] = sysconfig.get_config_var(
     "OPT").replace("-Wstrict-prototypes", "")
 
+class CustomBuildCommand(setuptools.command.build_py.build_py):
+    "Custom build command"
+
+    def _create_stdlib_docs(self):
+        'Generate HTML file with all fractal functions documented'
+        try:
+            # create list of stdlib functions
+            from fract4d import createdocs as cd1
+            cd1.main("manual/content/stdlib.html")
+
+        except Exception as err:
+            print("Problem creating docs. Online help will be incomplete.", file=sys.stderr)
+            print(err, file=sys.stderr)
+            raise
+
+    def _generate_manual(self):
+        '''generate the manual'''
+        try:
+            print("Generating docs")
+            result = subprocess.run(
+                ["hugo", "-b", ""],
+                cwd="manual",
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE)
+        except FileNotFoundError:
+            print("Unable to generate manual, please install Hugo >= 0.6", file=sys.stderr)
+            return
+
+        if result.returncode != 0:
+            print("Error generating docs: %d\nStderr\n%s\nStdout\n%s" %
+                (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
+
+    def run(self):
+        setuptools.command.build_py.build_py.run(self)
+        self._create_stdlib_docs()
+        self._generate_manual()
 
 # Extensions need to link against appropriate libs
 # We use pkg-config to find the appropriate set of includes and libs
@@ -70,39 +107,6 @@ for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
         break
 else:
     raise SystemExit("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
-
-def create_stdlib_docs():
-    'Autogenerate docs'
-    try:
-        # create list of stdlib functions
-        from fract4d import createdocs as cd1
-        cd1.main("manual/content/stdlib.html")
-
-    except Exception as err:
-        print("Problem creating docs. Online help will be incomplete.", file=sys.stderr)
-        print(err, file=sys.stderr)
-        raise
-
-create_stdlib_docs()
-
-def generate_docs():
-    '''generate the manual'''
-    try:
-        print("Generating docs")
-        result = subprocess.run(
-            ["hugo", "-b", ""],
-            cwd="manual",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-    except FileNotFoundError:
-        print("Unable to generate manual, hugo not installed", file=sys.stderr)
-        return
-
-    if result.returncode != 0:
-        print("Error generating docs: %d\nStderr\n%s\nStdout\n%s" %
-            (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
-
-generate_docs()
 
 fract4d_sources = [
     'fract4d/c/fract4dmodule.cpp',
@@ -187,7 +191,7 @@ def get_icons():
             ['pixmaps/logo/{0}x{0}/gnofract4d.png'.format(size)]))
     return icons
 
-so_extension = distutils.sysconfig.get_config_var("EXT_SUFFIX")
+so_extension = sysconfig.get_config_var("EXT_SUFFIX")
 
 with open("fract4d/c/cmap_name.h", "w") as fh:
     fh.write("""
@@ -209,6 +213,9 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     maintainer_email='edwin@bathysphere.org',
     keywords="fractal mandelbrot julia",
     url='http://github.com/fract4d/gnofract4d/',
+    cmdclass={
+        'build_py' : CustomBuildCommand
+    },
     packages=['fract4d_compiler', 'fract4d', 'fract4dgui'],
     package_data={
         'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml'],
