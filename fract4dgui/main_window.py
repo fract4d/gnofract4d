@@ -93,7 +93,7 @@ class MainWindow:
                 "maps",
                 "maps"))
         except Exception as ex:
-            # print ex
+            # print(ex)
             pass
 
         self.model = model.Model(self.f)

@@ -158,6 +158,7 @@ fract4dgui/dialog.py
 fract4dgui/director.py
 fract4dgui/director_prefs.py
 fract4dgui/fourway.py
+fract4dgui/gnofract4d.css
 fract4dgui/gtkfractal.py
 fract4dgui/hig.py
 fract4dgui/main_window.py
