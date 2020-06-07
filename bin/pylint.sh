@@ -3,7 +3,7 @@
 if [ -x "$(command -v pylint3)" ]; then
   PYLINT=pylint3
 else
-  PLYINT=pylint
+  PYLINT=pylint
 fi
 
 $PYLINT --rcfile pylintrc *.py gnofract4d fract4d fract4d_compiler fract4dgui
