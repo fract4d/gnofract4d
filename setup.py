@@ -183,6 +183,8 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     ext_modules=modules,
     scripts=['gnofract4d'],
     data_files=[
+        # style CSS
+        ('share/gnofract4d', ['gnofract4d.css']),
         # color maps
         (
             'share/gnofract4d/maps',

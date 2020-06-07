@@ -21,6 +21,7 @@ include fract4dgui/tests/*.py
 include fract4dgui/ui.xml
 include gnofract4d
 include gnofract4d-mime.xml
+include gnofract4d.css
 include gnofract4d.desktop
 include manual/public/*.css
 include manual/public/*.html
