@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from setuptools import setup, Extension
-import setuptools.command.build_py
 import sysconfig
 import os
 import shutil
@@ -28,42 +27,36 @@ os.environ["CFLAGS"] = sysconfig.get_config_var(
 os.environ["OPT"] = sysconfig.get_config_var(
     "OPT").replace("-Wstrict-prototypes", "")
 
-class CustomBuildCommand(setuptools.command.build_py.build_py):
-    "Custom build command"
+def create_stdlib_docs():
+    'Generate HTML file with all fractal functions documented'
+    try:
+        # create list of stdlib functions
+        from fract4d import createdocs as cd1
+        cd1.main("manual/content/stdlib.html")
 
-    def _create_stdlib_docs(self):
-        'Generate HTML file with all fractal functions documented'
-        try:
-            # create list of stdlib functions
-            from fract4d import createdocs as cd1
-            cd1.main("manual/content/stdlib.html")
+    except Exception as err:
+        print("Problem creating docs. Online help will be incomplete.", file=sys.stderr)
+        raise
 
-        except Exception as err:
-            print("Problem creating docs. Online help will be incomplete.", file=sys.stderr)
-            print(err, file=sys.stderr)
-            raise
+def generate_manual():
+    '''generate the manual'''
+    try:
+        print("Generating docs")
+        result = subprocess.run(
+            ["hugo", "-b", ""],
+            cwd="manual",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+    except FileNotFoundError:
+        print("Unable to generate manual, please install Hugo >= 0.6", file=sys.stderr)
+        raise
 
-    def _generate_manual(self):
-        '''generate the manual'''
-        try:
-            print("Generating docs")
-            result = subprocess.run(
-                ["hugo", "-b", ""],
-                cwd="manual",
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
-        except FileNotFoundError:
-            print("Unable to generate manual, please install Hugo >= 0.6", file=sys.stderr)
-            return
+    if result.returncode != 0:
+        raise RuntimeError("Error generating docs: %d\nStderr\n%s\nStdout\n%s" %
+            (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
 
-        if result.returncode != 0:
-            print("Error generating docs: %d\nStderr\n%s\nStdout\n%s" %
-                (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
-
-    def run(self):
-        self._create_stdlib_docs()
-        self._generate_manual()
-        setuptools.command.build_py.build_py.run(self)   
+create_stdlib_docs()
+generate_manual()
 
 # Extensions need to link against appropriate libs
 # We use pkg-config to find the appropriate set of includes and libs
@@ -213,9 +206,6 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     maintainer_email='edwin@bathysphere.org',
     keywords="fractal mandelbrot julia",
     url='http://github.com/fract4d/gnofract4d/',
-    cmdclass={
-        'build_py' : CustomBuildCommand
-    },
     packages=['fract4d_compiler', 'fract4d', 'fract4dgui'],
     package_data={
         'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml'],
