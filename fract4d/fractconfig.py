@@ -120,10 +120,11 @@ class T(configparser.ConfigParser):
     @staticmethod
     def get_data_path(subpath=""):
         # find where data files are present.
-        # use share path one level up from gnofract4d script location
-        # e.g., if invoked as /usr/bin/gnofract4d, use /usr/share/gnofract4d
+        # use share path one level up from module location
+        moduledir = os.path.dirname(sys.modules[__name__].__file__)
         path = os.path.normpath(os.path.join(
-            sys.path[0], "../share/gnofract4d", subpath))
+            moduledir, "../share/gnofract4d", subpath))
+        print("Looking in %s" % path)
         return path
 
     @staticmethod
@@ -148,7 +149,7 @@ class T(configparser.ConfigParser):
         if os.path.exists(full_name):
             return full_name
 
-        # print "missing resource %s" % full_name
+        #print("missing resource %s" % full_name)
         return full_name
 
     def get_default_editor(self):

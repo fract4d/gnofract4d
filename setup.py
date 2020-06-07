@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from distutils.core import setup, Extension
-import distutils.sysconfig
+from setuptools import setup, Extension
+import sysconfig
 import os
 import shutil
 import subprocess
@@ -14,7 +14,7 @@ if sys.version_info < (3, 5):
     print("You have version %s. Please upgrade." % sys.version)
     sys.exit(1)
 
-if not os.path.exists(os.path.join(distutils.sysconfig.get_python_inc(), "Python.h")):
+if not os.path.exists(os.path.join(sysconfig.get_config_var("INCLUDEPY"), "Python.h")):
     print("Python header files are required.")
     print("Please install libpython3-dev")
     sys.exit(1)
@@ -22,11 +22,10 @@ if not os.path.exists(os.path.join(distutils.sysconfig.get_python_inc(), "Python
 # by default python uses all the args which were used to compile it. But Python is C and some
 # extension files are C++, resulting in annoying '-Wstrict-prototypes is not supported' messages.
 # tweak the cflags to override
-os.environ["CFLAGS"] = distutils.sysconfig.get_config_var(
+os.environ["CFLAGS"] = sysconfig.get_config_var(
     "CFLAGS").replace("-Wstrict-prototypes", "")
-os.environ["OPT"] = distutils.sysconfig.get_config_var(
+os.environ["OPT"] = sysconfig.get_config_var(
     "OPT").replace("-Wstrict-prototypes", "")
-
 
 # Extensions need to link against appropriate libs
 # We use pkg-config to find the appropriate set of includes and libs
@@ -70,7 +69,6 @@ for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
         break
 else:
     raise SystemExit("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
-
 
 fract4d_sources = [
     'fract4d/c/fract4dmodule.cpp',
@@ -145,7 +143,6 @@ module_cmap = Extension(
 
 modules = [module_fract4dc, module_cmap]
 
-
 def get_files(dir, ext):
     return [os.path.join(dir, x) for x in os.listdir(dir) if x.endswith(ext)]
 
@@ -156,7 +153,7 @@ def get_icons():
             ['pixmaps/logo/{0}x{0}/gnofract4d.png'.format(size)]))
     return icons
 
-so_extension = distutils.sysconfig.get_config_var("EXT_SUFFIX")
+so_extension = sysconfig.get_config_var("EXT_SUFFIX")
 
 with open("fract4d/c/cmap_name.h", "w") as fh:
     fh.write("""
@@ -176,18 +173,16 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     author_email='edwin@bathysphere.org',
     maintainer='Edwin Young',
     maintainer_email='edwin@bathysphere.org',
-    keywords="edwin@bathysphere.org",
-    url='https://github.com/fract4d/gnofract4d/',
+    keywords="fractal mandelbrot julia",
+    url='http://github.com/fract4d/gnofract4d/',
     packages=['fract4d_compiler', 'fract4d', 'fract4dgui'],
     package_data={
-        'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml'],
+        'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml', 'gnofract4d.css'],
         'fract4d': ['c/pf.h', 'c/fract_stdlib.h']
     },
     ext_modules=modules,
     scripts=['gnofract4d'],
     data_files=[
-        # style CSS
-        ('share/gnofract4d', ['gnofract4d.css']),
         # color maps
         (
             'share/gnofract4d/maps',
@@ -205,19 +200,9 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
         # documentation
         (
             'share/gnome/help/gnofract4d/C',
-            get_files("doc/gnofract4d-manual/C", "xml")
-        ),
-        (
-            'share/gnome/help/gnofract4d/C/figures',
-            get_files("doc/gnofract4d-manual/C/figures", ".png")
-        ),
-        (
-            'share/gnome/help/gnofract4d/C',
-            get_files("doc/gnofract4d-manual/C", "html")
-        ),
-        (
-            'share/gnome/help/gnofract4d/C',
-            get_files("doc/gnofract4d-manual/C", ".css")
+            get_files("manual/public", "html") +
+            get_files("manual/public", "png") +
+            get_files("manual/public", "css")
         ),
         # internal pixmaps
         (

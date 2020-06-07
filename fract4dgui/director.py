@@ -480,6 +480,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
 
     # creating window...
     def __init__(self, main_window, f, userConfig, conf_file=""):
+        #pylint: disable=no-member
         dialog.T.__init__(
             self,
             _("Director"),

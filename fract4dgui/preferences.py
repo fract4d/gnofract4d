@@ -73,6 +73,7 @@ GObject.type_register(Preferences)
 
 class PrefsDialog(dialog.T):
     def __init__(self, main_window, f, userPrefs):
+        # pylint: disable=no-member
         dialog.T.__init__(
             self,
             _("Gnofract 4D Preferences"),

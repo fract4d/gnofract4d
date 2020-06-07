@@ -1,6 +1,8 @@
 # A module which manages a queue of images to render in the background
 # and a UI for the same
 
+# pylint: disable=no-member
+
 import copy
 import gi
 

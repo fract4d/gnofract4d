@@ -13,6 +13,7 @@ from gi.repository import Gdk, Gtk, GLib
 
 class AVIGeneration:
     def __init__(self, animation, parent):
+        # pylint: disable=no-member
         self.animation = animation
         self.converterpath = parent.converterpath
         self.error_watch = None
@@ -124,7 +125,7 @@ class AVIGeneration:
 
         try:
             self.generate_avi()
-        except GLib.GError as err:
+        except GLib.GError as err: #pylint: disable=catching-non-exception
             error_dlg = Gtk.MessageDialog(
                 transient_for=self.dialog,
                 title=_("Error executing video converter"),

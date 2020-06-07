@@ -1,35 +1,26 @@
 #!/usr/bin/env python3
 
-# run this to update some tables in the documentation
+# Used to generate the documentation, in 2 phases:
+# 1) run python script to list all the functions in the standard library
+# 2) invoke Hugo static file generator to create HTML docs which are written to manual/public
 
-# making this a separate cmd (not part of setup.py) because importing
-# gtk was causing "setup.py build" to crash - inexplicable...
+# This is a separate step from the normal build because not everyone will want to
+# install those tools. The 'sdist' packages (gnofract4d-4.2.zip etc) contain the output from this step
+# but not all the input. To build the docs you need to clone the git repo
 
-# also the other python versions don't have gtk as a module,
-# so were reporting errors.
+import subprocess
 
-import sys
-import os
+# create list of stdlib functions
+from fract4d import createdocs as cd1
+cd1.main("manual/content/stdlib.html")
 
-def create_stdlib_docs():
-    'Autogenerate docs'
-    try:
-        # create list of stdlib functions
-        from fract4d import createdocs as cd1
-        cd1.main("doc/gnofract4d-manual/C/stdlib.xml")
+print("Generating docs")
+result = subprocess.run(
+    ["hugo", "-b", ""],
+    cwd="manual",
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE)
 
-        # create list of mouse and GUI commands
-        import fract4dgui.createdocs
-        fract4dgui.createdocs.main("doc/gnofract4d-manual/C/commands.xml")  # pylint: disable=no-value-for-parameter
-
-        # create HTML version of docs for them as don't have yelp
-        os.chdir("doc/gnofract4d-manual/C")
-        retval = os.system("xsltproc --nonet --output gnofract4d-manual.html --stringparam html.stylesheet docbook.css gnofract4d.xsl gnofract4d-manual.xml")
-        if retval != 0:
-            raise Exception("error processing xslt")
-    except Exception as err:
-        print("Problem creating docs. Online help will be incomplete.", file=sys.stderr)
-        print(err, file=sys.stderr)
-        sys.exit(1)
-
-create_stdlib_docs()
+if result.returncode != 0:
+    raise RuntimeError("Error generating docs: %d\nStderr\n%s\nStdout\n%s" %
+        (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
