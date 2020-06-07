@@ -78,15 +78,10 @@ def create_stdlib_docs():
         from fract4d import createdocs as cd1
         cd1.main("manual/content/stdlib.html")
 
-        # create list of mouse and GUI commands
-        import fract4dgui.createdocs
-        fract4dgui.createdocs.main("manual/content/commands.html")  # pylint: disable=no-value-for-parameter
-
-
     except Exception as err:
         print("Problem creating docs. Online help will be incomplete.", file=sys.stderr)
         print(err, file=sys.stderr)
-        sys.exit(1)
+        raise
 
 create_stdlib_docs()
 
@@ -181,7 +176,6 @@ module_cmap = Extension(
 )
 
 modules = [module_fract4dc, module_cmap]
-
 
 def get_files(dir, ext):
     return [os.path.join(dir, x) for x in os.listdir(dir) if x.endswith(ext)]
