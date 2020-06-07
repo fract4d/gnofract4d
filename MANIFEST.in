@@ -9,9 +9,6 @@ include formulas/gf4d.uxf
 include formulas/standard.ucl
 include formulas/tutorial.frm
 include formulas/sterling2.frm
-include formulas/test.cfrm
-include formulas/test.frm
-include formulas/test_bad_pp.frm
 include fract4d/c/*.h
 include fract4d/c/fract4dc/*.h
 include fract4d/c/model/*.h
@@ -19,9 +16,9 @@ include fract4d/tests/*.py
 include fract4d_compiler/tests/*.py
 include fract4dgui/tests/*.py
 include fract4dgui/ui.xml
+include fract4dgui/gnofract4d.css
 include gnofract4d
 include gnofract4d-mime.xml
-include gnofract4d.css
 include gnofract4d.desktop
 include manual/public/*.css
 include manual/public/*.html
@@ -30,7 +27,6 @@ include maps/*.cs
 include maps/*.map
 include maps/*.ugr
 include pixmaps/*.png
-include pixmaps/*.xpm
 include test.py
 include testdata/animation.fcta
 include testdata/chainsoflight.fct
