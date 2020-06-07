@@ -61,9 +61,9 @@ class CustomBuildCommand(setuptools.command.build_py.build_py):
                 (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
 
     def run(self):
-        setuptools.command.build_py.build_py.run(self)
         self._create_stdlib_docs()
         self._generate_manual()
+        setuptools.command.build_py.build_py.run(self)   
 
 # Extensions need to link against appropriate libs
 # We use pkg-config to find the appropriate set of includes and libs
