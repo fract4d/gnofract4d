@@ -17,6 +17,7 @@ running = False
 
 class PNGGeneration(Gtk.Dialog, hig.MessagePopper):
     def __init__(self, animation, compiler, parent):
+        #pylint: disable=no-member
         Gtk.Dialog.__init__(
             self,
             transient_for=parent,

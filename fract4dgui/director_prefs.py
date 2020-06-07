@@ -37,6 +37,7 @@ class DirectorPrefs:
             self.txt_temp_png.set_text(fold)
 
     def __init__(self, animation, parent):
+        # pylint: disable=no-member
         self.dialog = Gtk.Dialog(title="Director preferences...",
                                  transient_for=parent,
                                  modal=True, destroy_with_parent=True)

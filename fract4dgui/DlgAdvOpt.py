@@ -13,6 +13,7 @@ from gi.repository import Gtk
 
 class DlgAdvOptions:
     def __init__(self, current_kf, animation, parent):
+        # pylint: disable=no-member
         self.dialog = Gtk.Dialog(
             transient_for=parent,
             title="Keyframe advanced options",

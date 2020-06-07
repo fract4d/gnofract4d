@@ -105,7 +105,7 @@ class SymbolPrinter:
         for k in keys:
             self.output_symbol(k, table[k], type)
         print('</tbody>', file=self.f)
-        print('</table>', file=self.f) 
+        print('</table>', file=self.f)
 
 def main(outfile):
     with open(outfile, "w") as out:

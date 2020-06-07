@@ -358,6 +358,8 @@ class Gradient:
         new_segments = []
         name = None
 
+        right = rr = rg = rb = ra = 0 # should never be used
+
         line = f.readline()
         if line.startswith("Name:"):
             name = line[5:].strip()
