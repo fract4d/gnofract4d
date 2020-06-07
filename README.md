@@ -76,9 +76,9 @@ On MacOS you might find an error regarding the number of opened files, you can i
 Linting
 =======
 
-Pylint is being used to detect code that doesn't follow the [PEP8 style](https://www.python.org/dev/peps/pep-0008/) guide and potentially erroneus code in Python.
+Pylint is being used to detect code that doesn't follow the [PEP8 style](https://www.python.org/dev/peps/pep-0008/) guide and potentially erroneous code in Python.
 You can run it in two ways:
- - Directly (firstly you should install pylint throw pip3):
+ - Directly (firstly you should install pylint through pip3):
 ```
 $ sudo pip3 install pylint
 $ ./bin/pylint.sh
@@ -87,3 +87,13 @@ $ ./bin/pylint.sh
 ```
 $ ./docker/bin/run_lint.sh
 ```
+
+Generating Documentation
+========================
+
+You can only regenerate the docs if you clone the Gnofract 4D git repo - the source dist packages contain the generated docs but not the input files for the generation process. To regenerate the docs:
+
+1. Make sure you're starting from a git clone not a source .zip - you need the files under manual/content
+1. Install hugo (Ubuntu 18.04 has an older version. Run `snap install hugo` instead of apt-get install hugo)
+1. Run `./createdocs.py`
+

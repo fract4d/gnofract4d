@@ -27,37 +27,6 @@ os.environ["CFLAGS"] = sysconfig.get_config_var(
 os.environ["OPT"] = sysconfig.get_config_var(
     "OPT").replace("-Wstrict-prototypes", "")
 
-def create_stdlib_docs():
-    'Generate HTML file with all fractal functions documented'
-    try:
-        # create list of stdlib functions
-        from fract4d import createdocs as cd1
-        cd1.main("manual/content/stdlib.html")
-
-    except Exception as err:
-        print("Problem creating docs. Online help will be incomplete.", file=sys.stderr)
-        raise
-
-def generate_manual():
-    '''generate the manual'''
-    try:
-        print("Generating docs")
-        result = subprocess.run(
-            ["hugo", "-b", ""],
-            cwd="manual",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-    except FileNotFoundError:
-        print("Unable to generate manual, please install Hugo >= 0.6", file=sys.stderr)
-        raise
-
-    if result.returncode != 0:
-        raise RuntimeError("Error generating docs: %d\nStderr\n%s\nStdout\n%s" %
-            (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
-
-create_stdlib_docs()
-generate_manual()
-
 # Extensions need to link against appropriate libs
 # We use pkg-config to find the appropriate set of includes and libs
 def call_package_config(package, option, optional=False):
