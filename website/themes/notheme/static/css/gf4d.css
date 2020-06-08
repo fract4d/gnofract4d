@@ -39,21 +39,42 @@ html {
     
 }
 
-.feature_row {
-    display: flex;
-    margin-top: 80px; 
-    margin-bottom: 80px;
-  }
-  
-.feature_column {
-    flex: 50%;
-    /* margin-right: 20px; */
+@media all and (min-width: 680px) {
+	.feature_row {
+		display: flex;
+		margin-top: 80px; 
+		margin-bottom: 80px;
+		flex-flow: row wrap;
+	}
+	
+	.feature_column {
+		flex: 50%;
+	}
+
+	.feature_column_left {
+		flex: 50%;
+		padding-right: 40px; 	
+	}
 }
 
-.feature_column_left {
-    flex: 50%;
-    padding-right: 40px; 
+@media all and (max-width: 629px) {
+	.feature_row {
+		display: flex;
+		margin-top: 80px; 
+		margin-bottom: 80px;
+		flex-flow: column wrap;
+	}
+	
+	.feature_column {
+		flex: 100%;
+	}
+
+	.feature_column_left {
+		flex: 100%;
+	}
 }
+
+
 
 a.download-button {
     width: 600px;
