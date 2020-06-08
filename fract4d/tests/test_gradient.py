@@ -683,6 +683,23 @@ opacity:
         g.load(f)
         f.close()
 
+    # map is from https://coolors.co/94ae89-a8bca1-c0da74-beedaa-d5ffd9
+    # colors 94AE89, A8BCA1, C0DA74, BEEDAA, D5FFD9 
+    def testLoadASE(self):
+        g = gradient.Gradient()
+        f = open("testdata/test.ase", "rb")
+
+        g.load_ase(f)
+        self.assertEqual(5, len(g.segments))
+        self.assertEqual(
+            [0x94 / 255.0, 0xAE / 255.0, 0x89 / 255.0, 1.0],
+            g.segments[0].left_color)
+
+        f.seek(0)
+        g.load(f)
+        f.close()
+
+
     def testSetColor(self):
         g = gradient.Gradient()
         self.assertEqual(True, g.set_color(0, True, 0.2, 0.7, 0.9))

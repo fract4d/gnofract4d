@@ -48,12 +48,13 @@ class FormulaTypes:
     GRAD_MAP = 1
     GRAD_GGR = 2
     GRAD_CS = 3
+    GRAD_ASE = 4
     matches = [
         re.compile(r'(\.frm\Z)|(\.ufm\Z)', re.IGNORECASE),
         re.compile(r'(\.cfrm\Z)|(\.ucl\Z)', re.IGNORECASE),
         re.compile(r'\.uxf\Z', re.IGNORECASE),
         re.compile(
-            r'(\.ugr\Z)|(\.map\Z)|(\.ggr\Z)|(\.cs\Z)|(\.pal\Z)',
+            r'(\.ugr\Z)|(\.map\Z)|(\.ggr\Z)|(\.cs\Z)|(\.pal\Z)|(\.ase\Z)',
             re.IGNORECASE)
     ]
 
@@ -93,13 +94,16 @@ class FormulaTypes:
             return FormulaTypes.GRAD_GGR
         if filename.endswith(".cs"):
             return FormulaTypes.GRAD_CS
+        if filename.endswith(".ase"):
+            return FormulaTypes.GRAD_ASE
         raise ValueError("Unknown gradient type for '%s'" % filename)
 
     @staticmethod
     def is_binary_filetype(filename):
-        if FormulaTypes.guess_formula_type_from_filename(filename) == FormulaTypes.GRADIENT and \
-           FormulaTypes.guess_gradient_subtype_from_filename(filename) == FormulaTypes.GRAD_CS:
-            return True
+        if FormulaTypes.guess_formula_type_from_filename(filename) == FormulaTypes.GRADIENT:
+            subtype = FormulaTypes.guess_gradient_subtype_from_filename(filename)
+            if subtype == FormulaTypes.GRAD_CS or subtype == FormulaTypes.GRAD_ASE:
+                return True
         return False
 
     @staticmethod

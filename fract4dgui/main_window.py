@@ -199,7 +199,7 @@ class MainWindow:
             _("Formula Files"), formula_patterns)
         chooser.add_filter(formula_filter)
 
-        gradient_patterns = ["*.map", "*.ggr", "*.ugr", "*.cs", "*.pal"]
+        gradient_patterns = ["*.map", "*.ggr", "*.ugr", "*.cs", "*.pal", "*.ase"]
         gradient_filter = self.get_filter(
             _("Gradient Files"), gradient_patterns)
         chooser.add_filter(gradient_filter)

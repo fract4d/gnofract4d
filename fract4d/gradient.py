@@ -42,7 +42,7 @@ rgb_re = re.compile(r'\s*(\d+)\s+(\d+)\s+(\d+)')
 
 
 class FileType:
-    MAP, GGR, CS, UGR = list(range(4))
+    MAP, GGR, CS, UGR, ASE = list(range(5))
 
     @staticmethod
     def guess(s):
@@ -53,6 +53,8 @@ class FileType:
             return FileType.CS
         elif s.endswith(".ugr"):
             return FileType.UGR
+        elif s.endswith(".ase"):
+            return FileType.ASE
         else:
             # assume a GIMP gradient, those sometimes don't have extensions
             return FileType.GGR
@@ -314,6 +316,59 @@ class Gradient:
 
         self.load_list(list)
 
+    def load_ase(self, f):
+        "Load an Adobe Swatch Exchange (.ase) palette file"
+        # File format explained here: https://www.cyotek.com/blog/reading-adobe-swatch-exchange-ase-files-using-csharp
+
+        sig = struct.unpack("BBBB", f.read(4))
+        # sig should be ASEF
+        if sig[0] != 0x41 or sig[1] != 0x53 or sig[2] != 0x45 or sig[3] != 0x46:
+            raise RuntimeError("Not a valid ASE file")
+
+        # version - we only understand 1.0
+        (major, minor) = struct.unpack(">HH", f.read(4))
+        #print("%d.%d" % (major, minor))
+        if major != 1 or minor != 0:
+            raise RuntimeError("Unknown ASE version %d.%d" % (major, minor))
+
+        (nblocks,) = struct.unpack(">L", f.read(4))
+        #print("nblocks: %d" % nblocks)
+
+        list = []
+        for i in range(nblocks):
+            (block_type, block_length, name_length) = struct.unpack(">HLH", f.read(8))
+            name_format = "%ds" % (name_length*2)
+            #print("%d %d %d" % (block_type, block_length, name_length))
+            #print(name_format)
+            (name_bytes,) = struct.unpack(name_format, f.read(name_length*2))
+            #print(name_bytes)
+            name = name_bytes.decode('utf_16_be')
+            #print("name: %s" % name)
+            if block_type == 1:
+                # color block
+                (color_model,) = struct.unpack("4s", f.read(4))
+                color_model_name = color_model.decode('ascii')
+                #print("color model name: %s" % color_model_name)
+
+                if color_model_name == "RGB ":
+                    (r, g, b) = struct.unpack(">3f", f.read(3*4))
+                    (ri, gi, bi) = (int(r*255), int(g*255), int(b*255))
+                    #print("color %f %f %f" % (r*255,g,b))
+                    #print("color %x%x%x" % (ri,gi,bi))
+                else:
+                    raise RuntimeError("Only RGB gradients supported, sorry")
+
+                # global, spot or normal - ignored
+                color_type = struct.unpack(">H", f.read(2))
+
+                #print("color type: %d" % color_type)
+
+                entry = (i / float(nblocks), ri, gi, bi, 255)
+                list.append(entry)
+
+        self.load_list(list)
+
+
     def load_ugr(self, f):
         "Load an ir tree parsed by the translator"
         prev_index = 0.0
@@ -399,6 +454,10 @@ class Gradient:
                 # a .cs file, we suspect
                 f.seek(0)
                 return self.load_cs(f)
+            elif line[:4] == b'ASEF':
+                # probably an ASE file
+                f.seek(0)
+                return self.load_ase(f)
             else:
                 f.seek(0)
                 return self.load_map_file(f)
