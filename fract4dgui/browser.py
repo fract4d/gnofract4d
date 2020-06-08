@@ -9,6 +9,7 @@ from gi.repository import Gtk, GObject
 
 from . import dialog, utils, gtkfractal, browser_model
 
+# pylint: disable=no-member
 
 class BrowserDialog(dialog.T):
     RESPONSE_REFRESH = 2

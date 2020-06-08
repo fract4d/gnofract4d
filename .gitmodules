@@ -1,0 +1,3 @@
+[submodule "manual/themes/book"]
+	path = manual/themes/book
+	url = https://github.com/fract4d/hugo-book

@@ -24,13 +24,14 @@ class Test(unittest.TestCase):
 
     def testDocVersionMatches(self):
         # check the docs
-        doc = open("doc/gnofract4d-manual/C/gnofract4d-manual.xml")
+        doc = open("manual/config.toml")
         content = doc.read()
         doc.close()
-        doc_re = re.compile(r'\<\!ENTITY version "(\S+)"\>')
 
-        m = doc_re.search(content)
-        self.assertTrue(m, "doc doesn't specify version")
+        ver_re = re.compile(r'version = "(\S+)"')
+
+        m = ver_re.search(content)
+        self.assertTrue(m, "manual doesn't specify version")
         self.assertEqual(options.VERSION, m.group(1), "Version mismatch")
 
     def testWebsiteVersionMatches(self):

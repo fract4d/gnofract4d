@@ -47,9 +47,7 @@ class MainWindow:
         theme_provider = Gtk.CssProvider()
         css_file = "gnofract4d.css"
         this_path = os.path.dirname(sys.modules[__name__].__file__)
-        css_filepath = os.path.join(this_path, "..", css_file)
-        if not os.path.exists(css_filepath):
-            css_filepath = fractconfig.T.get_data_path(css_file)
+        css_filepath = os.path.join(this_path, css_file)
         theme_provider.load_from_path(css_filepath)
         Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),
                                                  theme_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
@@ -96,7 +94,7 @@ class MainWindow:
                 "maps",
                 "maps"))
         except Exception as ex:
-            # print ex
+            # print(ex)
             pass
 
         self.model = model.Model(self.f)
@@ -1262,7 +1260,7 @@ class MainWindow:
         if self.shortcuts_window:
             self.shortcuts_window.show_all()
         else:
-            self.display_help("cmdref")
+            self.display_help("command-reference")
 
     def report_bug(self, *args):
         url = "https://github.com/fract4d/gnofract4d/issues"
@@ -1272,16 +1270,15 @@ class MainWindow:
             self.window)
 
     def display_help(self, section=None):
-        base_help_file = "gnofract4d-manual.html"
-
-        loc = "C"  # FIXME
+        base_help_file = "index.html"
 
         # look locally first to support run-before-install
-        local_dir = "doc/gnofract4d-manual/%s/" % loc
-        install_dir = "../../share/gnome/help/gnofract4d/%s/" % loc
+        local_dir = "manual/public/"
+        install_dir = "../../share/gnome/help/gnofract4d/C/"
 
         helpfile = fractconfig.T.find_resource(
             base_help_file, local_dir, install_dir)
+
         abs_file = os.path.abspath(helpfile)
 
         if not os.path.isfile(abs_file):

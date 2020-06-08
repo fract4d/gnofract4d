@@ -10,6 +10,7 @@ from . import dialog
 
 class PainterDialog(dialog.T):
     def __init__(self, main_window, f):
+        # pylint: disable=no-member
         dialog.T.__init__(
             self,
             _("Painter"),
