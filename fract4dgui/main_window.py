@@ -1391,11 +1391,8 @@ class MainWindow:
         aboutDialog.set_version(VERSION)
         aboutDialog.set_website("https://fract4d.github.io/gnofract4d/")
         aboutDialog.set_website_label("fract4d.github.io/gnofract4d")
-        aboutDialog.connect("response", self.on_close_about)
-        aboutDialog.show()
-
-    def on_close_about(self, action, parameter):
-        action.destroy()
+        aboutDialog.run()
+        aboutDialog.destroy()
 
     def quit(self, action, widget=None):
         """Quit Gnofract 4D."""
