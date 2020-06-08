@@ -124,7 +124,7 @@ class T(configparser.ConfigParser):
         moduledir = os.path.dirname(sys.modules[__name__].__file__)
         path = os.path.normpath(os.path.join(
             moduledir, "../share/gnofract4d", subpath))
-        print("Looking in %s" % path)
+        #print("Looking in %s" % path)
         return path
 
     @staticmethod

@@ -1,0 +1,3362 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+	<meta name="generator" content="Hugo 0.68.3" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Gnofract 4D Introduction  There is no excellent beauty which hath not some strangeness in the proportion. &ndash; Francis Bacon
+ Gnofract 4D is a program which draws complex mathematical objects known as fractals, including the Mandelbrot and Julia sets and many others. It allows you to treat a fractal which has more than one parameter as a four-dimensional object and interactively view slices of this object from arbitrary angles, giving rise to some very unusual images.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Gnofract 4D Manual" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://fract4d.github.io/gnofract4d/manual/" />
+<meta property="og:updated_time" content="2020-05-31T08:47:16-07:00" />
+<title>Gnofract 4D Manual | Gnofract 4D Manual</title>
+<link rel="manifest" href="/gnofract4d/manual/manifest.json">
+<link rel="icon" href="/gnofract4d/manual/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="https://fract4d.github.io/gnofract4d/manual/book.min.b830c5af147b33c572bd318c390ce2113508322c166cd967769e1e63e800aed3.css" ><link rel="alternate" type="application/rss+xml" href="https://fract4d.github.io/gnofract4d/manual/index.xml" title="Gnofract 4D Manual" />
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden" id="menu-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/gnofract4d/manual"><span>Gnofract 4D Manual</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/fract4d/gnofract4d" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://fract4d.github.io/gnofract4d" target="_blank" rel="noopener">
+        Website
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/gnofract4d/manual/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Gnofract 4D Manual</strong>
+
+  <label for="toc-control">
+    
+    <img src="/gnofract4d/manual/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+    <input type="checkbox" class="hidden" id="toc-control" />
+    <aside class="hidden clearfix">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#gnofract-4d">Gnofract 4D</a>
+      <ul>
+        <li><a href="#introduction">Introduction</a>
+          <ul>
+            <li><a href="#using-gnofract-4d">Using Gnofract 4D</a></li>
+            <li><a href="#interacting-with-the-fractal">Interacting with the Fractal</a></li>
+            <li><a href="#working-with-files">Working with Files</a></li>
+          </ul>
+        </li>
+        <li><a href="#tools">Tools</a>
+          <ul>
+            <li><a href="#autozoom">Autozoom</a></li>
+            <li><a href="#explorer">Explorer</a></li>
+            <li><a href="#formula-browser">Formula Browser</a></li>
+            <li><a href="#director">Director</a></li>
+            <li><a href="#randomize-colors">Randomize Colors</a></li>
+            <li><a href="#painter">Painter</a></li>
+          </ul>
+        </li>
+        <li><a href="#toolbar-buttons">Toolbar buttons</a></li>
+        <li><a href="#changing-fractal-settings">Changing Fractal Settings</a>
+          <ul>
+            <li><a href="#fractal-settings">Fractal Settings</a></li>
+            <li><a href="#preferences">Preferences</a></li>
+          </ul>
+        </li>
+        <li><a href="#hints">Hints</a></li>
+        <li><a href="#command-reference">Command Reference</a></li>
+        <li><a href="#about-the-math">About the math</a>
+          <ul>
+            <li><a href="#the-mandelbrot-set">The Mandelbrot Set</a></li>
+            <li><a href="#the-julia-set">The Julia Set</a></li>
+            <li><a href="#the-julibrot">The Julibrot</a></li>
+            <li><a href="#viewing-in-four-dimensions">Viewing in Four Dimensions</a></li>
+            <li><a href="#hypercomplex-fractals-and-quaternions">Hypercomplex Fractals and Quaternions</a></li>
+          </ul>
+        </li>
+        <li><a href="#writing-your-own-functions">Writing Your Own Functions</a>
+          <ul>
+            <li><a href="#writing-your-first-formula">Writing Your First Formula</a></li>
+          </ul>
+        </li>
+        <li><a href="#formula-language-reference">Formula Language Reference</a></li>
+        <li><a href="#gnofract-4d-internals">Gnofract 4D Internals</a>
+          <ul>
+            <li><a href="#source-code-layout">Source Code Layout</a></li>
+            <li><a href="#compiler-1">Compiler</a></li>
+            <li><a href="#threading">Threading</a></li>
+          </ul>
+        </li>
+        <li><a href="#bugs-and-known-issues">Bugs and Known Issues</a></li>
+        <li><a href="#about-gnofract-4d">About Gnofract 4D</a></li>
+        <li><a href="#credits-and-copyright">Credits and copyright</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+    </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="gnofract-4d">Gnofract 4D</h1>
+<h2 id="introduction">Introduction</h2>
+<blockquote>
+<p>There is no excellent beauty which hath not some strangeness in the
+proportion.  &ndash; <em>Francis Bacon</em></p>
+</blockquote>
+<p>Gnofract 4D is a program which draws complex mathematical
+objects known as fractals, including the Mandelbrot and Julia sets and
+many others. It allows you to treat a fractal which has more than one
+parameter as a four-dimensional object and interactively view slices
+of this object from arbitrary angles, giving rise to some very unusual
+images.</p>
+<p>This user&rsquo;s manual provides a tutorial introduction to Gnofract 4D and the
+mathematical background behind it, information on how to use the
+graphical interface, and reference material on the language used to
+write fractal formulas.</p>
+<h3 id="using-gnofract-4d">Using Gnofract 4D</h3>
+<p>Gnofract 4D&rsquo;s screen layout is deliberately simple. Most of the screen is
+taken up by a view of the fractal you&rsquo;re investigating. By
+default, this is the Mandelbrot set. You can directly click on this to
+zoom. The toolbar provides quick access to frequently used functions,
+and more complex properties of the fractal are accessed through dialog
+boxes brought up via the menu bar.</p>
+<p>Initially, just play around - after all, generating fractals isn&rsquo;t
+meant to be <em>work</em>. If you make a change you don&rsquo;t
+like, just hit Undo.</p>
+<h3 id="interacting-with-the-fractal">Interacting with the Fractal</h3>
+<p>Each fractal is an infinitely complex image, which you can see a slice
+of in the main window. By left-clicking on the window, you can zoom in
+to view finer and finer details. Just click on an area you like to
+view it more closely. If you click and drag with the left button, you can
+draw a white box around an area. When you let go, you zoom in
+so that the area inside that box fills the window.</p>
+<p>To zoom back out, click with the right button. You can also press
+<strong>Home</strong> to return all parameters to the starting point
+for this fractal, <strong>Control+Home</strong> to
+reset the zoom only, or use <strong>Undo</strong> to go back one
+step.  There isn&rsquo;t a click and drag feature for the right button.</p>
+<p>Clicking with the middle button rotates the view by 90 degrees in the
+<em>xz</em> and <em>yw</em> axes. If you&rsquo;re
+currently looking at the Mandelbrot set, you&rsquo;ll get a Julia set, and
+vice versa. If you&rsquo;re looking at something else, you&rsquo;ll get something
+weird. Note that clicking this twice doesn&rsquo;t take you back to where
+you started: the screen also gets recentered on the point you clicked,
+so middle-clicking twice will normally give you a perturbed, deformed-looking
+Mandelbrot.</p>
+<p>The cursor keys pan around the image. Hold down
+<strong>Control+<cursor></strong> to move more
+quickly. Hold down <strong>Shift</strong> +
+<strong><cursor></strong> to move around in the other two
+dimensions, mutating the image. You can recenter the image on a point
+by left-clicking on that point while holding down
+<strong>Shift</strong>.</p>
+<blockquote>
+<p><strong>Non-4D formulas.</strong>
+Some fractal formulas
+(typically those originally written for Fractint or UltraFractal)
+don&rsquo;t support full 4D operation. (Gnofract 4D determines this by whether
+the formula uses the <strong>#zwpixel</strong> variable.) In this
+case, the widgets for rotating in other dimensions, warping, and the
+middle mouse button will be disabled.</p>
+</blockquote>
+<h3 id="working-with-files">Working with Files</h3>
+<p>Gnofract 4D uses several different types of file. These have different
+purposes as listed in the table below.</p>
+<table>
+<thead>
+<tr>
+<th>File Type</th>
+<th>Extensions</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parameter File</td>
+<td><code>.fct</code></td>
+<td>A parameter file is a small text file which contains all the settings required to produce a particular image, such as the position of the viewer along the X axis and the coloring scheme used. The parameter file lists the formula used, but doesn&rsquo;t contain the entire formula, so if you invent a new formula and want to share parameter files which use it, you need to distribute the formula file as well. <strong>Fractint</strong> uses <code>.par</code> files for this purpose and UltraFractal uses <code>.upr</code>. Unfortunately Gnofract 4D can&rsquo;t read those formats (yet).</td>
+</tr>
+<tr>
+<td>Image File</td>
+<td><code>.tga</code>, <code>.jpg</code>,<code>.png</code></td>
+<td>Gnofract 4D supports TARGA, JPEG and PNG file formats for image output. <em>No information about the fractal parameters is stored in the image file</em>, so if you want to carry on exploring from a particular point you need to save a parameter file as well. Gnofract 4D can&rsquo;t load image files, only save them. Choose <strong>File</strong> &gt; <strong>Save Image</strong> to save an image. I recommend using PNG images for high quality output, and JPEGs only when image size is important, because JPEGs introduce artifacts which blur the fine details of your fractal.</td>
+</tr>
+<tr>
+<td>Formula File</td>
+<td><code>.frm</code>, <code>.ufm</code></td>
+<td>A formula file is a collection of formulas, each of which is a description of the algorithm used to draw a particular kind of fractal, expressed in a simple programming language (see [Formula Reference](#Formula Reference) for language details). Both Gnofract 4D and Fractint use <code>.frm</code> as the extension, and UltraFractal uses <code>.ufm</code>. In general, any formula which works in Fractint should work in Gnofract 4D and any which works in Gnofract 4D should work in UltraFractal, but the reverse is not true.</td>
+</tr>
+<tr>
+<td>Coloring Algorithm File</td>
+<td><code>.cfrm</code>, <code>.ucl</code></td>
+<td>A coloring algorithm file is a collection of formulas used to assign colors to a fractal. Gnofract 4D combines a coloring algorithm with a formula to produce the final image (this approach is shared with UltraFractal - Fractint restricts you to built-in coloring algorithms).  Coloring algorithms are written in the same language as fractal formulas. UltraFractal uses the extension .ucl for its coloring algorithm files. Some of these are compatible with Gnofract 4D but so far not very many.</td>
+</tr>
+<tr>
+<td>Gradient File</td>
+<td><code>.map</code>, <code>.ggr</code>, <code>.ugr</code>, <code>.cs</code></td>
+<td>A gradient file is a list of colors which is used to translate the purely numerical output of the formula into something pretty to look at. Gradients are currently saved only inside the fractal itself, not as separate files. The GIMP uses the extension .ggr for its gradient files; Fractint uses .map for its own, simpler files. UltraFractal uses .ugr - these files contain multiple gradients.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tools">Tools</h2>
+<h3 id="autozoom">Autozoom</h3>
+<p><strong>Autozoom</strong> automatically searches for interesting parts of the
+fractal by zooming in repeatedly, each time choosing the quadrant of
+the screen which has the largest number of different colors (with some
+randomization as well). You can start it going, go off for a coffee,
+and see what it&rsquo;s found when you return, or guide it by clicking on
+parts you like as it goes. It&rsquo;ll stop when the image reaches the
+minimum size, which is set by default to stop just before you get to
+the limits of the precision Gnofract 4D offers.</p>
+<h3 id="explorer">Explorer</h3>
+<p>The <strong>Explorer</strong> helps you find neat-looking fractals
+easily. It divides the screen into a large central section and smaller
+&ldquo;subfractals&rdquo; which surround it. The central section is the main image</p>
+<ul>
+<li>you can click on this to zoom in, change the color, or perform any
+operation you can normally. The other images around the edges are
+&ldquo;mutant&rdquo; versions of the main image - they&rsquo;re formed by starting with
+the base parameters and randomly changing them a bit. Whenever you
+change the main image, you get a whole new set of mutants. If you like
+a mutant more than the main picture, click on it to move it to the
+middle - it then becomes the main picture and you get 12 new mutants
+based on the new main image. When you&rsquo;re satisfied with the results,
+click the Explorer button again to return to normal mode.</li>
+</ul>
+<p>The Shape and Color sliders on the toolbar determines how
+different the mutants are from the standard image. If Shape&rsquo;s set to
+100, they&rsquo;re almost unrecognizable - if it&rsquo;s 0, they&rsquo;re exactly the
+same. Similarly if Color&rsquo;s 100, each mutant is a different color, and
+0 keeps the colors all the same.</p>
+<h3 id="formula-browser">Formula Browser</h3>
+<p>The <strong>Formula Browser</strong> allows you to look at all the
+fractal formulas, coloring functions and gradients which are currently loaded formula files. When you select a formula (from the Formula list in the middle), the source window shows you the contents of that formula. You can then use <strong>Apply</strong> to change the current fractal to use that formula. This also resets the formula&rsquo;s parameters to their defaults. Alternatively, <strong>OK</strong> applies the formula and closes the window.</p>
+<p>Tips:</p>
+<ul>
+<li>
+<p>To load a new formula file, choose <strong>File</strong> &gt; <strong>Open Formula File</strong>.</p>
+</li>
+<li>
+<p>If you have changed a formula on disk after using it, choose <strong>Refresh</strong> to have Gnofract 4D re-read it.</p>
+</li>
+<li>
+<p>If the formula contains errors, <strong>Apply</strong> and <strong>OK</strong> will be
+disabled. Check the Messages window to see what the errors
+are.</p>
+</li>
+</ul>
+<h3 id="director">Director</h3>
+<p>The <strong>Director</strong> allows you to create fractal videos.
+You first define keyframes which are points in the video.
+Then, for each of them, you specify how long a still image of the keyframe will
+stay in the video (<strong>stopped for</strong>), how long the transition
+is to the next keyframe (<strong>transition duration</strong> - in frames)
+and the interpolation type used for the transition from several possibilities.
+When you hit <strong>Render</strong> button, Director will render all
+frames and put them in the directory you selected and then it will create
+the video using 
+  <a href="https://www.ffmpeg.org/">FFmpeg</a>.</p>
+<p>Tips:</p>
+<ul>
+<li>
+<p>In order to end up with a video file, not just a bunch of images, you need to have <strong>ffmpeg</strong> compiled with support for zlib and libvpx.</p>
+</li>
+<li>
+<p>You can always save your animation configuration for later use.</p>
+</li>
+<li>
+<p>You can always stop rendering images. As long as you use same animation setting again (for example, saving them before starting rendering), Director will start from where it stopped last time.</p>
+</li>
+</ul>
+<h3 id="randomize-colors">Randomize Colors</h3>
+<p>Replaces the current gradient with a randomly-generated new one.</p>
+<h3 id="painter">Painter</h3>
+<p>The <strong>painter</strong> dialog allows you to change the colors of your fractal by
+clicking on the place where you want the color to be different. First,
+select the color you want in the color selector. Then click on the
+image - the part of the gradient most responsible for the color of
+that pixel will be updated with the color you chose. Toggle the
+&ldquo;painting&rdquo; button off if you want to interact with the fractal while
+the painter dialog is up.</p>
+<h2 id="toolbar-buttons">Toolbar buttons</h2>
+<p>On the left of the toolbar you can see a small preview window, which
+updates as you change the angle or position buttons, to give you an
+idea of what the fractal will look like when you release the button.</p>
+<p>The first eight toolbar buttons correspond to the ten parameters which
+define the view. The circular angle buttons, labelled
+<strong>xy</strong> to <strong>zw</strong>, correspond to
+rotation around the principal planes in four dimensions. They can
+be changed by dragging the dot around. When you let go, the fractal will
+update. By the way, the <strong>zw</strong> angle does work, you
+just can&rsquo;t see its effects until you rotate in some other dimensions
+first.</p>
+<p>The square position buttons, <strong>pan</strong> and
+<strong>wrp</strong> (aka Warp), can be used to alter the view. The
+<strong>pan</strong> button allows you to pan around the current
+view. The <strong>wrp</strong> button allows you to move along the
+other two axes, resulting in a mutated version of the current image.
+Click inside one then drag the mouse, watching the preview window
+update, then release the mouse when you like the results.</p>
+<p>The warp menu allows even formulas which weren&rsquo;t designed to be
+used with Gnofract 4D to be used in 4D mode. If the current fractal has any complex parameters, they&rsquo;re listed in this menu. If you select one,
+that parameter&rsquo;s value is set to the value of the Z and W coordinates
+for each pixel. Basically what this means is that the parameter you choose
+becomes the fourth dimension. NB: If you set an explicit value for the parameter as well, it&rsquo;ll be ignored.</p>
+<p>The <strong>Deepen</strong> button allows you to increase the current iteration count
+and tighten the periodicity checking, for those occasions when the
+auto-deepening and/or auto-tolerance doesn&rsquo;t get it right. This will
+generally convert some &lsquo;inside&rsquo; pixels to outside and make the image
+look better, at the cost of longer rendering time. The image size list should be
+self-explanatory. If you want a size not listed here, use the
+Preferences dialog.   The <strong>Undo</strong> and
+<strong>Redo</strong> buttons should be fairly obvious. You can
+undo as many times as you like. Note that undo also affects parameters
+such as color, not just position on screen.  Lastly, the
+<strong>Explore</strong> button toggles Explorer Mode. See 
+  <a href="/gnofract4d/manual/#explorer">Explorer</a>.</p>
+<h2 id="changing-fractal-settings">Changing Fractal Settings</h2>
+<p>In Gnofract 4D, settings are divided into <strong>Fractal
+Settings</strong>, <strong>Gradients</strong> and
+<strong>Preferences</strong>. <strong>Fractal Settings</strong> and <strong>Gradients</strong> are saved in the
+fractal&rsquo;s .fct file - they are properties of the fractal itself. By
+contrast, <strong>Preferences</strong> are your preferences for
+Gnofract 4D&rsquo;s general behavior and are saved in Gnofract 4D&rsquo;s config file
+(~/.gnofract4d), so they will still be active next time you
+start Gnofract 4D.</p>
+<h3 id="fractal-settings">Fractal Settings</h3>
+<p>The <strong>Formula</strong> section allows you to choose the
+formula used to calculate the fractal, and to set any parameters the
+formula has. You can modify the formula by choosing <strong>Browse</strong>, which invokes the Formula Browser. <strong>Max Iterations</strong> sets the number of iterations a point will go through before we give up and assume it&rsquo;s a member of the Julibrot. The other parameters on this pane are different depending on the fractal type.</p>
+<p>The <strong>Outer</strong> tab controls the function used to
+decide what color to draw those points which aren&rsquo;t part of the
+fractal set proper. Similarly, the <strong>Inner</strong> page
+controls the function used for points which are part of the set.</p>
+<p>The <strong>Location</strong> entryboxes allow you to
+change the coordinates of the screen center and the image size.</p>
+<p>The <strong>Angles</strong> entryboxes allows you to set the rotation
+angles. Only values between 0 and 2 * pi are different; values outside
+this range &ldquo;wrap&rdquo; to points inside that range.</p>
+<p>The <strong>Transforms</strong> page allows you to control a list
+of transformations applied to the image, and any parameters those transforms have.</p>
+<p>The <strong>General</strong> page gives a few options which don&rsquo;t
+fit anywhere else. <strong>Flip Y Axis</strong> causes Y to
+increase top-to-bottom, rather than
+bottom-to-top. <strong>Periodicity Checking</strong> is a method
+to speed up generation of the fractal. Points inside the fractal
+eventually settle into a loop, where they repeatedly jump around
+between the same points (they become &lsquo;periodic&rsquo;). By noticing this, we
+can skip calculating the point any further. You will generally want to
+disable this if you are coloring the inside of the fractal, since it
+will look rather weird otherwise. <strong>Tolerance</strong> is
+the distance between points which we&rsquo;ll accept as being &lsquo;the same&rsquo; for
+the purposes of periodicity detection. This is automatically adjusted
+if the &lsquo;auto tolerance&rsquo; setting in the preferences is enabled.</p>
+<p>The <strong>Colors</strong> tab allows you to edit the list of
+colors used to display your fractal. For more complex gradient
+editing, you can also use the GIMP&rsquo;s gradient editor.</p>
+<h3 id="preferences">Preferences</h3>
+<h4 id="image">Image</h4>
+<p><strong>Width</strong> and <strong>Height</strong> set
+the size of the image in pixels. If <strong>Maintain Aspect Ratio</strong> is checked when you change either the width or
+height, the other automatically changes to keep the image the same
+shape. If <strong>Auto Deepen</strong> is enabled, Gnofract 4D will try
+to automatically guess how many iterations are required to display the
+image correctly. Similarly, <strong>Auto Tolerance</strong>
+adjusts the periodicity tolerance setting to try and calculate the
+image quickly but correctly. <strong>Antialiasing</strong> makes
+the image look smoother but takes extra time to do. The difference
+between &lsquo;fast&rsquo; and &lsquo;best&rsquo; is that fast antialiasing doesn&rsquo;t bother to
+recalculate points which are the same color as their neighbors. This
+speeds things up a lot but can miss a few details sometimes.</p>
+<h4 id="compiler">Compiler</h4>
+<p>Gnofract 4D needs a C compiler to be available at runtime in order to work
+(it dynamically creates the code to compute a particular formula when
+you select it). The <strong>Compiler</strong> page allows you to
+specify a location for the compiler and options to pass to
+it. <em>If Gnofract 4D is working fine, generally I suggest you leave
+those settings alone</em>. However you <strong>may</strong> be able to
+get noticeable performance gains by specifying the specific kind of
+processor you have. For example, some AMD processors will
+benefit by adding &ldquo;-mathlon -msse2 -m3dnow&rdquo; to the compiler flags.</p>
+<p>The <strong>Formula Search Path</strong> lists the directories where Gnofract 4D will look for formulas when a parameter file is loaded.</p>
+<h4 id="general">General</h4>
+<p><strong>Number of threads</strong> sets how many calculation
+threads to use. Generally, leave this at 1 unless you have a
+hyper-threaded or multi-processor computer, in which case set it to 1
+greater than the number of cores you have.</p>
+<h4 id="helpers">Helpers</h4>
+<p>Gnofract 4D sometimes need to invoke a helper program. If the default is
+wrong you can designate a different program here.</p>
+<h2 id="hints">Hints</h2>
+<ul>
+<li>
+<p>If you zoom into a busy part of the fractal the image can look
+&ldquo;noisy&rdquo;. You can fix this by making the colors change more slowly - go
+to the &ldquo;Outer&rdquo; tab and change the transfer function to &lsquo;sqrt&rsquo; or &lsquo;log&rsquo; - or change &ldquo;Density&rdquo; to a number between 0 and 1 - a density of 0.1
+makes the colors change 10 times more slowly.</p>
+</li>
+<li>
+<p>If you have an Inner coloring method other than zero, you may
+see weird effects unless you disable periodicity checking.</p>
+</li>
+<li>
+<p>If the image looks pixelated, you&rsquo;ve zoomed in as far as we can go.</p>
+</li>
+</ul>
+<h2 id="command-reference">Command Reference</h2>
+
+
+ 
+    
+<h2 id="MouseCommands">Mouse Commands</h2>
+<table>
+<th><tr>
+                    <td>Button</td>
+                    <td>Action</td>
+                 </tr></th>
+<tbody>
+<tr>
+<td>Left-click</td>
+<td>Zoom in</td>
+</tr>
+<tr>
+<td>Left-click and drag</td>
+<td>Draw rectangle to zoom into.</td>
+</tr>
+<tr>
+<td>Shift-Left-click</td>
+<td>Recenter image on point clicked.</td>
+</tr>
+<tr>
+<td>Middle-click</td>
+<td>Flip to Julia set (or back to Mandelbrot).</td>
+</tr>
+<tr>
+<td>Right-click</td>
+<td>Zoom out.</td>
+</tr>
+<tr>
+<td>Control-Right-click</td>
+<td>Zoom out more quickly.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="KeyboardShortcuts">Keyboard Shortcuts</h2>
+<table>
+<th><tr>
+                    <td>Key</td>
+                    <td>Action</td>
+                 </tr></th>
+<tbody>
+<tr>
+<td>(arrow)</td>
+<td>Pan image in indicated direction.</td>
+</tr>
+<tr>
+<td>Ctrl+(arrow)</td>
+<td>Pan more quickly in indicated direction.</td>
+</tr>
+<tr>
+<td>Shift+(arrow)</td>
+<td>Mutate image in Z or W directions.</td>
+</tr>
+<tr>
+<td>Shift+Ctrl+(arrow)</td>
+<td>Mutate more quickly.</td>
+</tr>
+<tr>
+<td>Ctrl+1</td>
+<td>Reset rotation to show the XY (Mandelbrot) plane.</td>
+</tr>
+<tr>
+<td>Ctrl+2</td>
+<td>Reset rotation to show the ZW (Julia) plane.</td>
+</tr>
+<tr>
+<td>Ctrl+3</td>
+<td>Reset rotation to show the XZ (Oblate) plane.</td>
+</tr>
+<tr>
+<td>Ctrl+4</td>
+<td>Reset rotation to show the XW (Parabolic) plane.</td>
+</tr>
+<tr>
+<td>Ctrl+5</td>
+<td>Reset rotation to show the YZ (Elliptic) plane.</td>
+</tr>
+<tr>
+<td>Ctrl+6</td>
+<td>Reset rotation to show the WY (Rectangular) plane.</td>
+</tr>
+<tr>
+<td>Ctrl+A</td>
+<td>Display AutoZoom dialog.</td>
+</tr>
+<tr>
+<td>Ctrl+B</td>
+<td>Display formula browser.</td>
+</tr>
+<tr>
+<td>Ctrl+D</td>
+<td>Display the Director (animation) window.</td>
+</tr>
+<tr>
+<td>Ctrl+E</td>
+<td>Enter (or leave) Explorer mode.</td>
+</tr>
+<tr>
+<td>Escape</td>
+<td>Quit full-screen mode.</td>
+</tr>
+<tr>
+<td>Ctrl+F</td>
+<td>Show fractal settings controls.</td>
+</tr>
+<tr>
+<td>Home</td>
+<td>Reset all numeric parameters to their defaults.</td>
+</tr>
+<tr>
+<td>Ctrl+Home</td>
+<td>Reset zoom to default level.</td>
+</tr>
+<tr>
+<td>Ctrl+I</td>
+<td>Save the current image to a file.</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+I</td>
+<td>Add the current fractal to the render queue.</td>
+</tr>
+<tr>
+<td>Ctrl+R</td>
+<td>Create a new random color scheme.</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+S</td>
+<td>Save the current parameters into a new file.</td>
+</tr>
+<tr>
+<td>Ctrl+Z</td>
+<td>Undo the last operation.</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Z</td>
+<td>Redo an operation after undoing it.</td>
+</tr>
+<tr>
+<td>F1</td>
+<td>Show help file contents page.</td>
+</tr>
+<tr>
+<td>F11</td>
+<td>Show main window full-screen.</td>
+</tr>
+</tbody>
+</table>
+    
+
+<h2 id="about-the-math">About the math</h2>
+<aside class="notice">Warning: Dubious mathematics ahead!
+I'm not a mathematician. You may find this discussion
+insultingly oversimplified or just plain wrong.
+</aside>
+<h3 id="the-mandelbrot-set">The Mandelbrot Set</h3>
+<p>The Mandelbrot may be
+defined as the set of all complex numbers which, when you
+repeatedly square them and add them again, never become infinite. (The
+official definition of the set is somewhat different: it is the set of
+points in the complex plane whose corresponding Julia sets are
+connected. These end up being the same thing.)</p>
+<p>We can tell that a number will eventually reach infinity if it ever
+gets outside a circle of radius 2 around the origin. Unfortunately, we
+can&rsquo;t tell in general that a point will <strong>never</strong>
+become infinite, so we have to estimate by trying a large number of
+times before giving up.</p>
+<p>In Gnofract 4D, the formula is:</p>
+<pre><code>Mandelbrot1 {
+init:
+    z = 0
+loop:
+    z = z^2 + c
+bailout:
+    |z| &lt; 4.0
+}
+</code></pre><p>(<code>|z|</code> means the square of the magnitude of <code>z</code>). We calculate the loop
+function repeatedly until the bailout condition is false or we&rsquo;ve
+performed the maximum number of iterations. At that point, if we
+&ldquo;bailed out&rdquo;, we know we&rsquo;re outside the set: otherwise we&rsquo;re
+(probably) inside.</p>
+<p>We do this repeatedly for each position on the screen, setting
+<code>c</code> to a different value for each point. This gives
+rise to the familiar Mandelbrot set:</p>
+<p>
+  <img src="mandelbrot_standard.png" alt="The Mandelbrot Set" /></p>
+<p>All the points inside the set are (as is traditional) coloured
+black. The points outside the set are different colours depending on
+how long it takes them to escape from the set. These colours aren&rsquo;t
+very mathematically significant, but they look nice.</p>
+<p>So what happens if <code>z</code> is initially set to a
+complex value other than zero? (Strictly speaking, you shouldn&rsquo;t do
+this. Zero is important because it is the <strong>critical
+value</strong> of <code>z^2+c</code> - other values are not mathematically
+meaningful. However, as with most fractal programs, Gnofract 4D allows you
+to draw anything which looks interesting, regardless of its
+mathematical purity.)</p>
+<p>Well, you get a rather odd-looking, deformed M-set.  This initial
+value, which we&rsquo;ll call <code>z0</code>, is called the intial
+perturbation, and sets which have a non-zero <code>z0</code>
+are known as <strong>perturbed</strong> sets:</p>
+<pre><code>Mandelbrot2 {
+init:
+    z = z0
+loop:
+    z = z^2 + c
+bailout:
+    |z| &lt; 4.0
+}
+</code></pre><p>
+  <img src="mandelbrot_perturbed.png" alt="Perturbed Mandelbrot" /></p>
+<h3 id="the-julia-set">The Julia Set</h3>
+<p>The Julia set is actually drawn by the same procedure as the
+Mandelbrot set. But instead of changing the value of
+<code>c</code> for each pixel, we keep <code>c</code>
+constant and change <code>z0</code>. There is a different
+Julia set for each value of <code>c</code>; here&rsquo;s the one for <code>c</code> = 0.</p>
+<pre><code>BoringJulia {
+init:
+    z = z0
+loop:
+    z = z^2 + 0
+bailout:
+    |z| &lt; 4.0
+}
+</code></pre><p>
+  <img src="julia_standard.png" alt="Boring Julia" /></p>
+<p>Boring, isn&rsquo;t it? That&rsquo;s because we&rsquo;re just squaring the value at each
+iteration without adding anything to it. So any value which starts
+with a magnitude less than 1 will shrink forever (and hence is a
+member of the set). All other values will grow forever, and so we&rsquo;ve
+just discovered a rather inefficient way of drawing perfect circles.
+If we use a different value of <strong>c</strong> we get something more
+interesting:</p>
+<p>
+  <img src="julia_perturbed.png" alt="Julia" /></p>
+<h3 id="the-julibrot">The Julibrot</h3>
+<p>Here we come to the heart of the matter. I said above that both the
+Julia and Mandelbrot sets are drawn with the <strong>same
+function</strong>.</p>
+<pre><code>Julibrot(z0,c) {
+init:
+    z = z0
+loop:
+    z = z^2 + c
+bailout:
+    |z| &lt; 4.0
+}
+</code></pre><p>The Julibrot function has two complex parameters, or four real
+ones. In Gnofract 4D I refer to the real parameters as x, y, z, and w:
+these are c.re , c.im, z0.re and z0.im respectively.</p>
+<p>The only difference is which points we choose to draw. To draw the
+Mandelbrot set, we keep <code>z0</code> constant and change
+<code>c</code> with each pixel. To draw the Julia set, we keep
+<code>c</code> constant and change <code>z0</code>. If
+you squint with your brain a bit, you can imagine both sets as
+orthogonal &ldquo;slices&rdquo; through the same four-dimensional object. In
+Gnofract 4D terms, the Mandelbrot set is the <code>xy</code>
+plane, and the Julia set is the <code>zw</code> plane. We can
+also look at other planes: here&rsquo;s an image of the
+<code>xw</code> plane:</p>
+<p>
+  <img src="xw_plane.png" alt="XW Plane" /></p>
+<h3 id="viewing-in-four-dimensions">Viewing in Four Dimensions</h3>
+<p>However, we can draw any 2D slice we like, not just those which are
+parallel to the Julibrot axes. To do this we&rsquo;ll need to describe our
+scene by four things. First, the (<code>x,y,z,w</code>)
+coordinates of the center of the screen. Second, a vector for the
+x-axis of the screen. This tells us how to change the parameters to
+the Julibrot function as we proceed across the screen. Third, a vector
+for the y-axis. Fourth and finally, the size of the image. For the
+Mandelbrot set, our &ldquo;default&rdquo; view, the screen is centered at
+[0,0,0,0], the x-vector is [1,0,0,0] and the y-vector is
+[0,1,0,0]. The initial size is 4, because the whole Mandelbrot set
+fits inside the 2x2 square. We can zoom into the set by changing
+<code>x</code> and <code>y</code> and the zoom factor.</p>
+<p>If we want to draw other slices, we need to rotate our view through
+four dimensions. In 3D, we can rotate in 3 directions: around the
+<code>x</code>, <code>y</code>, and <code>z</code> axes. In 4D, we rotate around a <strong>plane</strong> rather than a line, and we can rotate in 6
+directions: around the <code>xy, xz, xw, yz, yw</code> and <code>zw</code> planes. For example, if we rotate through 90
+degrees in the <code>xz</code> and <code>yw</code> directions, our screen vectors become
+[0,0,1,0] and [0,0,0,1]: in other words, the Julia set. If we rotate
+only part of the way, we get a &ldquo;hybrid&rdquo; between the two sets, which
+looks decidedly odd:</p>
+<p>
+  <img src="hybrid.png" alt="Hybrid" /></p>
+<p>In fact, we can rotate to any angle in each of the planes,
+creating a whole world of bizarre pictures.</p>
+<h3 id="hypercomplex-fractals-and-quaternions">Hypercomplex Fractals and Quaternions</h3>
+<p>There are other kinds of fractal which are commonly described
+as &ldquo;four-dimensional&rdquo; - hypercomplex and quaternion-based
+fractals. Hypercomplex numbers have four components (one real and
+three imaginary) where complex numbers have two. Since the
+hypercomplex mandelbrot has two hypercomplex parameters, in Gnofract 4D
+terms it&rsquo;s actually an eight-dimensional object. Gnofract 4D allows you to
+set four of these as part of the view - the other four have to be set
+via parameters. Gnofract 4D doesn&rsquo;t support quaternions at present.</p>
+<h2 id="writing-your-own-functions">Writing Your Own Functions</h2>
+<p>When you get tired of the fractal functions which come with Gnofract
+4D, you can write your own, or take advantage of thousands of formulas
+written by other fractal enthusiasts. Gnofract4D can load most fractal
+formula files written for Fractint (and some written for
+UltraFractal). However the compiler is not 100%
+backwards-compatible with Fractint, so unfortunately some fractals
+can&rsquo;t be loaded, or will display differently when they do. Gnofract 4D
+also supports many constructs Fractint doesn&rsquo;t, so you need to take
+extra care when writing formulas if you want them to work in Fractint
+too.</p>
+<p>Here are links to some online resources for formula files:</p>
+<ul>
+<li>
+  <a href="https://github.com/fract4d/formulas">Gnofract 4D Formula Repository</a></li>
+</ul>
+<p>A collection of about 25,000 Fractint formula files by many authors,
+originally compiled by George C. Martin and currently maintained by
+Paul N. Lee. Indispensable. </listitem></p>
+<ul>
+<li>
+  <a href="http://formulas.ultrafractal.com/">UltraFractal public formula database</a>
+Many thousands of formulas by users of
+UltraFractal. Some of the coloring algorithms and forumlas will work with Gnofract 4D.
+Please report issues, since I aim to improve compatibility further in future
+releases.</li>
+</ul>
+<h3 id="writing-your-first-formula">Writing Your First Formula</h3>
+<p>This section steps you through the creation of a new fractal
+formula. By the way, the formulas for each of these steps can also be
+found in the file <code>formulas/tutorial.frm</code>.</p>
+<ol>
+<li>
+<p>Using a text editor, Create a new file called <code>example.frm</code> (the
+extension is important - Gnofract 4D uses this to decide whether the file
+is a formula or a coloring function).</p>
+</li>
+<li>
+<p>Enter the following in <code>example.frm</code>.</p>
+</li>
+</ol>
+<pre><code>MyFormula1 {
+; First example formula - this produces a variant on the Mandelbrot set
+init:
+    z = 0
+    c = #pixel
+loop:
+    z = z*z*c + c*c
+bailout:
+    |z| &lt; 4.0
+}
+</code></pre><ol start="3">
+<li>Start Gnofract 4D, choose <strong>File | Open Formula
+File</strong>, and open example.frm. You should see MyFormula in
+the list of formulas to choose from. Select it and click Apply. You
+should see an image like this:</li>
+</ol>
+<p>
+  <img src="tutorial001.png" alt="Example 1" /></p>
+<ol start="4">
+<li>
+<p>A few things to note about the formula. It&rsquo;s divided into named
+sections, marked with a colon: &ldquo;init&rdquo;, &ldquo;loop&rdquo;. and &ldquo;bailout&rdquo;. The
+compiler uses these to supply some of the standard scaffolding for a
+fractal function so you don&rsquo;t have to. The &ldquo;loop&rdquo; statement is the
+heart of the formula - this is the statement which is run repeatedly
+and which defines the shape of your fractal.</p>
+</li>
+<li>
+<p>At this point, the widgets for rotating the image in 4D will be
+disabled, because your formula doesn&rsquo;t use any of the 4D
+options. Let&rsquo;s turn those on. Edit your formula so it reads:</p>
+</li>
+</ol>
+<pre><code>MyFormula2 {
+; Second example - introduce 4D
+init:
+    z = #zwpixel ; take initial value from 4D position
+    c = #pixel
+loop:
+    z = z*z*c + c*c
+bailout:
+    |z| &lt; 4.0
+}
+</code></pre><ol start="6">
+<li>
+<p>Then hit <strong>Refresh</strong> on the Formula Browser window. You
+should now find that all the options are enabled. This is because the image now depends on all 4 components of the 4D space, via #pixel and #zwpixel.</p>
+</li>
+<li>
+<p>Next let&rsquo;s add some parameters to our function:</p>
+</li>
+</ol>
+<pre><code>MyFormula3 {
+; Third example - add a parameter
+init:
+    z = #zwpixel
+    c = #pixel
+loop:
+    z = @myfunc(z*z*c) + @factor * z + c*c
+bailout:
+    |z| &lt; 4
+default:
+param factor
+	default = (1.0,0.5)
+endparam
+}
+</code></pre><ol start="8">
+<li>Hit <strong>Refresh</strong> again, then <strong>Edit &gt; Fractal Settings</strong> to show the formula settings. You
+should two extra parameters in addition to the standard &ldquo;Max
+Iterations&rdquo; option: <strong>myfunc</strong>, with a drop-down list
+of functions, and <strong>fac</strong> (or Factor) with a
+draggable 4-way widget and 2 edit boxes. If you set myfunc to
+<strong>sqr</strong> and set factor to (-1,0.5) you should see:</li>
+</ol>
+<p>
+  <img src="tutorial002.png" alt="Tutorial 2" /></p>
+<ol start="9">
+<li>Parameters like this are a quick way to add more options to your
+fractal. Listing them in the &ldquo;default&rdquo; section is optional but
+provides a way to pre-populate your formula with values that work
+well. If you leave the default out Gnofract 4D will use &ldquo;ident&rdquo; for
+functions and 0 for numeric ones.</li>
+</ol>
+<h2 id="formula-language-reference">Formula Language Reference</h2>
+
+
+ 
+    
+<h2>Operators</h2>
+<table>
+
+<thead>
+<tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Argument Types</th>
+                    <th>Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top" align="left" rowspan="4">
+!=</td>
+<td valign="top" align="left" rowspan="4">
+Inequality operator. Compare two values and return true if
+      they are different.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int, Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Bool, Bool
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="2">
+%</td>
+<td valign="top" align="left" rowspan="2">
+Modulus operator. Computes the remainder when x is divided by y. Not to be confused with the complex modulus.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int, Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+&amp;&amp;</td>
+<td valign="top" align="left" rowspan="1">
+Logical AND.
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool, Bool
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="6">
+*</td>
+<td valign="top" align="left" rowspan="6">
+Multiplication operator.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int, Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper, Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Color, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="5">
++</td>
+<td valign="top" align="left" rowspan="5">
+Adds two numbers together.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int, Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper, Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Color, Color
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="5">
+-</td>
+<td valign="top" align="left" rowspan="5">
+Subtracts two numbers
+</td>
+<td valign="top" align="left" rowspan="1">
+Int, Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper, Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Color, Color
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="5">
+/</td>
+<td valign="top" align="left" rowspan="5">
+Division operator
+</td>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Color, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+&lt;</td>
+<td valign="top" align="left" rowspan="3">
+Less-than operator. Compare two values and return true if the first is less than the second.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int, Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+&lt;=</td>
+<td valign="top" align="left" rowspan="3">
+Less-than-or-equal operator. Compare two values and return true if the first is less than or equal to the second.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int, Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="4">
+==</td>
+<td valign="top" align="left" rowspan="4">
+Equality operator. Compare two values and return true if they are
+      the same.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int, Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Bool, Bool
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+&gt;</td>
+<td valign="top" align="left" rowspan="3">
+Greater-than operator. Compare two values and return true if the first is greater than the second.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int, Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+&gt;=</td>
+<td valign="top" align="left" rowspan="3">
+Greater-than-or-equal operator. Compare two values and return true if the first is greater than or equal to the second.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int, Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+^</td>
+<td valign="top" align="left" rowspan="3">
+Exponentiation operator. Computes x to the power y.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+not</td>
+<td valign="top" align="left" rowspan="1">
+Logical NOT.
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+||</td>
+<td valign="top" align="left" rowspan="1">
+Logical OR.
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool, Bool
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+</tbody>
+</table>
+<h2>Functions</h2>
+<table>
+
+<thead>
+<tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Argument Types</th>
+                    <th>Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#rand</td>
+<td valign="top" align="left" rowspan="1">
+Each time this is accessed, it returns a new pseudo-random complex number. This is primarily for backwards compatibility with Fractint formulas - use the random() function in new formulas.
+</td>
+<td valign="top" align="left" rowspan="1">
+
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#random</td>
+<td valign="top" align="left" rowspan="1">
+Each time this is accessed, it returns a new pseudo-random complex number. This is primarily for backwards compatibility with Fractint formulas - use the random() function in new formulas.
+</td>
+<td valign="top" align="left" rowspan="1">
+
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+@fn1</td>
+<td valign="top" align="left" rowspan="1">
+Predefined function parameter used by Fractint formulas
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+@fn2</td>
+<td valign="top" align="left" rowspan="1">
+Predefined function parameter used by Fractint formulas
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+@fn3</td>
+<td valign="top" align="left" rowspan="1">
+Predefined function parameter used by Fractint formulas
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+@fn4</td>
+<td valign="top" align="left" rowspan="1">
+Predefined function parameter used by Fractint formulas
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+abs</td>
+<td valign="top" align="left" rowspan="3">
+The absolute value of a number. abs(3) = abs(-3) = 3.
+      abs() of a complex number is a complex number consisting of
+      the absolute values of the real and imaginary parts, i.e.
+      abs(a,b) = (abs(a),abs(b)).
+</td>
+<td valign="top" align="left" rowspan="1">
+Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+acos</td>
+<td valign="top" align="left" rowspan="3">
+Inverse cosine function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+acosh</td>
+<td valign="top" align="left" rowspan="3">
+Inverse hyperbolic cosine function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+alpha</td>
+<td valign="top" align="left" rowspan="1">
+The alpha component of a color. Can be assigned to.
+</td>
+<td valign="top" align="left" rowspan="1">
+Color
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+asin</td>
+<td valign="top" align="left" rowspan="3">
+Inverse sine function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+asinh</td>
+<td valign="top" align="left" rowspan="3">
+Inverse hyperbolic sine function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+atan</td>
+<td valign="top" align="left" rowspan="3">
+Inverse tangent function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+atan2</td>
+<td valign="top" align="left" rowspan="1">
+The angle between this complex number and the real line,
+      aka the complex argument.
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+atanh</td>
+<td valign="top" align="left" rowspan="3">
+Inverse hyperbolic tangent function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+blend</td>
+<td valign="top" align="left" rowspan="1">
+Blend two colors together in the ratio given by the 3rd parameter.
+</td>
+<td valign="top" align="left" rowspan="1">
+Color, Color, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+blue</td>
+<td valign="top" align="left" rowspan="1">
+The blue component of a color. Can be assigned to.
+</td>
+<td valign="top" align="left" rowspan="1">
+Color
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+bool</td>
+<td valign="top" align="left" rowspan="1">
+Construct a boolean. It's not really required (bool x = bool(true) is just the same as bool x = true) but is included for consistency.
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+cabs</td>
+<td valign="top" align="left" rowspan="1">
+The complex modulus of a complex number z.
+      cabs(a,b) is equivalent to sqrt(a*a+b*b).
+      This is also the same as sqrt(|z|)
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="2">
+ceil</td>
+<td valign="top" align="left" rowspan="2">
+Round up to the next highest number.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="2">
+cmag</td>
+<td valign="top" align="left" rowspan="2">
+The squared modulus of a complex or hypercomplex number z.
+      cmag(a,b) is equivalent to a*a+b*b. This is the same as |z|.
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+color</td>
+<td valign="top" align="left" rowspan="1">
+Constructs a new color from floating point red, green, blue and alpha
+     components. Equivalent to rgba.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float, Float, Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+complex</td>
+<td valign="top" align="left" rowspan="1">
+Construct a complex number from two real parts.
+      complex(a,b) is equivalent to (a,b).
+</td>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+compose</td>
+<td valign="top" align="left" rowspan="1">
+Composite the second color on top of the first, with opacity given
+by the 3rd parameter.
+</td>
+<td valign="top" align="left" rowspan="1">
+Color, Color, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="2">
+conj</td>
+<td valign="top" align="left" rowspan="2">
+The complex conjugate. conj(a,b) is equivalent to (a,-b).
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+cos</td>
+<td valign="top" align="left" rowspan="3">
+trigonometric sine function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+cosh</td>
+<td valign="top" align="left" rowspan="3">
+Hyperbolic cosine function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="2">
+cosxx</td>
+<td valign="top" align="left" rowspan="2">
+Incorrect version of cosine function. Provided for backwards
+      compatibility with equivalent wrong function in Fractint.
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+cotan</td>
+<td valign="top" align="left" rowspan="3">
+Trigonometric cotangent function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+cotanh</td>
+<td valign="top" align="left" rowspan="3">
+Hyperbolic cotangent function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+exp</td>
+<td valign="top" align="left" rowspan="3">
+exp(x) is equivalent to e^x
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="2">
+flip</td>
+<td valign="top" align="left" rowspan="2">
+Swap the real and imaginary parts of a complex number.
+      flip(a,b) = (b,a).
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+float</td>
+<td valign="top" align="left" rowspan="1">
+Construct a floating-point number.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="2">
+floor</td>
+<td valign="top" align="left" rowspan="2">
+Round down to the next lowest number.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+fn1</td>
+<td valign="top" align="left" rowspan="1">
+Predefined function parameter used by Fractint formulas
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+fn2</td>
+<td valign="top" align="left" rowspan="1">
+Predefined function parameter used by Fractint formulas
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+fn3</td>
+<td valign="top" align="left" rowspan="1">
+Predefined function parameter used by Fractint formulas
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+fn4</td>
+<td valign="top" align="left" rowspan="1">
+Predefined function parameter used by Fractint formulas
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+gradient</td>
+<td valign="top" align="left" rowspan="1">
+Look up a color from the default gradient.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+green</td>
+<td valign="top" align="left" rowspan="1">
+The green component of a color. Can be assigned to.
+</td>
+<td valign="top" align="left" rowspan="1">
+Color
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+hsl</td>
+<td valign="top" align="left" rowspan="1">
+Create a color from hue, saturation and lightness components. The alpha channel is set to to 1.0 (=100%).
+</td>
+<td valign="top" align="left" rowspan="1">
+Float, Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+hsla</td>
+<td valign="top" align="left" rowspan="1">
+Create a color from hue, saturation and lightness components and an alpha channel.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float, Float, Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+hsv</td>
+<td valign="top" align="left" rowspan="1">
+Create a color from hue, saturation and value components. HSV is a similar color model to HSL but has a different valid range for brightness.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float, Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+hue</td>
+<td valign="top" align="left" rowspan="1">
+The hue of a color.
+</td>
+<td valign="top" align="left" rowspan="1">
+Color
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="2">
+hyper</td>
+<td valign="top" align="left" rowspan="2">
+Construct a hypercomplex number with a real and 3 imaginary parts.
+      Can be passed either 2 complex numbers or 4 floating-point numbers.
+      hyper(a,b,c,d) is equivalent to the shorthand (a,b,c,d).
+</td>
+<td valign="top" align="left" rowspan="1">
+Float, Float, Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex, Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+hyper_j</td>
+<td valign="top" align="left" rowspan="1">
+The 3rd component of a hypercomplex number. Can be assigned to.
+      hyper_j(a,b,c,d) = c.
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+hyper_jk</td>
+<td valign="top" align="left" rowspan="1">
+The 3rd and 4th parts of a hypercomplex number.
+      Can be assigned to. hyper_jk(a,b,c,d) = (c,d).
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+hyper_k</td>
+<td valign="top" align="left" rowspan="1">
+The 4th component of a hypercomplex number. Can be assigned to.
+      hyper_k(a,b,c,d) = d.
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+hyper_ri</td>
+<td valign="top" align="left" rowspan="1">
+The real and imaginary parts of a hypercomplex number.
+      Can be assigned to. hyper_ri(a,b,c,d) = (a,b).
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="5">
+ident</td>
+<td valign="top" align="left" rowspan="5">
+Do nothing. ident(x) is equivalent to x.
+      This function is useless in normal formulas but
+      comes in useful as a value for a function parameter
+      to a formula. For example, a general formula like z = @fn1(z*z)+c
+      can be set back to a plain Mandelbrot by setting fn1 to ident.
+      Note: ident() is compiled out so there's no speed penalty involved.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Bool
+</td>
+<td valign="top" align="left" rowspan="1">
+Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="2">
+imag</td>
+<td valign="top" align="left" rowspan="2">
+Extract the imaginary part of a complex or hypercomplex number.
+      imag(a,b) = b.
+      imag() is unusual in that it can be assigned to: imag(z) = 7 changes
+      the imag part of z.
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+imag2</td>
+<td valign="top" align="left" rowspan="1">
+The square of the imaginary part of a complex number.
+      real2(a,b) = b*b.
+      While not a generally useful function, this is provided to ease porting
+      of files from older Gnofract 4D versions.
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+int</td>
+<td valign="top" align="left" rowspan="1">
+Construct an integer. To convert a float to an int, use floor, ceil, round or trunc instead.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+log</td>
+<td valign="top" align="left" rowspan="3">
+The natural log.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+lum</td>
+<td valign="top" align="left" rowspan="1">
+The luminance (or brightness) of a color.
+</td>
+<td valign="top" align="left" rowspan="1">
+Color
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+manhattan</td>
+<td valign="top" align="left" rowspan="1">
+The Manhattan distance between the origin and complex number z.
+      manhattan(a,b) is equivalent to abs(a) + abs(b).
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+manhattanish</td>
+<td valign="top" align="left" rowspan="1">
+A variant on Manhattan distance provided for backwards
+      compatibility. manhattanish(a,b) is equivalent to a+b.
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+manhattanish2</td>
+<td valign="top" align="left" rowspan="1">
+A variant on Manhattan distance provided for backwards
+      compatibility. manhattanish2(a,b) is equivalent to (a*a + b*b)^2.
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+max</td>
+<td valign="top" align="left" rowspan="1">
+Returns the larger of its two arguments.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+max2</td>
+<td valign="top" align="left" rowspan="1">
+max2(a,b) returns the larger of a*a or b*b. Provided for
+      backwards compatibility.
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+mergemultiply</td>
+<td valign="top" align="left" rowspan="1">
+Multiplies colors together. Result is always darker than either input.
+</td>
+<td valign="top" align="left" rowspan="1">
+Color, Color
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+mergenormal</td>
+<td valign="top" align="left" rowspan="1">
+Returns second color, ignoring first.
+</td>
+<td valign="top" align="left" rowspan="1">
+Color, Color
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+min</td>
+<td valign="top" align="left" rowspan="1">
+Returns the smaller of its two arguments.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+min2</td>
+<td valign="top" align="left" rowspan="1">
+min2(a,b) returns the smaller of a*a or b*b. Provided for
+      backwards compatibility.
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="4">
+neg</td>
+<td valign="top" align="left" rowspan="4">
+No documentation yet.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+rand</td>
+<td valign="top" align="left" rowspan="1">
+Each time this is accessed, it returns a new pseudo-random complex number. This is primarily for backwards compatibility with Fractint formulas - use the random() function in new formulas.
+</td>
+<td valign="top" align="left" rowspan="1">
+
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="2">
+real</td>
+<td valign="top" align="left" rowspan="2">
+Extract the real part of a complex or hypercomplex number.
+      real(a,b) = a.
+      real() is unusual in that it can be assigned to: real(z) = 7 changes
+      the real part of z.
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+real2</td>
+<td valign="top" align="left" rowspan="1">
+The square of the real part of a complex number.
+      real2(a,b) = a*a.
+      While not a generally useful function, this is provided to ease porting
+      of files from older Gnofract 4D versions.
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+recip</td>
+<td valign="top" align="left" rowspan="3">
+The reciprocal of a number. recip(x) is equivalent to 1/x.
+      Note that not all hypercomplex numbers have a proper reciprocal.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+red</td>
+<td valign="top" align="left" rowspan="1">
+The red component of a color. Can be assigned to.
+</td>
+<td valign="top" align="left" rowspan="1">
+Color
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+rgb</td>
+<td valign="top" align="left" rowspan="1">
+Create a color from three color components. The alpha channel is set to to 1.0 (=100%).
+</td>
+<td valign="top" align="left" rowspan="1">
+Float, Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+rgba</td>
+<td valign="top" align="left" rowspan="1">
+Create a color from three color components and an alpha channel.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float, Float, Float, Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="2">
+round</td>
+<td valign="top" align="left" rowspan="2">
+Round to the nearest number (0.5 rounds up).
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+sat</td>
+<td valign="top" align="left" rowspan="1">
+The saturation of a color.
+</td>
+<td valign="top" align="left" rowspan="1">
+Color
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+sin</td>
+<td valign="top" align="left" rowspan="3">
+trigonometric sine function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+sinh</td>
+<td valign="top" align="left" rowspan="3">
+Hyperbolic sine function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="4">
+sqr</td>
+<td valign="top" align="left" rowspan="4">
+Square the argument. sqr(x) is equivalent to x*x or x^2.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+sqrt</td>
+<td valign="top" align="left" rowspan="3">
+The square root.
+      The square root of a negative float number is NaN
+      (ie it is NOT converted to complex). Thus sqrt((-3,0)) != sqrt(-3).
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+tan</td>
+<td valign="top" align="left" rowspan="3">
+trigonometric sine function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+tanh</td>
+<td valign="top" align="left" rowspan="3">
+Hyperbolic tangent function.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Hyper
+</td>
+<td valign="top" align="left" rowspan="1">
+Hyper</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="2">
+trunc</td>
+<td valign="top" align="left" rowspan="2">
+Round towards zero.
+</td>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="3">
+zero</td>
+<td valign="top" align="left" rowspan="3">
+Returns zero.
+</td>
+<td valign="top" align="left" rowspan="1">
+Int
+</td>
+<td valign="top" align="left" rowspan="1">
+Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Float
+</td>
+<td valign="top" align="left" rowspan="1">
+Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+Complex
+</td>
+<td valign="top" align="left" rowspan="1">
+Complex</td>
+</tr>
+</tbody>
+</table>
+<h2>Symbols</h2>
+<table>
+
+<thead>
+<tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Argument Types</th>
+                    <th>Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#center</td>
+<td valign="top" align="left" rowspan="1">
+Where the center of the image is located on the complex plane
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#color</td>
+<td valign="top" align="left" rowspan="1">
+Set this from a coloring function to directly set the color instead of using a gradient
+</td>
+<td>Color</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#fate</td>
+<td valign="top" align="left" rowspan="1">
+The fate of a point can be used to distinguish between different basins of attraction or whatever you like. Set this to a number from 2 to 128 to indicate that a different 'fate' has befallen this point. 0 indicates the point has diverged, 1 that it has been trapped, &gt;1 whatever you like. Can only be usefully updated in the #final section.
+</td>
+<td>Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#index</td>
+<td valign="top" align="left" rowspan="1">
+The point in the gradient to use for the color of this point.
+</td>
+<td>Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#inside</td>
+<td valign="top" align="left" rowspan="1">
+Set this in the final section of a formula to override whether a point is colored with the inside or outside coloring algorithm. This is mainly useful in conjuction with #fate.
+</td>
+<td>Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#magn</td>
+<td valign="top" align="left" rowspan="1">
+The magnification factor of the image. This is the number of times the image size has doubled, or ln(4.0/size)
+</td>
+<td>Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#maxit</td>
+<td valign="top" align="left" rowspan="1">
+No documentation yet.
+</td>
+<td>Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#maxiter</td>
+<td valign="top" align="left" rowspan="1">
+No documentation yet.
+</td>
+<td>Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#numiter</td>
+<td valign="top" align="left" rowspan="1">
+The number of iterations performed.
+</td>
+<td>Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#pi</td>
+<td valign="top" align="left" rowspan="1">
+The constant pi, 3.14159...
+</td>
+<td>Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#pixel</td>
+<td valign="top" align="left" rowspan="1">
+The (X,Y) coordinates of the current point. When viewing the Mandelbrot set, this has a different value for each pixel. When viewing the Julia set, it remains constant for each pixel.
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#solid</td>
+<td valign="top" align="left" rowspan="1">
+Set this to true in a coloring function to use the solid color rather than the color map.
+</td>
+<td>Bool</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#tolerance</td>
+<td valign="top" align="left" rowspan="1">
+10% of the distance between adjacent pixels.
+</td>
+<td>Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#xypixel</td>
+<td valign="top" align="left" rowspan="1">
+The (X,Y) coordinates of the current point. When viewing the Mandelbrot set, this has a different value for each pixel. When viewing the Julia set, it remains constant for each pixel.
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#z</td>
+<td valign="top" align="left" rowspan="1">
+No documentation yet.
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+#zwpixel</td>
+<td valign="top" align="left" rowspan="1">
+The (Z,W) coordinates of the current point. (See #pixel for the other two coordinates.) When viewing the Mandelbrot set, this remains constant for each pixel on the screen; when viewing the Julia set, it's different for each pixel. Initialize z to some function of this to take advantage of 4D drawing.
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+@p1</td>
+<td valign="top" align="left" rowspan="1">
+Predefined parameter used by Fractint formulas
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+@p2</td>
+<td valign="top" align="left" rowspan="1">
+Predefined parameter used by Fractint formulas
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+@p3</td>
+<td valign="top" align="left" rowspan="1">
+Predefined parameter used by Fractint formulas
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+@p4</td>
+<td valign="top" align="left" rowspan="1">
+Predefined parameter used by Fractint formulas
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+@p5</td>
+<td valign="top" align="left" rowspan="1">
+Predefined parameter used by Fractint formulas
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+@p6</td>
+<td valign="top" align="left" rowspan="1">
+Predefined parameter used by Fractint formulas
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+maxit</td>
+<td valign="top" align="left" rowspan="1">
+No documentation yet.
+</td>
+<td>Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+maxiter</td>
+<td valign="top" align="left" rowspan="1">
+No documentation yet.
+</td>
+<td>Int</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+p1</td>
+<td valign="top" align="left" rowspan="1">
+Predefined parameter used by Fractint formulas
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+p2</td>
+<td valign="top" align="left" rowspan="1">
+Predefined parameter used by Fractint formulas
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+p3</td>
+<td valign="top" align="left" rowspan="1">
+Predefined parameter used by Fractint formulas
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+p4</td>
+<td valign="top" align="left" rowspan="1">
+Predefined parameter used by Fractint formulas
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+p5</td>
+<td valign="top" align="left" rowspan="1">
+Predefined parameter used by Fractint formulas
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+p6</td>
+<td valign="top" align="left" rowspan="1">
+Predefined parameter used by Fractint formulas
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+pi</td>
+<td valign="top" align="left" rowspan="1">
+The constant pi, 3.14159...
+</td>
+<td>Float</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+pixel</td>
+<td valign="top" align="left" rowspan="1">
+The (X,Y) coordinates of the current point. When viewing the Mandelbrot set, this has a different value for each pixel. When viewing the Julia set, it remains constant for each pixel.
+</td>
+<td>Complex</td>
+</tr>
+<tr>
+<td valign="top" align="left" rowspan="1">
+z</td>
+<td valign="top" align="left" rowspan="1">
+No documentation yet.
+</td>
+<td>Complex</td>
+</tr>
+</tbody>
+</table>
+    
+
+<h2 id="gnofract-4d-internals">Gnofract 4D Internals</h2>
+<p>This section explains how Gnofract 4D is structured. You don&rsquo;t need to know
+any of this to use the program, but it may come in handy if you want
+to change it or contribute to its development (which you&rsquo;re heartily
+encouraged to do!).</p>
+<p>Gnofract 4D is implemented primarily in Python, with some C++
+extensions. Extensive use
+is made of Python unittest framework to keep everything working - each
+Python file <code>foo.py</code> is accompanied by
+<code>tests/test_foo.py</code>, which contains unit tests for that
+file&rsquo;s features. &lsquo;test.py&rsquo; for each folder runs all of the tests.</p>
+<h3 id="source-code-layout">Source Code Layout</h3>
+<p>The important directories in the source are:</p>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fract4d</code></td>
+<td>This contains all the non-GUI-related, relatively platform-independent parts of the code. This is in case it ever needs to be ported to another environment (eg run on a server without a GUI as part of a cluster). The main class which represents a fractal is in <code>fractal.py</code>. This holds references to the compiled code, the formula and colorfunc definitions, the parameters and the colormap. It also handles loading and saving information from a <code>.fct</code> file, and provides wrappers for some of the gnarlier C++ extension functions.</td>
+</tr>
+<tr>
+<td><code>fract4d_compiler</code></td>
+<td>This contains all the files of the compiler (see below). The main class is <code>fc.py</code></td>
+</tr>
+<tr>
+<td><code>fract4d/c</code></td>
+<td>This contains the C++ extension code which is compiled to produce <code>fract4dc.so</code>. This is divided into a set of classes which communicate primaily via interfaces. The main responsibility of this code is to call the &lsquo;pointFunc&rsquo; (the function which calculates a single pixel) once for each point on the image. This code also does the bulk of the &lsquo;4D&rsquo; manipulation -<code>vectors.h</code> contains code for 4-vectors and 4x4 matrix math. This library also handles multi-threaded calculations, parcelling out the work to multiple MTFractWorkers via the queue in <code>threadpool.h</code></td>
+</tr>
+<tr>
+<td><code>fract4dgui</code></td>
+<td>This contains the python code which implements the GUI. It uses PyGTK3 as the GUI toolkit. Basically there&rsquo;s one class per dialog or custom control, and a few other for utility purposes. The central class is <code>gtkfractal</code>, which wraps a <code>fractal</code> and displays the results of the calculation in a window.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="compiler-1">Compiler</h3>
+<p>The most complicated part of Gnofract 4D is the compiler. This takes
+as input an UltraFractal or Fractint formula file, and produces C
+code. We then invoke a C compiler (eg gcc) to produce a shared library
+containing code to generate the fractal which we dynamically load.</p>
+<p>The UltraFractal manual is the best current description of the formula
+file format, though there are some UltraFractal features which are not
+yet supported. You can download it from <a href="https://www.ultrafractal.com/download/uf6-manual.pdf">https://www.ultrafractal.com/download/uf6-manual.pdf</a></p>
+<p>The implementation is based on the outline in &ldquo;Modern Compiler Implementation in ML: basic
+techniques&rdquo; (Appel 1997, Cambridge). It doesn&rsquo;t do any
+optimization at this point, leaving that to the C compiler used as a
+back-end. It would be worthwhile to do some simple optimization (eg
+constant-folding, removing multiplication by 1.0) because the C
+compiler refuses to do this to floating point numbers.</p>
+<p>Overall structure: The 
+  <a href="http://www.dabeaz.com/ply/ply.html">PLY</a> package
+is used to do lexing and SLR parsing - it&rsquo;s in
+<code>lex.py</code> and
+<code>yacc.py</code>. <code>fractlexer.py</code> and
+<code>fractparser.py</code> are the lexer and parser
+definitions, respectively. They produce as output an abstract syntax
+tree (defined in the <code>Absyn</code> module). The
+<code>Translate</code> module type-checks the code,
+maintains the symbol table (<code>symbol.py</code>) and
+converts it into an intermediate form (<code>ir.py</code>).
+<code>Canon</code> performs several simplifying passes on
+the IR to make it easier to deal with, then
+<code>codegen</code> converts it into a linear sequence of
+simple C instructions. <code>stdlib.py</code> contains the
+&lsquo;standard library&rsquo; of mathematical functions, like cosh(z). It&rsquo;s at
+this point that complex and hypercomplex variables are expanded out
+into pairs of floating point numbers - the C code is oblivious to the
+complex numbers. Finally we invoke the C compiler to convert to a
+native code shared library.</p>
+<p>At runtime the different phases happen at different times. First, the
+entire .frm file is lexed and parsed. Then when a particular formula
+is selected, it&rsquo;s translated and syntax-checked. The actual code is
+only generated just before the fractal is drawn. This phase is
+repeated whenever the function parameters are changed (eg @fn1 is set
+to &lsquo;cosh&rsquo;).</p>
+<p>Probably the ugliest part of the code is the handling of
+parameters. Numeric parameters like floats are passed in as an array,
+and the C++ code and Python code need to collaborate to work out which
+indices into this array correspond to which params- this is done by
+sorting them into alphabetic order. In general this area is a bit of a
+mess.</p>
+<h3 id="threading">Threading</h3>
+<p>One of the weirder parts of the code is how we deal with
+threading. Basically we want the calculation of the fractal to happen
+on a different thread (or multiple threads for SMP) from the main UI,
+so you can interrupt at any point. This is complicated by the fact
+that Python only allows a single thread in the Global Interpreter
+Lock, and that PyGTK is often compiled by Linux distribution vendors
+without thread support, meaning this lock is not released when running
+the GTK main loop. (This last is probably nottrue any more, but I haven&rsquo;t checked.)</p>
+<p>The way out of this is that the additional threads live only in the
+C++ code, where they are invisible to the Python code and GTK. When
+<code>pycalc</code> is called with asynchronous=True, it spawns a
+thread to do the calculation, which may in turn spawn more workers if
+we want multiple threads. These all write to the image buffer and
+report back what they&rsquo;re doing by writing messages into a pipe. This
+pipe is added to the list of things the GTK main loop monitors, so
+whenever a new message appears we get a callback into the gtkfractal
+code, interleaved with the normal GTK events. We can interrupt a
+calculation in progress by setting a var which the calculation threads
+check frequently - they then abandon their work and quit.</p>
+<blockquote>
+<p>Warning: Multiple threads and C++ exceptions do not coexist
+well on some libstdc++'s. Gnofract 4D was originally written not to use exceptions
+as a result. This may no longer be an issue but I haven&rsquo;t tried it.</p>
+</blockquote>
+<h2 id="bugs-and-known-issues">Bugs and Known Issues</h2>
+<p>Please report any bugs you encounter, via <ulink><a href="https://github.com/fract4d/gnofract4d/issues">https://github.com/fract4d/gnofract4d/issues</a></ulink></p>
+<h2 id="about-gnofract-4d">About Gnofract 4D</h2>
+<p>This is Gnofract 4D version 4.2. You can find the most recent version of
+Gnofract 4D from <a href="https://github.com/edyoung/gnofract4d">https://github.com/edyoung/gnofract4d</a></p>
+<h2 id="credits-and-copyright">Credits and copyright</h2>
+<p>Gnofract 4D is Copyright 1999-2020 Edwin Young
+
+  <a href="mailto:edwin@bathysphere.org">edwin@bathysphere.org</a>
+, and is distributed under the <strong>BSD
+license</strong>.  See the file &ldquo;LICENSE&rdquo; for details.</p>
+<p>Gnofract 4D was originally based on a program called Gnofract, written by Aurelien Alleaume
+though none of the original code remains in the current version.
+Gnofract could once be obtained from <a href="http://www.multimania.com/mason">http://www.multimania.com/mason</a>
+but this no longer appears to work.</p>
+<p><strong>Branko Kokanovic</strong> developed and contributed the animation feature.
+<strong>Chris Le Sueur</strong> provided parts of the gradient editing feature.
+<strong>Henryk Trappmann</strong> provided HSV gradient support.
+The man page was contributed by <strong>Aleksander Adamowski</strong>.
+<strong>Rachel Mant</strong> maintained the project for several years and provided many useful updates.
+<strong>Chris Mayo</strong> modernized a lot of code and made the Python 3 update possible.
+<strong>Alberto Gonzalez</strong> and <strong>Guanchor Ojeda Hernández</strong> have refactored and improved the code considerably.</p>
+<p>The formula language which Gnofract 4D uses originated in Fractint and
+was substantially enhanced in UltraFractal. However the compiler
+implementation does not share any code with those programs.</p>
+<p>The Gnofract 4D distribution contains palette (.map) files by a number of
+authors which were originally distributed with
+
+  <a href="https://fractint.org/">Fractint</a> under somewhat murky
+licensing conditions. It also contains a copy of &ldquo;standard.ucl&rdquo;,
+originally distributed with 
+  <a href="https://www.ultrafractal.com">UltraFractal</a>, by kind
+permission of Frederik Slijkerman, Damien Jones, and Kerry Mitchell.
+<code>blatte1.ugr</code> and <code>blatte2.ugr</code> are included by kind permission of
+
+  <a href="http://exoteric.roach.org/">&lsquo;Blatte&rsquo;</a>. The formulas
+in Sterling2.frm are translations of formulas originally created by
+Tad Boniecki for use with the SterlingWare 2 fractal program.</p>
+<p><code>lex.py</code> and <code>yacc.py</code> come from
+the PLY package, and are distributed under the BSD license.</p>
+<p>Some of the menu icons are taken or adapted from
+the <ulink url="http://tango.freedesktop.org">Tango icon set</ulink>.</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#gnofract-4d">Gnofract 4D</a>
+      <ul>
+        <li><a href="#introduction">Introduction</a>
+          <ul>
+            <li><a href="#using-gnofract-4d">Using Gnofract 4D</a></li>
+            <li><a href="#interacting-with-the-fractal">Interacting with the Fractal</a></li>
+            <li><a href="#working-with-files">Working with Files</a></li>
+          </ul>
+        </li>
+        <li><a href="#tools">Tools</a>
+          <ul>
+            <li><a href="#autozoom">Autozoom</a></li>
+            <li><a href="#explorer">Explorer</a></li>
+            <li><a href="#formula-browser">Formula Browser</a></li>
+            <li><a href="#director">Director</a></li>
+            <li><a href="#randomize-colors">Randomize Colors</a></li>
+            <li><a href="#painter">Painter</a></li>
+          </ul>
+        </li>
+        <li><a href="#toolbar-buttons">Toolbar buttons</a></li>
+        <li><a href="#changing-fractal-settings">Changing Fractal Settings</a>
+          <ul>
+            <li><a href="#fractal-settings">Fractal Settings</a></li>
+            <li><a href="#preferences">Preferences</a></li>
+          </ul>
+        </li>
+        <li><a href="#hints">Hints</a></li>
+        <li><a href="#command-reference">Command Reference</a></li>
+        <li><a href="#about-the-math">About the math</a>
+          <ul>
+            <li><a href="#the-mandelbrot-set">The Mandelbrot Set</a></li>
+            <li><a href="#the-julia-set">The Julia Set</a></li>
+            <li><a href="#the-julibrot">The Julibrot</a></li>
+            <li><a href="#viewing-in-four-dimensions">Viewing in Four Dimensions</a></li>
+            <li><a href="#hypercomplex-fractals-and-quaternions">Hypercomplex Fractals and Quaternions</a></li>
+          </ul>
+        </li>
+        <li><a href="#writing-your-own-functions">Writing Your Own Functions</a>
+          <ul>
+            <li><a href="#writing-your-first-formula">Writing Your First Formula</a></li>
+          </ul>
+        </li>
+        <li><a href="#formula-language-reference">Formula Language Reference</a></li>
+        <li><a href="#gnofract-4d-internals">Gnofract 4D Internals</a>
+          <ul>
+            <li><a href="#source-code-layout">Source Code Layout</a></li>
+            <li><a href="#compiler-1">Compiler</a></li>
+            <li><a href="#threading">Threading</a></li>
+          </ul>
+        </li>
+        <li><a href="#bugs-and-known-issues">Bugs and Known Issues</a></li>
+        <li><a href="#about-gnofract-4d">About Gnofract 4D</a></li>
+        <li><a href="#credits-and-copyright">Credits and copyright</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
