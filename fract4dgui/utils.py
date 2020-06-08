@@ -9,6 +9,7 @@
 
 import os
 import inspect
+import sys
 
 import gi
 gi.require_version('Gdk', '3.0')
@@ -160,7 +161,10 @@ def color256FromFloat(r, g, b, color):
 
 
 def launch_browser(prefs, url, window):
-    cmd = 'xdg-open "%s" &' % url
+    if sys.platform[:6] == "darwin":
+        cmd = 'open "%s" &' % url
+    else:
+        cmd = 'xdg-open "%s" &' % url
     try:
         os.system(cmd)
     except Exception as err:

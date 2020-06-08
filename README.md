@@ -94,6 +94,8 @@ Generating Documentation
 You can only regenerate the docs if you clone the Gnofract 4D git repo - the source dist packages contain the generated docs but not the input files for the generation process. To regenerate the docs:
 
 1. Make sure you're starting from a git clone not a source .zip - you need the files under manual/content
-1. Install hugo (Ubuntu 18.04 has an older version. Run `snap install hugo` instead of apt-get install hugo)
+1. Install hugo
+    * Ubuntu 18.04 has an older version. Run `snap install hugo` instead of `apt-get install hugo`
+    * For MacOS you can install with `brew install hugo`
 1. Run `./createdocs.py`
 
