@@ -1274,7 +1274,7 @@ class MainWindow:
 
         # look locally first to support run-before-install
         local_dir = "manual/public/"
-        install_dir = "../../share/gnome/help/gnofract4d/C/"
+        install_dir = "../../share/gnofract4d/help/"
 
         helpfile = fractconfig.T.find_resource(
             base_help_file, local_dir, install_dir)
