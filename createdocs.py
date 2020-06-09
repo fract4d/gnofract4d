@@ -14,13 +14,18 @@ import subprocess
 from fract4d import createdocs as cd1
 cd1.main("manual/content/stdlib.html")
 
-print("Generating docs")
-result = subprocess.run(
-    ["hugo", "-b", ""],
-    cwd="manual",
-    stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE)
+def main():
+    print("Generating docs")
+    result = subprocess.run(
+        ["hugo", "-b", ""],
+        cwd="manual",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
 
-if result.returncode != 0:
-    raise RuntimeError("Error generating docs: %d\nStderr\n%s\nStdout\n%s" %
-        (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
+    if result.returncode != 0:
+        raise RuntimeError("Error generating docs: %d\nStderr\n%s\nStdout\n%s" %
+            (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
+
+
+if __name__ == '__main__':
+    main()

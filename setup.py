@@ -162,6 +162,9 @@ with open("fract4d/c/cmap_name.h", "w") as fh:
 #endif
 """ % so_extension)
 
+import createdocs
+createdocs.main()
+
 setup(
     name='gnofract4d',
     version=gnofract4d_version,
