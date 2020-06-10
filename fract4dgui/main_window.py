@@ -55,9 +55,9 @@ class MainWindow:
         # custom icon images for toolbar buttons
         Gtk.IconTheme.prepend_search_path(Gtk.IconTheme.get_default(),
                                           os.path.dirname(fractconfig.T.find_resource(
-                                              'pixmaps/explorer_mode.png',
-                                              '..',
-                                              '')))
+                                              'explorer_mode.png',
+                                              'pixmaps',
+                                              'pixmaps')))
 
         # keyboard handling
         self.keymap = {
