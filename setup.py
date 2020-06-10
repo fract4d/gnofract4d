@@ -199,7 +199,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
         ),
         # documentation
         (
-            'share/gnome/help/gnofract4d/C',
+            'share/gnofract4d/help',
             get_files("manual/public", "html") +
             get_files("manual/public", "png") +
             get_files("manual/public", "css")

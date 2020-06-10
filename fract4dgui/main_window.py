@@ -55,9 +55,9 @@ class MainWindow:
         # custom icon images for toolbar buttons
         Gtk.IconTheme.prepend_search_path(Gtk.IconTheme.get_default(),
                                           os.path.dirname(fractconfig.T.find_resource(
-                                              'pixmaps/explorer_mode.png',
-                                              '..',
-                                              '')))
+                                              'explorer_mode.png',
+                                              'pixmaps',
+                                              'pixmaps')))
 
         # keyboard handling
         self.keymap = {
@@ -1274,7 +1274,7 @@ class MainWindow:
 
         # look locally first to support run-before-install
         local_dir = "manual/public/"
-        install_dir = "../../share/gnome/help/gnofract4d/C/"
+        install_dir = "help"
 
         helpfile = fractconfig.T.find_resource(
             base_help_file, local_dir, install_dir)
