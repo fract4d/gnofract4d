@@ -155,7 +155,7 @@ void PySite::pixel_changed(
         Py_XDECREF(pyret);
         RELEASE_LOCK;
     }
-};
+}
 
 void PySite::interrupt()
 {

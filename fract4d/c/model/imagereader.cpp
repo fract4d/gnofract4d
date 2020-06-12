@@ -82,7 +82,7 @@ png_reader::png_reader(FILE *fp, IImage *image) : image_reader(fp, image)
     png_init_io(png_ptr, fp);
     //printf("Init went OK\n");
     ok = true;
-};
+}
 
 png_reader::~png_reader()
 {

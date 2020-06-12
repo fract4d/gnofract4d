@@ -20,7 +20,7 @@ MTFractWorker::MTFractWorker(
     m_workers.reserve(numWorkers);
     for (int i = 0; i < numWorkers; ++i)
     {
-        STFractWorker &stfw = m_workers.emplace_back(pfo, cmap, im, site);
+        m_workers.emplace_back(pfo, cmap, im, site);
     }
     if (numThreads > 1)
     {
