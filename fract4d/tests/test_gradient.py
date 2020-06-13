@@ -684,7 +684,7 @@ opacity:
         f.close()
 
     # map is from https://coolors.co/94ae89-a8bca1-c0da74-beedaa-d5ffd9
-    # colors 94AE89, A8BCA1, C0DA74, BEEDAA, D5FFD9 
+    # colors 94AE89, A8BCA1, C0DA74, BEEDAA, D5FFD9
     def testLoadASE(self):
         g = gradient.Gradient()
         f = open("testdata/test.ase", "rb")
