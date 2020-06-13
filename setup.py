@@ -127,21 +127,7 @@ module_fract4dc = Extension(
     define_macros=define_macros
 )
 
-module_cmap = Extension(
-    'fract4d.fract4d_stdlib',
-    sources=[
-        'fract4d/c/model/colorutils.cpp',
-        'fract4d/c/model/colormap.cpp',
-        'fract4d/c/model/image.cpp',
-
-        'fract4d/c/fract_stdlib.cpp'
-    ],
-    include_dirs=['fract4d/c', 'fract4d/c/model'],
-    libraries=libraries,
-    define_macros=[('_REENTRANT', 1)]
-)
-
-modules = [module_fract4dc, module_cmap]
+modules = [module_fract4dc]
 
 def get_files(dir, ext):
     return [os.path.join(dir, x) for x in os.listdir(dir) if x.endswith(ext)]
@@ -154,13 +140,6 @@ def get_icons():
     return icons
 
 so_extension = sysconfig.get_config_var("EXT_SUFFIX")
-
-with open("fract4d/c/cmap_name.h", "w") as fh:
-    fh.write("""
-#ifndef CMAP_NAME
-#define CMAP_NAME "/fract4d_stdlib%s"
-#endif
-""" % so_extension)
 
 setup(
     name='gnofract4d',
@@ -237,7 +216,6 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
 
 lib_targets = {
     "fract4dc" + so_extension: "fract4d",
-    "fract4d_stdlib" + so_extension: "fract4d",
 }
 
 

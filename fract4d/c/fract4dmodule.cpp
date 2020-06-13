@@ -13,9 +13,6 @@
 
 #include "Python.h"
 
-#include "cmap_name.h"
-#include <dlfcn.h>
-
 #include "fract4dc/common.h"
 #include "fract4dc/colormaps.h"
 #include "fract4dc/loaders.h"
@@ -36,68 +33,6 @@ struct module_state
 {
     int dummy;
 };
-
-// really should be in module_state - one day
-void *cmap_module_handle = NULL;
-
-
-static int
-ensure_cmap_loaded(PyObject *pymod)
-{
-    char cwd[PATH_MAX + 1];
-    // load the cmap module so fract funcs we compile later
-    // can call its methods
-    if (NULL != cmap_module_handle)
-    {
-        return 1; // already loaded
-    }
-
-    // get location of current .so, fract4d_stdlib is in same dir
-    const char *filename = NULL;
-    Dl_info dl_info;
-    int result = dladdr((void *)ensure_cmap_loaded, &dl_info);
-    if (!result)
-    {
-        fprintf(stderr, "Cannot determine filename of current library\n");
-        return 0;
-    }
-    filename = dl_info.dli_fname;
-
-    if (NULL == filename)
-    {
-        fprintf(stderr, "NULL filename of current library\n");
-        return 0;
-    }
-
-    //fprintf(stderr,"base name: %s\n",filename);
-
-    const char *path_end = strrchr(filename, '/');
-
-    if (path_end == NULL)
-    {
-        filename = getcwd(cwd, sizeof(cwd));
-        path_end = filename + strlen(filename);
-    }
-
-    int path_len = strlen(filename) - strlen(path_end);
-    int len = path_len + strlen(CMAP_NAME);
-
-    char *new_filename = (char *)malloc(len + 1);
-    strncpy(new_filename, filename, path_len);
-    new_filename[path_len] = '\0';
-
-    strcat(new_filename, CMAP_NAME);
-    //fprintf(stderr,"Filename: %s\n", new_filename);
-
-    cmap_module_handle = dlopen(new_filename, RTLD_GLOBAL | RTLD_NOW);
-    if (NULL == cmap_module_handle)
-    {
-        /* an error */
-        PyErr_SetString(PyExc_ValueError, dlerror());
-        return 0;
-    }
-    return 1;
-}
 
 /*
  * loaders
@@ -761,13 +696,6 @@ PyInit_fract4dc(void)
     PyModule_AddIntConstant(pymod, "MESSAGE_TYPE_PIXEL", PIXEL);
     PyModule_AddIntConstant(pymod, "MESSAGE_TYPE_TOLERANCE", TOLERANCE);
     PyModule_AddIntConstant(pymod, "MESSAGE_TYPE_STATS", STATS);
-
-    if (!ensure_cmap_loaded(pymod))
-    {
-        Py_DECREF(&ControllerType);
-        Py_DECREF(pymod);
-        return NULL;
-    }
 
     return pymod;
 }
