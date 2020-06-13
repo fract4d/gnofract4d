@@ -53,7 +53,7 @@ image_writer::image_writer(FILE *fp_, IImage *image_)
 * TGA *
 *******/
 
-tga_writer::tga_writer(FILE *fp, IImage *image) : image_writer(fp, image){};
+tga_writer::tga_writer(FILE *fp, IImage *image) : image_writer(fp, image){}
 
 bool tga_writer::save_header()
 {

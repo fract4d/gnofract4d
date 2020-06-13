@@ -112,7 +112,7 @@ void FDSite::pixel_changed(
         x,y,aa,dist,fate,nIters);
     */
     return; // FIXME
-};
+}
 
 void FDSite::interrupt()
 {
