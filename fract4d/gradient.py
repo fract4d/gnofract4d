@@ -495,6 +495,44 @@ class Gradient:
         self.load_list(colorlist, maxdiff)
         return solid
 
+    def is_coolorable(self):
+        'Indicate if we can create a coolors url for this gradient'
+        # Coolors.co can only do up to 10 colors per palette
+        return len(self.segments) < 11
+
+    def get_coolor_url(self):
+        'Generate a URL which encodes a palette. This can be opened to edit on the website coolors.co'
+        clist = []
+        for s in self.segments:
+            color = s.left_color
+            (r, g, b, a) = [int(x*255.0) for x in color] 
+            colorstring = "%02x%02x%02x" % (r, g, b)
+            clist.append(colorstring)
+        return "https://coolors.co/" + ("-".join(clist))
+
+    def load_from_url(self, url):
+        'Parse a URL which encodes a palette. We don\'t actually fetch it, the data is in the URL itself'
+        try:
+            if not url.startswith("https://coolors.co/"):
+                return False
+            url = url[19:] # remove domain
+            parts = url.split('-')
+            print(parts)
+            colorlist = []
+            ncolors = len(parts)
+            i = 0
+            for p in parts:
+                (r, g, b) = (int(p[0:2], 16), int(p[2:4], 16), int(p[4:6], 16))
+                entry = (i/ncolors, r, g, b, 255)
+                print(entry)
+                colorlist.append(entry)
+                i += 1
+            self.load_list(colorlist, maxdiff=-1)
+            return True
+        except RuntimeError as err:
+            print(err)
+            return False
+
     def load_list(self, l, maxdiff=0):
         # a colorlist is a simplified gradient, of the form
         # (index, r, g, b, a) (colors are 0-255 ints)
@@ -523,6 +561,7 @@ class Gradient:
                 if self.compare_colors(
                         test_segment.get_color_at(last_index), last_color, maxdiff):
                     # can compress, update in place
+                    #print("compress!")
                     new_segments[-1].right_color = color
                     new_segments[-1].right = index
                     new_segments[-1].center()
