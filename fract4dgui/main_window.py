@@ -1273,7 +1273,7 @@ class MainWindow:
         base_help_file = "index.html"
 
         # look locally first to support run-before-install
-        local_dir = "manual/public/"
+        local_dir = "help"
         install_dir = "help"
 
         helpfile = fractconfig.T.find_resource(
