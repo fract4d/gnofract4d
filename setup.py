@@ -179,9 +179,9 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
         # documentation
         (
             'share/gnofract4d/help',
-            get_files("manual/public", "html") +
-            get_files("manual/public", "png") +
-            get_files("manual/public", "css")
+            get_files("help", "html") +
+            get_files("help", "png") +
+            get_files("help", "css")
         ),
         # internal pixmaps
         (

@@ -136,16 +136,13 @@ class T(configparser.ConfigParser):
         return None
 
     @staticmethod
-    def find_resource(name, local_dir, installed_dir):
+    def find_resource(name, resource_dir):
         'try and find a file either locally or installed'
-        if os.path.exists(name):
-            return name
-
-        local_name = os.path.join(local_dir, name)
+        local_name = os.path.join(resource_dir, name)
         if os.path.exists(local_name):
             return local_name
 
-        full_name = os.path.join(T.get_data_path(installed_dir), name)
+        full_name = os.path.join(T.get_data_path(resource_dir), name)
         if os.path.exists(full_name):
             return full_name
 

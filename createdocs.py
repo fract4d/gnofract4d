@@ -2,7 +2,7 @@
 
 # Used to generate the documentation, in 2 phases:
 # 1) run python script to list all the functions in the standard library
-# 2) invoke Hugo static file generator to create HTML docs which are written to manual/public
+# 2) invoke Hugo static file generator to create HTML docs which are written to help/
 
 # This is a separate step from the normal build because not everyone will want to
 # install those tools. The 'sdist' packages (gnofract4d-4.2.zip etc) contain the output from this step
@@ -16,7 +16,7 @@ cd1.main("manual/content/stdlib.html")
 
 print("Generating docs")
 result = subprocess.run(
-    ["hugo", "-b", ""],
+    ["hugo", "-b", "", "-d", "../help"],
     cwd="manual",
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE)

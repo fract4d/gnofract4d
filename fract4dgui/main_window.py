@@ -56,7 +56,6 @@ class MainWindow:
         Gtk.IconTheme.prepend_search_path(Gtk.IconTheme.get_default(),
                                           os.path.dirname(fractconfig.T.find_resource(
                                               'explorer_mode.png',
-                                              'pixmaps',
                                               'pixmaps')))
 
         # keyboard handling
@@ -91,7 +90,6 @@ class MainWindow:
             # try to make default image more interesting
             self.f.set_cmap(fractconfig.T.find_resource(
                 "basic.map",
-                "maps",
                 "maps"))
         except Exception as ex:
             # print(ex)
@@ -1270,14 +1268,8 @@ class MainWindow:
             self.window)
 
     def display_help(self, section=None):
-        base_help_file = "index.html"
-
-        # look locally first to support run-before-install
-        local_dir = "manual/public/"
-        install_dir = "help"
-
         helpfile = fractconfig.T.find_resource(
-            base_help_file, local_dir, install_dir)
+            "index.html", "help")
 
         abs_file = os.path.abspath(helpfile)
 
