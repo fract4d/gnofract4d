@@ -6,8 +6,11 @@ import os
 import struct
 import math
 import copy
-import cairo
+
 import gi
+
+import cairo
+gi.require_foreign('cairo')  # ensure Cairo integration support is available
 
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
