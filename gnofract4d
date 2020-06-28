@@ -19,10 +19,11 @@ try:
     from fract4d import fractconfig, fractmain
     from fract4d.options import Arguments
 except ImportError as err:
-    print((_('''
-Can't import a required module.
-If you haven't set up Gnofract 4D yet, run './setup.py build'
-Error was: '%s' ''') % err))
+    print(_("Can't import a required module."))
+    if "fract4dc" in str(err):
+        print(_("If you haven't set up Gnofract 4D yet, run:\n"
+                "./setup.py build\n"))
+    print(_("Error was: '%s'") % err)
     sys.exit(1)
 
 def main(args):
@@ -55,10 +56,8 @@ def gtkmain(userConfig, options):
         # GUI module
         from fract4dgui import main_window
     except ImportError as err:
-        print(_('''
-    Can't import a required module.
-    If you haven't set up Gnofract 4D yet, run './setup.py build'
-    Error was: '%s' ''') % err)
+        print(_("Can't import a required module."))
+        print(_("Error was: '%s'") % err)
         sys.exit(1)
 
     mainWindow = main_window.MainWindow(userConfig)

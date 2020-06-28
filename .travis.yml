@@ -10,6 +10,8 @@ jobs:
   include:
     - env: TOXENV=pylint
 before_install:
+  # libgirepository1.0-dev required to build PyGObject from source
+  # gir1.2-gtk-3.0 pulls in all the introspection data and GLib, GTK 3
   - sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0 
   - sudo snap install hugo --channel=extended
 install:
