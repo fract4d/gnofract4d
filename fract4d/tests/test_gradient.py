@@ -699,6 +699,29 @@ opacity:
         g.load(f)
         f.close()
 
+    def testGetCoolorUrl(self):
+        g = gradient.Gradient()
+        f = open("testdata/test.ase", "rb")
+
+        g.load_ase(f)
+        self.assertEqual(5, len(g.segments))
+        self.assertEqual(
+            [0x94 / 255.0, 0xAE / 255.0, 0x89 / 255.0, 1.0],
+            g.segments[0].left_color)
+
+        url = g.get_coolor_url()
+        self.assertEqual("https://coolors.co/94ae89-a8bca1-c0da74-beedaa-d5ffd9", url)
+
+
+    def testLoadUrl(self):
+        g = gradient.Gradient()
+        g.load_from_url("https://coolors.co/94ae89-a8bca1-c0da74-beedaa-d5ffd9")
+
+        self.assertEqual(5, len(g.segments))
+        self.assertEqual(
+            [0x94 / 255.0, 0xAE / 255.0, 0x89 / 255.0, 1.0],
+            g.segments[0].left_color)
+
 
     def testSetColor(self):
         g = gradient.Gradient()

@@ -2,7 +2,6 @@
 disable=all
 enable=E,
   bad-whitespace,
-  trailing-whitespace,
   bad-indentation,
   unnecessary-semicolon,
   trailing-newlines,

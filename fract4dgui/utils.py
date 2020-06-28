@@ -160,7 +160,7 @@ def color256FromFloat(r, g, b, color):
     return (int(r * 255), int(g * 255), int(b * 255), color[3])
 
 
-def launch_browser(prefs, url, window):
+def launch_browser(url, window):
     if sys.platform[:6] == "darwin":
         cmd = 'open "%s" &' % url
     else:
@@ -170,7 +170,7 @@ def launch_browser(prefs, url, window):
     except Exception as err:
         d = hig.ErrorAlert(
             primary=_("Error launching browser"),
-            secondary=_("Try modifying your preferences or copy the URL manually to a browser window.\n") +
+            secondary=_("Try copying the URL '%s' manually to a browser window.\n" % url) +
             str(err),
             transient_for=window)
         d.run()

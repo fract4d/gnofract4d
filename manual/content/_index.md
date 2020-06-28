@@ -269,6 +269,12 @@ The **Colors** tab allows you to edit the list of
 colors used to display your fractal. For more complex gradient
 editing, you can also use the GIMP's gradient editor.
 
+It is also possible to use the online palette editor tool at https://coolors.co/ 
+to modify the palette. You can start editing the current palette in Coolors 
+by clicking **Edit Gradient Online** in the Colors tab. When you are done editing, in the Coolors UI
+choose **Export** > **Copy URL**. Then paste into the Gnofract 4D window. This
+changes the current gradient to the one you edited online.
+
 ### Preferences
 
 #### Image
