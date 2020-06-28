@@ -1206,6 +1206,20 @@ class MainWindow:
         """Redo an operation after undoing it."""
         self.model.redo()
 
+    def paste(self, *args):
+        """Paste (can be used to update colors)."""
+
+        clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+        text = clipboard.wait_for_text()
+        if text is None:
+            return
+        
+        #print("paste! %s" % text)
+        grad = self.f.get_gradient()
+        grad.load_from_url(text)
+        self.f.set_gradient(grad)
+        self.f.changed()
+
     def reset(self, *args):
         """Reset all numeric parameters to their defaults."""
         self.f.reset()
