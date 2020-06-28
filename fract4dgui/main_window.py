@@ -1215,6 +1215,9 @@ class MainWindow:
 
         clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         text = clipboard.wait_for_text()
+        if text is None:
+            return
+        
         #print("paste! %s" % text)
         grad = self.f.get_gradient()
         grad.load_from_url(text)

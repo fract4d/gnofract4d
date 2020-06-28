@@ -517,14 +517,14 @@ class Gradient:
                 return False
             url = url[19:] # remove domain
             parts = url.split('-')
-            print(parts)
+            
             colorlist = []
             ncolors = len(parts)
             i = 0
             for p in parts:
                 (r, g, b) = (int(p[0:2], 16), int(p[2:4], 16), int(p[4:6], 16))
                 entry = (i/ncolors, r, g, b, 255)
-                print(entry)
+                # print(entry)
                 colorlist.append(entry)
                 i += 1
             self.load_list(colorlist, maxdiff=-1)
@@ -561,7 +561,6 @@ class Gradient:
                 if self.compare_colors(
                         test_segment.get_color_at(last_index), last_color, maxdiff):
                     # can compress, update in place
-                    #print("compress!")
                     new_segments[-1].right_color = color
                     new_segments[-1].right = index
                     new_segments[-1].center()
