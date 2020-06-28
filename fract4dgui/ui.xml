@@ -17,7 +17,8 @@
       <menuitem name="EditRedo" action="EditRedoAction"/>
       <separator/>
       <menuitem name="EditReset" action="EditResetAction"/>
-      <menuitem name="EditResetZoom" action="EditResetZoomAction"/>      
+      <menuitem name="EditResetZoom" action="EditResetZoomAction"/>   
+      <menuitem name="EditPaste" action="EditPasteAction"/>   
     </menu>
     <menu name="ViewMenu" action="ViewMenuAction">
       <menuitem name="ViewFullScreen" action="ViewFullScreenAction"/>

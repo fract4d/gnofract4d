@@ -596,7 +596,9 @@ class MainWindow:
             ('EditResetAction', Gtk.STOCK_HOME, _('_Reset'),
              'Home', _('Reset all parameters to defaults'), self.reset),
             ('EditResetZoomAction', Gtk.STOCK_ZOOM_100, _('Re_set Zoom'),
-             '<control>Home', _('Reset magnification'), self.reset_zoom),
+             '<control>Home', _('Reset Magnification'), self.reset_zoom),
+            ('EditPasteAction', Gtk.STOCK_PASTE, _("Paste Gradient"), 
+             '<control>V', _("Paste"), self.paste),
 
             ('ViewMenuAction', None, _('_View')),
             ('ViewFullScreenAction', Gtk.STOCK_FULLSCREEN, _('_Full Screen'),
@@ -1277,7 +1279,6 @@ class MainWindow:
     def report_bug(self, *args):
         url = "https://github.com/fract4d/gnofract4d/issues"
         utils.launch_browser(
-            self.userPrefs,
             url,
             self.window)
 
@@ -1300,7 +1301,6 @@ class MainWindow:
 
         url = "file://%s%s" % (abs_file, anchor)
         utils.launch_browser(
-            self.userPrefs,
             url,
             self.window)
 
