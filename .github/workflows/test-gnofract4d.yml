@@ -6,25 +6,36 @@ on:
     push:
 
 jobs:
-  test:
+  run:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [macos-latest, ubuntu-latest]
         python: [3.5, 3.6, 3.7]
         toxenv: [py]
+        exclude:
+          - os: macos-latest
+            python: 3.5
+          - os: macos-latest
+            python: 3.6
         include:
-          - python: 3.7
+          - os: ubuntu-latest
+            python: 3.7
             toxenv: pylint
 
     env:
       # For labelling Codecov report
-      OS: ubuntu-latest
+      OS: ${{ matrix.os }}
       PYTHON: ${{ matrix.python }}
 
     steps:
       - uses: actions/checkout@v2
+      - name: Install MacOS packages
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: brew install gtk+3 pygobject3
       - name: Install Ubuntu packages
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         # libgirepository1.0-dev required to build PyGObject from source
         run: sudo apt install gir1.2-gtk-3.0 libgirepository1.0-dev xvfb
       - name: Setup Python
@@ -35,7 +46,11 @@ jobs:
         run: pip install tox
       - name: Build
         run: python setup.py build
-      - name: Run Tox
+      - name: Run Tox (MacOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: tox -e ${{ matrix.toxenv }}
+      - name: Run Tox (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum tox -e ${{ matrix.toxenv }}
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1.0.7
