@@ -32,10 +32,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install MacOS packages
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ runner.os == 'macOS' }}
         run: brew install gtk+3 pygobject3
       - name: Install Ubuntu packages
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ runner.os == 'Linux' }}
         # libgirepository1.0-dev required to build PyGObject from source
         run: sudo apt install gir1.2-gtk-3.0 libgirepository1.0-dev xvfb
       - name: Setup Python
@@ -47,10 +47,10 @@ jobs:
       - name: Build
         run: python setup.py build
       - name: Run Tox (MacOS)
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ runner.os == 'macOS' }}
         run: tox -e ${{ matrix.toxenv }}
       - name: Run Tox (Linux)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ runner.os == 'Linux' }}
         run: xvfb-run --auto-servernum tox -e ${{ matrix.toxenv }}
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1.0.7
