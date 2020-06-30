@@ -54,6 +54,7 @@ jobs:
         if: ${{ runner.os == 'Linux' }}
         run: xvfb-run --auto-servernum tox -e ${{ matrix.toxenv }}
       - name: Upload coverage to Codecov
+        if: ${{ matrix.toxenv == 'py' }}
         uses: codecov/codecov-action@v1.0.7
         with:
           file: ./coverage.xml
