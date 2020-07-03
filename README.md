@@ -33,7 +33,7 @@ Requirements
 
 Gnofract 4D requires these packages to run:
 
-- Python version 3.5 or higher
+- Python version 3.6 or higher
 - GTK version 3.18 or higher
 - Pycairo
 - PyGObject to access GTK from Python

@@ -9,8 +9,8 @@ import sys
 
 gnofract4d_version = '4.2'
 
-if sys.version_info < (3, 5):
-    print("Sorry, you need Python 3.5 or higher to run Gnofract 4D.")
+if sys.version_info < (3, 6):
+    print("Sorry, you need Python 3.6 or higher to run Gnofract 4D.")
     print("You have version %s. Please upgrade." % sys.version)
     sys.exit(1)
 
