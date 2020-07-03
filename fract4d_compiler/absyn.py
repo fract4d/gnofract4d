@@ -4,7 +4,6 @@ import re
 
 from . import fracttypes
 
-
 class Node:
     def __init__(self, type, pos, children=None, leaf=None, datatype=None):
         self.type = type
@@ -17,14 +16,14 @@ class Node:
         self.pos = pos
 
     def __str__(self):
-        return "[%s : %s]" % (self.type, self.leaf)
+        return f"[{self.type} : {self.leaf}]"
 
     def pretty(self, depth=0, pos=False):
-        str = " " * depth + "[%s : %s" % (self.type, self.leaf)
+        str = " " * depth + f"[{self.type} : {self.leaf}" 
         if pos:
-            str += "<%s>" % self.pos
+            str += f"<{self.pos}>" 
         if self.datatype is not None:
-            str += "(%s)" % fracttypes.strOfType(self.datatype)
+            str += f"({fracttypes.strOfType(self.datatype)})"
         if self.children:
             str += "\n"
             for child in self.children:
@@ -66,9 +65,6 @@ class Node:
         if self._ordLeaf() > other._ordLeaf():
             return 1
 
-        # if len(self.children) < len(other.children): return -1
-        # if len(self.children) > len(other.children): return 1
-
         if not self.children and not other.children:
             return 0
 
@@ -77,15 +73,6 @@ class Node:
             if eql:
                 return eql
         return eql
-
-# def preorder(t):
-#     if t:
-#         print "pre",t
-#         yield t
-#         for child in t.children:
-#             print "prechild", child
-#             preorder(child)
-
 
 class NodeIter:
     def __init__(self, node):
@@ -118,34 +105,29 @@ class NodeIter:
 
         return ret
 
-
 def CheckTree(tree, nullOK=0):
     if nullOK and tree is None:
         return 1
     if not isinstance(tree, Node):
-        raise Exception("bad node type %s" % tree)
+        raise Exception(f"bad node type {tree}")
     if tree.children:
         if not isinstance(tree.children, list):
-            raise Exception("children not a list: %s instead" % tree.children)
+            raise Exception(f"children not a list: {tree.children} instead")
         for child in tree.children:
             CheckTree(child, 0)
     return 1
 
 # shorthand named ctors for specific node types
 
-
 def Formlist(list, pos):
     return Node("formlist", pos, list, "")
-
 
 def Set(id, s, pos):
     return Node("set", pos, [id, s], None)
 
-
 def SetType(id, t, pos):
     type = fracttypes.typeOfStr(t)
     return Node("set", pos, [id, Empty(pos)], None, type)
-
 
 def Number(n, pos):
     if re.search('[.eE]', n):
@@ -157,44 +139,34 @@ def Number(n, pos):
 
     return Node("const", pos, None, n, t)
 
-
 def Const(n, pos):
     if isinstance(n, str):
         n = n.lower()
     return Node("const", pos, None, n == "true" or n == "yes", fracttypes.Bool)
 
-
 def Binop(op, left, right, pos):
     return Node("binop", pos, [left, right], op)
-
 
 def ID(id, pos):
     return Node("id", pos, None, id)
 
-
 def Mag(exp, pos):
     return Node("unop", pos, [exp], "cmag")
-
 
 def Negate(exp, pos):
     return Node("unop", pos, [exp], "t__neg")
 
-
 def Not(exp, pos):
     return Node("unop", pos, [exp], "t__not")
-
 
 def String(s, list, pos):
     return Node("string", pos, list, s, fracttypes.String)
 
-
 def Funcall(id, arglist, pos):
     return Node("funcall", pos, arglist, id)
 
-
 def Assign(id, exp, pos):
     return Node("assign", pos, [id, exp], None)
-
 
 def Decl(type, id, pos, exp=None):
     if exp is None:
@@ -203,26 +175,20 @@ def Decl(type, id, pos, exp=None):
         l = [exp]
     return Node("decl", pos, l, id, fracttypes.typeOfStr(type))
 
-
 def DeclArray(type, id, indexes, pos):
     return Node("declarray", pos, indexes, id, fracttypes.typeOfStr(type))
-
 
 def ArrayLookup(id, indexes, pos):
     return Node("arraylookup", pos, indexes, id)
 
-
 def Stmlist(id, list, pos):
     return Node("stmlist", pos, list, id.lower())
-
 
 def Setlist(id, list, pos):
     return Node("setlist", pos, list, id.lower())
 
-
 def Empty(pos):
     return Node("empty", pos, None, "")
-
 
 def Formula(id, stmlist, pos):
     # rather gruesome: we re-lex the formula ID to extract the symmetry spec
@@ -239,50 +205,40 @@ def Formula(id, stmlist, pos):
 
     return n
 
-
 def Param(id, settinglist, type, pos):
     return Node("param", pos, settinglist, id, fracttypes.typeOfStr(type))
-
 
 def Func(id, settinglist, type, pos):
     return Node("func", pos, settinglist, id, fracttypes.typeOfStr(type))
 
-
 def Heading(settinglist, pos):
     return Node("heading", pos, settinglist)
-
 
 def Repeat(body, test, pos):
     return Node("repeat", pos, [test, Stmlist("", body, pos)], "")
 
-
 def While(test, body, pos):
     return Node("while", pos, [test, Stmlist("", body, pos)], "")
-
 
 def If(test, left, right, pos):
     return Node("if", pos,
                 [test, Stmlist("", left, pos), Stmlist("", right, pos)], "")
 
-
 def Error2(str, pos):
     if str == "$":
         return Node(
             "error", pos, None,
-            "%d: Error: unexpected preprocessor directive" % pos)
+            f"{pos}: Error: unexpected preprocessor directive")
     return Node("error", pos, None,
-                "%d: Syntax error: unexpected '%s' " % (pos, str))
-
+                f"{pos}: Syntax error: unexpected '{str}' ")
 
 def Error(type, value, pos):
     if type == "NEWLINE":
         return Node("error", pos, None,
-                    "%d: Syntax error: unexpected newline" % pos)
+                    f"{pos}: Syntax error: unexpected newline")
 
     return Node("error", pos, None,
-                "%d: Syntax error: unexpected %s '%s'" %
-                (pos, type.lower(), value))
-
+                f"{pos}: Syntax error: unexpected {type.lower()} '{value}'")
 
 def PreprocessorError(value, pos):
     return Node("error", pos, None, value)
