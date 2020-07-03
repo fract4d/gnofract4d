@@ -3,6 +3,7 @@
 *~
 #*
 .coverage
+coverage.xml
 gnofract4d.egg-info
 MANIFEST
 token
