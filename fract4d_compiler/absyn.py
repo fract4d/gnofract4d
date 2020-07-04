@@ -17,14 +17,14 @@ class Node:
         self.pos = pos
 
     def __str__(self):
-        return "[%s : %s]" % (self.type, self.leaf)
+        return f"[{self.type} : {self.leaf}]"
 
     def pretty(self, depth=0, pos=False):
-        str = " " * depth + "[%s : %s" % (self.type, self.leaf)
+        str = " " * depth + f"[{self.type} : {self.leaf}"
         if pos:
-            str += "<%s>" % self.pos
+            str += f"<{self.pos}>"
         if self.datatype is not None:
-            str += "(%s)" % fracttypes.strOfType(self.datatype)
+            str += f"({fracttypes.strOfType(self.datatype)})"
         if self.children:
             str += "\n"
             for child in self.children:
@@ -66,9 +66,6 @@ class Node:
         if self._ordLeaf() > other._ordLeaf():
             return 1
 
-        # if len(self.children) < len(other.children): return -1
-        # if len(self.children) > len(other.children): return 1
-
         if not self.children and not other.children:
             return 0
 
@@ -77,14 +74,6 @@ class Node:
             if eql:
                 return eql
         return eql
-
-# def preorder(t):
-#     if t:
-#         print "pre",t
-#         yield t
-#         for child in t.children:
-#             print "prechild", child
-#             preorder(child)
 
 
 class NodeIter:
@@ -123,10 +112,10 @@ def CheckTree(tree, nullOK=0):
     if nullOK and tree is None:
         return 1
     if not isinstance(tree, Node):
-        raise Exception("bad node type %s" % tree)
+        raise Exception(f"bad node type {tree}")
     if tree.children:
         if not isinstance(tree.children, list):
-            raise Exception("children not a list: %s instead" % tree.children)
+            raise Exception(f"children not a list: {tree.children} instead")
         for child in tree.children:
             CheckTree(child, 0)
     return 1
@@ -269,19 +258,18 @@ def Error2(str, pos):
     if str == "$":
         return Node(
             "error", pos, None,
-            "%d: Error: unexpected preprocessor directive" % pos)
+            f"{pos}: Error: unexpected preprocessor directive")
     return Node("error", pos, None,
-                "%d: Syntax error: unexpected '%s' " % (pos, str))
+                f"{pos}: Syntax error: unexpected '{str}' ")
 
 
 def Error(type, value, pos):
     if type == "NEWLINE":
         return Node("error", pos, None,
-                    "%d: Syntax error: unexpected newline" % pos)
+                    f"{pos}: Syntax error: unexpected newline")
 
     return Node("error", pos, None,
-                "%d: Syntax error: unexpected %s '%s'" %
-                (pos, type.lower(), value))
+                f"{pos}: Syntax error: unexpected {type.lower()} '{value}'")
 
 
 def PreprocessorError(value, pos):
