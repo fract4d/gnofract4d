@@ -4,6 +4,12 @@
 #include "model/vectors.h"
 #include "model/enums.h"
 
+/*
+    this class performs the geometry calculations to give each point
+    within a 2d slice or 3d projection its corresponding 4-dimensional
+    space value in the form of a 4d vector
+*/
+
 class fract_geometry final
 {
 public:
