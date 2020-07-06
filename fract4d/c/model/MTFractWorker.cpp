@@ -60,11 +60,6 @@ void MTFractWorker::row(int x, int y, int n)
     }
 }
 
-void MTFractWorker::box(int x, int y, int rsize)
-{
-    m_workers[0].box(x, y, rsize);
-}
-
 void MTFractWorker::box_row(int w, int y, int rsize)
 {
     if (m_threads)
@@ -87,15 +82,6 @@ void MTFractWorker::qbox_row(int w, int y, int rsize, int drawsize)
     {
         m_workers[0].qbox_row(w, y, rsize, drawsize);
     }
-}
-
-void MTFractWorker::pixel(int x, int y, int w, int h)
-{
-    m_workers[0].pixel(x, y, w, h);
-}
-
-void MTFractWorker::pixel_aa(int x, int y)
-{
 }
 
 void MTFractWorker::reset_counts()
@@ -165,9 +151,4 @@ void MTFractWorker::flush()
     {
         m_threads->flush();
     }
-}
-
-bool MTFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
-{
-    return m_workers[0].find_root(eye, look, root);
 }

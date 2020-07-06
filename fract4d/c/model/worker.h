@@ -76,21 +76,13 @@ public:
     virtual void row_aa(int x, int y, int n) = 0;
     // calculate a row of pixels
     virtual void row(int x, int y, int n) = 0;
-    // calculate an rsize-by-rsize box of pixels
-    virtual void box(int x, int y, int rsize) = 0;
     // calculate a row of boxes
     virtual void box_row(int w, int y, int rsize) = 0;
     // calculate a row of boxes, quickly
     virtual void qbox_row(int w, int y, int rsize, int drawsize) = 0;
-    // calculate a single pixel
-    virtual void pixel(int x, int y, int w, int h) = 0;
-    // calculate a single pixel in aa-mode
-    virtual void pixel_aa(int x, int y) = 0;
     // auto-deepening record keeping
     virtual void reset_counts() = 0;
     virtual const pixel_stat_t &get_stats() const = 0;
-    // ray-tracing machinery
-    virtual bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root) = 0;
     virtual void flush() = 0;
 
     virtual ~IFractWorker() = default;
@@ -111,19 +103,23 @@ public:
 
     // IFractWorker interface
     void set_context(IWorkerContext *);
-
     void row_aa(int x, int y, int n);
     void row(int x, int y, int n);
-    void box(int x, int y, int rsize);
     void box_row(int w, int y, int rsize);
     void qbox_row(int w, int y, int rsize, int drawsize);
-    void pixel(int x, int y, int h, int w);
-    void pixel_aa(int x, int y);
     void reset_counts();
     const pixel_stat_t &get_stats() const;
-    bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root);
     void flush(){};
 
+    // @TODO: make these private
+    // calculate an rsize-by-rsize box of pixels
+    void box(int x, int y, int rsize);
+    // calculate a single pixel
+    void pixel(int x, int y, int h, int w);
+    // calculate a single pixel in aa-mode
+    void pixel_aa(int x, int y);
+    // ray-tracing machinery
+    bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root);
 private:
     void compute_stats(const dvec4 &pos, int iter, fate_t, int x, int y);
     void compute_auto_deepen_stats(const dvec4 &pos, int iter, int x, int y);
@@ -190,14 +186,10 @@ public:
     void set_context(IWorkerContext *);
     void row_aa(int x, int y, int n);
     void row(int x, int y, int n);
-    void box(int x, int y, int rsize);
     void qbox_row(int w, int y, int rsize, int drawsize);
     void box_row(int w, int y, int rsize);
-    void pixel(int x, int y, int h, int w);
-    void pixel_aa(int x, int y);
     void reset_counts();
     const pixel_stat_t &get_stats() const;
-    bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root);
     void flush();
 
 private:

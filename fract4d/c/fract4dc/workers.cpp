@@ -74,8 +74,13 @@ namespace workers {
             return NULL;
         }
 
-        IFractWorker *worker = fw_fromcapsule(pyworker);
-        worker->pixel(x, y, w, h);
+        if (STFractWorker *worker = dynamic_cast<STFractWorker *>(fw_fromcapsule(pyworker))) {
+            worker->pixel(x, y, w, h);
+        }
+        else
+        {
+            return NULL;
+        }
 
         Py_INCREF(Py_None);
         return Py_None;
@@ -93,8 +98,13 @@ namespace workers {
             return NULL;
         }
 
-        IFractWorker *worker = fw_fromcapsule(pyworker);
-        worker->pixel_aa(x, y);
+        if (STFractWorker *worker = dynamic_cast<STFractWorker *>(fw_fromcapsule(pyworker))) {
+            worker->pixel_aa(x, y);
+        }
+        else
+        {
+            return NULL;
+        }
 
         Py_INCREF(Py_None);
         return Py_None;
@@ -113,9 +123,15 @@ namespace workers {
             return NULL;
         }
 
-        IFractWorker *worker = fw_fromcapsule(pyworker);
         dvec4 root;
-        int ok = worker->find_root(eye, look, root);
+        int ok = false;
+        if (STFractWorker *worker = dynamic_cast<STFractWorker *>(fw_fromcapsule(pyworker))) {
+            ok = worker->find_root(eye, look, root);
+        }
+        else
+        {
+            return NULL;
+        }
 
         return Py_BuildValue(
             "i(dddd)",

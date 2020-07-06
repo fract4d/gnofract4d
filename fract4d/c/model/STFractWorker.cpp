@@ -768,7 +768,7 @@ inline void STFractWorker::rectangle_with_iter(
     }
 }
 
-// @TODO: this is used for RENDER_THREE_D mode and seems to be unfinished or at leats worth to review
+// @TODO: this is used for RENDER_THREE_D mode and seems to be unfinished or at least worth to review
 bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
 {
     const calc_options &options = m_context->get_options();
