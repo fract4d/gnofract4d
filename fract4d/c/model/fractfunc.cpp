@@ -107,7 +107,7 @@ void fractFunc::draw_aa(float min_progress, float max_progress)
 
         for (int y = i; y < h; y += 2)
         {
-            m_worker->row_aa(0, y, w);
+            m_worker->row_aa(y, w);
             if (update_image(y))
             {
                 break;

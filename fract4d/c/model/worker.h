@@ -73,7 +73,7 @@ public:
 
     virtual void set_context(IWorkerContext *) = 0;
     // calculate a row of antialiased pixels
-    virtual void row_aa(int x, int y, int n) = 0;
+    virtual void row_aa(int y, int n) = 0;
     // calculate a row of pixels
     virtual void row(int x, int y, int n) = 0;
     // calculate a row of boxes
@@ -103,7 +103,7 @@ public:
 
     // IFractWorker interface
     void set_context(IWorkerContext *);
-    void row_aa(int x, int y, int n);
+    void row_aa(int y, int n);
     void row(int x, int y, int n);
     void box_row(int w, int y, int rsize);
     void qbox_row(int w, int y, int rsize, int drawsize);
@@ -184,7 +184,7 @@ public:
 
     // IFractWorker interface
     void set_context(IWorkerContext *);
-    void row_aa(int x, int y, int n);
+    void row_aa(int y, int n);
     void row(int x, int y, int n);
     void qbox_row(int w, int y, int rsize, int drawsize);
     void box_row(int w, int y, int rsize);
@@ -198,7 +198,7 @@ private:
     void send_quit();
     void send_box(int x, int y, int rsize);
     void send_row(int x, int y, int n);
-    void send_row_aa(int x, int y, int n);
+    void send_row_aa(int y, int n);
     void send_box_row(int w, int y, int rsize);
     void send_qbox_row(int w, int y, int rsize, int drawsize);
 

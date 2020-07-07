@@ -48,7 +48,7 @@ void STFractWorker::work(job_info_t &tdata)
         break;
     case JOB_ROW_AA:
         //printf("RAA(%d,%d,%d) [%x]\n",x,y,param,(unsigned int)pthread_self());
-        row_aa(tdata.x, tdata.y, tdata.param);
+        row_aa(tdata.y, tdata.param);
         nRows = 1;
         break;
     case JOB_QBOX_ROW:
@@ -64,9 +64,9 @@ void STFractWorker::work(job_info_t &tdata)
     m_context->progress_changed(new_progress);
 }
 
-void STFractWorker::row_aa(int x, int y, int w)
+void STFractWorker::row_aa(int y, int w)
 {
-    for (int x = 0; x < w; x++)
+    for (auto x = 0; x < w; x++)
     {
         pixel_aa(x, y);
     }
