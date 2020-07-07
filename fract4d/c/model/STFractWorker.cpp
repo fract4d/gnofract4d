@@ -274,6 +274,7 @@ void STFractWorker::compute_stats(const dvec4 &pos, int iter, fate_t fate, int x
 void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int x, int y)
 {
     const calc_options &options = m_context->get_options();
+    // convention: numIters is set to -1 when fate == FATE_INSIDE
     if (iter == -1)
     {
         // currently inside
@@ -447,11 +448,7 @@ void STFractWorker::box_row(int w, int y, int rsize)
     {
         box(x, y, rsize);
     }
-    // extra pixels at end of lines
-    for (auto y2 = y; y2 < y + rsize; ++y2)
-    {
-        row(x, y2, w - x);
-    }
+    // extra pixels at end of lines: already calculated by qbox_row
 }
 
 void STFractWorker::qbox_row(int w, int y, int rsize, int drawsize)
@@ -649,22 +646,23 @@ void STFractWorker::box(int x, int y, int rsize)
     const int iter = m_im->getIter(x, y);
     const int pcol = Pixel2INT(x, y);
     // calculate top and bottom of box & check for flatness
-    for (int x2 = x; x2 < x + rsize; ++x2)
+    const auto bottom_y = y + rsize - 1;
+    const auto right_x = x + rsize - 1;
+    for (int x2 = x; x2 <= right_x; ++x2)
     {
         pixel(x2, y, 1, 1);
         bFlat = bFlat && isTheSame(iter, pcol, x2, y);
-        pixel(x2, y + rsize - 1, 1, 1);
-        bFlat = bFlat && isTheSame(iter, pcol, x2, y + rsize - 1);
+        pixel(x2, bottom_y, 1, 1);
+        bFlat = bFlat && isTheSame(iter, pcol, x2, bottom_y);
     }
     // calc left and right of box & check for flatness
-    for (int y2 = y; y2 < y + rsize; ++y2)
+    for (int y2 = y; y2 <= bottom_y; ++y2)
     {
         pixel(x, y2, 1, 1);
         bFlat = bFlat && isTheSame(iter, pcol, x, y2);
-        pixel(x + rsize - 1, y2, 1, 1);
-        bFlat = bFlat && isTheSame(iter, pcol, x + rsize - 1, y2);
+        pixel(right_x, y2, 1, 1);
+        bFlat = bFlat && isTheSame(iter, pcol, right_x, y2);
     }
-
     if (bFlat)
     {
         // just draw a solid rectangle
@@ -695,7 +693,7 @@ void STFractWorker::box(int x, int y, int rsize)
             {
                 // we do need to calculate the interior
                 // points individually
-                for (auto y2 = y + 1; y2 < y + rsize - 1; ++y2)
+                for (auto y2 = y + 1; y2 < bottom_y; ++y2)
                 {
                     row(x + 1, y2, rsize - 2);
                 }
