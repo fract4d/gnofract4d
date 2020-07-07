@@ -16,7 +16,7 @@
 
 namespace functions {
 
-    PyObject * ff_create(PyObject *self, PyObject *args)
+    PyObject * ff_create([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pypfo, *pycmap, *pyim, *pysite, *pyworker;
         double params[N_PARAMS];
@@ -84,7 +84,7 @@ namespace functions {
         return pyret;
     }
 
-    PyObject * ff_get_vector(PyObject *self, PyObject *args)
+    PyObject * ff_get_vector([[maybe_unused]] PyObject *self, PyObject *args)
     {
         int vec_type;
         PyObject *pyFF;
@@ -133,7 +133,7 @@ namespace functions {
         return NULL;
     }
 
-    PyObject * ff_look_vector(PyObject *self, PyObject *args)
+    PyObject * ff_look_vector([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyFF;
         double x, y;
@@ -183,7 +183,7 @@ ffHandle * ff_fromcapsule(PyObject *pyff)
     ffHandle *ff = (ffHandle *)PyCapsule_GetPointer(pyff, OBTYPE_FFH);
     if (NULL == ff)
     {
-        fprintf(stderr, "%p : FF : CTOR\n", ff);
+        fprintf(stderr, "%p : FF : CTOR\n", reinterpret_cast<void *>(ff));
     }
     return ff;
 }

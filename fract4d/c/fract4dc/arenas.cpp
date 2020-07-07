@@ -7,7 +7,7 @@
 
 namespace arenas {
 
-    PyObject * pyarena_create(PyObject *self, PyObject *args)
+    PyObject * pyarena_create([[maybe_unused]] PyObject *self, PyObject *args)
     {
         int page_size, max_pages;
         if (!PyArg_ParseTuple(
@@ -31,7 +31,7 @@ namespace arenas {
         return pyarena;
     }
 
-    PyObject * pyarena_alloc(PyObject *self, PyObject *args)
+    PyObject * pyarena_alloc([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyArena;
         int element_size;
@@ -79,7 +79,7 @@ arena_t arena_fromcapsule(PyObject *p)
     arena_t arena = (arena_t)PyCapsule_GetPointer(p, OBTYPE_ARENA);
     if (NULL == arena)
     {
-        fprintf(stderr, "%p : AR : BAD\n", p);
+        fprintf(stderr, "%p : AR : BAD\n", reinterpret_cast<void *>(p));
     }
 
     return arena;

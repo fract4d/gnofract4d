@@ -13,7 +13,7 @@
 
 namespace utils {
 
-    PyObject * rot_matrix(PyObject *self, PyObject *args)
+    PyObject * rot_matrix([[maybe_unused]] PyObject *self, PyObject *args)
     {
         double params[N_PARAMS];
 
@@ -38,7 +38,7 @@ namespace utils {
     }
 
 
-    PyObject * eye_vector(PyObject *self, PyObject *args)
+    PyObject * eye_vector([[maybe_unused]] PyObject *self, PyObject *args)
     {
         double params[N_PARAMS], dist;
 
@@ -60,7 +60,7 @@ namespace utils {
     }
 
 
-    PyObject * pyrgb_to_hsv(PyObject *self, PyObject *args)
+    PyObject * pyrgb_to_hsv([[maybe_unused]] PyObject *self, PyObject *args)
     {
         double r, g, b, a = 1.0, h, s, v;
         if (!PyArg_ParseTuple(
@@ -78,7 +78,7 @@ namespace utils {
             h, s, v, a);
     }
 
-    PyObject * pyrgb_to_hsl(PyObject *self, PyObject *args)
+    PyObject * pyrgb_to_hsl([[maybe_unused]] PyObject *self, PyObject *args)
     {
         double r, g, b, a = 1.0, h, l, s;
         if (!PyArg_ParseTuple(
@@ -96,7 +96,7 @@ namespace utils {
             h, s, l, a);
     }
 
-    PyObject * pyhsl_to_rgb(PyObject *self, PyObject *args)
+    PyObject * pyhsl_to_rgb([[maybe_unused]] PyObject *self, PyObject *args)
     {
         double r, g, b, a = 1.0, h, l, s;
         if (!PyArg_ParseTuple(
@@ -115,7 +115,7 @@ namespace utils {
     }
 
 
-    PyObject * pyarray_get(PyObject *self, PyObject *args)
+    PyObject * pyarray_get([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyAllocation;
         int indexes[4];
@@ -146,7 +146,7 @@ namespace utils {
         return pyRet;
     }
 
-    PyObject * pyarray_set(PyObject *self, PyObject *args)
+    PyObject * pyarray_set([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyAllocation;
         int val;

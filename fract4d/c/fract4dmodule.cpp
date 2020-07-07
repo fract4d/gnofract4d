@@ -468,7 +468,7 @@ static PyMethodDef Custom_controller_methods[] = {
         "stop_calculating", (PyCFunction) Controller_stop_calculating, METH_NOARGS,
         "Gracefully stops calculation task"
     },
-    {NULL}  /* Sentinel */
+    {NULL, NULL, 0, NULL}  /* Sentinel */
 };
 
 static PyTypeObject ControllerType = {

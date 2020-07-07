@@ -386,12 +386,14 @@ void STFractWorker::pixel(int x, int y, int w, int h)
                 x, y, 0,
                 &pixel, &iter, &index, &fate);
             compute_stats(pos, iter, fate, x, y);
+#ifdef DEBUG_PIXEL
             const int color_iters = (fate & FATE_INSIDE) ? -1 : iter;
             m_site->pixel_changed(
                 pos.n, options.maxiter, min_period_iters,
                 x, y, 0,
                 index, fate, color_iters,
                 pixel.r, pixel.g, pixel.b, pixel.a);
+#endif
         }
         break;
         case RENDER_LANDSCAPE:
@@ -495,7 +497,7 @@ void STFractWorker::pixel_aa(int x, int y)
     rectangle(pixel, x, y, 1, 1);
 }
 
-// EXPERIMENTAL (not in use)
+#ifdef EXPERIMENTAL_OPTIMIZATIONS
 bool STFractWorker::isNearlyFlat(int x, int y, int rsize)
 {
     rgba_t colors[2];
@@ -562,7 +564,6 @@ bool STFractWorker::isNearlyFlat(int x, int y, int rsize)
     return true;
 }
 
-// EXPERIMENTAL (not in use)
 // linearly interpolate over a rectangle
 void STFractWorker::interpolate_rectangle(int x, int y, int rsize)
 {
@@ -572,7 +573,6 @@ void STFractWorker::interpolate_rectangle(int x, int y, int rsize)
     }
 }
 
-// EXPERIMENTAL (not in use)
 void STFractWorker::interpolate_row(int x, int y, int rsize)
 {
     const fate_t fate = m_im->getFate(x, y, 0);
@@ -602,7 +602,6 @@ void STFractWorker::interpolate_row(int x, int y, int rsize)
     }
 }
 
-// EXPERIMENTAL (not in use)
 // linearly interpolate between colors to guess correct color
 rgba_t STFractWorker::predict_color(rgba_t colors[2], double factor)
 {
@@ -614,19 +613,16 @@ rgba_t STFractWorker::predict_color(rgba_t colors[2], double factor)
     return result;
 }
 
-// EXPERIMENTAL (not in use)
 int STFractWorker::predict_iter(int iters[2], double factor)
 {
     return static_cast<int>(iters[0] * (1.0 - factor) + iters[1] * factor);
 }
 
-// EXPERIMENTAL (not in use)
 float STFractWorker::predict_index(int indexes[2], double factor)
 {
     return indexes[0] * (1.0 - factor) + indexes[1] * factor;
 }
 
-// EXPERIMENTAL (not in use)
 // sum squared differences between components of 2 colors
 int STFractWorker::diff_colors(rgba_t a, rgba_t b)
 {
@@ -636,6 +632,33 @@ int STFractWorker::diff_colors(rgba_t a, rgba_t b)
     const int da = a.a - b.a;
     return dr * dr + dg * dg + db * db + da * da;
 }
+
+inline void STFractWorker::check_guess(int x, int y, rgba_t pixel)
+{
+    const calc_options &options = m_context->get_options();
+    const dvec4 pos = m_context->get_geometry().vec_for_point_2d(x, y);
+    rgba_t tpixel;
+    int titer;
+    float tindex;
+    fate_t tfate;
+    m_pf.calc(
+        pos.n,
+        options.maxiter,
+        periodGuess(),
+        options.period_tolerance,
+        options.warp_param,
+        x, y, 0,
+        &tpixel, &titer, &tindex, &tfate);
+    if (tpixel == pixel)
+    {
+        m_stats.s[PIXELS_SKIPPED_RIGHT]++;
+    }
+    else
+    {
+        m_stats.s[PIXELS_SKIPPED_WRONG]++;
+    }
+}
+#endif // #ifdef EXPERIMENTAL_OPTIMIZATIONS
 
 void STFractWorker::box(int x, int y, int rsize)
 {
@@ -673,30 +696,29 @@ void STFractWorker::box(int x, int y, int rsize)
     }
     else
     {
-        const bool nearlyFlat = false && isNearlyFlat(x, y, rsize);
-        if (nearlyFlat)
+#ifdef EXPERIMENTAL_OPTIMIZATIONS
+        if (isNearlyFlat(x, y, rsize))
         {
             interpolate_rectangle(x, y, rsize);
+            return;
+        }
+#endif
+        if (rsize > 4)
+        {
+            // divide into 4 sub-boxes and check those for flatness
+            const int half_size = rsize / 2;
+            box(x, y, half_size);
+            box(x + half_size, y, half_size);
+            box(x, y + half_size, half_size);
+            box(x + half_size, y + half_size, half_size);
         }
         else
         {
-            if (rsize > 4)
+            // we do need to calculate the interior
+            // points individually
+            for (auto y2 = y + 1; y2 < bottom_y; ++y2)
             {
-                // divide into 4 sub-boxes and check those for flatness
-                const int half_size = rsize / 2;
-                box(x, y, half_size);
-                box(x + half_size, y, half_size);
-                box(x, y + half_size, half_size);
-                box(x + half_size, y + half_size, half_size);
-            }
-            else
-            {
-                // we do need to calculate the interior
-                // points individually
-                for (auto y2 = y + 1; y2 < bottom_y; ++y2)
-                {
-                    row(x + 1, y2, rsize - 2);
-                }
+                row(x + 1, y2, rsize - 2);
             }
         }
     }
@@ -710,36 +732,6 @@ inline void STFractWorker::rectangle(rgba_t pixel, int x, int y, int w, int h)
         {
             m_im->put(j, i, pixel);
         }
-    }
-}
-
-// EXPERIMENTAL (not in use)
-inline void STFractWorker::check_guess(int x, int y, rgba_t pixel, fate_t fate, int iter, float index)
-{
-    const calc_options &options = m_context->get_options();
-    const dvec4 pos = m_context->get_geometry().vec_for_point_2d(x, y); // m_ff->topleft + x * m_ff->deltax + y * m_ff->deltay;
-    rgba_t tpixel;
-    int titer;
-    float tindex;
-    fate_t tfate;
-    m_pf.calc(
-        pos.n,
-        options.maxiter,
-        periodGuess(),
-        options.period_tolerance,
-        options.warp_param,
-        x, y, 0,
-        &tpixel, &titer, &tindex, &tfate);
-    if (tpixel == pixel)
-    //	    fate == tfate &&
-    //	    iter == titer &&
-    //	    fabs(index-tindex) < 1.0e-2)
-    {
-        m_stats.s[PIXELS_SKIPPED_RIGHT]++;
-    }
-    else
-    {
-        m_stats.s[PIXELS_SKIPPED_WRONG]++;
     }
 }
 

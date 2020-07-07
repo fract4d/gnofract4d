@@ -111,10 +111,12 @@ defines = [
     # ('NO_CALC', 1),  # set this to not calculate the fractal
     # ('DEBUG_CREATION',1), # debug spew for allocation of objects
     # ('DEBUG_ALLOCATION',1), # debug spew for array handling
+    # ('DEBUG_PIXEL',1), # debug spew for array handling
+    # ('EXPERIMENTAL_OPTIMIZATIONS',1), # enables some experimental optimizations
 ]
 
 libraries = ['stdc++']
-extra_compile_args = ['-Wall', '-O0', '-std=c++17'] + png_flags
+extra_compile_args = ['-std=c++17', '-Wall', '-Wextra', '-Wpedantic'] + png_flags
 define_macros = defines + extra_macros
 
 module_fract4dc = Extension(
@@ -124,7 +126,8 @@ module_fract4dc = Extension(
     libraries=libraries + jpg_libs,
     extra_compile_args=extra_compile_args,
     extra_link_args=png_libs,
-    define_macros=define_macros
+    define_macros=define_macros,
+    # undef_macros=['NDEBUG'], # you need this to enable asserts
 )
 
 modules = [module_fract4dc]

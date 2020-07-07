@@ -141,7 +141,7 @@ private:
     void rectangle(rgba_t, int x, int y, int w, int h);
     void rectangle_with_iter(rgba_t, fate_t, int iter, float index, int x, int y, int w, int h);
 
-    // EXPERIMENTAL (not in use)
+#ifdef EXPERIMENTAL_OPTIMIZATIONS
     // is the square with its top-left corner at (x,y) close-enough to flat
     // that we could interpolate & get a decent-looking image?
     bool isNearlyFlat(int x, int y, int rsize);
@@ -152,12 +152,13 @@ private:
     void interpolate_rectangle(int x, int y, int rsize);
     void interpolate_row(int x, int y, int rsize);
     // compare a prediction against the real answer & update stats
-    void check_guess(int x, int y, rgba_t pixel, fate_t fate, int iter, float index);
+    void check_guess(int x, int y, rgba_t pixel);
     // sum squared differences between components of 2 colors
     int diff_colors(rgba_t a, rgba_t b);
+#endif // #ifdef EXPERIMENTAL_OPTIMIZATIONS
 
     // @TODO: move m_site and m_im dependencies to IWorkerContext
-    IFractalSite *m_site;
+    [[maybe_unused]] IFractalSite *m_site;
     IWorkerContext *m_context;
     /* pointers to data also held in fractFunc */
     IImage *m_im;

@@ -15,7 +15,7 @@
 
 namespace calcs {
 
-    PyObject * pystop_calc(PyObject *self, PyObject *args)
+    PyObject * pystop_calc([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pysite;
         if (!PyArg_ParseTuple(args, "O", &pysite))
@@ -35,7 +35,7 @@ namespace calcs {
         return Py_None;
     }
 
-    PyObject * pycalc(PyObject *self, PyObject *args, PyObject *kwds)
+    PyObject * pycalc([[maybe_unused]] PyObject *self, PyObject *args, PyObject *kwds)
     {
         calc_args *cargs = parse_calc_args(args, kwds);
         if (NULL == cargs)

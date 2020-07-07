@@ -9,7 +9,7 @@
 
 namespace colormaps {
 
-    PyObject * cmap_create(PyObject *self, PyObject *args)
+    PyObject * cmap_create([[maybe_unused]] PyObject *self, PyObject *args)
     {
         /* args = an array of (index,r,g,b,a) tuples */
         PyObject *pyarray, *pyret;
@@ -70,7 +70,7 @@ namespace colormaps {
         return pyret;
     }
 
-    PyObject * cmap_create_gradient(PyObject *self, PyObject *args)
+    PyObject * cmap_create_gradient([[maybe_unused]] PyObject *self, PyObject *args)
     {
         /* args = a gradient object:
         an array of objects with:
@@ -103,7 +103,7 @@ namespace colormaps {
     }
 
 
-    PyObject * pycmap_set_solid(PyObject *self, PyObject *args)
+    PyObject * pycmap_set_solid([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pycmap;
         int which, r, g, b, a;
@@ -127,7 +127,7 @@ namespace colormaps {
     }
 
 
-    PyObject * pycmap_set_transfer(PyObject *self, PyObject *args)
+    PyObject * pycmap_set_transfer([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pycmap;
         int which;
@@ -152,7 +152,7 @@ namespace colormaps {
     }
 
 
-    PyObject * cmap_pylookup(PyObject *self, PyObject *args)
+    PyObject * cmap_pylookup([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyobj, *pyret;
         double d;
@@ -178,7 +178,7 @@ namespace colormaps {
     }
 
 
-    PyObject * cmap_pylookup_with_flags(PyObject *self, PyObject *args)
+    PyObject * cmap_pylookup_with_flags([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyobj, *pyret;
         double d;
@@ -271,7 +271,7 @@ namespace colormaps {
         ColorMap *cmap = (ColorMap *)PyCapsule_GetPointer(capsule, OBTYPE_CMAP);
         if (NULL == cmap)
         {
-            fprintf(stderr, "%p : CM : BAD", capsule);
+            fprintf(stderr, "%p : CM : BAD", reinterpret_cast<void *>(capsule));
         }
         return cmap;
     }

@@ -55,26 +55,17 @@ void image::delete_buffers()
 
 bool image::alloc_buffers()
 {
+    // @TODO: find a way to reduce memory usage when (m_Xres * m_Yres > MAX_RECOLOR_SIZE)
     buffer = new (std::nothrow) char[bytes()];
     iter_buf = new (std::nothrow) int[m_Xres * m_Yres];
-    // FIXME remove true
-    if (true || m_Xres * m_Yres <= MAX_RECOLOR_SIZE)
-    {
-        index_buf = new (std::nothrow) float[m_Xres * m_Yres * N_SUBPIXELS];
-        fate_buf = new (std::nothrow) fate_t[m_Xres * m_Yres * N_SUBPIXELS];
-        if (!index_buf || !fate_buf)
-        {
-            delete_buffers();
-            return false;
-        }
-    }
-    else
-    {
-        // use less memory for big images. Sadly not working yet
-        index_buf = NULL;
-        fate_buf = NULL;
-    }
     if (!buffer || !iter_buf)
+    {
+        delete_buffers();
+        return false;
+    }
+    index_buf = new (std::nothrow) float[m_Xres * m_Yres * N_SUBPIXELS];
+    fate_buf = new (std::nothrow) fate_t[m_Xres * m_Yres * N_SUBPIXELS];
+    if (!index_buf || !fate_buf)
     {
         delete_buffers();
         return false;

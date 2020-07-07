@@ -53,12 +53,12 @@ image_reader::image_reader(FILE *fp_, IImage *image_)
 
 #ifdef PNG_ENABLED
 
-void user_error_fn(png_structp png_ptr, png_const_charp error_msg)
+void user_error_fn([[maybe_unused]] png_structp png_ptr, png_const_charp error_msg)
 {
     printf("Error %s reading PNG file", error_msg);
 }
 
-void user_warning_fn(png_structp png_ptr, png_const_charp warning_msg)
+void user_warning_fn([[maybe_unused]] png_structp png_ptr, png_const_charp warning_msg)
 {
     printf("Warning %s reading PNG file", warning_msg);
 }
