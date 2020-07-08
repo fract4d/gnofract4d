@@ -160,7 +160,7 @@ class T(configparser.ConfigParser):
 
     def get_default_compiler_options(self):
         # appears to work for most unixes
-        return "-fPIC -DPIC -D_REENTRANT -O2 -shared -ffast-math"
+        return "-fPIC -DPIC -O2 -shared -ffast-math"
 
     def set(self, section, key, val):
         if self.has_section(section) and \
@@ -266,7 +266,7 @@ class DarwinConfig(T):
         return "open %s"
 
     def get_default_compiler_options(self):
-        return "-fPIC -DPIC -D_REENTRANT -O2 -dynamiclib -flat_namespace -undefined suppress -ffast-math"
+        return "-fPIC -DPIC -O2 -dynamiclib -flat_namespace -undefined suppress -ffast-math"
 
 
 def userConfig():

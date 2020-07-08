@@ -105,7 +105,6 @@ fract4d_sources = [
 ]
 
 defines = [
-    ('_REENTRANT', 1),
     ('THREADS', 1),
     # ('STATIC_CALC',1),
     # ('NO_CALC', 1),  # set this to not calculate the fractal
