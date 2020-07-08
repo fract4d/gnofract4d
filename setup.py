@@ -11,7 +11,7 @@ gnofract4d_version = '4.2'
 
 if sys.version_info < (3, 6):
     print("Sorry, you need Python 3.6 or higher to run Gnofract 4D.")
-    print("You have version %s. Please upgrade." % sys.version)
+    print("You have version {sys.version}. Please upgrade.")
     sys.exit(1)
 
 if not os.path.exists(os.path.join(sysconfig.get_config_var("INCLUDEPY"), "Python.h")):
@@ -30,14 +30,12 @@ os.environ["OPT"] = sysconfig.get_config_var(
 # Extensions need to link against appropriate libs
 # We use pkg-config to find the appropriate set of includes and libs
 def call_package_config(package, option, optional=False):
-    '''invoke pkg-config, if it exists, to find the appropriate
-    arguments for a library'''
+    '''invoke pkg-config, if it exists, to find the appropriate arguments for a library'''
     try:
         cp = subprocess.run(["pkg-config", package, option],
                             universal_newlines=True, stdout=subprocess.PIPE)
     except FileNotFoundError:
-        print("Unable to check for %s, pkg-config not installed" %
-              package, file=sys.stderr)
+        print(f"Unable to check for '{package}', pkg-config not installed", file=sys.stderr)
         if optional:
             return []
         else:
@@ -45,12 +43,11 @@ def call_package_config(package, option, optional=False):
 
     if cp.returncode != 0:
         if optional:
-            print("Can't find '%s'" % package, file=sys.stderr)
+            print(f"Can't find '{package}'", file=sys.stderr)
             print("Some functionality will be disabled", file=sys.stderr)
             return []
         else:
-            print("Development files not found for: '%s'." %
-                  package, file=sys.stderr)
+            print(f"Development files not found for '{package}'", file=sys.stderr)
             sys.exit(1)
 
     return cp.stdout.split()
@@ -137,8 +134,8 @@ def get_files(dir, ext):
 def get_icons():
     icons = []
     for size in 16, 32, 48, 64, 128, 256:
-        icons.append(('share/icons/hicolor/{0}x{0}/apps'.format(size),
-            ['pixmaps/logo/{0}x{0}/gnofract4d.png'.format(size)]))
+        icons.append((f'share/icons/hicolor/{size}x{size}/apps',
+            [f'pixmaps/logo/{size}x{size}/gnofract4d.png']))
     return icons
 
 so_extension = sysconfig.get_config_var("EXT_SUFFIX")
