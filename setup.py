@@ -9,6 +9,8 @@ import sys
 
 gnofract4d_version = '4.2'
 
+_DEBUG = False
+
 if sys.version_info < (3, 6):
     print("Sorry, you need Python 3.6 or higher to run Gnofract 4D.")
     print("You have version {sys.version}. Please upgrade.")
@@ -55,12 +57,12 @@ def call_package_config(package, option, optional=False):
 
 png_flags = call_package_config("libpng", "--cflags")
 png_libs = call_package_config("libpng", "--libs")
-extra_macros = [('PNG_ENABLED', 1)]
+define_macros = [('PNG_ENABLED', 1)]
 
 jpeg_flags = call_package_config("libjpeg", "--cflags")
 jpeg_libs = call_package_config("libjpeg", "--libs")
 if jpeg_flags + jpeg_libs:
-    extra_macros.append(('JPG_ENABLED', 1))
+    define_macros.append(('JPG_ENABLED', 1))
 
 fract4d_sources = [
     'fract4d/c/fract4dmodule.cpp',
@@ -96,18 +98,22 @@ fract4d_sources = [
     'fract4d/c/fract_stdlib.cpp'
 ]
 
-defines = [
-    ('THREADS', 1),
-    # ('STATIC_CALC',1),
-    # ('NO_CALC', 1),  # set this to not calculate the fractal
-    # ('DEBUG_CREATION',1), # debug spew for allocation of objects
-    # ('DEBUG_ALLOCATION',1), # debug spew for array handling
-    # ('DEBUG_PIXEL',1), # debug spew for array handling
-    # ('EXPERIMENTAL_OPTIMIZATIONS',1), # enables some experimental optimizations
-]
-
+define_macros.append(('THREADS', 1))
 extra_compile_args = ['-std=c++17', '-Wall', '-Wextra', '-Wpedantic']
-define_macros = defines + extra_macros
+
+# from https://pythonextensionpatterns.readthedocs.io/en/latest/compiler_flags.html?highlight=python3-dev
+if _DEBUG:
+    extra_compile_args += ["-g3", "-O0", "-UNDEBUG"]
+    define_macros += [
+        # ('STATIC_CALC',1),
+        # ('NO_CALC', 1),  # set this to not calculate the fractal
+        # ('DEBUG_CREATION',1), # debug spew for allocation of objects
+        # ('DEBUG_ALLOCATION',1), # debug spew for array handling
+        # ('DEBUG_PIXEL',1), # debug spew for array handling
+        # ('EXPERIMENTAL_OPTIMIZATIONS',1), # enables some experimental optimizations
+    ]
+else:
+    extra_compile_args += ["-DNDEBUG", "-O3"]
 
 module_fract4dc = Extension(
     name='fract4d.fract4dc',
@@ -117,7 +123,6 @@ module_fract4dc = Extension(
     extra_compile_args=extra_compile_args + png_flags + jpeg_flags,
     extra_link_args=png_libs + jpeg_libs,
     define_macros=define_macros,
-    # undef_macros=['NDEBUG'], # you need this to enable asserts
 )
 
 def get_files(dir, ext):
