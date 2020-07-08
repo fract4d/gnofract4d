@@ -55,17 +55,12 @@ def call_package_config(package, option, optional=False):
 
 png_flags = call_package_config("libpng", "--cflags")
 png_libs = call_package_config("libpng", "--libs")
-
 extra_macros = [('PNG_ENABLED', 1)]
 
-jpg_lib = "jpeg"
-for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
-    if os.path.isfile(path):
-        extra_macros.append(('JPG_ENABLED', 1))
-        jpg_libs = [jpg_lib]
-        break
-else:
-    raise SystemExit("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
+jpeg_flags = call_package_config("libjpeg", "--cflags")
+jpeg_libs = call_package_config("libjpeg", "--libs")
+if jpeg_flags + jpeg_libs:
+    extra_macros.append(('JPG_ENABLED', 1))
 
 fract4d_sources = [
     'fract4d/c/fract4dmodule.cpp',
@@ -111,22 +106,19 @@ defines = [
     # ('EXPERIMENTAL_OPTIMIZATIONS',1), # enables some experimental optimizations
 ]
 
-libraries = ['stdc++']
-extra_compile_args = ['-std=c++17', '-Wall', '-Wextra', '-Wpedantic'] + png_flags
+extra_compile_args = ['-std=c++17', '-Wall', '-Wextra', '-Wpedantic']
 define_macros = defines + extra_macros
 
 module_fract4dc = Extension(
     name='fract4d.fract4dc',
     sources=fract4d_sources,
     include_dirs=['fract4d/c', 'fract4d/c/fract4dc', 'fract4d/c/model'],
-    libraries=libraries + jpg_libs,
-    extra_compile_args=extra_compile_args,
-    extra_link_args=png_libs,
+    libraries=['stdc++'],
+    extra_compile_args=extra_compile_args + png_flags + jpeg_flags,
+    extra_link_args=png_libs + jpeg_libs,
     define_macros=define_macros,
     # undef_macros=['NDEBUG'], # you need this to enable asserts
 )
-
-modules = [module_fract4dc]
 
 def get_files(dir, ext):
     return [os.path.join(dir, x) for x in os.listdir(dir) if x.endswith(ext)]
@@ -158,7 +150,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
         'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml', 'gnofract4d.css'],
         'fract4d': ['c/pf.h', 'c/fract_stdlib.h']
     },
-    ext_modules=modules,
+    ext_modules=[module_fract4dc],
     scripts=['gnofract4d'],
     data_files=[
         # color maps
