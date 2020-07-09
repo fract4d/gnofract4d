@@ -59,8 +59,8 @@ png_flags = call_package_config("libpng", "--cflags")
 png_libs = call_package_config("libpng", "--libs")
 define_macros = [('PNG_ENABLED', 1)]
 
-jpeg_flags = call_package_config("libjpeg", "--cflags")
-jpeg_libs = call_package_config("libjpeg", "--libs")
+jpeg_flags = call_package_config("libjpeg", "--cflags", True)
+jpeg_libs = call_package_config("libjpeg", "--libs", True)
 if jpeg_flags + jpeg_libs:
     define_macros.append(('JPG_ENABLED', 1))
 
