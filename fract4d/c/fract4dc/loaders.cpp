@@ -218,7 +218,7 @@ namespace loaders
         struct pfHandle *pfHandle = (struct pfHandle *)PyCapsule_GetPointer(capsule, OBTYPE_POINTFUNC);
         if (NULL == pfHandle)
         {
-            fprintf(stderr, "%p : PF : BAD\n", reinterpret_cast<void *>(capsule));
+            fprintf(stderr, "%p : PF : BAD\n", static_cast<void *>(capsule));
         }
         return pfHandle;
     }
@@ -251,7 +251,7 @@ namespace loaders
         void *vp = PyCapsule_GetPointer(p, OBTYPE_MODULE);
         if (NULL == vp)
         {
-            fprintf(stderr, "%p : SO : BAD\n", reinterpret_cast<void *>(p));
+            fprintf(stderr, "%p : SO : BAD\n", static_cast<void *>(p));
         }
 
         return vp;

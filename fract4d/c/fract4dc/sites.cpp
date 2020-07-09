@@ -52,7 +52,7 @@ namespace sites {
         IFractalSite *site = (IFractalSite *)PyCapsule_GetPointer(pysite, OBTYPE_SITE);
         if (NULL == site)
         {
-            fprintf(stderr, "%p : ST : BAD\n", reinterpret_cast<void *>(pysite));
+            fprintf(stderr, "%p : ST : BAD\n", static_cast<void *>(pysite));
         }
         return site;
     }

@@ -46,7 +46,7 @@ namespace images {
         IImage *image = (IImage *)PyCapsule_GetPointer(pyimage, OBTYPE_IMAGE);
         if (NULL == image)
         {
-            fprintf(stderr, "%p : IM : BAD\n", reinterpret_cast<void *>(pyimage));
+            fprintf(stderr, "%p : IM : BAD\n", static_cast<void *>(pyimage));
         }
         return image;
     }
@@ -479,7 +479,7 @@ ImageWriter * image_writer_fromcapsule(PyObject *p)
     ImageWriter *iw = (ImageWriter *)PyCapsule_GetPointer(p, OBTYPE_IMAGE_WRITER);
     if (NULL == iw)
     {
-        fprintf(stderr, "%p : IW : BAD\n", reinterpret_cast<void *>(p));
+        fprintf(stderr, "%p : IW : BAD\n", static_cast<void *>(p));
     }
 
     return iw;

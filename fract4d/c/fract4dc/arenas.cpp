@@ -79,7 +79,7 @@ arena_t arena_fromcapsule(PyObject *p)
     arena_t arena = (arena_t)PyCapsule_GetPointer(p, OBTYPE_ARENA);
     if (NULL == arena)
     {
-        fprintf(stderr, "%p : AR : BAD\n", reinterpret_cast<void *>(p));
+        fprintf(stderr, "%p : AR : BAD\n", static_cast<void *>(p));
     }
 
     return arena;

@@ -271,7 +271,7 @@ namespace colormaps {
         ColorMap *cmap = (ColorMap *)PyCapsule_GetPointer(capsule, OBTYPE_CMAP);
         if (NULL == cmap)
         {
-            fprintf(stderr, "%p : CM : BAD", reinterpret_cast<void *>(capsule));
+            fprintf(stderr, "%p : CM : BAD", static_cast<void *>(capsule));
         }
         return cmap;
     }
