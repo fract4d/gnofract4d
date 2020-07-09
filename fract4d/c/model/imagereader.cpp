@@ -112,10 +112,10 @@ bool png_reader::read_header()
 
 bool png_reader::read_tile()
 {
-    int number_passes = png_set_interlace_handling(png_ptr);
-    for (int pass = 0; pass < number_passes; pass++)
+    auto number_passes = png_set_interlace_handling(png_ptr);
+    for (auto pass = 0; pass < number_passes; ++pass)
     {
-        for (int y = 0; y < im->Yres(); y++)
+        for (auto y = 0; y < im->Yres(); ++y)
         {
             png_bytep row = (png_bytep)(im->getBuffer() + im->row_length() * y);
             png_read_rows(png_ptr, &row, (png_bytepp)NULL, 1);

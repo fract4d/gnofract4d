@@ -66,7 +66,7 @@ void STFractWorker::work(job_info_t &tdata)
 
 void STFractWorker::row_aa(int y, int w)
 {
-    for (auto x = 0; x < w; x++)
+    for (auto x = 0; x < w; ++x)
     {
         pixel_aa(x, y);
     }
@@ -246,19 +246,19 @@ void STFractWorker::compute_stats(const dvec4 &pos, int iter, fate_t fate, int x
 {
     const calc_options &options = m_context->get_options();
     m_stats.s[ITERATIONS] += iter;
-    m_stats.s[PIXELS]++;
-    m_stats.s[PIXELS_CALCULATED]++;
+    ++m_stats.s[PIXELS];
+    ++m_stats.s[PIXELS_CALCULATED];
     if (fate & FATE_INSIDE)
     {
-        m_stats.s[PIXELS_INSIDE]++;
+        ++m_stats.s[PIXELS_INSIDE];
         if (iter < options.maxiter - 1)
         {
-            m_stats.s[PIXELS_PERIODIC]++;
+            ++m_stats.s[PIXELS_PERIODIC];
         }
     }
     else
     {
-        m_stats.s[PIXELS_OUTSIDE]++;
+        ++m_stats.s[PIXELS_OUTSIDE];
     }
     if (options.auto_deepen && m_stats.s[PIXELS] % AUTO_DEEPEN_FREQUENCY == 0)
     {
@@ -298,7 +298,7 @@ void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int
         {
             // current tolerance is too loose, we would get 1 more
             // pixel correct if we tightened it
-            m_stats.s[BETTER_TOLERANCE_PIXELS]++;
+            ++m_stats.s[BETTER_TOLERANCE_PIXELS];
         }
     }
     else
@@ -323,7 +323,7 @@ void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int
         if (temp_iter == -1)
         {
             // if we loosened, we'd get this pixel wrong
-            m_stats.s[WORSE_TOLERANCE_PIXELS]++;
+            ++m_stats.s[WORSE_TOLERANCE_PIXELS];
         }
     }
 }
@@ -335,7 +335,7 @@ void STFractWorker::compute_auto_deepen_stats(const dvec4 &pos, int iter, int x,
     {
         /* we would have got this wrong if we used
 	    * half as many iterations */
-        m_stats.s[WORSE_DEPTH_PIXELS]++;
+        ++m_stats.s[WORSE_DEPTH_PIXELS];
     }
     else if (iter == -1)
     {
@@ -356,7 +356,7 @@ void STFractWorker::compute_auto_deepen_stats(const dvec4 &pos, int iter, int x,
         if (temp_iter != -1)
         {
             /* we would have got this right if we used twice as many iterations */
-            m_stats.s[BETTER_DEPTH_PIXELS]++;
+            ++m_stats.s[BETTER_DEPTH_PIXELS];
         }
     }
 }
@@ -597,8 +597,8 @@ void STFractWorker::interpolate_row(int x, int y, int rsize)
         m_im->setIter(x2, y, predicted_iter);
         m_im->setFate(x2, y, 0, fate);
         m_im->setIndex(x2, y, 0, predicted_index);
-        m_stats.s[PIXELS]++;
-        m_stats.s[PIXELS_SKIPPED]++;
+        ++m_stats.s[PIXELS];
+        ++m_stats.s[PIXELS_SKIPPED];
     }
 }
 
@@ -651,11 +651,11 @@ inline void STFractWorker::check_guess(int x, int y, rgba_t pixel)
         &tpixel, &titer, &tindex, &tfate);
     if (tpixel == pixel)
     {
-        m_stats.s[PIXELS_SKIPPED_RIGHT]++;
+        ++m_stats.s[PIXELS_SKIPPED_RIGHT];
     }
     else
     {
-        m_stats.s[PIXELS_SKIPPED_WRONG]++;
+        ++m_stats.s[PIXELS_SKIPPED_WRONG];
     }
 }
 #endif // #ifdef EXPERIMENTAL_OPTIMIZATIONS
@@ -726,9 +726,9 @@ void STFractWorker::box(int x, int y, int rsize)
 
 inline void STFractWorker::rectangle(rgba_t pixel, int x, int y, int w, int h)
 {
-    for (auto i = y; i < y + h; i++)
+    for (auto i = y; i < y + h; ++i)
     {
-        for (auto j = x; j < x + w; j++)
+        for (auto j = x; j < x + w; ++j)
         {
             m_im->put(j, i, pixel);
         }
@@ -739,9 +739,9 @@ inline void STFractWorker::rectangle_with_iter(
     rgba_t pixel, fate_t fate, int iter, float index,
     int x, int y, int w, int h)
 {
-    for (auto i = y; i < y + h; i++)
+    for (auto i = y; i < y + h; ++i)
     {
-        for (auto j = x; j < x + w; j++)
+        for (auto j = x; j < x + w; ++j)
         {
             if (m_context->get_debug_flags() & DEBUG_DRAWING_STATS)
             {
@@ -752,8 +752,8 @@ inline void STFractWorker::rectangle_with_iter(
             m_im->setIter(j, i, iter);
             m_im->setFate(j, i, 0, fate);
             m_im->setIndex(j, i, 0, index);
-            m_stats.s[PIXELS]++;
-            m_stats.s[PIXELS_SKIPPED]++;
+            ++m_stats.s[PIXELS];
+            ++m_stats.s[PIXELS_SKIPPED];
         }
     }
 }
@@ -791,7 +791,7 @@ bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
             options.warp_param,
             x, y, 0,
             &pixel, &iter, &index, &fate);
-        steps++;
+        ++steps;
         if (fate != 0) // FIXME
         {
             // inside
@@ -826,7 +826,7 @@ bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
             //outside, root must be further in
             lastdist = mid;
         }
-        steps++;
+        ++steps;
     }
 #ifdef DEBUG_ROOTS
     printf("polished after %d\n", steps);

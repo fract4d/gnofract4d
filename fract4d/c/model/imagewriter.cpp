@@ -80,9 +80,9 @@ bool tga_writer::save_header()
 
 bool tga_writer::save_tile()
 {
-    for (int y = 0; y < im->Yres(); y++)
+    for (auto y = 0; y < im->Yres(); ++y)
     {
-        for (int x = 0; x < im->Xres(); x++)
+        for (int x = 0; x < im->Xres(); ++x)
         {
             rgba_t pixel = im->get(x, y);
             std::fputc(pixel.b, fp);
@@ -164,7 +164,7 @@ bool png_writer::save_header()
 
 bool png_writer::save_tile()
 {
-    for (int y = 0; y < im->Yres(); y++)
+    for (auto y = 0; y < im->Yres(); ++y)
     {
         png_bytep row = (png_bytep)(im->getBuffer() + im->row_length() * y);
         png_write_rows(png_ptr, &row, 1);
@@ -207,7 +207,7 @@ bool jpg_writer::save_header()
 
 bool jpg_writer::save_tile()
 {
-    for (int y = 0; y < im->Yres(); y++)
+    for (auto y = 0; y < im->Yres(); ++y)
     {
         JSAMPROW row = (JSAMPROW)(im->getBuffer() + im->row_length() * y);
         jpeg_write_scanlines(&cinfo, &row, 1);

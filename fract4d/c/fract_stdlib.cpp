@@ -166,7 +166,7 @@ bool arena_add_page(arena_t arena)
     {
         newalloc[i].d = 0.0;
     }
-    arena->pages_left--;
+    --arena->pages_left;
     arena->base_allocation = newalloc;
     arena->free_slots = arena->page_size;
     arena->next_allocation = &(arena->base_allocation[1]);

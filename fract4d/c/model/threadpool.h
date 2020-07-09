@@ -125,8 +125,8 @@ public:
         /* advance queue head to next position */
         queue_head = (queue_head + 1) % max_queue_size;
         /* record keeping */
-        cur_queue_size++;
-        work_queued++;
+        ++cur_queue_size;
+        ++work_queued;
         if (1 == cur_queue_size)
         {
             pthread_cond_broadcast(&queue_not_empty);
@@ -141,7 +141,7 @@ public:
         while (1)
         {
             pthread_mutex_lock(&queue_lock);
-            total_work_done++;
+            ++total_work_done;
             while (cur_queue_size == 0 && !(shutdown))
             {
                 if (total_work_done == target_work_done)
@@ -156,7 +156,7 @@ public:
                 pthread_exit(NULL);
             }
             tpool_work<work_t, threadInfo> *my_workp = &queue[queue_tail];
-            cur_queue_size--;
+            --cur_queue_size;
             assert(cur_queue_size >= 0);
             queue_tail = (queue_tail + 1) % max_queue_size;
             if (cur_queue_size == max_queue_size - 1)
