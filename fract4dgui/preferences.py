@@ -1,11 +1,10 @@
 # GUI for user settings
 
+from . import dialog, utils
+from gi.repository import Gtk, GObject
 import gi
 
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GObject
-
-from . import dialog, utils
 
 
 class Preferences(GObject.GObject):
@@ -53,9 +52,6 @@ class Preferences(GObject.GObject):
 
     def set_list(self, name, list):
         self.config.set_list(name, list)
-
-    def update_list(self, name, new_entry, maxsize):
-        return self.config.update_list(name, new_entry, maxsize)
 
     def remove_section_item(self, section, number):
         self.config.remove_section_item(section, number)
