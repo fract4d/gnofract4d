@@ -1,12 +1,13 @@
 *.pyc
 *.so
-*~
-#*
+
+
 .coverage
 coverage.xml
 gnofract4d.egg-info
 MANIFEST
 token
+.cache/
 
 .tox/*
 build/*
@@ -37,5 +38,6 @@ docs/manual/katex/*
 docs/manual/tags/*
 docs/manual/stdlib/*
 
-# edit
+# editors
 .vscode/
+*~
