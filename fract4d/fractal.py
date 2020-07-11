@@ -1013,14 +1013,6 @@ The image may not display correctly. Please upgrade to version %s or higher.'''
             for f in self.forms:
                 f.try_set_named_item("@bailout", self.bailout)
 
-    def fix_gradients(self, old_gradient):
-        # new gradient is read in after the gradient params have been set,
-        # so this is needed to fix any which are using that default
-        p = self.forms[0].params
-        for i in range(len(p)):
-            if p[i] == old_gradient:
-                p[i] = self.get_gradient()
-
     def param_display_name(self, name, param):
         if hasattr(param, "title"):
             return param.title.value
@@ -1044,5 +1036,4 @@ The image may not display correctly. Please upgrade to version %s or higher.'''
         self.load(f)
 
         self.fix_bailout()
-        # self.fix_gradients(old_gradient)
         self.saved = True
