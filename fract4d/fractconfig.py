@@ -230,15 +230,6 @@ class T(configparser.ConfigParser):
 
         self.changed(name)
 
-    def update_list(self, name, new_entry, maxsize):
-        list = self.get_list(name)
-        if list.count(new_entry) == 0:
-            list.insert(0, new_entry)
-            list = list[:maxsize]
-            self.set_list(name, list)
-
-        return list
-
     def changed(self, section):
         pass
 
