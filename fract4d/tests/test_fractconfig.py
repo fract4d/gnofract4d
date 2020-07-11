@@ -32,11 +32,31 @@ class Test(testbase.TestSetup):
         l2 = c.get_list("map_path")
         self.assertEqual(l, l2)
 
+    def testRemoveSectionItem(self):
+        c = fractconfig.T("")
+        l = c.get_list("map_path")
+        c.remove_section_item("map_path", 1)
+        l2 = c.get_list("map_path")
+        self.assertEqual(len(l)-1, len(l2))
+        self.assertEqual(l[0], l2[0])
+
+        for i in range(1, len(l2)-1):
+            self.assertEqual(l[i+1], l2[i])
+
     def testSetSize(self):
         c = self.userConfig
         c.set_size(871, 313)
         self.assertEqual(871, c.getint("display", "width"))
         self.assertEqual(313, c.getint("display", "height"))
+
+    def testSetSizeToSameNoChangeSignal(self):
+        c = self.userConfig
+        c.set_size(871, 313)
+        c.changed = self.assertNotCalled
+        c.set_size(871, 313)
+
+    def assertNotCalled(self, *args):
+        self.assertFalse("Should not be called")
 
     def testSave(self):
         testprefs = os.path.join(self.tmpdir.name, "testprefs")
