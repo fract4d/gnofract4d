@@ -29,3 +29,10 @@ class Test(testbase.TestSetup):
         os.remove("test.so")
         if os.path.exists("test.so.c"):
             os.remove("test.so.c")
+
+    def testSinglePoint(self):
+        c = self.userConfig
+        fm = fractmain.T(c)
+        options = Arguments().parse_args(["--singlepoint"])
+
+        fm.run(options)
