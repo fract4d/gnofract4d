@@ -7,7 +7,7 @@ import shutil
 import subprocess
 import sys
 
-gnofract4d_version = '4.2'
+gnofract4d_version = '4.3'
 
 if sys.version_info < (3, 6):
     print("Sorry, you need Python 3.6 or higher to run Gnofract 4D.")
@@ -29,6 +29,8 @@ os.environ["OPT"] = sysconfig.get_config_var(
 
 # Extensions need to link against appropriate libs
 # We use pkg-config to find the appropriate set of includes and libs
+
+
 def call_package_config(package, option, optional=False):
     '''invoke pkg-config, if it exists, to find the appropriate
     arguments for a library'''
@@ -129,15 +131,18 @@ module_fract4dc = Extension(
 
 modules = [module_fract4dc]
 
+
 def get_files(dir, ext):
     return [os.path.join(dir, x) for x in os.listdir(dir) if x.endswith(ext)]
+
 
 def get_icons():
     icons = []
     for size in 16, 32, 48, 64, 128, 256:
         icons.append(('share/icons/hicolor/{0}x{0}/apps'.format(size),
-            ['pixmaps/logo/{0}x{0}/gnofract4d.png'.format(size)]))
+                      ['pixmaps/logo/{0}x{0}/gnofract4d.png'.format(size)]))
     return icons
+
 
 so_extension = sysconfig.get_config_var("EXT_SUFFIX")
 

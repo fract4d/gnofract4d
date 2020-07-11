@@ -30,7 +30,7 @@ enableGitInfo = true
 
 [params]
   # Gnofract 4D version
-  version = "4.2"
+  version = "4.3"
 
   # Used to customize the location of the stylesheet, which need to be different
   # for local installation and for use on the website

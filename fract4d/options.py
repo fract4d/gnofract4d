@@ -5,7 +5,7 @@ import sys
 from . import fractal
 
 # version of Gnofract 4D
-VERSION = '4.2'
+VERSION = '4.3'
 
 POSITION_ARGUMENTS = ("xcenter", "ycenter", "zcenter", "wcenter",
                       "xyangle", "xzangle", "xwangle", "yzangle", "ywangle", "zwangle",
