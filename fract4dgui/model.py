@@ -52,26 +52,26 @@ class Model:
         # print "after:"
         # print self.dump_history()
 
-    def extract_x_from_dump(self, dump):
-        "Get (x=number) from file"
-        x_re = re.compile(r'x=.*')
-        m = x_re.search(dump)
-        if m:
-            return m.group()
-        return "eek"
+    # def extract_x_from_dump(self, dump):
+    #     "Get (x=number) from file"
+    #     x_re = re.compile(r'x=.*')
+    #     m = x_re.search(dump)
+    #     if m:
+    #         return m.group()
+    #     return "eek"
 
-    def dump_history(self):
-        i = 0
-        print("(redo,undo)")
-        for he in self.seq.history:
-            if i == self.seq.pos:
-                print("-->", end=' ')
-            else:
-                print("   ", end=' ')
-            print("(%s,%s)" %
-                  (self.extract_x_from_dump(he.redo_data),
-                   self.extract_x_from_dump(he.undo_data)))
-            i += 1
+    # def dump_history(self):
+    #     i = 0
+    #     print("(redo,undo)")
+    #     for he in self.seq.history:
+    #         if i == self.seq.pos:
+    #             print("-->", end=' ')
+    #         else:
+    #             print("   ", end=' ')
+    #         print("(%s,%s)" %
+    #               (self.extract_x_from_dump(he.redo_data),
+    #                self.extract_x_from_dump(he.undo_data)))
+    #         i += 1
 
     def undo(self):
         if self.seq.can_undo():
