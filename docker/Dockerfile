@@ -12,7 +12,7 @@ RUN \
 # bin/run_builds.sh deps
 RUN apt-get -y install software-properties-common && \
     add-apt-repository -y ppa:deadsnakes/ppa && \
-    apt-get -y install python3.5 python3.5-dev python3.6 python3.6-dev python3.7 python3.7-dev python3.8 python3.8-dev
+    apt-get -y install python3.6 python3.6-dev python3.7 python3.7-dev python3.8 python3.8-dev
 
 # bin/run_pylint.sh deps
 RUN pip3 install pylint
