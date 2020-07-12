@@ -44,13 +44,14 @@ On Ubuntu, these can be installed with:
     sudo apt install gcc gir1.2-gtk-3.0 python3-gi-cairo
 
 To build from source you also need:
+
 - headers for libpng and libjpeg
 - Python headers
 - pkg-config
 
 On Ubuntu, these can be installed with:
 
-    sudo apt install libjpeg-dev libpng-dev pkg-config python3-dev
+    sudo apt install libjpeg-dev libpng-dev libpython3-dev pkg-config
 
 If FFmpeg is installed it will be possible to create videos.
 
