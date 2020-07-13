@@ -183,7 +183,7 @@ ffHandle * ff_fromcapsule(PyObject *pyff)
     ffHandle *ff = (ffHandle *)PyCapsule_GetPointer(pyff, OBTYPE_FFH);
     if (NULL == ff)
     {
-        fprintf(stderr, "%p : FF : CTOR\n", static_cast<void *>(ff));
+        fprintf(stderr, "%p : FF : BAD\n", static_cast<void *>(ff));
     }
     return ff;
 }
