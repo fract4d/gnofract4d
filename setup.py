@@ -13,7 +13,7 @@ _DEBUG = False
 
 if sys.version_info < (3, 6):
     print("Sorry, you need Python 3.6 or higher to run Gnofract 4D.")
-    print("You have version {sys.version}. Please upgrade.")
+    print("You have version %s. Please upgrade." % sys.version)
     sys.exit(1)
 
 if not os.path.exists(os.path.join(sysconfig.get_config_var("INCLUDEPY"), "Python.h")):
