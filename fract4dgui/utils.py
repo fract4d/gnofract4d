@@ -9,12 +9,11 @@
 
 import os
 import inspect
-import sys
 
 import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GLib
+from gi.repository import Gtk, Gdk, Gio, GLib
 
 from . import hig
 
@@ -161,17 +160,13 @@ def color256FromFloat(r, g, b, color):
 
 
 def launch_browser(url, window):
-    if sys.platform[:6] == "darwin":
-        cmd = 'open "%s" &' % url
-    else:
-        cmd = 'xdg-open "%s" &' % url
     try:
-        os.system(cmd)
-    except Exception as err:
+        Gio.AppInfo.launch_default_for_uri(url)
+    except GLib.Error as err:
         d = hig.ErrorAlert(
             primary=_("Error launching browser"),
-            secondary=_("Try copying the URL '%s' manually to a browser window.\n" % url) +
-            str(err),
+            secondary=_(f"Try copying the URL '{url}' manually to a browser window.\n"
+                        f"{err.message}"),
             transient_for=window)
         d.run()
         d.destroy()
