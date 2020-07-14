@@ -7,14 +7,14 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN \
     apt-get update && \
     apt-get -y upgrade && \
-    apt-get -y install libpng-dev libjpeg-dev python3-dev gtk3.0 libcairo2-dev python3-cairo python3-gi-cairo pkg-config python3-pip xvfb
+    apt-get -y install libpng-dev libjpeg-dev gtk3.0 libcairo2-dev python3-cairo python3-gi-cairo pkg-config python3-pip xvfb
 
 # bin/run_builds.sh deps
 RUN \
     apt-get update && \
     apt-get -y install software-properties-common && \
     add-apt-repository -y ppa:deadsnakes/ppa && \
-    apt-get -y install python3.6 python3.6-dev python3.7 python3.7-dev python3.8 python3.8-dev
+    apt-get -y install python3.6-dev python3.7-dev python3.8-dev
 
 # bin/run_pylint.sh deps
 RUN pip3 install pylint
