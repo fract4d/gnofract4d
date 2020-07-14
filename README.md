@@ -64,7 +64,7 @@ Testing
 
 Testing requires pytest for Python 3. In some distributions, 'pytest' is for Python 2. Run
 
-    sudo pip3 install pytest
+    pip3 install pytest
 
 To get the latest.
 
@@ -84,7 +84,7 @@ You can run it in two ways:
 
  - Directly (firstly you should install pylint through pip3):
 
-    $ sudo pip3 install pylint
+    $ pip3 install pylint
     $ ./bin/pylint.sh
 
  - Using docker (same environment as pipeline):
