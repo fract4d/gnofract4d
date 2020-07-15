@@ -16,6 +16,9 @@ RUN \
     add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get -y install python3.6-dev python3.7-dev python3.8-dev
 
+# Gio.AppInfo.launch_default_for_uri() deps
+RUN apt-get -y install firefox gvfs
+
 # bin/run_pylint.sh deps
 RUN pip3 install pylint
 
