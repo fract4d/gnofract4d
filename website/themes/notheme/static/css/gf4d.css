@@ -3,10 +3,6 @@ body {
     font-size: large;
 }
 
-.intro {
-    font-size: x-large; 
-}
-
 .banner {
     background: #10507e url('../fragment002.png') no-repeat;
     font-size:90;
@@ -16,14 +12,6 @@ body {
     vertical-align:middle; 
     font-family: Merriweather;
     font-weight:900;
-}
-
-.hero {
-    text-align: center;
-}
-
-.blueback {
-    background: #c7eaf2;
 }
 
 html {
