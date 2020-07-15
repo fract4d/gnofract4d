@@ -28,10 +28,6 @@ class Test(testgui.TestCase):
         self.mw = WrapMainWindow(Test.userConfig)
         self.assertEqual(self.mw.filename, None, "shouldn't have a filename")
 
-    def tearDown(self):
-        os.system("killall realyelp > /dev/null 2>&1")
-        os.system("killall yelp > /dev/null 2>&1")
-
     def wait(self):
         Gtk.main()
 
