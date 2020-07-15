@@ -6,7 +6,7 @@ typedef struct _object PyObject;
 struct calc_args;
 
 calc_args * parse_calc_args(PyObject *args, PyObject *kwds);
-void * calculation_thread(void *vdata);
+void * calculation_thread(calc_args *args);
 
 namespace calcs {
     PyObject * pystop_calc(PyObject *self, PyObject *args);

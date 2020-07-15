@@ -1,7 +1,7 @@
 #ifndef __SITE_H_INCLUDED__
 #define __SITE_H_INCLUDED__
 
-#include <pthread.h>
+#include <thread>
 
 #include "model/enums.h"
 
@@ -20,8 +20,7 @@ typedef struct s_pixel_stat pixel_stat_t;
 class IFractalSite
 {
 public:
-    IFractalSite();
-    virtual ~IFractalSite(){};
+    virtual ~IFractalSite();
     // the parameters have changed (usually due to auto-deepening)
     virtual void iters_changed(int numiters) = 0;
     // tolerance has changed due to auto-tolerance
@@ -49,11 +48,11 @@ public:
     virtual void interrupt() = 0;
     virtual void start() = 0;
     // having started it, set the thread id of the calc thread to wait for
-    virtual void set_tid(pthread_t tid);
+    virtual void set_thread(std::thread t);
     // wait for it to finish
     virtual void wait();
 protected:
-    pthread_t tid;
+    std::thread m_thread;
 };
 
 // write the callbacks to a file descriptor

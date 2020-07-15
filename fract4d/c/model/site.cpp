@@ -1,30 +1,29 @@
 #include <unistd.h>
+#include <iostream>
 
 #include "site.h"
-
 #include "model/stats.h"
 
-
-IFractalSite::IFractalSite() {
-    tid = (pthread_t)0;
+IFractalSite::~IFractalSite() {
+    wait();
 }
 
-void IFractalSite::set_tid(pthread_t tid_)
+void IFractalSite::set_thread(std::thread t)
 {
 #ifdef DEBUG_THREADS
-    fprintf(stderr, "%p : CA : SET(%p)\n", this, tid_);
+    std::cerr << this << " : CA : SET(" << t.get_id() << ")\n";
 #endif
-    tid = tid_;
+    m_thread = std::move(t);
 }
 
 void IFractalSite::wait()
 {
-    if (tid != 0)
+    if (m_thread.joinable())
     {
 #ifdef DEBUG_THREADS
-        fprintf(stderr, "%p : CA : WAIT(%p)\n", this, tid);
+        std::cerr << this << " : CA : WAIT(" << m_thread.get_id() << ")\n";
 #endif
-        pthread_join(tid, NULL);
+        m_thread.join();
     }
 }
 
@@ -118,7 +117,7 @@ void FDSite::pixel_changed(
 void FDSite::interrupt()
 {
 #ifdef DEBUG_THREADS
-    fprintf(stderr, "%p : CA : INT(%p)\n", this, tid);
+    std::cerr << this << " : CA : INT(" << m_thread.get_id() << ")\n";
 #endif
     interrupted = true;
 }
