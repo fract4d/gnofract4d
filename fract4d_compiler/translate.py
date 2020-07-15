@@ -1330,7 +1330,8 @@ parser = fractparser.parser
 
 def main(args):
     for arg in args:
-        s = open(arg, "r").read()  # read in a whole file
+        with open(arg, "r") as f:
+            s = f.read()  # read in a whole file
         result = parser.parse(s)
         for formula in result.children:
             print(formula.leaf)

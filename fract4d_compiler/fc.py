@@ -337,9 +337,8 @@ class Compiler:
             mode = "r"
             if FormulaTypes.is_binary_filetype(filename):
                 mode = "rb"
-            f = open(filename, mode)
-            s = f.read()  # read in a whole file
-            f.close()
+            with open(filename, mode) as f:
+                s = f.read()  # read in a whole file
             basefile = os.path.basename(filename)
             mtime = os.stat(filename)[stat.ST_MTIME]
 
@@ -420,9 +419,8 @@ class Compiler:
         if cfile is None:
             cfile = self.cache.makefilename(hash, ".c")
 
-        f = open(cfile, "w")
-        f.write(self.c_code)
-        f.close()
+        with open(cfile, "w") as f:
+            f.write(self.c_code)
 
         # -march=i686 for 10% speed gain
         cmd = "%s \"%s\" %s %s %s\"%s\"" % \

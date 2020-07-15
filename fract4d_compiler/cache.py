@@ -59,19 +59,13 @@ class T:
         return fullname
 
     def createPickledFile(self, file, contents):
-        f = open(file, "wb")
-        try:
+        with open(file, "wb") as f:
             pickle.dump(contents, f, True)
             # print "created %s" % file
-        finally:
-            f.close()
 
     def loadPickledFile(self, file):
-        f = open(file, "rb")
-        try:
+        with open(file, "rb") as f:
             contents = pickle.load(f)
-        finally:
-            f.close()
         return contents
 
     def getcontents(self, file, parser):
@@ -82,9 +76,8 @@ class T:
             if tso.time == mtime:
                 return tso.obj
 
-        f = open(file)
-        val = parser(f)
-        f.close()
+        with open(file) as f:
+            val = parser(f)
 
         hashname = self.makePickleName(file)
         # self.createPickledFile(hashname,val)

@@ -243,11 +243,8 @@ class T(configparser.ConfigParser):
         pass
 
     def save(self):
-        f = open(self.file, "w")
-        try:
+        with open(self.file, "w") as f:
             self.write(f)
-        finally:
-            f.close()
 
 
 class DarwinConfig(T):

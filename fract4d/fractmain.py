@@ -64,4 +64,5 @@ class T:
         shutil.copy(cfile, options.buildonly + ".c")
 
     def load(self, filename):
-        self.f.loadFctFile(open(filename))
+        with open(filename) as fh:
+            self.f.loadFctFile(fh)

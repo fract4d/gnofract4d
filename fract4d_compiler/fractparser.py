@@ -423,7 +423,8 @@ if __name__ == '__main__':  # pragma: no cover
     import sys
 
     for arg in sys.argv[1:]:
-        s = open(arg, "r").read()  # read in a whole file
+        with open(arg, "r") as f:
+            s = f.read()  # read in a whole file
         result = yacc.parse(s)
         print(result.pretty())
 
@@ -436,7 +437,8 @@ if __name__ == '__main__':  # pragma: no cover
             if not s:
                 continue
             if s[0] == '#':
-                s = open(s[1:], "r").read()  # read in a whole file
+                with open(s[1:], "r") as f:
+                    s = f.read()  # read in a whole file
                 print(s)
             else:
                 s += "\n"
