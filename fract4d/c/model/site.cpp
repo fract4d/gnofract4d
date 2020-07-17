@@ -33,11 +33,10 @@ void IFractalSite::wait()
 
 inline void FDSite::send(msg_type_t type, int size, void *buf)
 {
-    pthread_mutex_lock(&write_lock);
+    const std::lock_guard<std::mutex> lock(write_lock);
     write(fd, &type, sizeof(type));
     write(fd, &size, sizeof(size));
     write(fd, buf, size);
-    pthread_mutex_unlock(&write_lock);
 }
 
 FDSite::FDSite(int fd_) : fd(fd_), interrupted(false)
@@ -45,7 +44,6 @@ FDSite::FDSite(int fd_) : fd(fd_), interrupted(false)
 #ifdef DEBUG_CREATION
     fprintf(stderr, "%p : FD : CTOR\n", this);
 #endif
-    pthread_mutex_init(&write_lock, NULL);
 }
 
 void FDSite::iters_changed(int numiters)
@@ -61,7 +59,7 @@ void FDSite::tolerance_changed(double tolerance)
 // we've drawn a rectangle of image
 void FDSite::image_changed(int x1, int y1, int x2, int y2)
 {
-    if (!interrupted)
+    if (!is_interrupted())
     {
         int buf[4] = {x1, y1, x2, y2};
         send(IMAGE, sizeof(buf), &buf[0]);
@@ -70,7 +68,7 @@ void FDSite::image_changed(int x1, int y1, int x2, int y2)
 // estimate of how far through current pass we are
 void FDSite::progress_changed(float progress)
 {
-    if (!interrupted)
+    if (!is_interrupted())
     {
         int percentdone = (int)(100.0 * progress);
         send(PROGRESS, sizeof(percentdone), &percentdone);
@@ -79,7 +77,7 @@ void FDSite::progress_changed(float progress)
 
 void FDSite::stats_changed(pixel_stat_t &stats)
 {
-    if (!interrupted)
+    if (!is_interrupted())
     {
         send(STATS, sizeof(stats), &stats);
     }
@@ -95,6 +93,7 @@ void FDSite::status_changed(int status_val)
 bool FDSite::is_interrupted()
 {
     //fprintf(stderr,"int: %d\n",interrupted);
+    const std::lock_guard<std::mutex> lock(interrupt_lock);
     return interrupted;
 }
 
@@ -119,10 +118,12 @@ void FDSite::interrupt()
 #ifdef DEBUG_THREADS
     std::cerr << this << " : CA : INT(" << m_thread.get_id() << ")\n";
 #endif
+    const std::lock_guard<std::mutex> lock(interrupt_lock);
     interrupted = true;
 }
 
 void FDSite::start() {
+    const std::lock_guard<std::mutex> lock(interrupt_lock);
     interrupted = false;
 }
 

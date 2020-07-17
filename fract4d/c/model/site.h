@@ -2,6 +2,7 @@
 #define __SITE_H_INCLUDED__
 
 #include <thread>
+#include <mutex>
 
 #include "model/enums.h"
 
@@ -60,7 +61,6 @@ class FDSite : public IFractalSite
 {
 public:
     FDSite(int fd_);
-    inline void send(msg_type_t type, int size, void *buf);
     void iters_changed(int numiters);
     void tolerance_changed(double tolerance);
     void image_changed(int x1, int y1, int x2, int y2);
@@ -81,7 +81,10 @@ public:
 private:
     int fd;
     volatile bool interrupted;
-    pthread_mutex_t write_lock;
+    std::mutex write_lock;
+    std::mutex interrupt_lock;
+
+    inline void send(msg_type_t type, int size, void *buf);
 };
 
 #endif
