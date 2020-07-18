@@ -99,6 +99,6 @@ You can only regenerate the docs if you clone the Gnofract 4D git repo - the sou
 1. Make sure you're starting from a git clone not a source .zip - you need the files under manual/content
 2. The documentation theme is managed in a separate repository and embedded in manual/themes/book as a submodule. Initialize and update it with `git submodule update --init`
 3. Install hugo
-    * Ubuntu 18.04 has an older version. Run `snap install hugo` instead of `apt install hugo`
+    * Ubuntu 18.04 has an older version. Run `snap install hugo --channel=extended` instead of `apt install hugo`
     * For MacOS you can install with `brew install hugo`
 4. Run `./createdocs.py`
