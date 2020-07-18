@@ -1,10 +1,10 @@
 # GUI for user settings
 
-from . import dialog, utils
-from gi.repository import Gtk, GObject
 import gi
 
 gi.require_version('Gtk', '3.0')
+from . import dialog, utils
+from gi.repository import Gtk, GObject
 
 
 class Preferences(GObject.GObject):
