@@ -20,11 +20,11 @@ You can then run Gnofract 4D in the local directory:
 
     ./gnofract4d
 
-You can also install it:
+Alternatively to build and install Gnofract 4D (version 4.2 as an example) type:
 
-    sudo ./setup.py install
+    pip3 install gnofract4d-4.2.tar.gz
 
-You can then run it as:
+You can then run it by clicking on the desktop icon or typing:
 
     gnofract4d
 
@@ -64,7 +64,7 @@ Testing
 
 Testing requires pytest for Python 3. In some distributions, 'pytest' is for Python 2. Run
 
-    sudo pip3 install pytest
+    pip3 install pytest
 
 To get the latest.
 
@@ -84,7 +84,7 @@ You can run it in two ways:
 
  - Directly (firstly you should install pylint through pip3):
 
-    $ sudo pip3 install pylint
+    $ pip3 install pylint
     $ ./bin/pylint.sh
 
  - Using docker (same environment as pipeline):
