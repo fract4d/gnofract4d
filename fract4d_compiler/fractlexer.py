@@ -269,7 +269,8 @@ def get_lexer():
 # debugging
 if __name__ == '__main__':  # pragma: no cover
     # Test it out
-    data = open(sys.argv[1], "r").read()
+    with open(sys.argv[1], "r") as f:
+        data = f.read()
 
     # Give the lexer some input
     lex.input(data)

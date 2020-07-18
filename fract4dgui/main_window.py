@@ -257,7 +257,8 @@ class MainWindow:
         def on_update_preview(chooser, preview):
             filename = chooser.get_preview_filename()
             try:
-                preview.loadFctFile(open(filename))
+                with open(filename) as f:
+                    preview.loadFctFile(f)
                 preview.draw_image(False, False)
                 active = True
             except Exception as err:
@@ -1074,20 +1075,16 @@ class MainWindow:
             self.four_d_sensitives.append(my_fourway)
 
     def save_file(self, file):
-        fileHandle = None
         try:
             comp = self.userPrefs.getboolean("general", "compress_fct")
-            fileHandle = open(file, 'w')
-            self.f.save(fileHandle, compress=comp)
+            with open(file, 'w') as fileHandle:
+                self.f.save(fileHandle, compress=comp)
             self.set_filename(file)
             return True
         except Exception as err:
             self.show_error_message(
                 _("Error saving to file %s") % file, err)
             return False
-        finally:
-            if fileHandle is not None:
-                fileHandle.close()
 
     def save(self, action):
         """Save the current parameters."""
@@ -1324,11 +1321,8 @@ class MainWindow:
             if fc.FormulaTypes.isFormula(file):
                 self.load_formula(file)
                 return True
-            fh = open(file)
-            try:
+            with open(file) as fh:
                 self.f.loadFctFile(fh)
-            finally:
-                fh.close()
             self.set_filename(file)
             return True
         except Exception as err:

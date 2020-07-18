@@ -224,11 +224,8 @@ class GenerationManager:
 
         # write .fct file if user wants that
         if self.anim.get_fct_enabled():
-            f_frame.save(
-                open(
-                    self.anim.get_fractal_filename(
-                        self.image_counter),
-                    "w"))
+            with open(self.anim.get_fractal_filename(self.image_counter), "w") as f:
+                f_frame.save(f)
 
         # check if image already exists and user wants to recreate it or not
         image_name = self.anim.get_image_filename(self.image_counter)

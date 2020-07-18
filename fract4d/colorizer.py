@@ -105,14 +105,13 @@ class T(fctutils.T):
     def parse_file(self, val, f):
         try:
             mapfile = open(val)
-        except IOError:
+        except FileNotFoundError:
             # maybe it's not in the right place
             fname = self.parent.compiler.find_file(
                 val, fc.FormulaTypes.GRADIENT)
             mapfile = open(fname)
-
-        self.parse_map_file(mapfile)
-        mapfile.close()
+        with mapfile:
+            self.parse_map_file(mapfile)
 
     def parse_map_file(self, mapfile, maxdiff=0):
         mapfile.tell()
