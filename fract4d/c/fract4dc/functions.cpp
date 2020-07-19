@@ -170,7 +170,7 @@ void pyff_delete(PyObject *pyff)
 {
     ffHandle *ff = (ffHandle *)PyCapsule_GetPointer(pyff, OBTYPE_FFH);
 #ifdef DEBUG_CREATION
-    fprintf(stderr, "%p : FF : DTOR\n", ffh);
+    fprintf(stderr, "%p : FF : DTOR\n", ff);
 #endif
     delete ff->ff;
     Py_DECREF(ff->pyhandle);
