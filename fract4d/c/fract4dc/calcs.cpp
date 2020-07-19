@@ -1,5 +1,6 @@
 #include "Python.h"
-#include <pthread.h>
+#include <thread>
+#include <iostream>
 
 #include "calcs.h"
 
@@ -45,26 +46,11 @@ namespace calcs {
 
         if (cargs->asynchronous)
         {
-            cargs->site->interrupt();
-            cargs->site->wait();
-
-            // cargs->site->start(cargs);
-            cargs->site->start();
-
-            pthread_t tid;
-
-            /* create low-priority attribute block */
-            pthread_attr_t lowprio_attr;
-            //struct sched_param lowprio_param;
-            pthread_attr_init(&lowprio_attr);
-            //lowprio_param.sched_priority = sched_get_priority_min(SCHED_OTHER);
-            //pthread_attr_setschedparam(&lowprio_attr, &lowprio_param);
-
-            /* start the calculation thread */
-            pthread_create(&tid, &lowprio_attr, calculation_thread, (void *)cargs);
-            assert(tid != 0);
-
-            cargs->site->set_tid(tid);
+            auto &site = *cargs->site;
+            site.interrupt();
+            site.wait();
+            site.start();
+            site.set_thread(std::thread(calculation_thread, cargs));
         }
         else
         {
@@ -91,14 +77,11 @@ namespace calcs {
 }
 
 
-void * calculation_thread(void *vdata)
+void * calculation_thread(calc_args *args)
 {
-    calc_args *args = (calc_args *)vdata;
-
 #ifdef DEBUG_THREADS
-    fprintf(stderr, "%p : CA : CALC(%d)\n", args, pthread_self());
+    std::cerr << args << " : CA : CALC(" << std::this_thread::get_id() << ")\n";
 #endif
-
     calc(
         args->options,
         args->params,
@@ -108,11 +91,9 @@ void * calculation_thread(void *vdata)
         args->im,
         0 // debug_flags
     );
-
 #ifdef DEBUG_THREADS
-    fprintf(stderr, "%p : CA : ENDCALC(%d)\n", args, pthread_self());
+    std::cerr << args << " : CA : ENDCALC(" << std::this_thread::get_id() << ")\n";
 #endif
-
     delete args;
     return NULL;
 }

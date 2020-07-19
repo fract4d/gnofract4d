@@ -1,7 +1,9 @@
 #ifndef __SITE_H_INCLUDED__
 #define __SITE_H_INCLUDED__
 
-#include <pthread.h>
+#include <thread>
+#include <mutex>
+#include <atomic>
 
 #include "model/enums.h"
 
@@ -20,8 +22,7 @@ typedef struct s_pixel_stat pixel_stat_t;
 class IFractalSite
 {
 public:
-    IFractalSite();
-    virtual ~IFractalSite(){};
+    virtual ~IFractalSite();
     // the parameters have changed (usually due to auto-deepening)
     virtual void iters_changed(int numiters) = 0;
     // tolerance has changed due to auto-tolerance
@@ -49,11 +50,11 @@ public:
     virtual void interrupt() = 0;
     virtual void start() = 0;
     // having started it, set the thread id of the calc thread to wait for
-    virtual void set_tid(pthread_t tid);
+    virtual void set_thread(std::thread t);
     // wait for it to finish
     virtual void wait();
 protected:
-    pthread_t tid;
+    std::thread m_thread;
 };
 
 // write the callbacks to a file descriptor
@@ -61,7 +62,6 @@ class FDSite : public IFractalSite
 {
 public:
     FDSite(int fd_);
-    inline void send(msg_type_t type, int size, void *buf);
     void iters_changed(int numiters);
     void tolerance_changed(double tolerance);
     void image_changed(int x1, int y1, int x2, int y2);
@@ -81,8 +81,10 @@ public:
     ~FDSite();
 private:
     int fd;
-    volatile bool interrupted;
-    pthread_mutex_t write_lock;
+    std::atomic<bool> interrupted;
+    std::mutex write_lock;
+
+    inline void send(msg_type_t type, int size, void *buf);
 };
 
 #endif

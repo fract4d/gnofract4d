@@ -3,7 +3,7 @@
 
 #include <dlfcn.h>
 #include <cassert>
-#include <pthread.h>
+#include <thread>
 
 #include "pf.h"
 
@@ -70,8 +70,7 @@ void fractal_controller::start_calculating(
     image = images::image_fromcapsule(py_image);
     Py_XINCREF(py_image);
 
-    auto calc_fn = [](void *data) mutable -> void* {
-        fractal_controller *fc = (fractal_controller *)data;
+    auto calc_fn = [](fractal_controller *fc) mutable -> void* {
         calc(
             fc->c_options,
             fc->c_pos_params,
@@ -88,13 +87,10 @@ void fractal_controller::start_calculating(
         site->interrupt();
         site->wait();
         site->start();
-        pthread_t tid;
-        pthread_create(&tid, nullptr, calc_fn, (void *)this);
-        assert(tid != 0);
-        site->set_tid(tid);
+        site->set_thread(std::thread(calc_fn, this));
     } else {
         Py_BEGIN_ALLOW_THREADS
-        calc_fn((void *)this);
+        calc_fn(this);
         Py_END_ALLOW_THREADS
     }
 }

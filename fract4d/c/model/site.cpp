@@ -1,30 +1,29 @@
 #include <unistd.h>
+#include <iostream>
 
 #include "site.h"
-
 #include "model/stats.h"
 
-
-IFractalSite::IFractalSite() {
-    tid = (pthread_t)0;
+IFractalSite::~IFractalSite() {
+    wait();
 }
 
-void IFractalSite::set_tid(pthread_t tid_)
+void IFractalSite::set_thread(std::thread t)
 {
 #ifdef DEBUG_THREADS
-    fprintf(stderr, "%p : CA : SET(%p)\n", this, tid_);
+    std::cerr << this << " : CA : SET(" << t.get_id() << ")\n";
 #endif
-    tid = tid_;
+    m_thread = std::move(t);
 }
 
 void IFractalSite::wait()
 {
-    if (tid != 0)
+    if (m_thread.joinable())
     {
 #ifdef DEBUG_THREADS
-        fprintf(stderr, "%p : CA : WAIT(%p)\n", this, tid);
+        std::cerr << this << " : CA : WAIT(" << m_thread.get_id() << ")\n";
 #endif
-        pthread_join(tid, NULL);
+        m_thread.join();
     }
 }
 
@@ -34,11 +33,10 @@ void IFractalSite::wait()
 
 inline void FDSite::send(msg_type_t type, int size, void *buf)
 {
-    pthread_mutex_lock(&write_lock);
+    const std::lock_guard<std::mutex> lock(write_lock);
     write(fd, &type, sizeof(type));
     write(fd, &size, sizeof(size));
     write(fd, buf, size);
-    pthread_mutex_unlock(&write_lock);
 }
 
 FDSite::FDSite(int fd_) : fd(fd_), interrupted(false)
@@ -46,7 +44,6 @@ FDSite::FDSite(int fd_) : fd(fd_), interrupted(false)
 #ifdef DEBUG_CREATION
     fprintf(stderr, "%p : FD : CTOR\n", this);
 #endif
-    pthread_mutex_init(&write_lock, NULL);
 }
 
 void FDSite::iters_changed(int numiters)
@@ -62,7 +59,7 @@ void FDSite::tolerance_changed(double tolerance)
 // we've drawn a rectangle of image
 void FDSite::image_changed(int x1, int y1, int x2, int y2)
 {
-    if (!interrupted)
+    if (!is_interrupted())
     {
         int buf[4] = {x1, y1, x2, y2};
         send(IMAGE, sizeof(buf), &buf[0]);
@@ -71,7 +68,7 @@ void FDSite::image_changed(int x1, int y1, int x2, int y2)
 // estimate of how far through current pass we are
 void FDSite::progress_changed(float progress)
 {
-    if (!interrupted)
+    if (!is_interrupted())
     {
         int percentdone = (int)(100.0 * progress);
         send(PROGRESS, sizeof(percentdone), &percentdone);
@@ -80,7 +77,7 @@ void FDSite::progress_changed(float progress)
 
 void FDSite::stats_changed(pixel_stat_t &stats)
 {
-    if (!interrupted)
+    if (!is_interrupted())
     {
         send(STATS, sizeof(stats), &stats);
     }
@@ -118,7 +115,7 @@ void FDSite::pixel_changed(
 void FDSite::interrupt()
 {
 #ifdef DEBUG_THREADS
-    fprintf(stderr, "%p : CA : INT(%p)\n", this, tid);
+    std::cerr << this << " : CA : INT(" << m_thread.get_id() << ")\n";
 #endif
     interrupted = true;
 }

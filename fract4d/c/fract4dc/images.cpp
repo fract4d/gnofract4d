@@ -33,7 +33,7 @@ namespace images {
         }
 
     #ifdef DEBUG_CREATION
-        fprintf(stderr, "%p : IM : CTOR\n", i);
+        fprintf(stderr, "%p : IM : CTOR %dx%d \n", i, x, y);
     #endif
 
         PyObject *pyret = PyCapsule_New(i, OBTYPE_IMAGE, pyimage_delete);
@@ -462,8 +462,8 @@ namespace images {
 void pyimage_delete(PyObject *pyimage)
 {
     IImage *im = images::image_fromcapsule(pyimage);
-    #ifdef DEBUG_CREATION
-    fprintf(stderr, "%p : IM : DTOR\n", image);
+#ifdef DEBUG_CREATION
+    fprintf(stderr, "%p : IM : DTOR\n", im);
 #endif
     delete im;
 }
