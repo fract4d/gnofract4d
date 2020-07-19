@@ -103,7 +103,8 @@ fract4d_sources = [
 ]
 
 define_macros.append(('THREADS', 1))
-extra_compile_args = ['-std=c++17', '-Wall', '-Wextra', '-Wpedantic']
+extra_compile_args = ['-std=c++17', '-Wall',
+                      '-Wextra', '-Wpedantic', '-Wno-attributes']
 
 # from https://pythonextensionpatterns.readthedocs.io/en/latest/compiler_flags.html?highlight=python3-dev
 if _DEBUG:
