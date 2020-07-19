@@ -11,11 +11,12 @@ import pytest
 
 from fract4d import options
 
+
 class Test(unittest.TestCase):
     def testSetupPyVersionMatches(self):
-        doc = open("setup.py")
-        content = doc.read()
-        doc.close()
+        with open("setup.py") as doc:
+            content = doc.read()
+
         doc_re = re.compile(r"gnofract4d_version = '(\S+)'")
         m = doc_re.search(content)
 
@@ -24,9 +25,8 @@ class Test(unittest.TestCase):
 
     def testDocVersionMatches(self):
         # check the docs
-        doc = open("manual/config.toml")
-        content = doc.read()
-        doc.close()
+        with open("manual/config.toml") as doc:
+            content = doc.read()
 
         ver_re = re.compile(r'version = "(\S+)"')
 
@@ -34,13 +34,24 @@ class Test(unittest.TestCase):
         self.assertTrue(m, "manual doesn't specify version")
         self.assertEqual(options.VERSION, m.group(1), "Version mismatch")
 
+    def testReadmeVersionMatches(self):
+        with open("README.md") as doc:
+            content = doc.read()
+
+        ver_re = re.compile(r'gnofract4d-(\S+)\.tar\.gz')
+
+        m = ver_re.search(content)
+        self.assertTrue(m, "README doesn't specify version")
+        self.assertEqual(options.VERSION, m.group(1), "Version mismatch")
+
     def testWebsiteVersionMatches(self):
         if not os.path.exists("website"):
             # not included in source dist
             return
-        mkweb = open("website/content/_index.md")
-        content = mkweb.read()
-        mkweb.close()
+
+        with open("website/content/_index.md") as doc:
+            content = doc.read()
+
         ver_re = re.compile(r'latest: "(\S+)"')
 
         m = ver_re.search(content)
@@ -58,8 +69,10 @@ class Test(unittest.TestCase):
                 "--width", "24", "-j", "12", "-q"], check=True)
             self.assertTrue(os.path.exists(test_file))
 
+
 def suite():
     return unittest.makeSuite(Test, 'test')
+
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')
