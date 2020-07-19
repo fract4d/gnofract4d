@@ -1,23 +1,22 @@
 <html>
-    <head>
-	<meta name="generator" content="Hugo 0.68.3" />
-        <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400&display=swap" rel="stylesheet"> 
-        <link href="css/gf4d.css" rel="stylesheet"/>
-        <link href="css/flickity.css" rel="stylesheet" media="screen" />
-        <script src="js/flickity.pkgd.min.js"></script>
 
-<title>Front Page</title>
+<head>
+	<meta name="generator" content="Hugo 0.68.3" />
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <link href="css/gf4d.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+  <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+  <title>Front Page</title>
 </head>
 
-<body>    
-<div class="pagewrapper">
-    <div class="banner">        
-    Gnofract 4D
-    </div>
+<body>
+  <div class="page-wrapper">
+    <div class="banner">Gnofract 4D</div>
 
-    <div class="feature_row">
+    <div class="content-wrapper">
+      <div class="feature_row">
         <div class="feature_column_left">
-            <h1 id="what-is-gnofract-4d">What is Gnofract 4D?</h1>
+          <h1 id="what-is-gnofract-4d">What is Gnofract 4D?</h1>
 <p><strong>Gnofract 4D</strong> is a free, open source program which allows anyone to create beautiful fractal images.
 These include the famous Mandelbrot and Julia sets and many more.
 You can explore a universe of images just using a mouse.
@@ -25,110 +24,102 @@ It runs on Unix-based systems such as Linux and FreeBSD and can also be run on M
 It is easy to use, very fast, flexible, and widely used,with over <strong>125,000</strong> downloads over the past 20 years.</p>
 
 
-            <a href="https://github.com/fract4d/gnofract4d/archive/v4.2.tar.gz" class="download-button">
-                Download
-                <span>Latest version from GitHub</span>
-            </a>
-
-            <a href="https://github.com/fract4d/gnofract4d/" class="fancy-button">
-                Code, Docs and Issues
-            </a>
-
-            <a href="/gnofract4d/manual/index.html" class="fancy-button">
-                Manual
-            </a>
-
+          <a href="https://github.com/fract4d/gnofract4d/releases/download/v4.3/gnofract4d-4.3.tar.gz"
+            class="fancy-button download-button">Download <span>Latest version from GitHub</span></a>
+          <a href="https://github.com/fract4d/gnofract4d/" class="fancy-button">Code, Docs and Issues</a>
+          <a href="/gnofract4d/manual/index.html" class="fancy-button">Manual</a>
         </div>
-        <div class="feature_column">    
-            <div class="carousel" 
-                data-flickity='{ "imagesLoaded": true, "percentPosition": false, "wrapAround": true, "autoPlay": 3000,  "pauseAutoPlayOnHover": true}'>    
-                <img class="carousel-image" src="118178355_1635be61e5_o.png"/>
-                <img class="carousel-image" src="118227643_3fbc420fff_o.png"/>
-                <img class="carousel-image" src="1573086937_95453d0d9b_o.png"/>
-                <img class="carousel-image" src="17325174_6d9c97c691_o.png"/>
-                <img class="carousel-image" src="194514471_c7c1f7b5f3_o.png"/>
-                <img class="carousel-image" src="196405593_9a4afab7aa_o.png"/>
-                <img class="carousel-image" src="209773417_5d6f6d4a26_o.png"/>
-                <img class="carousel-image" src="2578720031_d1bcecd2da_o.png"/>
-                <img class="carousel-image" src="3345477161_a88e150274_o.png"/>
-                <img class="carousel-image" src="3458267830_92c8ea43b7_o.png"/>
-                <img class="carousel-image" src="3760208363_8c766d6035_o.png"/>
-                <img class="carousel-image" src="41978302_b628d98489_o.png"/>
-                <img class="carousel-image" src="5792719_30e3221826_o.png"/>    
-            </div>
+
+        <div class="feature_column">
+          <div class="carousel"
+            data-flickity='{ "imagesLoaded": true, "percentPosition": false, "wrapAround": true, "autoPlay": 3000, "pauseAutoPlayOnHover": true }'>
+            <img src="118178355_1635be61e5_o.png" />
+            <img src="118227643_3fbc420fff_o.png" />
+            <img src="1573086937_95453d0d9b_o.png" />
+            <img src="17325174_6d9c97c691_o.png" />
+            <img src="194514471_c7c1f7b5f3_o.png" />
+            <img src="196405593_9a4afab7aa_o.png" />
+            <img src="209773417_5d6f6d4a26_o.png" />
+            <img src="2578720031_d1bcecd2da_o.png" />
+            <img src="3345477161_a88e150274_o.png" />
+            <img src="3458267830_92c8ea43b7_o.png" />
+            <img src="3760208363_8c766d6035_o.png" />
+            <img src="41978302_b628d98489_o.png" />
+            <img src="5792719_30e3221826_o.png" />
+          </div>
         </div>
-    </div>
+      </div>
 
-
-    
-        
-<div class="feature_row">
-    <div class="feature_column_left">
-        <h3>Fast, Polished User Interface</h3>
-        <p>Modern interface (using the GTK toolkit) with unlimited undo, full-screen mode, simple interaction,
+      
+      <div class="feature_row">
+  <div class="feature_column_left">
+    <h3>Fast, Polished User Interface</h3>
+    <p>Modern interface (using the GTK toolkit) with unlimited undo, full-screen mode, simple interaction,
 and quick previews. Explorer Mode and AutoZoom help you find interesting parts of the
 fractal automatically. Since all formulas are compiled to machine code before being run, you get
 snappy calculations even on complex custom formulas. Gnofract 4D will take full advantage of
 multi-core computers for even faster rendering.</p>
 
-    </div>
-    <div class="feature_column">    
-        <img src="thumbnail_main_screenshot.png"/>
-    </div>
+  </div>
+  <div class="feature_column">
+    <img class="feature_image" src="thumbnail_main_screenshot.png"/>
+  </div>
 </div>
-    
-        
-<div class="feature_row">
-    <div class="feature_column_left">
-        <h3>Unlimited Variety</h3>
-        <p>Most fractal programs provide a fixed set of formulas. Gnofract 4D&rsquo;s formula compiler allows you to use any function you can think of. It also supports Fractint and UltraFractal formulas and coloring algorithms so you can use the many thousands of formulas written for those packages. This image is generated from the simple formula below.</p>
+
+      
+      <div class="feature_row">
+  <div class="feature_column_left">
+    <h3>Unlimited Variety</h3>
+    <p>Most fractal programs provide a fixed set of formulas. Gnofract 4D&rsquo;s formula compiler allows you to use any function you can think of. It also supports Fractint and UltraFractal formulas and coloring algorithms so you can use the many thousands of formulas written for those packages. This image is generated from the simple formula below.</p>
 <pre><code>Jm_25 {
   z=#zwpixel,t=p1+4:
    z=fn1(z*fn2(z)) + pixel
     |z|&lt;=t
   }
 </code></pre>
-    </div>
-    <div class="feature_column">    
-        <img src="quadrants2.jpg"/>
-    </div>
+  </div>
+  <div class="feature_column">
+    <img class="feature_image" src="quadrants2.jpg"/>
+  </div>
 </div>
-    
-        
-<div class="feature_row">
-    <div class="feature_column_left">
-        <h3>Innumerable Options</h3>
-        <p>Each base fractal can be displayed in millions of
+
+      
+      <div class="feature_row">
+  <div class="feature_column_left">
+    <h3>Innumerable Options</h3>
+    <p>Each base fractal can be displayed in millions of
 ways, using many coloring algorithms, including old favorites like
 biomorph, powerful options like Orbit Traps, and unique methods like
 Hot and Cold. Display multiple fixed points, critical values, or
 other regions using the &ldquo;fate&rdquo; option. This image shows the two basins
 of attraction of the Cubic Mandelbrot.</p>
 
-    </div>
-    <div class="feature_column">    
-        <img src="double_exposure.jpg"/>
-    </div>
+  </div>
+  <div class="feature_column">
+    <img class="feature_image" src="double_exposure.jpg"/>
+  </div>
 </div>
-    
-        
-<div class="feature_row">
-    <div class="feature_column_left">
-        <h3>Four Dimensions</h3>
-        <p>What sets it apart from other fractal programs (and makes it &ldquo;4D&rdquo;) is the way that it treats
+
+      
+      <div class="feature_row">
+  <div class="feature_column_left">
+    <h3>Four Dimensions</h3>
+    <p>What sets it apart from other fractal programs (and makes it &ldquo;4D&rdquo;) is the way that it treats
 the Mandelbrot and Julia sets as different views of the same four-dimensional fractal object.
 This allows you to create images which are a cross between the two sets and explore their
 inter-relationships.</p>
 
-    </div>
-    <div class="feature_column">    
-        <img src="4d.jpg"/>
-    </div>
+  </div>
+  <div class="feature_column">
+    <img class="feature_image" src="4d.jpg"/>
+  </div>
 </div>
+
+      
+    </div>
     
-</div>
+
+  </div>
 </body>
-
-
 
 </html>

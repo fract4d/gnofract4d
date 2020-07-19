@@ -1,50 +1,54 @@
 <html>
-  <head>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
-    <link href="css/gf4d.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
-    <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
-    <title>{{ .Title }}</title>
-  </head>
 
-  <body>
-    <div class="page-wrapper">
-      <div class="banner">Gnofract 4D</div>
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <link href="css/gf4d.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+  <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+  <title>{{ .Title }}</title>
+</head>
 
-      <div class="content-wrapper">
-        <div class="feature_row">
-          <div class="feature_column_left">
-            {{ .Content }}
+<body>
+  <div class="page-wrapper">
+    <div class="banner">Gnofract 4D</div>
 
-            <a href="https://github.com/fract4d/gnofract4d/archive/v{{ .Params.latest }}.tar.gz" class="fancy-button download-button">Download <span>Latest version from GitHub</span></a>
-            <a href="https://github.com/fract4d/gnofract4d/" class="fancy-button">Code, Docs and Issues</a>
-            <a href="/gnofract4d/manual/index.html" class="fancy-button">Manual</a>
-          </div>
+    <div class="content-wrapper">
+      <div class="feature_row">
+        <div class="feature_column_left">
+          {{ .Content }}
 
-          <div class="feature_column">
-            <div class="carousel" data-flickity='{ "imagesLoaded": true, "percentPosition": false, "wrapAround": true, "autoPlay": 3000, "pauseAutoPlayOnHover": true }'>
-              <img src="118178355_1635be61e5_o.png" />
-              <img src="118227643_3fbc420fff_o.png" />
-              <img src="1573086937_95453d0d9b_o.png" />
-              <img src="17325174_6d9c97c691_o.png" />
-              <img src="194514471_c7c1f7b5f3_o.png" />
-              <img src="196405593_9a4afab7aa_o.png" />
-              <img src="209773417_5d6f6d4a26_o.png" />
-              <img src="2578720031_d1bcecd2da_o.png" />
-              <img src="3345477161_a88e150274_o.png" />
-              <img src="3458267830_92c8ea43b7_o.png" />
-              <img src="3760208363_8c766d6035_o.png" />
-              <img src="41978302_b628d98489_o.png" />
-              <img src="5792719_30e3221826_o.png" />
-            </div>
-          </div>
+          <a href="https://github.com/fract4d/gnofract4d/releases/download/v{{ .Params.latest }}/gnofract4d-{{ .Params.latest }}.tar.gz"
+            class="fancy-button download-button">Download <span>Latest version from GitHub</span></a>
+          <a href="https://github.com/fract4d/gnofract4d/" class="fancy-button">Code, Docs and Issues</a>
+          <a href="/gnofract4d/manual/index.html" class="fancy-button">Manual</a>
         </div>
 
-        {{ range where .Site.RegularPages "Section" "features"}}
-        {{ .Render "feature" }}
-        {{ end }}
+        <div class="feature_column">
+          <div class="carousel"
+            data-flickity='{ "imagesLoaded": true, "percentPosition": false, "wrapAround": true, "autoPlay": 3000, "pauseAutoPlayOnHover": true }'>
+            <img src="118178355_1635be61e5_o.png" />
+            <img src="118227643_3fbc420fff_o.png" />
+            <img src="1573086937_95453d0d9b_o.png" />
+            <img src="17325174_6d9c97c691_o.png" />
+            <img src="194514471_c7c1f7b5f3_o.png" />
+            <img src="196405593_9a4afab7aa_o.png" />
+            <img src="209773417_5d6f6d4a26_o.png" />
+            <img src="2578720031_d1bcecd2da_o.png" />
+            <img src="3345477161_a88e150274_o.png" />
+            <img src="3458267830_92c8ea43b7_o.png" />
+            <img src="3760208363_8c766d6035_o.png" />
+            <img src="41978302_b628d98489_o.png" />
+            <img src="5792719_30e3221826_o.png" />
+          </div>
+        </div>
       </div>
-      {{ partial "footer.html"}}
+
+      {{ range where .Site.RegularPages "Section" "features"}}
+      {{ .Render "feature" }}
+      {{ end }}
     </div>
-  </body>
+    {{ partial "footer.html"}}
+  </div>
+</body>
+
 </html>

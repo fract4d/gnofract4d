@@ -269,7 +269,8 @@ purposes as listed in the table below.</p>
 <tr>
 <td>Formula File</td>
 <td><code>.frm</code>, <code>.ufm</code></td>
-<td>A formula file is a collection of formulas, each of which is a description of the algorithm used to draw a particular kind of fractal, expressed in a simple programming language (see [Formula Reference](#Formula Reference) for language details). Both Gnofract 4D and Fractint use <code>.frm</code> as the extension, and UltraFractal uses <code>.ufm</code>. In general, any formula which works in Fractint should work in Gnofract 4D and any which works in Gnofract 4D should work in UltraFractal, but the reverse is not true.</td>
+<td>A formula file is a collection of formulas, each of which is a description of the algorithm used to draw a particular kind of fractal, expressed in a simple programming language (see 
+  <a href="/gnofract4d/manual/#formula-language-reference">Formula Language Reference</a> for language details). Both Gnofract 4D and Fractint use <code>.frm</code> as the extension, and UltraFractal uses <code>.ufm</code>. In general, any formula which works in Fractint should work in Gnofract 4D and any which works in Gnofract 4D should work in UltraFractal, but the reverse is not true.</td>
 </tr>
 <tr>
 <td>Coloring Algorithm File</td>
@@ -278,8 +279,8 @@ purposes as listed in the table below.</p>
 </tr>
 <tr>
 <td>Gradient File</td>
-<td><code>.map</code>, <code>.ggr</code>, <code>.ugr</code>, <code>.cs</code></td>
-<td>A gradient file is a list of colors which is used to translate the purely numerical output of the formula into something pretty to look at. Gradients are currently saved only inside the fractal itself, not as separate files. The GIMP uses the extension .ggr for its gradient files; Fractint uses .map for its own, simpler files. UltraFractal uses .ugr - these files contain multiple gradients.</td>
+<td><code>.map</code>, <code>.ggr</code>, <code>.ugr</code>, <code>.cs</code>, <code>.ase</code></td>
+<td>A gradient file is a list of colors which is used to translate the purely numerical output of the formula into something pretty to look at. Gradients are currently saved only inside the fractal itself, not as separate files. The GIMP uses the extension <code>.ggr</code> for its gradient files; Fractint uses <code>.map</code> for its own, simpler files. UltraFractal uses <code>.ugr</code> - these files contain multiple gradients. Several programs including Adobe ones and <a href="https://coolors.co/">https://coolors.co/</a> support ASE (Adobe Swatch Exchange).</td>
 </tr>
 </tbody>
 </table>
@@ -439,6 +440,11 @@ if the &lsquo;auto tolerance&rsquo; setting in the preferences is enabled.</p>
 <p>The <strong>Colors</strong> tab allows you to edit the list of
 colors used to display your fractal. For more complex gradient
 editing, you can also use the GIMP&rsquo;s gradient editor.</p>
+<p>It is also possible to use the online palette editor tool at <a href="https://coolors.co/">https://coolors.co/</a>
+to modify the palette. You can start editing the current palette in Coolors
+by clicking <strong>Edit Gradient Online</strong> in the Colors tab. When you are done editing, in the Coolors UI
+choose <strong>Export</strong> &gt; <strong>Copy URL</strong>. Then paste into the Gnofract 4D window. This
+changes the current gradient to the one you edited online.</p>
 <h3 id="preferences">Preferences</h3>
 <h4 id="image">Image</h4>
 <p><strong>Width</strong> and <strong>Height</strong> set
@@ -3212,7 +3218,7 @@ as a result. This may no longer be an issue but I haven&rsquo;t tried it.</p>
 <h2 id="bugs-and-known-issues">Bugs and Known Issues</h2>
 <p>Please report any bugs you encounter, via <ulink><a href="https://github.com/fract4d/gnofract4d/issues">https://github.com/fract4d/gnofract4d/issues</a></ulink></p>
 <h2 id="about-gnofract-4d">About Gnofract 4D</h2>
-<p>This is Gnofract 4D version 4.2. You can find the most recent version of
+<p>This is Gnofract 4D version 4.3. You can find the most recent version of
 Gnofract 4D from <a href="https://github.com/edyoung/gnofract4d">https://github.com/edyoung/gnofract4d</a></p>
 <h2 id="credits-and-copyright">Credits and copyright</h2>
 <p>Gnofract 4D is Copyright 1999-2020 Edwin Young
