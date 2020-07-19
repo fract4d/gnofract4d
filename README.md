@@ -20,9 +20,9 @@ You can then run Gnofract 4D in the local directory:
 
     ./gnofract4d
 
-Alternatively to build and install Gnofract 4D (version 4.2 as an example) type:
+Alternatively to build and install Gnofract 4D type:
 
-    pip3 install gnofract4d-4.2.tar.gz
+    pip3 install gnofract4d-4.3.tar.gz
 
 You can then run it by clicking on the desktop icon or typing:
 
