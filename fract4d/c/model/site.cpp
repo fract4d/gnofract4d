@@ -93,7 +93,6 @@ void FDSite::status_changed(int status_val)
 bool FDSite::is_interrupted()
 {
     //fprintf(stderr,"int: %d\n",interrupted);
-    const std::lock_guard<std::mutex> lock(interrupt_lock);
     return interrupted;
 }
 
@@ -118,12 +117,10 @@ void FDSite::interrupt()
 #ifdef DEBUG_THREADS
     std::cerr << this << " : CA : INT(" << m_thread.get_id() << ")\n";
 #endif
-    const std::lock_guard<std::mutex> lock(interrupt_lock);
     interrupted = true;
 }
 
 void FDSite::start() {
-    const std::lock_guard<std::mutex> lock(interrupt_lock);
     interrupted = false;
 }
 

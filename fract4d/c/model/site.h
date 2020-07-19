@@ -3,6 +3,7 @@
 
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 #include "model/enums.h"
 
@@ -80,9 +81,8 @@ public:
     ~FDSite();
 private:
     int fd;
-    volatile bool interrupted;
+    std::atomic<bool> interrupted;
     std::mutex write_lock;
-    std::mutex interrupt_lock;
 
     inline void send(msg_type_t type, int size, void *buf);
 };
