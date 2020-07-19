@@ -31,13 +31,16 @@ os.environ["OPT"] = sysconfig.get_config_var(
 
 # Extensions need to link against appropriate libs
 # We use pkg-config to find the appropriate set of includes and libs
+
+
 def call_package_config(package, option, optional=False):
     '''invoke pkg-config, if it exists, to find the appropriate arguments for a library'''
     try:
         cp = subprocess.run(["pkg-config", package, option],
                             universal_newlines=True, stdout=subprocess.PIPE)
     except FileNotFoundError:
-        print(f"Unable to check for '{package}', pkg-config not installed", file=sys.stderr)
+        print(
+            "Unable to check for '%s', pkg-config not installed" % package, file=sys.stderr)
         if optional:
             return []
         else:
@@ -45,11 +48,12 @@ def call_package_config(package, option, optional=False):
 
     if cp.returncode != 0:
         if optional:
-            print(f"Can't find '{package}'", file=sys.stderr)
+            print("Can't find '%s'" % package, file=sys.stderr)
             print("Some functionality will be disabled", file=sys.stderr)
             return []
         else:
-            print(f"Development files not found for '{package}'", file=sys.stderr)
+            print(
+                "Development files not found for '%s'" % package, file=sys.stderr)
             sys.exit(1)
 
     return cp.stdout.split()
@@ -99,7 +103,8 @@ fract4d_sources = [
 ]
 
 define_macros.append(('THREADS', 1))
-extra_compile_args = ['-std=c++17', '-Wall', '-Wextra', '-Wpedantic']
+extra_compile_args = ['-std=c++17', '-Wall',
+                      '-Wextra', '-Wpedantic', '-Wno-attributes']
 
 # from https://pythonextensionpatterns.readthedocs.io/en/latest/compiler_flags.html?highlight=python3-dev
 if _DEBUG:
@@ -125,15 +130,18 @@ module_fract4dc = Extension(
     define_macros=define_macros,
 )
 
+
 def get_files(dir, ext):
     return [os.path.join(dir, x) for x in os.listdir(dir) if x.endswith(ext)]
+
 
 def get_icons():
     icons = []
     for size in 16, 32, 48, 64, 128, 256:
         icons.append((f'share/icons/hicolor/{size}x{size}/apps',
-            [f'pixmaps/logo/{size}x{size}/gnofract4d.png']))
+                      [f'pixmaps/logo/{size}x{size}/gnofract4d.png']))
     return icons
+
 
 so_extension = sysconfig.get_config_var("EXT_SUFFIX")
 

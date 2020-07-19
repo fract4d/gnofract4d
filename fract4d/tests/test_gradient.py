@@ -710,18 +710,30 @@ opacity:
             g.segments[0].left_color)
 
         url = g.get_coolor_url()
-        self.assertEqual("https://coolors.co/94ae89-a8bca1-c0da74-beedaa-d5ffd9", url)
-
+        self.assertEqual(
+            "https://coolors.co/94ae89-a8bca1-c0da74-beedaa-d5ffd9", url)
 
     def testLoadUrl(self):
         g = gradient.Gradient()
-        g.load_from_url("https://coolors.co/94ae89-a8bca1-c0da74-beedaa-d5ffd9")
+        g.load_from_url(
+            "https://coolors.co/94ae89-a8bca1-c0da74-beedaa-d5ffd9")
 
         self.assertEqual(5, len(g.segments))
         self.assertEqual(
             [0x94 / 255.0, 0xAE / 255.0, 0x89 / 255.0, 1.0],
             g.segments[0].left_color)
 
+    def testRandomizeComplementary(self):
+        g = gradient.Gradient()
+        g.randomize_complementary(10)
+        self.assertEqual(10 - 1, len(g.segments))
+        self.assertWellFormedGradient(g)
+
+    def testRandomizeSpheres(self):
+        g = gradient.Gradient()
+        g.randomize_spheres(10)
+        self.assertEqual(10, len(g.segments))
+        self.assertWellFormedGradient(g)
 
     def testSetColor(self):
         g = gradient.Gradient()

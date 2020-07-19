@@ -1,7 +1,6 @@
 *.pyc
 *.so
-*~
-#*
+
 .coverage
 coverage.xml
 gnofract4d.egg-info
@@ -9,6 +8,7 @@ MANIFEST
 token
 
 .tox/*
+.cache/*
 build/*
 dist/*
 experiments/*
@@ -39,3 +39,4 @@ docs/manual/stdlib/*
 
 # edit
 .vscode/
+*~

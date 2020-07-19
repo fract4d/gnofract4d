@@ -838,13 +838,13 @@ class T(fctutils.T):
             dirty=self.clear_image,
             asynchronous=asynchronous)
 
-    def drawpoint(self):
+    def drawpoint(self, repeats=1000):
         self.init_pfunc()
         print("x:\t\t%.17f\ny:\t\t%.17f\nz:\t\t%.17f\nw:\t\t%.17f\n" %
               tuple(self.params[0:4]))
         startTime = now()
         result = fract4dc.pf_calc(
-            self.pfunc, self.params[0:4], self.maxiter, 0, 0, 0, 100 * 1000 * 1000)
+            self.pfunc, self.params[0:4], self.maxiter, 0, 0, 0, repeats)
         duration = now() - startTime
         print(
             "iterations:\t%s\nfate:\t\t%s\ndistance:\t%s\nsolid:\t\t%s" %

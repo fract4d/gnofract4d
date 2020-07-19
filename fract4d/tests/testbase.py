@@ -254,11 +254,10 @@ class ClassSetup(TestBase):
 
         cls.userConfig.set("general", "cache_dir",
                            os.path.join(cls.tmpdir.name, "gnofract4d-cache"))
-        cls.userConfig["formula_path"].clear()
-        cls.userConfig["map_path"].clear()
+
+        cls.userConfig["formula_path"] = {"0": "formulas",
+                                          "1": "testdata/formulas"}
         cls.g_comp = fc.Compiler(cls.userConfig)
-        cls.g_comp.add_func_path("formulas")
-        cls.g_comp.add_func_path("testdata/formulas")
 
     @classmethod
     def tearDownClass(cls):
@@ -269,13 +268,17 @@ class ClassSetup(TestBase):
 class TestSetup(TestBase):
     def setUp(self):
         self.tmpdir = tempfile.TemporaryDirectory(prefix="fract4d_")
-        self.userConfig = fractconfig.T("")
+
+        import sys
+        if sys.platform[:6] == "darwin":
+            self.userConfig = fractconfig.DarwinConfig("")
+        else:
+            self.userConfig = fractconfig.T("")
+
         self.userConfig.set("general", "cache_dir",
                             os.path.join(self.tmpdir.name, "gnofract4d-cache"))
-        self.userConfig["formula_path"].clear()
-        self.userConfig["map_path"].clear()
+        self.userConfig["formula_path"] = {"0": "formulas"}
         self.g_comp = fc.Compiler(self.userConfig)
-        self.g_comp.add_func_path("formulas")
 
     def tearDown(self):
         del self.g_comp
