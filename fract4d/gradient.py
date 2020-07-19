@@ -337,11 +337,11 @@ class Gradient:
         list = []
         for i in range(nblocks):
             (block_type, block_length, name_length) = struct.unpack(">HLH", f.read(8))
-            name_format = "%ds" % (name_length*2)
+            name_format = "%ds" % (name_length * 2)
             #print("%d %d %d" % (block_type, block_length, name_length))
-            #print(name_format)
-            (name_bytes,) = struct.unpack(name_format, f.read(name_length*2))
-            #print(name_bytes)
+            # print(name_format)
+            (name_bytes,) = struct.unpack(name_format, f.read(name_length * 2))
+            # print(name_bytes)
             name = name_bytes.decode('utf_16_be')
             #print("name: %s" % name)
             if block_type == 1:
@@ -351,8 +351,8 @@ class Gradient:
                 #print("color model name: %s" % color_model_name)
 
                 if color_model_name == "RGB ":
-                    (r, g, b) = struct.unpack(">3f", f.read(3*4))
-                    (ri, gi, bi) = (int(r*255), int(g*255), int(b*255))
+                    (r, g, b) = struct.unpack(">3f", f.read(3 * 4))
+                    (ri, gi, bi) = (int(r * 255), int(g * 255), int(b * 255))
                     #print("color %f %f %f" % (r*255,g,b))
                     #print("color %x%x%x" % (ri,gi,bi))
                 else:
@@ -367,7 +367,6 @@ class Gradient:
                 list.append(entry)
 
         self.load_list(list)
-
 
     def load_ugr(self, f):
         "Load an ir tree parsed by the translator"
@@ -413,7 +412,7 @@ class Gradient:
         new_segments = []
         name = None
 
-        right = rr = rg = rb = ra = 0 # should never be used
+        right = rr = rg = rb = ra = 0  # should never be used
 
         line = f.readline()
         if line.startswith("Name:"):
@@ -505,7 +504,7 @@ class Gradient:
         clist = []
         for s in self.segments:
             color = s.left_color
-            (r, g, b, a) = [int(x*255.0) for x in color] 
+            (r, g, b, a) = [int(x * 255.0) for x in color]
             colorstring = "%02x%02x%02x" % (r, g, b)
             clist.append(colorstring)
         return "https://coolors.co/" + ("-".join(clist))
@@ -515,15 +514,15 @@ class Gradient:
         try:
             if not url.startswith("https://coolors.co/"):
                 return False
-            url = url[19:] # remove domain
+            url = url[19:]  # remove domain
             parts = url.split('-')
-            
+
             colorlist = []
             ncolors = len(parts)
             i = 0
             for p in parts:
                 (r, g, b) = (int(p[0:2], 16), int(p[2:4], 16), int(p[4:6], 16))
-                entry = (i/ncolors, r, g, b, 255)
+                entry = (i / ncolors, r, g, b, 255)
                 # print(entry)
                 colorlist.append(entry)
                 i += 1
@@ -579,19 +578,6 @@ class Gradient:
                 Segment(new_segments[-1].right, last_color, 1.0, last_color))
 
         self.segments = new_segments
-
-    def load_fractint(self, l):
-        # l is a list of colors from a Fractint .par file
-
-        # convert format to colorlist
-        i = 0
-        colors = []
-        for (r, g, b) in l:
-            colors.append((i / 255.0, r * 4, g * 4, b * 4, 255))
-            i += 1
-        # load it
-
-        self.load_list(colors, -1.0)
 
     def set_color(self, seg_id, is_left, r, g, b):
         if seg_id < 0 or seg_id >= len(self.segments):
