@@ -133,7 +133,7 @@ bool PySite::is_interrupted()
     return ret;
 }
 
-// pixel changed
+#ifdef DEBUG_PIXEL
 void PySite::pixel_changed(
     const double *params, int maxIters, int nNoPeriodIters,
     int x, int y, int aa,
@@ -156,6 +156,7 @@ void PySite::pixel_changed(
         RELEASE_LOCK;
     }
 }
+#endif
 
 void PySite::interrupt()
 {

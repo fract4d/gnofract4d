@@ -7,7 +7,7 @@
 
 namespace sites {
 
-    PyObject * pyfdsite_create(PyObject *self, PyObject *args)
+    PyObject * pyfdsite_create([[maybe_unused]] PyObject *self, PyObject *args)
     {
         int fd;
         if (!PyArg_ParseTuple(args, "i", &fd))
@@ -22,7 +22,7 @@ namespace sites {
         return pyret;
     }
 
-    PyObject * pysite_create(PyObject *self, PyObject *args)
+    PyObject * pysite_create([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pysite;
         if (!PyArg_ParseTuple(
@@ -52,7 +52,7 @@ namespace sites {
         IFractalSite *site = (IFractalSite *)PyCapsule_GetPointer(pysite, OBTYPE_SITE);
         if (NULL == site)
         {
-            fprintf(stderr, "%p : ST : BAD\n", pysite);
+            fprintf(stderr, "%p : ST : BAD\n", static_cast<void *>(pysite));
         }
         return site;
     }

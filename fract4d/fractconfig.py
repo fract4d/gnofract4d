@@ -160,7 +160,7 @@ class T(configparser.ConfigParser):
 
     def get_default_compiler_options(self):
         # appears to work for most unixes
-        return "-fPIC -DPIC -D_REENTRANT -O2 -shared -ffast-math"
+        return "-fPIC -DPIC -O2 -shared -ffast-math"
 
     def set(self, section, key, val):
         if self.has_section(section) and \
@@ -230,24 +230,12 @@ class T(configparser.ConfigParser):
 
         self.changed(name)
 
-    def update_list(self, name, new_entry, maxsize):
-        list = self.get_list(name)
-        if list.count(new_entry) == 0:
-            list.insert(0, new_entry)
-            list = list[:maxsize]
-            self.set_list(name, list)
-
-        return list
-
     def changed(self, section):
         pass
 
     def save(self):
-        f = open(self.file, "w")
-        try:
+        with open(self.file, "w") as f:
             self.write(f)
-        finally:
-            f.close()
 
 
 class DarwinConfig(T):
@@ -266,7 +254,7 @@ class DarwinConfig(T):
         return "open %s"
 
     def get_default_compiler_options(self):
-        return "-fPIC -DPIC -D_REENTRANT -O2 -dynamiclib -flat_namespace -undefined suppress -ffast-math"
+        return "-fPIC -DPIC -O2 -dynamiclib -flat_namespace -undefined suppress -ffast-math"
 
 
 def userConfig():

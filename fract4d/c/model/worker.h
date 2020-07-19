@@ -73,24 +73,16 @@ public:
 
     virtual void set_context(IWorkerContext *) = 0;
     // calculate a row of antialiased pixels
-    virtual void row_aa(int x, int y, int n) = 0;
+    virtual void row_aa(int y, int n) = 0;
     // calculate a row of pixels
     virtual void row(int x, int y, int n) = 0;
-    // calculate an rsize-by-rsize box of pixels
-    virtual void box(int x, int y, int rsize) = 0;
     // calculate a row of boxes
     virtual void box_row(int w, int y, int rsize) = 0;
     // calculate a row of boxes, quickly
     virtual void qbox_row(int w, int y, int rsize, int drawsize) = 0;
-    // calculate a single pixel
-    virtual void pixel(int x, int y, int w, int h) = 0;
-    // calculate a single pixel in aa-mode
-    virtual void pixel_aa(int x, int y) = 0;
     // auto-deepening record keeping
     virtual void reset_counts() = 0;
     virtual const pixel_stat_t &get_stats() const = 0;
-    // ray-tracing machinery
-    virtual bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root) = 0;
     virtual void flush() = 0;
 
     virtual ~IFractWorker() = default;
@@ -111,19 +103,23 @@ public:
 
     // IFractWorker interface
     void set_context(IWorkerContext *);
-
-    void row_aa(int x, int y, int n);
+    void row_aa(int y, int n);
     void row(int x, int y, int n);
-    void box(int x, int y, int rsize);
     void box_row(int w, int y, int rsize);
     void qbox_row(int w, int y, int rsize, int drawsize);
-    void pixel(int x, int y, int h, int w);
-    void pixel_aa(int x, int y);
     void reset_counts();
     const pixel_stat_t &get_stats() const;
-    bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root);
     void flush(){};
 
+    // @TODO: make these private
+    // calculate an rsize-by-rsize box of pixels
+    void box(int x, int y, int rsize);
+    // calculate a single pixel
+    void pixel(int x, int y, int h, int w);
+    // calculate a single pixel in aa-mode
+    void pixel_aa(int x, int y);
+    // ray-tracing machinery
+    bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root);
 private:
     void compute_stats(const dvec4 &pos, int iter, fate_t, int x, int y);
     void compute_auto_deepen_stats(const dvec4 &pos, int iter, int x, int y);
@@ -145,7 +141,7 @@ private:
     void rectangle(rgba_t, int x, int y, int w, int h);
     void rectangle_with_iter(rgba_t, fate_t, int iter, float index, int x, int y, int w, int h);
 
-    // EXPERIMENTAL (not in use)
+#ifdef EXPERIMENTAL_OPTIMIZATIONS
     // is the square with its top-left corner at (x,y) close-enough to flat
     // that we could interpolate & get a decent-looking image?
     bool isNearlyFlat(int x, int y, int rsize);
@@ -156,12 +152,13 @@ private:
     void interpolate_rectangle(int x, int y, int rsize);
     void interpolate_row(int x, int y, int rsize);
     // compare a prediction against the real answer & update stats
-    void check_guess(int x, int y, rgba_t pixel, fate_t fate, int iter, float index);
+    void check_guess(int x, int y, rgba_t pixel);
     // sum squared differences between components of 2 colors
     int diff_colors(rgba_t a, rgba_t b);
+#endif // #ifdef EXPERIMENTAL_OPTIMIZATIONS
 
     // @TODO: move m_site and m_im dependencies to IWorkerContext
-    IFractalSite *m_site;
+    [[maybe_unused]] IFractalSite *m_site;
     IWorkerContext *m_context;
     /* pointers to data also held in fractFunc */
     IImage *m_im;
@@ -188,16 +185,12 @@ public:
 
     // IFractWorker interface
     void set_context(IWorkerContext *);
-    void row_aa(int x, int y, int n);
+    void row_aa(int y, int n);
     void row(int x, int y, int n);
-    void box(int x, int y, int rsize);
     void qbox_row(int w, int y, int rsize, int drawsize);
     void box_row(int w, int y, int rsize);
-    void pixel(int x, int y, int h, int w);
-    void pixel_aa(int x, int y);
     void reset_counts();
     const pixel_stat_t &get_stats() const;
-    bool find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root);
     void flush();
 
 private:
@@ -206,7 +199,7 @@ private:
     void send_quit();
     void send_box(int x, int y, int rsize);
     void send_row(int x, int y, int n);
-    void send_row_aa(int x, int y, int n);
+    void send_row_aa(int y, int n);
     void send_box_row(int w, int y, int rsize);
     void send_qbox_row(int w, int y, int rsize, int drawsize);
 

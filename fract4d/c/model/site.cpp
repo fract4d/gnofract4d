@@ -99,7 +99,7 @@ bool FDSite::is_interrupted()
     return interrupted;
 }
 
-// pixel changed
+#ifdef DEBUG_PIXEL
 void FDSite::pixel_changed(
     const double *params, int maxIters, int nNoPeriodIters,
     int x, int y, int aa,
@@ -113,6 +113,7 @@ void FDSite::pixel_changed(
     */
     return; // FIXME
 }
+#endif
 
 void FDSite::interrupt()
 {

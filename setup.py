@@ -9,6 +9,8 @@ import sys
 
 gnofract4d_version = '4.3'
 
+_DEBUG = False
+
 if sys.version_info < (3, 6):
     print("Sorry, you need Python 3.6 or higher to run Gnofract 4D.")
     print("You have version %s. Please upgrade." % sys.version)
@@ -32,14 +34,13 @@ os.environ["OPT"] = sysconfig.get_config_var(
 
 
 def call_package_config(package, option, optional=False):
-    '''invoke pkg-config, if it exists, to find the appropriate
-    arguments for a library'''
+    '''invoke pkg-config, if it exists, to find the appropriate arguments for a library'''
     try:
         cp = subprocess.run(["pkg-config", package, option],
                             universal_newlines=True, stdout=subprocess.PIPE)
     except FileNotFoundError:
-        print("Unable to check for %s, pkg-config not installed" %
-              package, file=sys.stderr)
+        print(
+            "Unable to check for '%s', pkg-config not installed" % package, file=sys.stderr)
         if optional:
             return []
         else:
@@ -51,8 +52,8 @@ def call_package_config(package, option, optional=False):
             print("Some functionality will be disabled", file=sys.stderr)
             return []
         else:
-            print("Development files not found for: '%s'." %
-                  package, file=sys.stderr)
+            print(
+                "Development files not found for '%s'" % package, file=sys.stderr)
             sys.exit(1)
 
     return cp.stdout.split()
@@ -60,17 +61,12 @@ def call_package_config(package, option, optional=False):
 
 png_flags = call_package_config("libpng", "--cflags")
 png_libs = call_package_config("libpng", "--libs")
+define_macros = [('PNG_ENABLED', 1)]
 
-extra_macros = [('PNG_ENABLED', 1)]
-
-jpg_lib = "jpeg"
-for path in "/usr/include/jpeglib.h", "/usr/local/include/jpeglib.h":
-    if os.path.isfile(path):
-        extra_macros.append(('JPG_ENABLED', 1))
-        jpg_libs = [jpg_lib]
-        break
-else:
-    raise SystemExit("NO JPEG HEADERS FOUND, you need to install libjpeg-dev")
+jpeg_flags = call_package_config("libjpeg", "--cflags", True)
+jpeg_libs = call_package_config("libjpeg", "--libs", True)
+if jpeg_flags + jpeg_libs:
+    define_macros.append(('JPG_ENABLED', 1))
 
 fract4d_sources = [
     'fract4d/c/fract4dmodule.cpp',
@@ -106,30 +102,34 @@ fract4d_sources = [
     'fract4d/c/fract_stdlib.cpp'
 ]
 
-defines = [
-    ('_REENTRANT', 1),
-    ('THREADS', 1),
-    # ('STATIC_CALC',1),
-    # ('NO_CALC', 1),  # set this to not calculate the fractal
-    # ('DEBUG_CREATION',1), # debug spew for allocation of objects
-    # ('DEBUG_ALLOCATION',1), # debug spew for array handling
-]
+define_macros.append(('THREADS', 1))
+extra_compile_args = ['-std=c++17', '-Wall',
+                      '-Wextra', '-Wpedantic', '-Wno-attributes']
 
-libraries = ['stdc++']
-extra_compile_args = ['-Wall', '-O0', '-std=c++17'] + png_flags
-define_macros = defines + extra_macros
+# from https://pythonextensionpatterns.readthedocs.io/en/latest/compiler_flags.html?highlight=python3-dev
+if _DEBUG:
+    extra_compile_args += ["-g3", "-O0", "-UNDEBUG"]
+    define_macros += [
+        # ('STATIC_CALC',1),
+        # ('NO_CALC', 1),  # set this to not calculate the fractal
+        # ('DEBUG_CREATION',1), # debug spew for allocation of objects
+        # ('DEBUG_ALLOCATION',1), # debug spew for array handling
+        # ('DEBUG_PIXEL',1), # debug spew for array handling
+        # ('EXPERIMENTAL_OPTIMIZATIONS',1), # enables some experimental optimizations
+    ]
+else:
+    extra_compile_args += ["-DNDEBUG", "-O3"]
 
 module_fract4dc = Extension(
     name='fract4d.fract4dc',
     sources=fract4d_sources,
     include_dirs=['fract4d/c', 'fract4d/c/fract4dc', 'fract4d/c/model'],
-    libraries=libraries + jpg_libs,
-    extra_compile_args=extra_compile_args,
-    extra_link_args=png_libs,
-    define_macros=define_macros
+    libraries=['stdc++'],
+    extra_compile_args=extra_compile_args + png_flags + jpeg_flags,
+    extra_link_args=png_libs + jpeg_libs,
+    define_macros=define_macros,
 )
 
-modules = [module_fract4dc]
 
 
 def get_files(dir, ext):
@@ -164,7 +164,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
         'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml', 'gnofract4d.css'],
         'fract4d': ['c/pf.h', 'c/fract_stdlib.h']
     },
-    ext_modules=modules,
+    ext_modules=[module_fract4dc],
     scripts=['gnofract4d'],
     data_files=[
         # color maps

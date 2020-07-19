@@ -34,12 +34,14 @@ public:
     virtual void status_changed(int status_val) = 0;
     // statistics about image
     virtual void stats_changed(pixel_stat_t &stats) = 0;
+#ifdef DEBUG_PIXEL
     // per-pixel callback for debugging
     virtual void pixel_changed(
         const double *params, int maxIters, int min_period_iter,
         int x, int y, int aa,
         double dist, int fate, int nIters,
         int r, int g, int b, int a) = 0;
+#endif
     // asynchronous support
     // return true if we've been interrupted and are supposed to stop
     virtual bool is_interrupted() = 0;
@@ -67,11 +69,13 @@ public:
     void stats_changed(pixel_stat_t &stats);
     void status_changed(int status_val);
     bool is_interrupted();
+#ifdef DEBUG_PIXEL
     void pixel_changed(
         const double *params, int maxIters, int nNoPeriodIters,
         int x, int y, int aa,
         double dist, int fate, int nIters,
         int r, int g, int b, int a);
+#endif
     void interrupt();
     void start();
     ~FDSite();

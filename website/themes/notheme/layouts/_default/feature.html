@@ -1,10 +1,9 @@
-
 <div class="feature_row">
-    <div class="feature_column_left">
-        <h3>{{ .Title }}</h3>
-        {{ .Content }}
-    </div>
-    <div class="feature_column">    
-        <img src="{{ .Params.image}}"/>
-    </div>
+  <div class="feature_column_left">
+    <h3>{{ .Title }}</h3>
+    {{ .Content }}
+  </div>
+  <div class="feature_column">
+    <img class="feature_image" src="{{ .Params.image}}"/>
+  </div>
 </div>

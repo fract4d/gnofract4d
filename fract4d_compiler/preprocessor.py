@@ -170,6 +170,7 @@ class T:
 if __name__ == '__main__':  # pragma: no cover
     import sys
     # Test it out
-    data = open(sys.argv[1], "r").read()
+    with open(sys.argv[1], "r") as f:
+        data = f.read()
     pp = T(data)
     print(pp.out())

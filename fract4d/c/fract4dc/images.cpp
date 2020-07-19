@@ -12,7 +12,7 @@
 
 namespace images {
 
-    PyObject * image_create(PyObject *self, PyObject *args)
+    PyObject * image_create([[maybe_unused]] PyObject *self, PyObject *args)
     {
         int x, y;
         int totalx = -1, totaly = -1;
@@ -46,13 +46,13 @@ namespace images {
         IImage *image = (IImage *)PyCapsule_GetPointer(pyimage, OBTYPE_IMAGE);
         if (NULL == image)
         {
-            fprintf(stderr, "%p : IM : BAD\n", pyimage);
+            fprintf(stderr, "%p : IM : BAD\n", static_cast<void *>(pyimage));
         }
         return image;
     }
 
 
-    PyObject * pyimage_lookup(PyObject *self, PyObject *args)
+    PyObject * pyimage_lookup([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyimage = NULL;
         double x, y;
@@ -76,7 +76,7 @@ namespace images {
     }
 
 
-    PyObject * image_resize(PyObject *self, PyObject *args)
+    PyObject * image_resize([[maybe_unused]] PyObject *self, PyObject *args)
     {
         int x, y;
         int totalx = -1, totaly = -1;
@@ -105,7 +105,7 @@ namespace images {
         return Py_None;
     }
 
-    PyObject * image_dims(PyObject *self, PyObject *args)
+    PyObject * image_dims([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyim;
 
@@ -134,7 +134,7 @@ namespace images {
         return pyret;
     }
 
-    PyObject * image_set_offset(PyObject *self, PyObject *args)
+    PyObject * image_set_offset([[maybe_unused]] PyObject *self, PyObject *args)
     {
         int x, y;
         PyObject *pyim;
@@ -161,7 +161,7 @@ namespace images {
         return Py_None;
     }
 
-    PyObject * image_clear(PyObject *self, PyObject *args)
+    PyObject * image_clear([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyim;
 
@@ -182,7 +182,7 @@ namespace images {
         return Py_None;
     }
 
-    PyObject * image_writer_create(PyObject *self, PyObject *args)
+    PyObject * image_writer_create([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyim;
         char *filename;
@@ -212,7 +212,7 @@ namespace images {
         return PyCapsule_New(writer, OBTYPE_IMAGE_WRITER, pyimage_writer_delete);
     }
 
-    PyObject * image_read(PyObject *self, PyObject *args)
+    PyObject * image_read([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyim;
         char *filename;
@@ -246,7 +246,7 @@ namespace images {
         return Py_None;
     }
 
-    PyObject * image_save_header(PyObject *self, PyObject *args)
+    PyObject * image_save_header([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyimwriter;
         if (!PyArg_ParseTuple(args, "O", &pyimwriter))
@@ -266,7 +266,7 @@ namespace images {
         return Py_None;
     }
 
-    PyObject * image_save_tile(PyObject *self, PyObject *args)
+    PyObject * image_save_tile([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyimwriter;
         if (!PyArg_ParseTuple(args, "O", &pyimwriter))
@@ -286,7 +286,7 @@ namespace images {
         return Py_None;
     }
 
-    PyObject * image_save_footer(PyObject *self, PyObject *args)
+    PyObject * image_save_footer([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyimwriter;
         if (!PyArg_ParseTuple(args, "O", &pyimwriter))
@@ -306,7 +306,7 @@ namespace images {
         return Py_None;
     }
 
-    PyObject * image_buffer(PyObject *self, PyObject *args)
+    PyObject * image_buffer([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyim;
         PyObject *pybuf;
@@ -334,7 +334,7 @@ namespace images {
             PyErr_SetString(PyExc_ValueError, "request for buffer outside image bounds");
             return NULL;
         }
-        int offset = 3 * (y * i->Xres() + x);
+        int offset = 3 * (y * i->Xres() + x); // @TODO: this number 3 means "bytes per pixel" and it's hardcoded here and in the image class
         assert(offset > -1 && offset < i->bytes());
         Py_buffer *buffer = new Py_buffer;
         PyBuffer_FillInfo(buffer, NULL, i->getBuffer() + offset, i->bytes() - offset, 0, PyBUF_WRITABLE);
@@ -345,7 +345,7 @@ namespace images {
         return pybuf;
     }
 
-    PyObject * image_fate_buffer(PyObject *self, PyObject *args)
+    PyObject * image_fate_buffer([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyim;
         PyObject *pybuf;
@@ -387,7 +387,7 @@ namespace images {
         return pybuf;
     }
 
-    PyObject * image_get_color_index(PyObject *self, PyObject *args)
+    PyObject * image_get_color_index([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyim;
 
@@ -419,7 +419,7 @@ namespace images {
         return Py_BuildValue("d", (double)dist);
     }
 
-    PyObject * image_get_fate(PyObject *self, PyObject *args)
+    PyObject * image_get_fate([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyim;
 
@@ -479,7 +479,7 @@ ImageWriter * image_writer_fromcapsule(PyObject *p)
     ImageWriter *iw = (ImageWriter *)PyCapsule_GetPointer(p, OBTYPE_IMAGE_WRITER);
     if (NULL == iw)
     {
-        fprintf(stderr, "%p : IW : BAD\n", p);
+        fprintf(stderr, "%p : IW : BAD\n", static_cast<void *>(p));
     }
 
     return iw;

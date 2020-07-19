@@ -107,7 +107,7 @@ void fractFunc::draw_aa(float min_progress, float max_progress)
 
         for (int y = i; y < h; y += 2)
         {
-            m_worker->row_aa(0, y, w);
+            m_worker->row_aa(y, w);
             if (update_image(y))
             {
                 break;
@@ -248,14 +248,14 @@ void fractFunc::draw(int rsize, int drawsize, float min_progress, float max_prog
     set_progress_range(min_progress, mid_progress);
 
     // first pass - big blocks and edges
-    int y = 0;
+    auto y = 0;
     while(y < h) {
         if ((h - y) > rsize) {
             m_worker->qbox_row(w, y, rsize, drawsize);
             y += rsize;
         } else {
             m_worker->row(0, y, w);
-            y++;
+            ++y;
         }
         if (update_image(y)) {
             break;

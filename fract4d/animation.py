@@ -216,7 +216,8 @@ class T:
             parser = make_parser()
             ah = AnimationHandler(self)
             parser.setContentHandler(ah)
-            parser.parse(open(file))
+            with open(file) as f:
+                parser.parse(f)
         except Exception as err:
             # retrieve previous__dict__
             self.__setstate__(odict)

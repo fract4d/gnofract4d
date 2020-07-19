@@ -36,15 +36,15 @@ void MTFractWorker::set_context(IWorkerContext *context)
     }
 }
 
-void MTFractWorker::row_aa(int x, int y, int n)
+void MTFractWorker::row_aa(int y, int n)
 {
     if (m_threads && n > 8)
     {
-        send_row_aa(x, y, n);
+        send_row_aa(y, n);
     }
     else
     {
-        m_workers[0].row_aa(x, y, n);
+        m_workers[0].row_aa(y, n);
     }
 }
 
@@ -58,11 +58,6 @@ void MTFractWorker::row(int x, int y, int n)
     {
         m_workers[0].row(x, y, n);
     }
-}
-
-void MTFractWorker::box(int x, int y, int rsize)
-{
-    m_workers[0].box(x, y, rsize);
 }
 
 void MTFractWorker::box_row(int w, int y, int rsize)
@@ -87,15 +82,6 @@ void MTFractWorker::qbox_row(int w, int y, int rsize, int drawsize)
     {
         m_workers[0].qbox_row(w, y, rsize, drawsize);
     }
-}
-
-void MTFractWorker::pixel(int x, int y, int w, int h)
-{
-    m_workers[0].pixel(x, y, w, h);
-}
-
-void MTFractWorker::pixel_aa(int x, int y)
-{
 }
 
 void MTFractWorker::reset_counts()
@@ -153,10 +139,10 @@ void MTFractWorker::send_box(int x, int y, int rsize)
     send_cmd(JOB_BOX, x, y, rsize);
 }
 
-void MTFractWorker::send_row_aa(int x, int y, int w)
+void MTFractWorker::send_row_aa(int y, int w)
 {
     //cout << "sent RAA" << y << "\n";
-    send_cmd(JOB_ROW_AA, x, y, w);
+    send_cmd(JOB_ROW_AA, 0, y, w);
 }
 
 void MTFractWorker::flush()
@@ -165,9 +151,4 @@ void MTFractWorker::flush()
     {
         m_threads->flush();
     }
-}
-
-bool MTFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
-{
-    return m_workers[0].find_root(eye, look, root);
 }

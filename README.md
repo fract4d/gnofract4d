@@ -20,11 +20,11 @@ You can then run Gnofract 4D in the local directory:
 
     ./gnofract4d
 
-You can also install it:
+Alternatively to build and install Gnofract 4D (version 4.2 as an example) type:
 
-    sudo ./setup.py install
+    pip3 install gnofract4d-4.2.tar.gz
 
-You can then run it as:
+You can then run it by clicking on the desktop icon or typing:
 
     gnofract4d
 
@@ -44,13 +44,14 @@ On Ubuntu, these can be installed with:
     sudo apt install gcc gir1.2-gtk-3.0 python3-gi-cairo
 
 To build from source you also need:
+
 - headers for libpng and libjpeg
 - Python headers
 - pkg-config
 
 On Ubuntu, these can be installed with:
 
-    sudo apt install libjpeg-dev libpng-dev pkg-config python3-dev
+    sudo apt install libjpeg-dev libpng-dev libpython3-dev pkg-config
 
 If FFmpeg is installed it will be possible to create videos.
 
@@ -63,7 +64,7 @@ Testing
 
 Testing requires pytest for Python 3. In some distributions, 'pytest' is for Python 2. Run
 
-    sudo pip3 install pytest
+    pip3 install pytest
 
 To get the latest.
 
@@ -83,7 +84,7 @@ You can run it in two ways:
 
  - Directly (firstly you should install pylint through pip3):
 
-    $ sudo pip3 install pylint
+    $ pip3 install pylint
     $ ./bin/pylint.sh
 
  - Using docker (same environment as pipeline):
@@ -98,6 +99,6 @@ You can only regenerate the docs if you clone the Gnofract 4D git repo - the sou
 1. Make sure you're starting from a git clone not a source .zip - you need the files under manual/content
 2. The documentation theme is managed in a separate repository and embedded in manual/themes/book as a submodule. Initialize and update it with `git submodule update --init`
 3. Install hugo
-    * Ubuntu 18.04 has an older version. Run `snap install hugo` instead of `apt install hugo`
+    * Ubuntu 18.04 has an older version. Run `snap install hugo --channel=extended` instead of `apt install hugo`
     * For MacOS you can install with `brew install hugo`
 4. Run `./createdocs.py`

@@ -12,7 +12,7 @@
 namespace loaders
 {
 
-    PyObject *module_load(PyObject *self, PyObject *args)
+    PyObject *module_load([[maybe_unused]] PyObject *self, PyObject *args)
     {
     #ifdef STATIC_CALC
         Py_INCREF(Py_None);
@@ -39,7 +39,7 @@ namespace loaders
     #endif
     }
 
-    PyObject * pf_create(PyObject *self, PyObject *args)
+    PyObject * pf_create([[maybe_unused]] PyObject *self, PyObject *args)
     {
         struct pfHandle *pfh = (pfHandle *)malloc(sizeof(struct pfHandle));
         void *dlHandle;
@@ -81,7 +81,7 @@ namespace loaders
     }
 
 
-    PyObject * pf_init(PyObject *self, PyObject *args)
+    PyObject * pf_init([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyobj, *pyarray, *py_posparams;
         struct s_param *params;
@@ -122,7 +122,7 @@ namespace loaders
     }
 
 
-    PyObject * pf_defaults(PyObject *self, PyObject *args)
+    PyObject * pf_defaults([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyobj, *pyarray, *py_posparams;
         struct s_param *params;
@@ -167,7 +167,7 @@ namespace loaders
         return pyret;
     }
 
-    PyObject * pf_calc(PyObject *self, PyObject *args)
+    PyObject * pf_calc([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyobj, *pyret;
         double params[4];
@@ -218,7 +218,7 @@ namespace loaders
         struct pfHandle *pfHandle = (struct pfHandle *)PyCapsule_GetPointer(capsule, OBTYPE_POINTFUNC);
         if (NULL == pfHandle)
         {
-            fprintf(stderr, "%p : PF : BAD\n", capsule);
+            fprintf(stderr, "%p : PF : BAD\n", static_cast<void *>(capsule));
         }
         return pfHandle;
     }
@@ -251,7 +251,7 @@ namespace loaders
         void *vp = PyCapsule_GetPointer(p, OBTYPE_MODULE);
         if (NULL == vp)
         {
-            fprintf(stderr, "%p : SO : BAD\n", p);
+            fprintf(stderr, "%p : SO : BAD\n", static_cast<void *>(p));
         }
 
         return vp;

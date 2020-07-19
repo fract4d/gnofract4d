@@ -48,7 +48,7 @@ void STFractWorker::work(job_info_t &tdata)
         break;
     case JOB_ROW_AA:
         //printf("RAA(%d,%d,%d) [%x]\n",x,y,param,(unsigned int)pthread_self());
-        row_aa(tdata.x, tdata.y, tdata.param);
+        row_aa(tdata.y, tdata.param);
         nRows = 1;
         break;
     case JOB_QBOX_ROW:
@@ -64,9 +64,9 @@ void STFractWorker::work(job_info_t &tdata)
     m_context->progress_changed(new_progress);
 }
 
-void STFractWorker::row_aa(int x, int y, int w)
+void STFractWorker::row_aa(int y, int w)
 {
-    for (int x = 0; x < w; x++)
+    for (auto x = 0; x < w; ++x)
     {
         pixel_aa(x, y);
     }
@@ -246,19 +246,19 @@ void STFractWorker::compute_stats(const dvec4 &pos, int iter, fate_t fate, int x
 {
     const calc_options &options = m_context->get_options();
     m_stats.s[ITERATIONS] += iter;
-    m_stats.s[PIXELS]++;
-    m_stats.s[PIXELS_CALCULATED]++;
+    ++m_stats.s[PIXELS];
+    ++m_stats.s[PIXELS_CALCULATED];
     if (fate & FATE_INSIDE)
     {
-        m_stats.s[PIXELS_INSIDE]++;
+        ++m_stats.s[PIXELS_INSIDE];
         if (iter < options.maxiter - 1)
         {
-            m_stats.s[PIXELS_PERIODIC]++;
+            ++m_stats.s[PIXELS_PERIODIC];
         }
     }
     else
     {
-        m_stats.s[PIXELS_OUTSIDE]++;
+        ++m_stats.s[PIXELS_OUTSIDE];
     }
     if (options.auto_deepen && m_stats.s[PIXELS] % AUTO_DEEPEN_FREQUENCY == 0)
     {
@@ -274,6 +274,7 @@ void STFractWorker::compute_stats(const dvec4 &pos, int iter, fate_t fate, int x
 void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int x, int y)
 {
     const calc_options &options = m_context->get_options();
+    // convention: numIters is set to -1 when fate == FATE_INSIDE
     if (iter == -1)
     {
         // currently inside
@@ -297,7 +298,7 @@ void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int
         {
             // current tolerance is too loose, we would get 1 more
             // pixel correct if we tightened it
-            m_stats.s[BETTER_TOLERANCE_PIXELS]++;
+            ++m_stats.s[BETTER_TOLERANCE_PIXELS];
         }
     }
     else
@@ -322,7 +323,7 @@ void STFractWorker::compute_auto_tolerance_stats(const dvec4 &pos, int iter, int
         if (temp_iter == -1)
         {
             // if we loosened, we'd get this pixel wrong
-            m_stats.s[WORSE_TOLERANCE_PIXELS]++;
+            ++m_stats.s[WORSE_TOLERANCE_PIXELS];
         }
     }
 }
@@ -334,7 +335,7 @@ void STFractWorker::compute_auto_deepen_stats(const dvec4 &pos, int iter, int x,
     {
         /* we would have got this wrong if we used
 	    * half as many iterations */
-        m_stats.s[WORSE_DEPTH_PIXELS]++;
+        ++m_stats.s[WORSE_DEPTH_PIXELS];
     }
     else if (iter == -1)
     {
@@ -355,7 +356,7 @@ void STFractWorker::compute_auto_deepen_stats(const dvec4 &pos, int iter, int x,
         if (temp_iter != -1)
         {
             /* we would have got this right if we used twice as many iterations */
-            m_stats.s[BETTER_DEPTH_PIXELS]++;
+            ++m_stats.s[BETTER_DEPTH_PIXELS];
         }
     }
 }
@@ -385,12 +386,14 @@ void STFractWorker::pixel(int x, int y, int w, int h)
                 x, y, 0,
                 &pixel, &iter, &index, &fate);
             compute_stats(pos, iter, fate, x, y);
+#ifdef DEBUG_PIXEL
             const int color_iters = (fate & FATE_INSIDE) ? -1 : iter;
             m_site->pixel_changed(
                 pos.n, options.maxiter, min_period_iters,
                 x, y, 0,
                 index, fate, color_iters,
                 pixel.r, pixel.g, pixel.b, pixel.a);
+#endif
         }
         break;
         case RENDER_LANDSCAPE:
@@ -447,11 +450,7 @@ void STFractWorker::box_row(int w, int y, int rsize)
     {
         box(x, y, rsize);
     }
-    // extra pixels at end of lines
-    for (auto y2 = y; y2 < y + rsize; ++y2)
-    {
-        row(x, y2, w - x);
-    }
+    // extra pixels at end of lines: already calculated by qbox_row
 }
 
 void STFractWorker::qbox_row(int w, int y, int rsize, int drawsize)
@@ -498,7 +497,7 @@ void STFractWorker::pixel_aa(int x, int y)
     rectangle(pixel, x, y, 1, 1);
 }
 
-// EXPERIMENTAL (not in use)
+#ifdef EXPERIMENTAL_OPTIMIZATIONS
 bool STFractWorker::isNearlyFlat(int x, int y, int rsize)
 {
     rgba_t colors[2];
@@ -565,7 +564,6 @@ bool STFractWorker::isNearlyFlat(int x, int y, int rsize)
     return true;
 }
 
-// EXPERIMENTAL (not in use)
 // linearly interpolate over a rectangle
 void STFractWorker::interpolate_rectangle(int x, int y, int rsize)
 {
@@ -575,7 +573,6 @@ void STFractWorker::interpolate_rectangle(int x, int y, int rsize)
     }
 }
 
-// EXPERIMENTAL (not in use)
 void STFractWorker::interpolate_row(int x, int y, int rsize)
 {
     const fate_t fate = m_im->getFate(x, y, 0);
@@ -600,12 +597,11 @@ void STFractWorker::interpolate_row(int x, int y, int rsize)
         m_im->setIter(x2, y, predicted_iter);
         m_im->setFate(x2, y, 0, fate);
         m_im->setIndex(x2, y, 0, predicted_index);
-        m_stats.s[PIXELS]++;
-        m_stats.s[PIXELS_SKIPPED]++;
+        ++m_stats.s[PIXELS];
+        ++m_stats.s[PIXELS_SKIPPED];
     }
 }
 
-// EXPERIMENTAL (not in use)
 // linearly interpolate between colors to guess correct color
 rgba_t STFractWorker::predict_color(rgba_t colors[2], double factor)
 {
@@ -617,19 +613,16 @@ rgba_t STFractWorker::predict_color(rgba_t colors[2], double factor)
     return result;
 }
 
-// EXPERIMENTAL (not in use)
 int STFractWorker::predict_iter(int iters[2], double factor)
 {
     return static_cast<int>(iters[0] * (1.0 - factor) + iters[1] * factor);
 }
 
-// EXPERIMENTAL (not in use)
 float STFractWorker::predict_index(int indexes[2], double factor)
 {
     return indexes[0] * (1.0 - factor) + indexes[1] * factor;
 }
 
-// EXPERIMENTAL (not in use)
 // sum squared differences between components of 2 colors
 int STFractWorker::diff_colors(rgba_t a, rgba_t b)
 {
@@ -640,86 +633,10 @@ int STFractWorker::diff_colors(rgba_t a, rgba_t b)
     return dr * dr + dg * dg + db * db + da * da;
 }
 
-void STFractWorker::box(int x, int y, int rsize)
-{
-    // calculate edges of box to see if they're all the same colour
-    // if they are, we assume that the box is a solid colour and
-    // don't calculate the interior points
-    bool bFlat = true;
-    const int iter = m_im->getIter(x, y);
-    const int pcol = Pixel2INT(x, y);
-    // calculate top and bottom of box & check for flatness
-    for (int x2 = x; x2 < x + rsize; ++x2)
-    {
-        pixel(x2, y, 1, 1);
-        bFlat = bFlat && isTheSame(iter, pcol, x2, y);
-        pixel(x2, y + rsize - 1, 1, 1);
-        bFlat = bFlat && isTheSame(iter, pcol, x2, y + rsize - 1);
-    }
-    // calc left and right of box & check for flatness
-    for (int y2 = y; y2 < y + rsize; ++y2)
-    {
-        pixel(x, y2, 1, 1);
-        bFlat = bFlat && isTheSame(iter, pcol, x, y2);
-        pixel(x + rsize - 1, y2, 1, 1);
-        bFlat = bFlat && isTheSame(iter, pcol, x + rsize - 1, y2);
-    }
-
-    if (bFlat)
-    {
-        // just draw a solid rectangle
-        const rgba_t pixel = m_im->get(x, y);
-        const fate_t fate = m_im->getFate(x, y, 0);
-        const float index = m_im->getIndex(x, y, 0);
-        rectangle_with_iter(pixel, fate, iter, index, x + 1, y + 1, rsize - 2, rsize - 2);
-    }
-    else
-    {
-        const bool nearlyFlat = false && isNearlyFlat(x, y, rsize);
-        if (nearlyFlat)
-        {
-            interpolate_rectangle(x, y, rsize);
-        }
-        else
-        {
-            if (rsize > 4)
-            {
-                // divide into 4 sub-boxes and check those for flatness
-                const int half_size = rsize / 2;
-                box(x, y, half_size);
-                box(x + half_size, y, half_size);
-                box(x, y + half_size, half_size);
-                box(x + half_size, y + half_size, half_size);
-            }
-            else
-            {
-                // we do need to calculate the interior
-                // points individually
-                for (auto y2 = y + 1; y2 < y + rsize - 1; ++y2)
-                {
-                    row(x + 1, y2, rsize - 2);
-                }
-            }
-        }
-    }
-}
-
-inline void STFractWorker::rectangle(rgba_t pixel, int x, int y, int w, int h)
-{
-    for (auto i = y; i < y + h; i++)
-    {
-        for (auto j = x; j < x + w; j++)
-        {
-            m_im->put(j, i, pixel);
-        }
-    }
-}
-
-// EXPERIMENTAL (not in use)
-inline void STFractWorker::check_guess(int x, int y, rgba_t pixel, fate_t fate, int iter, float index)
+inline void STFractWorker::check_guess(int x, int y, rgba_t pixel)
 {
     const calc_options &options = m_context->get_options();
-    const dvec4 pos = m_context->get_geometry().vec_for_point_2d(x, y); // m_ff->topleft + x * m_ff->deltax + y * m_ff->deltay;
+    const dvec4 pos = m_context->get_geometry().vec_for_point_2d(x, y);
     rgba_t tpixel;
     int titer;
     float tindex;
@@ -733,15 +650,88 @@ inline void STFractWorker::check_guess(int x, int y, rgba_t pixel, fate_t fate, 
         x, y, 0,
         &tpixel, &titer, &tindex, &tfate);
     if (tpixel == pixel)
-    //	    fate == tfate &&
-    //	    iter == titer &&
-    //	    fabs(index-tindex) < 1.0e-2)
     {
-        m_stats.s[PIXELS_SKIPPED_RIGHT]++;
+        ++m_stats.s[PIXELS_SKIPPED_RIGHT];
     }
     else
     {
-        m_stats.s[PIXELS_SKIPPED_WRONG]++;
+        ++m_stats.s[PIXELS_SKIPPED_WRONG];
+    }
+}
+#endif // #ifdef EXPERIMENTAL_OPTIMIZATIONS
+
+void STFractWorker::box(int x, int y, int rsize)
+{
+    // calculate edges of box to see if they're all the same colour
+    // if they are, we assume that the box is a solid colour and
+    // don't calculate the interior points
+    bool bFlat = true;
+    const int iter = m_im->getIter(x, y);
+    const int pcol = Pixel2INT(x, y);
+    // calculate top and bottom of box & check for flatness
+    const auto bottom_y = y + rsize - 1;
+    const auto right_x = x + rsize - 1;
+    for (int x2 = x; x2 <= right_x; ++x2)
+    {
+        pixel(x2, y, 1, 1);
+        bFlat = bFlat && isTheSame(iter, pcol, x2, y);
+        pixel(x2, bottom_y, 1, 1);
+        bFlat = bFlat && isTheSame(iter, pcol, x2, bottom_y);
+    }
+    // calc left and right of box & check for flatness
+    for (int y2 = y; y2 <= bottom_y; ++y2)
+    {
+        pixel(x, y2, 1, 1);
+        bFlat = bFlat && isTheSame(iter, pcol, x, y2);
+        pixel(right_x, y2, 1, 1);
+        bFlat = bFlat && isTheSame(iter, pcol, right_x, y2);
+    }
+    if (bFlat)
+    {
+        // just draw a solid rectangle
+        const rgba_t pixel = m_im->get(x, y);
+        const fate_t fate = m_im->getFate(x, y, 0);
+        const float index = m_im->getIndex(x, y, 0);
+        rectangle_with_iter(pixel, fate, iter, index, x + 1, y + 1, rsize - 2, rsize - 2);
+    }
+    else
+    {
+#ifdef EXPERIMENTAL_OPTIMIZATIONS
+        if (isNearlyFlat(x, y, rsize))
+        {
+            interpolate_rectangle(x, y, rsize);
+            return;
+        }
+#endif
+        if (rsize > 4)
+        {
+            // divide into 4 sub-boxes and check those for flatness
+            const int half_size = rsize / 2;
+            box(x, y, half_size);
+            box(x + half_size, y, half_size);
+            box(x, y + half_size, half_size);
+            box(x + half_size, y + half_size, half_size);
+        }
+        else
+        {
+            // we do need to calculate the interior
+            // points individually
+            for (auto y2 = y + 1; y2 < bottom_y; ++y2)
+            {
+                row(x + 1, y2, rsize - 2);
+            }
+        }
+    }
+}
+
+inline void STFractWorker::rectangle(rgba_t pixel, int x, int y, int w, int h)
+{
+    for (auto i = y; i < y + h; ++i)
+    {
+        for (auto j = x; j < x + w; ++j)
+        {
+            m_im->put(j, i, pixel);
+        }
     }
 }
 
@@ -749,9 +739,9 @@ inline void STFractWorker::rectangle_with_iter(
     rgba_t pixel, fate_t fate, int iter, float index,
     int x, int y, int w, int h)
 {
-    for (auto i = y; i < y + h; i++)
+    for (auto i = y; i < y + h; ++i)
     {
-        for (auto j = x; j < x + w; j++)
+        for (auto j = x; j < x + w; ++j)
         {
             if (m_context->get_debug_flags() & DEBUG_DRAWING_STATS)
             {
@@ -762,13 +752,13 @@ inline void STFractWorker::rectangle_with_iter(
             m_im->setIter(j, i, iter);
             m_im->setFate(j, i, 0, fate);
             m_im->setIndex(j, i, 0, index);
-            m_stats.s[PIXELS]++;
-            m_stats.s[PIXELS_SKIPPED]++;
+            ++m_stats.s[PIXELS];
+            ++m_stats.s[PIXELS_SKIPPED];
         }
     }
 }
 
-// @TODO: this is used for RENDER_THREE_D mode and seems to be unfinished or at leats worth to review
+// @TODO: this is used for RENDER_THREE_D mode and seems to be unfinished or at least worth to review
 bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
 {
     const calc_options &options = m_context->get_options();
@@ -801,7 +791,7 @@ bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
             options.warp_param,
             x, y, 0,
             &pixel, &iter, &index, &fate);
-        steps++;
+        ++steps;
         if (fate != 0) // FIXME
         {
             // inside
@@ -836,7 +826,7 @@ bool STFractWorker::find_root(const dvec4 &eye, const dvec4 &look, dvec4 &root)
             //outside, root must be further in
             lastdist = mid;
         }
-        steps++;
+        ++steps;
     }
 #ifdef DEBUG_ROOTS
     printf("polished after %d\n", steps);

@@ -107,7 +107,7 @@ void fractal_controller::stop_calculating() {
 
 namespace controllers
 {
-    bool create_controller(PyObject *self, PyObject *args, FractalController *fc)
+    bool create_controller([[maybe_unused]] PyObject *self, PyObject *args, FractalController *fc)
     {
         char *library_file_path;
         PyObject *py_formula_params, *py_location_params;

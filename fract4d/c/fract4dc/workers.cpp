@@ -19,7 +19,7 @@ namespace workers {
         return worker;
     }
 
-    PyObject * fw_create(PyObject *self, PyObject *args)
+    PyObject * fw_create([[maybe_unused]] PyObject *self, PyObject *args)
     {
         int nThreads;
         pf_obj *pfo;
@@ -62,7 +62,7 @@ namespace workers {
         return pyret;
     }
 
-    PyObject * fw_pixel(PyObject *self, PyObject *args)
+    PyObject * fw_pixel([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyworker;
         int x, y, w, h;
@@ -74,14 +74,19 @@ namespace workers {
             return NULL;
         }
 
-        IFractWorker *worker = fw_fromcapsule(pyworker);
-        worker->pixel(x, y, w, h);
+        if (STFractWorker *worker = dynamic_cast<STFractWorker *>(fw_fromcapsule(pyworker))) {
+            worker->pixel(x, y, w, h);
+        }
+        else
+        {
+            return NULL;
+        }
 
         Py_INCREF(Py_None);
         return Py_None;
     }
 
-    PyObject * fw_pixel_aa(PyObject *self, PyObject *args)
+    PyObject * fw_pixel_aa([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyworker;
         int x, y;
@@ -93,14 +98,19 @@ namespace workers {
             return NULL;
         }
 
-        IFractWorker *worker = fw_fromcapsule(pyworker);
-        worker->pixel_aa(x, y);
+        if (STFractWorker *worker = dynamic_cast<STFractWorker *>(fw_fromcapsule(pyworker))) {
+            worker->pixel_aa(x, y);
+        }
+        else
+        {
+            return NULL;
+        }
 
         Py_INCREF(Py_None);
         return Py_None;
     }
 
-    PyObject * fw_find_root(PyObject *self, PyObject *args)
+    PyObject * fw_find_root([[maybe_unused]] PyObject *self, PyObject *args)
     {
         PyObject *pyworker;
         dvec4 eye, look;
@@ -113,9 +123,15 @@ namespace workers {
             return NULL;
         }
 
-        IFractWorker *worker = fw_fromcapsule(pyworker);
         dvec4 root;
-        int ok = worker->find_root(eye, look, root);
+        int ok = false;
+        if (STFractWorker *worker = dynamic_cast<STFractWorker *>(fw_fromcapsule(pyworker))) {
+            ok = worker->find_root(eye, look, root);
+        }
+        else
+        {
+            return NULL;
+        }
 
         return Py_BuildValue(
             "i(dddd)",

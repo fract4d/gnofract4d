@@ -2,8 +2,9 @@ name: Test Gnofract 4D
 
 on:
     pull_request:
-      types: [opened, reopened, ready_for_review]
+      types: [opened, reopened, ready_for_review, synchronize]
     push:
+      branches: ["master"]
 
 jobs:
   run:
@@ -35,7 +36,8 @@ jobs:
       - name: Install Ubuntu packages
         if: ${{ runner.os == 'Linux' }}
         # libgirepository1.0-dev required to build PyGObject from source
-        run: sudo apt install gir1.2-gtk-3.0 libgirepository1.0-dev xvfb
+        # gvfs is needed for Gio.AppInfo.launch_default_for_uri()
+        run: sudo apt install gir1.2-gtk-3.0 gvfs libgirepository1.0-dev xvfb
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
