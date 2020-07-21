@@ -39,6 +39,7 @@ include testdata/formulas/test.frm
 include testdata/formulas/test_bad_pp.frm
 include testdata/gradient_func.fct
 include testdata/julfn.fct
+include testdata/test.ase
 include testdata/test.cs
 include testdata/test.fct
 include testdata/test_bail.fct
