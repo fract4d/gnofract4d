@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Install MacOS packages
+      - name: Install macOS packages
         if: ${{ runner.os == 'macOS' }}
         run: brew install gtk+3 pygobject3
       - name: Install Ubuntu packages
@@ -46,7 +46,7 @@ jobs:
         run: pip install tox
       - name: Build
         run: python setup.py build
-      - name: Run Tox (MacOS)
+      - name: Run Tox (macOS)
         if: ${{ runner.os == 'macOS' }}
         run: tox -e ${{ matrix.toxenv }}
       - name: Run Tox (Linux)
