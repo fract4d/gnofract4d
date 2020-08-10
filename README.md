@@ -55,7 +55,7 @@ On Ubuntu, these can be installed with:
 
 If FFmpeg is installed it will be possible to create videos.
 
-On MacOS, you can install the dependencies using brew:
+On macOS, you can install the dependencies using brew:
 
     brew install librsvg python3 pkg-config cairo gtk+3 pygobject3 py3cairo libpng jpeg
 
@@ -74,7 +74,7 @@ Run individual tests from the top-level directory using pytest, e.g.:
 Optionally, install tox and test with all supported Python versions by running:
     tox
 
-On MacOS you might find an error regarding the number of opened files, you can increase the system limit with `ulimit -Sn 10000`
+On macOS you might find an error regarding the number of opened files, you can increase the system limit with `ulimit -Sn 10000`
 
 Linting
 =======
@@ -100,5 +100,5 @@ You can only regenerate the docs if you clone the Gnofract 4D git repo - the sou
 2. The documentation theme is managed in a separate repository and embedded in manual/themes/book as a submodule. Initialize and update it with `git submodule update --init`
 3. Install hugo
     * Ubuntu 18.04 has an older version. Run `snap install hugo --channel=extended` instead of `apt install hugo`
-    * For MacOS you can install with `brew install hugo`
+    * For macOS you can install with `brew install hugo`
 4. Run `./createdocs.py`
