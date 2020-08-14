@@ -9,11 +9,11 @@
 #include "model/pointfunc.h"
 #include "model/threadpool.h"
 #include "model/fractgeometry.h"
+#include "model/image.h"
+#include "model/calcoptions.h"
 
 class ColorMap;
-class IImage;
 class IFractalSite;
-struct calc_options;
 typedef struct s_rgba rgba_t;
 typedef unsigned char fate_t;
 typedef struct s_pf_data pf_obj;
@@ -205,6 +205,55 @@ private:
 
     std::vector<STFractWorker> m_workers;
     std::unique_ptr<tpool<job_info_t, STFractWorker>> m_threads;
+};
+
+class XaosFractWorker final: public IFractWorker
+{
+public:
+    XaosFractWorker(
+        pf_obj * pfo,
+        ColorMap * cmap,
+        IImage * im,
+        double * params_previous,
+        calc_options options):
+    m_im{im},
+    m_pf{pfo, cmap},
+    m_lastPointIters{0},
+    m_geometry_previous{
+        params_previous,
+        static_cast<bool>(options.yflip),
+        im->totalXres(),
+        im->totalYres(),
+        im->Xoffset(),
+        im->Yoffset()
+    } {};
+
+    // IFractWorker interface
+    void set_context(IWorkerContext *);
+    void row_aa(int y, int n) {};
+    void row(int x, int y, int n);
+    void qbox_row(int w, int y, int rsize, int drawsize) {};
+    void box_row(int w, int y, int rsize) {};
+    void reset_counts() {};
+    const pixel_stat_t &get_stats() const { return m_stats; };
+    void flush() {};
+
+private:
+    // calculate a single pixel
+    void pixel(int x, int y, int h, int w);
+    // periodicity guesser for when we have the last count to hand
+    int periodGuess();
+    int periodGuess(int last);
+    // update whether last pixel bailed
+    void periodSet(int ppos);
+    // draw a rectangle of this colour
+    void rectangle(rgba_t, int x, int y, int w, int h);
+
+    IImage *m_im;
+    pointFunc m_pf;
+    int m_lastPointIters; // how many iterations did last pixel take
+
+    fract_geometry m_geometry_previous;
 };
 
 #endif

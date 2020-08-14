@@ -53,6 +53,14 @@ void image::delete_buffers()
     index_buf = NULL;
 }
 
+void image::swap_buffers(image &im)
+{
+    std::swap(buffer, im.buffer);
+    std::swap(iter_buf, im.iter_buf);
+    std::swap(fate_buf, im.fate_buf);
+    std::swap(index_buf, im.index_buf);
+}
+
 bool image::alloc_buffers()
 {
     // @TODO: find a way to reduce memory usage when (m_Xres * m_Yres > MAX_RECOLOR_SIZE)

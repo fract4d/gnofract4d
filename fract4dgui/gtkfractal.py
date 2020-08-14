@@ -310,7 +310,10 @@ class Hidden(GObject.GObject):
         cmap = self.f.get_colormap()
         self.running = True
         try:
-            self.f.calc(image, cmap, nthreads, self.site, True)
+            if self.continuous_zoom_is_active():
+                self.f.calcxaos(image, cmap, nthreads, self.site, True)
+            else:
+                self.f.calc(image, cmap, nthreads, self.site, True)
         except MemoryError:
             pass
 
@@ -488,7 +491,9 @@ class T(Hidden):
         self.widget = drawing_area
 
     def continuous_zoom_start(self):
-        self.continuousZoomTimer = threading.Timer(0.3, self.continuous_zoom_print)
+        # todo: now it tries 10 fps but it segfaults when unable to meet expectations
+        # we need to sync with the previous frame calculation ending
+        self.continuousZoomTimer = threading.Timer(0.1, self.continuous_zoom_print)
         self.continuousZoomTimer.start()
 
     def continuous_zoom_stop(self):

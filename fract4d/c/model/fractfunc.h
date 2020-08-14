@@ -33,6 +33,8 @@ public:
 
     void draw_all();
 
+    void draw_all_xaos();
+
     // callback wrappers
     inline void iters_changed(int iters)
     {

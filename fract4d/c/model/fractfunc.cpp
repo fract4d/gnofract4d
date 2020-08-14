@@ -152,6 +152,33 @@ void fractFunc::clear_in_fates()
     }
 }
 
+void fractFunc::draw_all_xaos()
+{
+    status_changed(GF4D_FRACTAL_CALCULATING);
+
+    // init RNG based on time before generating image
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
+    const auto w = m_im->Xres();
+    const auto h = m_im->Yres();
+
+    // only one pass
+    auto y = 0;
+    while(y < h) {
+        m_worker->row(0, y, w);
+        ++y;
+        if (try_finished_cond())
+        {
+            break;
+        }
+    }
+
+    m_worker->flush();
+    image_changed(0, 0, w, h);
+
+    status_changed(GF4D_FRACTAL_DONE);
+}
+
 void fractFunc::draw_all()
 {
     std::time_t startTime, endTime;

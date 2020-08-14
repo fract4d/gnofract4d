@@ -25,6 +25,17 @@ extern "C"
         int debug_flags
     );
 
+    void calc_xaos(
+        calc_options,
+        d *params,
+        d *params_previous,
+        pf_obj *,
+        ColorMap *,
+        IFractalSite *,
+        IImage *,
+        int debug_flags
+    );
+
 #ifdef __cplusplus
 }
 #endif

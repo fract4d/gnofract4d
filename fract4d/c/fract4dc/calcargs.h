@@ -16,6 +16,7 @@ struct calc_args
     calc_options options;
 
     double *params;
+    double *params_previous;
     pf_obj *pfo;
     ColorMap *cmap;
     IImage *im;

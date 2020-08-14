@@ -83,7 +83,6 @@ class image : public IImage
 
     void delete_buffers();
     bool alloc_buffers();
-    void clear_fate(int x, int y);
 
 public:
     static const int N_SUBPIXELS;
@@ -91,6 +90,8 @@ public:
     image();
     image(const image &im);
     ~image();
+
+    void swap_buffers(image &im);
 
     bool ok();
     int getNSubPixels() const;

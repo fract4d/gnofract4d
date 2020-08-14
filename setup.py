@@ -109,6 +109,7 @@ fract4d_sources = [
     'fract4d/c/model/worker.cpp',
     'fract4d/c/model/STFractWorker.cpp',
     'fract4d/c/model/MTFractWorker.cpp',
+    'fract4d/c/model/XaosFractWorker.cpp',
     'fract4d/c/model/pointfunc.cpp',
     'fract4d/c/model/stats.cpp',
     'fract4d/c/model/colorutils.cpp',

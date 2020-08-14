@@ -36,6 +36,27 @@ namespace calcs {
         return Py_None;
     }
 
+    PyObject * pycalc_xaos([[maybe_unused]] PyObject *self, PyObject *args, PyObject *kwds)
+    {
+        calc_args *cargs = parse_calc_args(args, kwds);
+        if (NULL == cargs)
+        {
+            return NULL;
+        }
+
+        std::thread t([cargs](){
+            auto &site = *cargs->site;
+            site.interrupt();
+            site.wait();
+            site.start();
+            site.set_thread(std::thread(calculation_thread, cargs));
+        });
+        t.detach();
+
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
     PyObject * pycalc([[maybe_unused]] PyObject *self, PyObject *args, PyObject *kwds)
     {
         calc_args *cargs = parse_calc_args(args, kwds);
@@ -94,6 +115,21 @@ struct GIL_guard {
         if (active) restore();
     }
 };
+void * calculation_thread_xaos(calc_args *args)
+{
+    calc_xaos(
+        args->options,
+        args->params,
+        args->params_previous,
+        args->pfo,
+        args->cmap,
+        args->site,
+        args->im,
+        0 // debug_flags
+    );
+    delete args;
+    return NULL;
+}
 
 void * calculation_thread(calc_args *args)
 {
@@ -120,6 +156,7 @@ void * calculation_thread(calc_args *args)
 calc_args * parse_calc_args(PyObject *args, PyObject *kwds)
 {
     PyObject *pyparams, *pypfo, *pycmap, *pyim, *pysite;
+    PyObject *pyparams_previous = NULL;
     calc_args *cargs = new calc_args();
     double *p = NULL;
 
@@ -129,6 +166,7 @@ calc_args * parse_calc_args(PyObject *args, PyObject *kwds)
         "pfo",
         "cmap",
         "params",
+        "params_previous",
         "antialias",
         "maxiter",
         "yflip",
@@ -146,12 +184,13 @@ calc_args * parse_calc_args(PyObject *args, PyObject *kwds)
     if (!PyArg_ParseTupleAndKeywords(
             args,
             kwds,
-            "OOOOO|iiiiiiiiiidi",
+            "OOOOO|Oiiiiiiiiiidi",
             const_cast<char **>(kwlist),
 
             &pyim, &pysite,
             &pypfo, &pycmap,
             &pyparams,
+            &pyparams_previous,
             &cargs->options.eaa,
             &cargs->options.maxiter,
             &cargs->options.yflip,
@@ -168,24 +207,17 @@ calc_args * parse_calc_args(PyObject *args, PyObject *kwds)
         goto error;
     }
 
-    p = cargs->params;
-    if (!PyList_Check(pyparams) || PyList_Size(pyparams) != N_PARAMS)
+    if (!parse_posparams(pyparams, cargs->params))
     {
-        PyErr_SetString(PyExc_ValueError, "bad parameter list");
         goto error;
     }
 
-    // todo: code duplicated in loaders.cpp (parse_params function)
-    for (int i = 0; i < N_PARAMS; ++i)
+    if (pyparams_previous != NULL)
     {
-        PyObject *elt = PyList_GetItem(pyparams, i);
-        if (!PyFloat_Check(elt))
+        if (!parse_posparams(pyparams_previous, cargs->params_previous))
         {
-            PyErr_SetString(PyExc_ValueError, "a param is not a float");
             goto error;
         }
-
-        p[i] = PyFloat_AsDouble(elt);
     }
 
     cargs->set_cmap(pycmap);

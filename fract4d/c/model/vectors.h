@@ -96,7 +96,7 @@ public:
 		return *this;
 	};
 	// indexing
-	T &operator[](int i)
+	const T &operator[](int i) const
 	{
 		return n[i];
 	};
@@ -278,7 +278,7 @@ public:
 		return *this;
 	};
 	// indexing
-	vec4<T> &operator[](int i)
+	const vec4<T> &operator[](int i) const
 	{
 		return v[i];
 	};
