@@ -363,6 +363,23 @@ class PrefsDialog(utils.Dialog):
 
         return widget
 
+    def create_continuous_zoom_widget(self):
+        widget = Gtk.CheckButton(label="Continuous _Zoom")
+        widget.set_tooltip_text("Activate continuous zoom to zoom in or out while keep clicked the mouse buttons")
+        widget.set_use_underline(True)
+
+        def set_widget(*args):
+            widget.set_active(self.prefs.getboolean("display", "continuouszoom"))
+
+        def set_prefs(*args):
+            self.prefs.set("display", "continuouszoom", str(widget.get_active()))
+
+        set_widget()
+        self.prefs.connect('preferences-changed', set_widget)
+        widget.connect('toggled', set_prefs)
+
+        return widget
+
     def create_antialias_menu(self):
         optMenu = utils.combo_box_text_with_items(["None", "Fast", "Best"])
 
@@ -418,3 +435,7 @@ class PrefsDialog(utils.Dialog):
         aalabel = Gtk.Label(
             label="_Antialiasing : ", mnemonic_widget=optMenu, use_underline=True)
         table.attach(aalabel, 0, 5, 1, 1)
+
+        # continuous zoom
+        self.continuous_zoom = self.create_continuous_zoom_widget()
+        table.attach(self.continuous_zoom, 0, 6, 2, 1)

@@ -54,6 +54,7 @@ class Hidden(GObject.GObject):
 
         (self.readfd, self.writefd) = os.pipe()
         self.nthreads = 1
+        self.continuous_zoom = False
 
         self.compiler = comp
 
@@ -76,17 +77,6 @@ class Hidden(GObject.GObject):
             self.width, self.height, total_width, total_height)
 
         self.msgbuf = b""
-
-    def autozoomStart(self):
-        self.autozoomTimer = threading.Timer(0.3, self.printAutozoom)
-        self.autozoomTimer.start()
-
-    def autozoomStop(self):
-        self.autozoomTimer.cancel()
-
-    def printAutozoom(self):
-        self.autozoomRecenter()
-        self.autozoomStart()
 
     def try_init_fractal(self):
         f = fractal.T(self.compiler, self.site)
@@ -248,6 +238,11 @@ class Hidden(GObject.GObject):
     def set_auto_deepen(self, deepen):
         if self.f.auto_deepen != deepen:
             self.f.auto_deepen = deepen
+            self.changed()
+
+    def set_continuous_zoom(self, value):
+        if self.continuous_zoom != value:
+            self.continuous_zoom = value
             self.changed()
 
     def set_antialias(self, aa_type):
@@ -492,6 +487,59 @@ class T(Hidden):
 
         self.widget = drawing_area
 
+    def continuous_zoom_start(self):
+        self.continuousZoomTimer = threading.Timer(0.3, self.continuous_zoom_print)
+        self.continuousZoomTimer.start()
+
+    def continuous_zoom_stop(self):
+        self.continuousZoomTimer.cancel()
+
+    def continuous_zoom_print(self):
+        self.continuous_zoom_recenter()
+        self.continuous_zoom_start()
+
+    def continuous_zoom_is_active(self):
+        return self.continuous_zoom
+
+    def continuous_zoom_recenter(self):
+        self.widget.queue_draw()
+        self.freeze()
+        centerX = x = self.width / 2
+        centerY = y = self.height / 2
+        if self.continuousZoomEventButton == 1:
+            if centerX != self.newx:
+                x = abs(centerX - self.newx) * 0.1
+                if centerX < self.newx:
+                    x = centerX + x
+                else:
+                    x = centerX - x
+            if centerY != self.newy:
+                y = abs(centerY - self.newy) * 0.1
+                if centerY < self.newy:
+                    y = centerY + y
+                else:
+                    y = centerY - y
+            zoom = 0.9
+        else:
+            if centerX != self.newx:
+                x = abs(centerX - self.newx) * 0.1
+                if centerX > self.newx:
+                    x = centerX + x
+                else:
+                    x = centerX - x
+            if centerY != self.newy:
+                y = abs(centerY - self.newy) * 0.1
+                if centerY > self.newy:
+                    y = centerY + y
+                else:
+                    y = centerY - y
+            zoom = 1.1
+
+        self.recenter(x, y, zoom)
+
+        if self.thaw():
+            self.changed()
+
     def image_changed(self, x1, y1, x2, y2):
         self.widget.queue_draw_area(x1, y1, x2 - x1, y2 - y1)
 
@@ -540,16 +588,45 @@ class T(Hidden):
 
         self.newx, self.newy = event.x, event.y
 
+        if not self.continuous_zoom_is_active():
+            dy = int(abs(self.newx - self.x) * float(self.height) / self.width)
+            if(self.newy < self.y or (self.newy == self.y and self.newx < self.x)):
+                dy = -dy
+            self.newy = self.y + dy
+
+            # create a dummy Cairo context to calculate the affected bounding box
+            surface = cairo.ImageSurface(cairo.FORMAT_A1, self.width, self.height)
+            cairo_ctx = cairo.Context(surface)
+            cairo_ctx.set_line_width(T.SELECTION_LINE_WIDTH)
+            if self.selection_rect:
+                cairo_ctx.rectangle(*self.selection_rect)
+
+            self.selection_rect = [
+                int(min(self.x, self.newx)),
+                int(min(self.y, self.newy)),
+                int(abs(self.newx - self.x)),
+                int(abs(self.newy - self.y))]
+
+            cairo_ctx.rectangle(*self.selection_rect)
+            x1, y1, x2, y2 = cairo_ctx.stroke_extents()
+
+            self.widget.queue_draw_area(x1, y1, x2 - x1, y2 - y1)
+
     def onButtonPress(self, widget, event):
         self.x = event.x
         self.y = event.y
         self.newx = self.x
         self.newy = self.y
         self.button = event.button
-        self.autozoomEventButton = event.button
-        if self.button == 1 or self.button == 3:
-            self.notice_mouse = True
-            self.autozoomStart()
+
+        if self.continuous_zoom_is_active():
+            self.continuousZoomEventButton = event.button
+            if self.button == 1 or self.button == 3:
+                self.notice_mouse = True
+                self.continuous_zoom_start()
+        else:
+            if self.button == 1:
+                self.notice_mouse = True
 
     def set_paint_mode(self, isEnabled, colorsel):
         self.paint_mode = isEnabled
@@ -600,53 +677,53 @@ class T(Hidden):
 
         return False
 
-    def autozoomRecenter(self):
-        self.widget.queue_draw()
-        self.freeze()
-        centerX = x = self.width / 2
-        centerY = y = self.height / 2
-        if self.autozoomEventButton == 1:
-            if centerX != self.newx:
-                x = abs(centerX - self.newx) * 0.1
-                if centerX < self.newx:
-                    x = centerX + x
-                else:
-                    x = centerX - x
-            if centerY != self.newy:
-                y = abs(centerY - self.newy) * 0.1
-                if centerY < self.newy:
-                    y = centerY + y
-                else:
-                    y = centerY - y
-            zoom = 0.9
-        else:
-            if centerX != self.newx:
-                x = abs(centerX - self.newx) * 0.1
-                if centerX > self.newx:
-                    x = centerX + x
-                else:
-                    x = centerX - x
-            if centerY != self.newy:
-                y = abs(centerY - self.newy) * 0.1
-                if centerY > self.newy:
-                    y = centerY + y
-                else:
-                    y = centerY - y
-            zoom = 1.1
-
-        self.recenter(x, y, zoom)
-
-        if self.thaw():
-            self.changed()
-
     def onButtonRelease(self, widget, event):
         self.widget.queue_draw()
         self.button = 0
         self.notice_mouse = False
-        self.autozoomStop()
+
+        if self.continuous_zoom_is_active():
+            self.continuous_zoom_stop()
+
         self.selection_rect.clear()
         if self.filterPaintModeRelease(event):
             return
+
+        if not self.continuous_zoom_is_active():
+            self.freeze()
+            if event.button == 1:
+                if self.x == self.newx or self.y == self.newy:
+                    zoom = 0.5
+                    x = self.x
+                    y = self.y
+                else:
+                    zoom = (1 + abs(self.x - self.newx)) / float(self.width)
+                    x = 0.5 + (self.x + self.newx) / 2.0
+                    y = 0.5 + (self.y + self.newy) / 2.0
+
+                # with shift held, don't zoom
+                if hasattr(event, "state") and event.get_state() & Gdk.ModifierType.SHIFT_MASK:
+                    zoom = 1.0
+                self.recenter(x, y, zoom)
+
+            elif event.button == 2:
+                (x, y) = (event.x, event.y)
+                zoom = 1.0
+                self.recenter(x, y, zoom)
+                if self.is4D():
+                    self.flip_to_julia()
+
+            else:
+                if hasattr(event, "state") and event.get_state(
+                ) & Gdk.ModifierType.CONTROL_MASK:
+                    zoom = 20.0
+                else:
+                    zoom = 2.0
+                (x, y) = (event.x, event.y)
+                self.recenter(x, y, zoom)
+
+            if self.thaw():
+                self.changed()
 
     def redraw_rect(self, widget, cairo_ctx):
         result, r = Gdk.cairo_get_clip_rectangle(cairo_ctx)

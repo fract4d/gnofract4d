@@ -141,6 +141,7 @@ class MainWindow(Actions, ApplicationWindow):
             prefs.getboolean("display", "autodeepen"))
         self.f.set_auto_tolerance(
             prefs.getboolean("display", "autotolerance"))
+        self.f.set_continuous_zoom(prefs.getboolean("display", "continuouszoom"))
 
     def on_prefs_changed(self, prefs):
         self.f.freeze()

@@ -39,6 +39,7 @@ class T(configparser.ConfigParser):
                          ("antialias", "1"),
                          ("autodeepen", "1"),
                          ("autotolerance", "1"),
+                         ("continuouszoom", "0"),
                          ))
              ),
             ("helpers",
