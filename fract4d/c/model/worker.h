@@ -71,7 +71,7 @@ public:
 
     IFractWorker() = default;
 
-    virtual void set_context(IWorkerContext *) = 0;
+    virtual void set_context(IWorkerContext *) = 0; // TODO: should we implement this method in this class instead child classes?
     // calculate a row of antialiased pixels
     virtual void row_aa(int y, int n) = 0;
     // calculate a row of pixels
@@ -88,7 +88,7 @@ public:
     virtual ~IFractWorker() = default;
 protected:
     mutable pixel_stat_t m_stats;
-    IWorkerContext *context;
+    IWorkerContext *m_context;
 };
 
 /* per-worker-thread fractal info */
@@ -159,7 +159,6 @@ private:
 
     // @TODO: move m_site and m_im dependencies to IWorkerContext
     [[maybe_unused]] IFractalSite *m_site;
-    IWorkerContext *m_context;
     /* pointers to data also held in fractFunc */
     IImage *m_im;
     // function object which calculates the colors of points
