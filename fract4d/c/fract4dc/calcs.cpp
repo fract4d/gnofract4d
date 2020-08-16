@@ -94,7 +94,9 @@ void * calculation_thread(calc_args *args)
 #ifdef DEBUG_THREADS
     std::cerr << args << " : CA : ENDCALC(" << std::this_thread::get_id() << ")\n";
 #endif
+    PyGILState_STATE gstate = PyGILState_Ensure();
     delete args;
+    PyGILState_Release(gstate);
     return NULL;
 }
 
