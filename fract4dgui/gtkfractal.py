@@ -192,7 +192,7 @@ class Hidden(GObject.GObject):
                 self.iters_changed(m.iterations)
         elif t == fract4dc.MESSAGE_TYPE_IMAGE:
             if not self.skip_updates:
-                self.image_changed(m.x, m.y, m.w, m.h)
+                self.image_changed(m.x1, m.y1, m.x2, m.y2)
         elif t == fract4dc.MESSAGE_TYPE_PROGRESS:
             if not self.skip_updates:
                 progress = m.progress

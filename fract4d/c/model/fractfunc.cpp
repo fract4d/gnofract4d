@@ -35,7 +35,7 @@ bool fractFunc::update_image(int i)
     const auto done = try_finished_cond();
     if (!done)
     {
-        image_changed(0, m_last_update_y, m_im->Xres(), i);
+        image_changed(0, m_last_update_y, m_im->Xres(), i + 1);
         progress_changed(static_cast<float>(i) / static_cast<float>(m_im->Yres()));
     }
     m_last_update_y = i;

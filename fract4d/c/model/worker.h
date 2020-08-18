@@ -59,7 +59,7 @@ public:
     virtual const calc_options& get_options() const = 0;
     virtual bool try_finished_cond() const = 0;
     virtual int get_debug_flags() const = 0;
-    virtual void image_changed(int x1, int x2, int y1, int y2) const = 0;
+    virtual void image_changed(int x1, int y1, int x2, int y2) const = 0;
     virtual void progress_changed(float progress) const = 0;
 };
 
