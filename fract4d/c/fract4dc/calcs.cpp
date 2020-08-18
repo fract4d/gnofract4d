@@ -158,7 +158,6 @@ calc_args * parse_calc_args(PyObject *args, PyObject *kwds)
     PyObject *pyparams, *pypfo, *pycmap, *pyim, *pysite;
     PyObject *pyparams_previous = NULL;
     calc_args *cargs = new calc_args();
-    double *p = NULL;
 
     const char *kwlist[] = {
         "image",
