@@ -22,39 +22,54 @@ void XaosFractWorker::set_context(IWorkerContext *context)
         return;
     }
 
-    // TODO: The following algorithm is only tested for zooming in: previous image contains a wider range
-    // it's also not tested with y-flip or plane rotation
+    // check whether we are zooming in our out by comparing the deltas (distance between pixels)
+    bool is_zoom_in{std::abs(m_geometry_previous.deltax[VX]) >= std::abs(geometry_current.deltax[VX])};
+
+    // collect the context data for calculations
     const auto w = m_im->Xres();
     const auto h = m_im->Yres();
-    const double x_offset = geometry_current.topleft[VX] - m_geometry_previous.topleft[VX];
-    const double y_offset = geometry_current.topleft[VY] - m_geometry_previous.topleft[VY];
-    const double previous_delta_x = m_geometry_previous.deltax[VX];
-    const double previous_delta_y = m_geometry_previous.deltay[VY];
-    const double current_delta_x = geometry_current.deltax[VX];
-    const double current_delta_y = geometry_current.deltay[VY];
-    const int old_x_start = std::floor(x_offset / previous_delta_x);
-    const int old_y_start = std::floor(y_offset / previous_delta_y);
-    const int old_x_end = std::ceil((current_delta_x * w + x_offset) / previous_delta_x);
-    const int old_y_end = std::ceil((current_delta_y * h + y_offset) / previous_delta_y);
-    // fprintf(stderr, "old_x_start: %d, old_y_start: %d \n", old_x_start, old_y_start);
+
+    double x_offset, y_offset;
+    if (is_zoom_in) {
+        x_offset = m_geometry_previous.topleft[VX] - geometry_current.topleft[VX];
+        y_offset = m_geometry_previous.topleft[VY] - geometry_current.topleft[VY];
+    } else {
+        x_offset = geometry_current.topleft[VX] - m_geometry_previous.topleft[VX];
+        y_offset = geometry_current.topleft[VY] - m_geometry_previous.topleft[VY];
+    }
+    const double previous_delta_x = std::abs(m_geometry_previous.deltax[VX]);
+    const double previous_delta_y = std::abs(m_geometry_previous.deltay[VY]);
+    const double current_delta_x = std::abs(geometry_current.deltax[VX]);
+    const double current_delta_y = std::abs(geometry_current.deltay[VY]);
+    const int x_offset_pixels = std::floor(x_offset / std::max(previous_delta_x, current_delta_x));
+    const int y_offset_pixels = std::floor(y_offset / std::max(previous_delta_y, current_delta_y));
+    const int old_x_end = std::ceil((std::min(previous_delta_x, current_delta_x) * w + x_offset) / std::max(previous_delta_x, current_delta_x));
+    const int old_y_end = std::ceil((std::min(previous_delta_y, current_delta_y) * h + y_offset) / std::max(previous_delta_y, current_delta_y));
+    // fprintf(stderr, "x_offset_pixels: %d, y_offset_pixels: %d \n", x_offset_pixels, y_offset_pixels);
     // fprintf(stderr, "old_x_end: %d, old_y_end: %d \n", old_x_end, old_y_end);
 
     // Nearest neighbor value interpolation (reuse pixels from previous frame)
     // inspired by merge function from mergeSort as the series of values L and R are, by nature, ordered
-
     // columns: VY values keeps the same value within the same row
     std::map<int, int> reusable_columns;
     {
-        auto i = std::max(old_x_start, 0);
-        const auto n1 = std::min(old_x_end, w);
-        auto j = 0;
-        const auto n2 = w;
-        while (i <= n1 && j < n2) {
+        int i, j, n1, n2;
+        if (is_zoom_in) {
+            i = std::max(x_offset_pixels, 0);
+            n1 = std::min(old_x_end + 1, w);
+            j = 0;
+            n2 = w;
+        } else {
+            i = 0;
+            n1 = w;
+            j = std::max(x_offset_pixels, 0);
+            n2 = std::min(old_x_end + 1, w);
+        }
+        while (i < n1 && j < n2) {
             const auto L = m_geometry_previous.vec_for_point_2d(i, 0)[VX];
             const auto R = geometry_current.vec_for_point_2d(j, 0)[VX];
             const double diff = std::abs(R - L);
-            // if the old pixel center is within the new pixel area
-            if (diff <= current_delta_x / 2) { // TODO: decide either an L in between tow R's is taken by both or by any
+            if (diff <= current_delta_x / 2) {
                 // fprintf(stderr, "column approximation old: %d, new: %d, old_value: %f, new_value: %f \n", i, j, L, R);
                 reusable_columns[j] = i;
             }
@@ -66,19 +81,26 @@ void XaosFractWorker::set_context(IWorkerContext *context)
         }
     }
 
-    // columns: VY values keeps the same value within the same row
+    // columns: VX values keeps the same value within the same column
     std::map<int, int> reusable_rows;
     {
-        const auto n1 = std::max(old_y_start, 0);
-        auto i = std::min(old_y_end, h);
-        const auto n2 = 0;
-        auto j = h - 1;
+        int i, j, n1, n2;
+        if (is_zoom_in) {
+            n1 = std::max(y_offset_pixels, 0);
+            i = std::min(old_y_end, h - 1);
+            n2 = 0;
+            j = h - 1;
+        } else {
+            n1 = 0;
+            i = h - 1;
+            n2 = std::max(y_offset_pixels, 0);
+            j = std::min(old_y_end, h - 1);
+        }
         while (i >= n1 && j >= n2) {
             const auto L = m_geometry_previous.vec_for_point_2d(0, i)[VY];
             const auto R = geometry_current.vec_for_point_2d(0, j)[VY];
             const double diff = std::abs(R - L);
-            // if the old pixel center is within the new pixel area
-            if (diff <= std::abs(current_delta_y) / 2) { // decide either an L in between tow R's is taken by both or by any
+            if (diff <= std::abs(current_delta_y) / 2) {
                 // fprintf(stderr, "row approximation old: %d, new: %d, old_value: %f, new_value: %f \n", i, j, L, R);
                 reusable_rows[j] = i;
             }
