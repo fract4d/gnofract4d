@@ -204,6 +204,7 @@ class Hidden(GObject.GObject):
         elif t == fract4dc.MESSAGE_TYPE_STATUS:
             if m.status == fract4dc.CALC_DONE:  # DONE
                 self.running = False
+                self.waiting_last_frame = False
             if not self.skip_updates:
                 self.status_changed(m.status)
         elif t == fract4dc.MESSAGE_TYPE_PIXEL:
@@ -491,16 +492,17 @@ class T(Hidden):
         self.widget = drawing_area
 
     def continuous_zoom_start(self):
-        # todo: now it tries 10 fps but it segfaults when unable to meet expectations
-        # we need to sync with the previous frame calculation ending
-        self.continuousZoomTimer = threading.Timer(0.1, self.continuous_zoom_print)
+        # try 20 fps
+        self.continuousZoomTimer = threading.Timer(0.05, self.continuous_zoom_print)
         self.continuousZoomTimer.start()
 
     def continuous_zoom_stop(self):
         self.continuousZoomTimer.cancel()
 
     def continuous_zoom_print(self):
-        self.continuous_zoom_recenter()
+        if not self.waiting_last_frame:
+            self.waiting_last_frame = True
+            self.continuous_zoom_recenter()
         self.continuous_zoom_start()
 
     def continuous_zoom_is_active(self):
