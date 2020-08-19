@@ -69,7 +69,7 @@ void XaosFractWorker::set_context(IWorkerContext *context)
             const auto L = m_geometry_previous.vec_for_point_2d(i, 0)[VX];
             const auto R = geometry_current.vec_for_point_2d(j, 0)[VX];
             const double diff = std::abs(R - L);
-            if (diff <= current_delta_x / 2) {
+            if (diff <= std::min(previous_delta_x, current_delta_x) / 2) {
                 // fprintf(stderr, "column approximation old: %d, new: %d, old_value: %f, new_value: %f \n", i, j, L, R);
                 reusable_columns[j] = i;
             }
@@ -100,7 +100,7 @@ void XaosFractWorker::set_context(IWorkerContext *context)
             const auto L = m_geometry_previous.vec_for_point_2d(0, i)[VY];
             const auto R = geometry_current.vec_for_point_2d(0, j)[VY];
             const double diff = std::abs(R - L);
-            if (diff <= std::abs(current_delta_y) / 2) {
+            if (diff <= std::min(previous_delta_y, current_delta_y) / 2) {
                 // fprintf(stderr, "row approximation old: %d, new: %d, old_value: %f, new_value: %f \n", i, j, L, R);
                 reusable_rows[j] = i;
             }
