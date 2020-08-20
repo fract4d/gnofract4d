@@ -321,6 +321,9 @@ class Hidden(GObject.GObject):
     def stats_changed(self, stats):
         self.emit('stats-changed', stats)
 
+    def continuous_zoom_is_active(self):
+        return self.continuous_zoom
+
     def draw(self, image, width, height, nthreads):
         t = self.f.epsilon_tolerance(width, height)
         if self.f.auto_epsilon:
@@ -530,9 +533,6 @@ class T(Hidden):
         if not self.waiting_last_frame:
             self.waiting_last_frame = True
             self.continuous_zoom_recenter()
-
-    def continuous_zoom_is_active(self):
-        return self.continuous_zoom
 
     def continuous_zoom_recenter(self):
         self.widget.queue_draw()
