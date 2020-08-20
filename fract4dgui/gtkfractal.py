@@ -17,6 +17,26 @@ from fract4d import fractal, fract4dc, image, messages
 
 import threading
 
+# from https://stackoverflow.com/questions/2697039/python-equivalent-of-setinterval
+class ThreadJob(threading.Thread):
+    def __init__(self, callback, event, interval):
+        '''runs the callback function after interval seconds
+        :param callback:  callback function to invoke
+        :param event: external event for controlling the update operation
+        :param interval: time in seconds after which are required to fire the callback
+        :type callback: function
+        :type interval: int
+        '''
+        self.callback = callback
+        self.event = event
+        self.interval = interval
+        super(ThreadJob, self).__init__()
+
+    def run(self):
+        while not self.event.wait(self.interval):
+            self.callback()
+
+
 class Hidden(GObject.GObject):
     """This class implements a fractal which calculates asynchronously
     and is integrated with the GTK main loop"""
@@ -491,19 +511,25 @@ class T(Hidden):
 
         self.widget = drawing_area
 
+        self.cz_event = threading.Event()
+        self.cz_thread_job = None
+
     def continuous_zoom_start(self):
         # try 20 fps
-        self.continuousZoomTimer = threading.Timer(0.05, self.continuous_zoom_print)
-        self.continuousZoomTimer.start()
+        if (not self.cz_thread_job or not self.cz_thread_job.is_alive()):
+            self.cz_thread_job = ThreadJob(self.continuous_zoom_print, self.cz_event, 0.05)
+            self.cz_thread_job.start()
 
     def continuous_zoom_stop(self):
-        self.continuousZoomTimer.cancel()
+        if (self.cz_thread_job.is_alive()):
+            self.cz_event.set()
+            self.cz_thread_job.join()
+        self.cz_event.clear()
 
     def continuous_zoom_print(self):
         if not self.waiting_last_frame:
             self.waiting_last_frame = True
             self.continuous_zoom_recenter()
-        self.continuous_zoom_start()
 
     def continuous_zoom_is_active(self):
         return self.continuous_zoom
