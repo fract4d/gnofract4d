@@ -2,6 +2,7 @@
 #define __IMAGE_H_INCLUDED__
 
 #include <cassert>
+#include <map>
 
 #include "pf.h"
 
@@ -81,6 +82,11 @@ class image : public IImage
     /* the fate of each pixel */
     fate_t *fate_buf;
 
+    /* continuous zoom: row/colum approximations reused from previous frame */
+    // need to save x and value for columns and y and value for rows
+    std::map<int, double> *reused_rows = nullptr;
+    std::map<int, double> *reused_columns = nullptr;
+
     void delete_buffers();
     bool alloc_buffers();
 
@@ -129,6 +135,34 @@ public:
     }
 
     // utilities
+    inline void set_reused_columns(const std::map<int,double> &columns) {
+        clear_reused_columns();
+        reused_columns = new std::map<int, double>(columns);
+    }
+    inline void set_reused_rows(const std::map<int,double> &rows) {
+        clear_reused_rows();
+        reused_rows = new std::map<int, double>(rows);
+    }
+    inline bool get_reused_column_value(int x, double *value) {
+        if (!reused_columns) return false;
+        if (reused_columns->find(x) == reused_columns->end()) return false;
+        *value = (*reused_columns)[x];
+        return true;
+    }
+    inline bool get_reused_row_value(int y, double *value) {
+        if (!reused_rows) return false;
+        if (reused_rows->find(y) == reused_rows->end()) return false;
+        *value = (*reused_rows)[y];
+        return true;
+    }
+    inline void clear_reused_rows() {
+        if (reused_rows) delete reused_rows;
+        reused_rows = nullptr;
+    }
+    inline void clear_reused_columns() {
+        if (reused_columns) delete reused_columns;
+        reused_columns = nullptr;
+    }
 
     int bytes() const;
 

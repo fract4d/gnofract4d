@@ -40,6 +40,8 @@ image::image(const image &im)
 image::~image()
 {
     delete_buffers();
+    clear_reused_rows();
+    clear_reused_columns();
 }
 
 void image::delete_buffers()
@@ -247,4 +249,6 @@ int image::index_of_sentinel_subpixel() const
 void image::clear()
 {
     std::memset(fate_buf, FATE_UNKNOWN, sizeof(fate_t) * m_Xres * m_Yres * N_SUBPIXELS);
+    clear_reused_columns();
+    clear_reused_rows();
 }

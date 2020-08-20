@@ -22,6 +22,9 @@ void XaosFractWorker::set_context(IWorkerContext *context)
         return;
     }
 
+    image * actual_image = dynamic_cast<image *>(m_im);
+    if (!actual_image) return; // how so?
+
     // check whether we are zooming in our out by comparing the deltas (distance between pixels)
     bool is_zoom_in{std::abs(m_geometry_previous.deltax[VX]) >= std::abs(geometry_current.deltax[VX])};
 
@@ -50,8 +53,26 @@ void XaosFractWorker::set_context(IWorkerContext *context)
 
     // Nearest neighbor value interpolation (reuse pixels from previous frame)
     // inspired by merge function from mergeSort as the series of values L and R are, by nature, ordered
+
+    // | is the center of the pixel in the complex plane
+    // -- is the space beteen pixel centers (delta)
+    // matching numbers are reused pixels
+
+    // zoom in
+    //     1   2   3   4   5    L(i)
+    // |---|---|---|---|---|---|  old frame
+    //    |--|--|--|--|--|--|     new frame
+    //    1     2  3  4     5   R(j)
+
+    // zoom out
+    //    1     2  3  4     5   L(i)
+    //    |--|--|--|--|--|--|     old frame
+    // |---|---|---|---|---|---|  new frame
+    //     1   2   3   4   5    R(j)
+
     // columns: VY values keeps the same value within the same row
     std::map<int, int> reusable_columns;
+    std::map<int, double> reusale_column_values;
     {
         int i, j, n1, n2;
         if (is_zoom_in) {
@@ -66,12 +87,17 @@ void XaosFractWorker::set_context(IWorkerContext *context)
             n2 = std::min(old_x_end + 1, w);
         }
         while (i < n1 && j < n2) {
-            const auto L = m_geometry_previous.vec_for_point_2d(i, 0)[VX];
-            const auto R = geometry_current.vec_for_point_2d(j, 0)[VX];
+            double L = m_geometry_previous.vec_for_point_2d(i, 0)[VX];
+            double R = geometry_current.vec_for_point_2d(j, 0)[VX];
+
+            double reused_value;
+            if (actual_image->get_reused_column_value(i, &reused_value)) L = reused_value;
+
             const double diff = std::abs(R - L);
             if (diff <= std::min(previous_delta_x, current_delta_x) / 2) {
                 // fprintf(stderr, "column approximation old: %d, new: %d, old_value: %f, new_value: %f \n", i, j, L, R);
                 reusable_columns[j] = i;
+                reusale_column_values[j] = L;
             }
             if (L <= R) {
                 ++i;
@@ -83,6 +109,7 @@ void XaosFractWorker::set_context(IWorkerContext *context)
 
     // columns: VX values keeps the same value within the same column
     std::map<int, int> reusable_rows;
+    std::map<int, double> reusable_row_values;
     {
         int i, j, n1, n2;
         if (is_zoom_in) {
@@ -97,12 +124,17 @@ void XaosFractWorker::set_context(IWorkerContext *context)
             j = std::min(old_y_end, h - 1);
         }
         while (i >= n1 && j >= n2) {
-            const auto L = m_geometry_previous.vec_for_point_2d(0, i)[VY];
-            const auto R = geometry_current.vec_for_point_2d(0, j)[VY];
+            double L = m_geometry_previous.vec_for_point_2d(0, i)[VY];
+            double R = geometry_current.vec_for_point_2d(0, j)[VY];
+
+            double reused_value;
+            if (actual_image->get_reused_row_value(i, &reused_value)) L = reused_value;
+
             const double diff = std::abs(R - L);
             if (diff <= std::min(previous_delta_y, current_delta_y) / 2) {
                 // fprintf(stderr, "row approximation old: %d, new: %d, old_value: %f, new_value: %f \n", i, j, L, R);
                 reusable_rows[j] = i;
+                reusable_row_values[j] = L;
             }
             if (L <= R) {
                 --i;
@@ -112,27 +144,30 @@ void XaosFractWorker::set_context(IWorkerContext *context)
         }
     }
 
+    // update the image reused column and row values for subsequent frames
+    actual_image->set_reused_columns(reusale_column_values);
+    actual_image->set_reused_rows(reusable_row_values);
+
     // print some statistics about reusage
     // const double pixels_reused = reusable_columns.size() * reusable_rows.size();
     // fprintf(stderr, "total pixels: %d, pixels reused: %f, reusage ratio: %f \n", w*h, pixels_reused, (pixels_reused / (w*h*1.0f)) * 100.0f);
 
     // copy reused pixels and metadata to a temp image "clone" (not actually a clone but a new one with same dimensions)
-    if (image * actual_image = dynamic_cast<image *>(m_im)) {
-        image im {*actual_image};
-        for (auto y = 0; y < h; y++) {
-            for (auto x = 0; x < w; x++) {
-                if (reusable_columns.find(x) == reusable_columns.end() ||
-                    reusable_rows.find(y) == reusable_rows.end()) continue;
-                im.put(x, y, actual_image->get(reusable_columns[x], reusable_rows[y]));
-                im.setIter(x, y, actual_image->getIter(reusable_columns[x], reusable_rows[y]));
-                im.setFate(x, y, 0, actual_image->getFate(reusable_columns[x], reusable_rows[y], 0));
-                im.setIndex(x, y, 0, actual_image->getIndex(reusable_columns[x], reusable_rows[y], 0));
-            }
+    image im {*actual_image};
+    for (auto y = 0; y < h; y++) {
+        for (auto x = 0; x < w; x++) {
+            if (reusable_columns.find(x) == reusable_columns.end() ||
+                reusable_rows.find(y) == reusable_rows.end()) continue;
+            im.put(x, y, actual_image->get(reusable_columns[x], reusable_rows[y]));
+            im.setIter(x, y, actual_image->getIter(reusable_columns[x], reusable_rows[y]));
+            im.setFate(x, y, 0, actual_image->getFate(reusable_columns[x], reusable_rows[y], 0));
+            im.setIndex(x, y, 0, actual_image->getIndex(reusable_columns[x], reusable_rows[y], 0));
         }
-        // swap the image buffers
-        actual_image->swap_buffers(im);
-        m_context->image_changed(0, 0, w, h);
     }
+    // swap the image buffers
+    actual_image->swap_buffers(im);
+    // m_context->image_changed(0, 0, w, h);
+
 }
 
 void XaosFractWorker::row(int x, int y, int n)
