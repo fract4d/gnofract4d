@@ -94,8 +94,6 @@ class GradientType(Type):
         else:
             return ["t__pfo->p[%d].gradient" % var.param_slot]
 
-        return []
-
 
 class ImageType(Type):
     def __init__(self, **kwds):
@@ -107,8 +105,6 @@ class ImageType(Type):
                 "Internal Compiler Error: image not initialized as a param")
         else:
             return ["t__pfo->p[%d].image" % var.param_slot]
-
-        return []
 
 
 # these have to be in the indexes given by the constants above
