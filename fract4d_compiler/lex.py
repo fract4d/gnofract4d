@@ -774,7 +774,6 @@ class LexerReflect(object):
                 module = inspect.getmodule(f)
                 self.modules.add(module)
 
-                tokname = self.toknames[fname]
                 if isinstance(f, types.MethodType):
                     reqargs = 2
                 else:
@@ -809,8 +808,7 @@ class LexerReflect(object):
 
                 try:
                     c = re.compile(
-                        '(?P<%s>%s)' %
-                        (fname, _get_regex(f)), re.VERBOSE | self.reflags)
+                        f'(?P<{fname}>{_get_regex(f)})', re.VERBOSE | self.reflags)
                     if c.match(''):
                         self.log.error(
                             "%s:%d: Regular expression for rule '%s' matches empty string",
