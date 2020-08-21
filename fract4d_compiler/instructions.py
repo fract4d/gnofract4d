@@ -168,7 +168,7 @@ class Literal(Insn):
     'A loophole in the system to sneak through text directly'
 
     def __init__(self, text):
-    	super().__init__()
+        super().__init__()
         self.text = text
 
     def cformat(self):
