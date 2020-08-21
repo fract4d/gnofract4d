@@ -168,6 +168,7 @@ class Literal(Insn):
     'A loophole in the system to sneak through text directly'
 
     def __init__(self, text):
+    	super().__init__()
         self.text = text
 
     def cformat(self):
@@ -187,7 +188,7 @@ class Oper(Insn):
     'An operation'
 
     def __init__(self, assem, src, dst, jumps=[]):
-        Insn.__init__(self, assem)
+        super().__init__(self, assem)
         self.src = src
         self.dst = dst
         self.jumps = jumps
@@ -210,7 +211,7 @@ class Binop(Oper):
     'A binary infix operation, like addition'
 
     def __init__(self, op, src, dst, generate_trace=False):
-        Insn.__init__(self, "")
+        super().__init__(self, "")
         self.op = op
         self.src = src
         self.dst = dst
@@ -261,7 +262,7 @@ class Label(Insn):
     'A label which can be jumped to'
 
     def __init__(self, label):
-        Insn.__init__(self, "%s: ;\n" % label)
+        super().__init__(self, "%s: ;\n" % label)
         self.label = label
 
     def format(self):
@@ -275,7 +276,7 @@ class Move(Insn):
     ' A move instruction'
 
     def __init__(self, src, dst, generate_trace=False):
-        Insn.__init__(self, "%(d0)s = %(s0)s;")
+        super().__init__(self, "%(d0)s = %(s0)s;")
         self.src = src
         self.dst = dst
         self.trace = generate_trace
@@ -303,7 +304,7 @@ class Decl(Insn):
     ' a variable declaration'
 
     def __init__(self, assem):
-        Insn.__init__(self, assem)
+        super().__init__(self, assem)
         self.src = None
         self.dst = None
 
