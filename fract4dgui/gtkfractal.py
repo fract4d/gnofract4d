@@ -689,7 +689,7 @@ class T(Hidden):
             # skip image params for now
             return
         else:
-            raise "Unsupported parameter type"
+            raise ValueError("Unsupported parameter type")
 
         table.attach(widget, 1, i, 1, 1)
 
