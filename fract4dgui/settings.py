@@ -696,8 +696,6 @@ class SettingsPane(Gtk.Box):
 
         if hasattr(container, "__call__"):
             container = container()
-        else:
-            container = container
 
         if container is None:
             return
