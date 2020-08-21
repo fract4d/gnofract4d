@@ -168,7 +168,7 @@ class Literal(Insn):
     'A loophole in the system to sneak through text directly'
 
     def __init__(self, text):
-        super().__init__()
+        super().__init__("")
         self.text = text
 
     def cformat(self):
@@ -211,10 +211,8 @@ class Binop(Oper):
     'A binary infix operation, like addition'
 
     def __init__(self, op, src, dst, generate_trace=False):
-        super().__init__("")
+        super().__init__("", src, dst)
         self.op = op
-        self.src = src
-        self.dst = dst
         self.trace = generate_trace
 
     def const_eval(self):
