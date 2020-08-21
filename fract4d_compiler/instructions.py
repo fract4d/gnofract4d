@@ -51,7 +51,7 @@ class ConstArg:
 
 class ConstFloatArg(ConstArg):
     def __init__(self, value):
-        ConstArg.__init__(self, value)
+        super().__init__(value)
 
     def cformat(self):
         return "%.17f"
@@ -71,7 +71,7 @@ class ConstFloatArg(ConstArg):
 
 class ConstIntArg(ConstArg):
     def __init__(self, value):
-        ConstArg.__init__(self, value)
+        super().__init__(value)
 
     def cformat(self):
         return "%d"
@@ -188,7 +188,7 @@ class Oper(Insn):
     'An operation'
 
     def __init__(self, assem, src, dst, jumps=[]):
-        super().__init__(self, assem)
+        super().__init__(assem)
         self.src = src
         self.dst = dst
         self.jumps = jumps
@@ -211,7 +211,7 @@ class Binop(Oper):
     'A binary infix operation, like addition'
 
     def __init__(self, op, src, dst, generate_trace=False):
-        super().__init__(self, "")
+        super().__init__("")
         self.op = op
         self.src = src
         self.dst = dst
@@ -262,7 +262,7 @@ class Label(Insn):
     'A label which can be jumped to'
 
     def __init__(self, label):
-        super().__init__(self, "%s: ;\n" % label)
+        super().__init__(f"{label}: ;\n")
         self.label = label
 
     def format(self):
@@ -276,7 +276,7 @@ class Move(Insn):
     ' A move instruction'
 
     def __init__(self, src, dst, generate_trace=False):
-        super().__init__(self, "%(d0)s = %(s0)s;")
+        super().__init__("%(d0)s = %(s0)s;")
         self.src = src
         self.dst = dst
         self.trace = generate_trace
@@ -304,7 +304,7 @@ class Decl(Insn):
     ' a variable declaration'
 
     def __init__(self, assem):
-        super().__init__(self, assem)
+        super().__init__(assem)
         self.src = None
         self.dst = None
 
