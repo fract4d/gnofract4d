@@ -299,6 +299,7 @@ class T:
 
 class AnimationHandler(ContentHandler):
     def __init__(self, animation):
+    	self.__init__()
         self.animation = animation
 
     def startElement(self, name, attrs):
