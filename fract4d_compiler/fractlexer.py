@@ -148,7 +148,6 @@ def t_COMMENT_FORMULA(t):
     r';?[Cc]omment\s*{[^}]*}'
     newlines = re.findall(r'\n', t.value)
     t.lexer.lineno += len(newlines)
-    pass
 
 # may seem weird, but this includes the starting {
 # this is to ensure that the generous pattern match doesn't
