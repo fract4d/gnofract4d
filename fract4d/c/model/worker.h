@@ -5,6 +5,9 @@
 #include <vector>
 #include <thread>
 #include <queue>
+#include <functional>
+#include <condition_variable>
+#include <mutex>
 
 #include "model/vectors.h"
 #include "model/stats.h"
