@@ -541,7 +541,6 @@ class T(Hidden):
         centerY = y = self.height / 2
         clickedXPosition = self.newx if self.newx < self.width else self.width
         clickedYPosition = self.newy if self.newy < self.height else self.height
-        print(self.newx, self.newy, clickedXPosition, clickedYPosition)
 
         if self.continuousZoomEventButton == 1:
             if centerX != clickedXPosition:
