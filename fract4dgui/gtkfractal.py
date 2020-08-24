@@ -539,30 +539,34 @@ class T(Hidden):
         self.freeze()
         centerX = x = self.width / 2
         centerY = y = self.height / 2
+        clickedXPosition = self.newx if self.newx < self.width else self.width
+        clickedYPosition = self.newy if self.newy < self.height else self.height
+        print(self.newx, self.newy, clickedXPosition, clickedYPosition)
+
         if self.continuousZoomEventButton == 1:
-            if centerX != self.newx:
-                x = abs(centerX - self.newx) * 0.1
-                if centerX < self.newx:
+            if centerX != clickedXPosition:
+                x = abs(centerX - clickedXPosition) * 0.1
+                if centerX < clickedXPosition:
                     x = centerX + x
                 else:
                     x = centerX - x
-            if centerY != self.newy:
-                y = abs(centerY - self.newy) * 0.1
-                if centerY < self.newy:
+            if centerY != clickedYPosition:
+                y = abs(centerY - clickedYPosition) * 0.1
+                if centerY < clickedYPosition:
                     y = centerY + y
                 else:
                     y = centerY - y
             zoom = 0.9
         else:
-            if centerX != self.newx:
-                x = abs(centerX - self.newx) * 0.1
-                if centerX > self.newx:
+            if centerX != clickedXPosition:
+                x = abs(centerX - clickedXPosition) * 0.1
+                if centerX > clickedXPosition:
                     x = centerX + x
                 else:
                     x = centerX - x
-            if centerY != self.newy:
-                y = abs(centerY - self.newy) * 0.1
-                if centerY > self.newy:
+            if centerY != clickedYPosition:
+                y = abs(centerY - clickedYPosition) * 0.1
+                if centerY > clickedYPosition:
                     y = centerY + y
                 else:
                     y = centerY - y
