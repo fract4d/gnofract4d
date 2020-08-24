@@ -3,6 +3,8 @@
 
 #include <memory>
 #include <vector>
+#include <thread>
+#include <queue>
 
 #include "model/vectors.h"
 #include "model/stats.h"
@@ -225,7 +227,19 @@ public:
         im->totalYres(),
         im->Xoffset(),
         im->Yoffset()
-    } {};
+    }
+    {
+        int nthreads = std::thread::hardware_concurrency();
+        for(auto i = 0; i < nthreads; i++)
+        {
+            m_pool.push_back(std::thread(&XaosFractWorker::work, this));
+        }
+    };
+
+    ~XaosFractWorker()
+    {
+        flush();
+    }
 
     // IFractWorker interface
     void set_context(IWorkerContext *);
@@ -237,6 +251,9 @@ public:
     const pixel_stat_t &get_stats() const { return m_stats; };
     void flush();
     void box(int x, int y, int rsize);
+    // thread pool
+    void work();
+    void add_job(std::function<void()>);
 
 private:
     // calculate a single pixel
@@ -258,6 +275,13 @@ private:
     int m_lastPointIters; // how many iterations did last pixel take
 
     fract_geometry m_geometry_previous;
+
+    std::vector<std::thread> m_pool;
+    std::mutex m_queue_mutex;
+    std::condition_variable m_condition;
+    std::queue<std::function<void()>> m_jobs;
+    bool m_terminate_pool = false;
+
 };
 
 #endif

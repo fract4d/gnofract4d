@@ -170,12 +170,55 @@ void XaosFractWorker::set_context(IWorkerContext *context)
 
 }
 
+void XaosFractWorker::work()
+{
+    for (;;)
+    {
+        std::function<void()> job;
+        {
+            std::unique_lock<std::mutex> lock(m_queue_mutex);
+            m_condition.wait(lock, [this]{return !m_jobs.empty() || m_terminate_pool;});
+            if (m_terminate_pool && m_jobs.empty()) return;
+            job = m_jobs.front();
+            m_jobs.pop();
+        }
+        job();
+    }
+}
+
+void XaosFractWorker::add_job(std::function<void()> job)
+{
+    {
+        const std::unique_lock<std::mutex> lock(m_queue_mutex);
+        m_jobs.push(job);
+    }
+    m_condition.notify_one();
+}
+
+void XaosFractWorker::flush()
+{
+    {
+        const std::unique_lock<std::mutex> lock(m_queue_mutex);
+        if (m_terminate_pool) return;
+        m_terminate_pool = true;
+    }
+    m_condition.notify_all();
+    for (auto &t: m_pool) t.join();
+    m_pool.clear();
+}
+
 void XaosFractWorker::row(int x, int y, int n)
 {
-    for (auto i = 0; i < n; ++i)
-    {
-        pixel(x + i, y, 1, 1);
-    }
+    // for (auto i = 0; i < n; ++i)
+    // {
+    //     pixel(x + i, y, 1, 1);
+    // }
+    add_job(std::bind([this](int x, int y, int n){
+        for (auto i = 0; i < n; ++i)
+        {
+            pixel(x + i, y, 1, 1);
+        }
+    }, x, y, n));
 }
 
 void XaosFractWorker::box_row(int w, int y, int rsize)
@@ -184,7 +227,8 @@ void XaosFractWorker::box_row(int w, int y, int rsize)
     // row boxes
     for (; x < w - rsize; x += rsize - 1)
     {
-        box(x, y, rsize);
+        // box(x, y, rsize);
+        add_job(std::bind(&XaosFractWorker::box, this, x, y, rsize));
     }
     // extra pixels at the row
     for (auto y2 = y; y2 < y + rsize; ++y2)
@@ -277,10 +321,7 @@ inline void XaosFractWorker::rectangle_with_iter(
     }
 }
 
-void XaosFractWorker::flush()
-{
 
-}
 
 void XaosFractWorker::pixel(int x, int y, int h, int w)
 {
