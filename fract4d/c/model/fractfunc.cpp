@@ -162,15 +162,15 @@ void fractFunc::draw_all_xaos()
     const auto w = m_im->Xres();
     const auto h = m_im->Yres();
 
-    // only one pass
+    const auto rsize = 16;
     auto y = 0;
+    for (; y < h - rsize; y += rsize)
+    {
+        m_worker->box_row(w, y, rsize);
+    }
     while(y < h) {
         m_worker->row(0, y, w);
         ++y;
-        if (try_finished_cond())
-        {
-            break;
-        }
     }
 
     m_worker->flush();

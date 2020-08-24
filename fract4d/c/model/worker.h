@@ -232,10 +232,11 @@ public:
     void row_aa(int y, int n) {};
     void row(int x, int y, int n);
     void qbox_row(int w, int y, int rsize, int drawsize) {};
-    void box_row(int w, int y, int rsize) {};
+    void box_row(int w, int y, int rsize);
     void reset_counts() {};
     const pixel_stat_t &get_stats() const { return m_stats; };
-    void flush() {};
+    void flush();
+    void box(int x, int y, int rsize);
 
 private:
     // calculate a single pixel
@@ -247,6 +248,10 @@ private:
     void periodSet(int ppos);
     // draw a rectangle of this colour
     void rectangle(rgba_t, int x, int y, int w, int h);
+    bool isTheSame(int targetIter, int targetCol, int x, int y);
+    // make an int corresponding to an RGB triple
+    int Pixel2INT(int x, int y);
+    void rectangle_with_iter(rgba_t, fate_t, int iter, float index, int x, int y, int w, int h);
 
     IImage *m_im;
     pointFunc m_pf;

@@ -178,6 +178,109 @@ void XaosFractWorker::row(int x, int y, int n)
     }
 }
 
+void XaosFractWorker::box_row(int w, int y, int rsize)
+{
+    auto x = 0;
+    // row boxes
+    for (; x < w - rsize; x += rsize - 1)
+    {
+        box(x, y, rsize);
+    }
+    // extra pixels at the row
+    for (auto y2 = y; y2 < y + rsize; ++y2)
+    {
+        row(x, y2, w - x);
+    }
+}
+
+void XaosFractWorker::box(int x, int y, int rsize)
+{
+    // calculate edges of box to see if they're all the same colour
+    // if they are, we assume that the box is a solid colour and
+    // don't calculate the interior points
+    bool bFlat = true;
+    const int iter = m_im->getIter(x, y);
+    const int pcol = Pixel2INT(x, y);
+    // calculate top and bottom of box & check for flatness
+    const auto bottom_y = y + rsize - 1;
+    const auto right_x = x + rsize - 1;
+    for (int x2 = x; x2 <= right_x; ++x2)
+    {
+        pixel(x2, y, 1, 1);
+        bFlat = bFlat && isTheSame(iter, pcol, x2, y);
+        pixel(x2, bottom_y, 1, 1);
+        bFlat = bFlat && isTheSame(iter, pcol, x2, bottom_y);
+    }
+    // calc left and right of box & check for flatness
+    for (int y2 = y; y2 <= bottom_y; ++y2)
+    {
+        pixel(x, y2, 1, 1);
+        bFlat = bFlat && isTheSame(iter, pcol, x, y2);
+        pixel(right_x, y2, 1, 1);
+        bFlat = bFlat && isTheSame(iter, pcol, right_x, y2);
+    }
+    if (bFlat)
+    {
+        // just draw a solid rectangle
+        const rgba_t pixel = m_im->get(x, y);
+        const fate_t fate = m_im->getFate(x, y, 0);
+        const float index = m_im->getIndex(x, y, 0);
+        rectangle_with_iter(pixel, fate, iter, index, x + 1, y + 1, rsize - 2, rsize - 2);
+        return;
+    }
+    if (rsize > 4)
+    {
+        // divide into 4 sub-boxes and check those for flatness
+        const int half_size = rsize / 2;
+        box(x, y, half_size);
+        box(x + half_size, y, half_size);
+        box(x, y + half_size, half_size);
+        box(x + half_size, y + half_size, half_size);
+    }
+    else
+    {
+        // we do need to calculate the interior points individually
+        for (auto y2 = y + 1; y2 < bottom_y; ++y2)
+        {
+            row(x + 1, y2, rsize - 2);
+        }
+    }
+}
+
+inline int XaosFractWorker::Pixel2INT(int x, int y)
+{
+    return static_cast<int>(m_im->get(x, y));
+}
+
+inline bool XaosFractWorker::isTheSame(int targetIter, int targetCol, int x, int y)
+{
+    // does this point have the target # of iterations and same colour?
+    if ((m_im->getIter(x, y) == targetIter) && (Pixel2INT(x, y) == targetCol)) {
+        return true;
+    }
+    return false;
+}
+
+inline void XaosFractWorker::rectangle_with_iter(
+    rgba_t pixel, fate_t fate, int iter, float index,
+    int x, int y, int w, int h)
+{
+    for (auto i = y; i < y + h; ++i)
+    {
+        for (auto j = x; j < x + w; ++j)
+        {
+            m_im->put(j, i, pixel);
+            m_im->setIter(j, i, iter);
+            m_im->setFate(j, i, 0, fate);
+            m_im->setIndex(j, i, 0, index);
+        }
+    }
+}
+
+void XaosFractWorker::flush()
+{
+
+}
 
 void XaosFractWorker::pixel(int x, int y, int h, int w)
 {
