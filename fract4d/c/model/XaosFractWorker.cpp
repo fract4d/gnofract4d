@@ -201,8 +201,8 @@ void XaosFractWorker::flush()
         const std::unique_lock<std::mutex> lock(m_queue_mutex);
         if (m_terminate_pool) return;
         m_terminate_pool = true;
+        m_condition.notify_all();
     }
-    m_condition.notify_all();
     for (auto &t: m_pool)
     {
         if (t.joinable()) t.join();

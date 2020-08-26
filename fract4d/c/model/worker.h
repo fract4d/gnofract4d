@@ -232,7 +232,7 @@ public:
         im->Yoffset()
     }
     {
-        int nthreads = std::thread::hardware_concurrency();
+        const int nthreads = std::thread::hardware_concurrency();
         for(auto i = 0; i < nthreads; i++)
         {
             m_pool.push_back(std::thread(&XaosFractWorker::work, this));
