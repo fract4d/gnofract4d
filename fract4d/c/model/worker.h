@@ -256,7 +256,7 @@ public:
     void box(int x, int y, int rsize);
     // thread pool
     void work();
-    void add_job(std::function<void()>);
+    void add_job(std::function<void()> &&);
 
 private:
     // calculate a single pixel

@@ -186,7 +186,7 @@ void XaosFractWorker::work()
     }
 }
 
-void XaosFractWorker::add_job(std::function<void()> job)
+void XaosFractWorker::add_job(std::function<void()> &&job)
 {
     {
         const std::unique_lock<std::mutex> lock(m_queue_mutex);
@@ -203,7 +203,10 @@ void XaosFractWorker::flush()
         m_terminate_pool = true;
     }
     m_condition.notify_all();
-    for (auto &t: m_pool) t.join();
+    for (auto &t: m_pool)
+    {
+        if (t.joinable()) t.join();
+    }
     m_pool.clear();
 }
 
