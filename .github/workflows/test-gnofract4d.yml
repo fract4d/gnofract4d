@@ -12,10 +12,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-10.15, ubuntu-20.04]
-        python: [3.7]
+        os: [ubuntu-20.04]
+        python: [3.8,3.9.0-rc.1]
         toxenv: [py]
         include:
+          - os: macos-10.15
+            python: 3.7
+            toxenv: py
           - os: ubuntu-18.04
             python: 3.6
             toxenv: py
