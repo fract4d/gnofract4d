@@ -747,6 +747,30 @@ opacity:
         self.assertEqual(False, g.set_color(-1, True, 0.2, 0.7, 0.9))
         self.assertEqual(False, g.set_color(7, True, 0.2, 0.7, 0.9))
 
+    def testRGBtoHSV(self):
+        rgb_hsv = (
+            ([0, 0, 0 ,0], [300, 0, 0, 0]),
+            ([1, 0, 0, 1], [0.0, 1.0, 1, 1]),
+            ([0, 0.5, 0, 1], [120.0, 1.0, 0.5, 1]),
+            ([0.5, 0.5, 1, 1], [240.0, 0.5, 1, 1]),
+        )
+        for rgb, hsv in rgb_hsv:
+            self.assertEqual(gradient.RGBtoHSV(rgb), hsv)
+
+    def testHSVtoRGB(self):
+        rgb_hsv = (
+            ([0, 0, 0], [300, 0, 0, 0]),
+            ([1, 0, 0, 1], [0.0, 1.0, 1, 1]),
+            ([0.75, 0.75, 0, 1], [60.0, 1.0, 0.75, 1]),
+            ([0, 0.5, 0, 1], [120.0, 1.0, 0.5, 1]),
+            ([0.5, 1, 1, 1], [180.0, 0.5, 1, 1]),
+            ([0.5, 0.5, 1, 1], [240.0, 0.5, 1, 1]),
+            ([0.75, 0.25, 0.75, 1], [300.0, 0.666666666667, 0.75, 1]),
+        )
+        for rgb, hsv in rgb_hsv:
+            self.assertNearlyEqual(
+                gradient.HSVtoRGB(hsv), rgb, f"HSV {hsv} expected RGB {rgb}")
+
     def assertNearlyEqual(self, a, b, msg, epsilon=1.0e-12):
         # check that each element is within epsilon of expected value
         for (ra, rb) in zip(a, b):

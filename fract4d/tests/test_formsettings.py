@@ -2,6 +2,7 @@
 
 import io
 import copy
+from unittest.mock import patch
 
 from . import testbase
 
@@ -149,11 +150,14 @@ class Test(testbase.ClassSetup):
 
         self.assertEqual(4.0, fs1.get_named_param_value("@bailout"))
 
-    def testMutate(self):
-        fs1 = formsettings.T(Test.g_comp)
-        fs1.set_formula("gf4d.frm", "Mandelbrot", g_grad)
+    @patch("random.random")
+    def testMutate(self, mock_random):
+        mock_random.return_value = 0.01
 
-        fs1.mutate(0.0, 1.0)
+        fs1 = formsettings.T(Test.g_comp)
+        fs1.set_formula("test.frm", "test_all_types", g_grad)
+
+        fs1.mutate(0.6, 1.0)
 
     def testNudge(self):
         fs1 = formsettings.T(Test.g_comp)
