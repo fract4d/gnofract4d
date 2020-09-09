@@ -6,6 +6,7 @@ import copy
 import os.path
 import time
 import filecmp
+from unittest.mock import patch
 
 from . import testbase
 
@@ -1735,3 +1736,29 @@ solids=[
         f.set_formula("fractint-g4.frm", "Jm_25")
         f.compile()
         self.assertEqual(len(f.forms[0].params), len(f.forms[0].paramtypes))
+
+    @patch("random.random")
+    def testAngleRandom(self, mock_random):
+        f = fractal.T(Test.g_comp)
+
+        # action > weirdness
+        weirdness = 0
+        mock_random.return_value = 0.5
+        angle = f.angle_random(weirdness)
+        self.assertEqual(angle, 0.0)
+
+        # action < weirdness / 6.0
+        weirdness = 12
+        # random.random() > 0.5
+        mock_random.return_value = 0.9
+        angle = f.angle_random(weirdness)
+        self.assertEqual(angle, math.pi / 2)
+        # else
+        mock_random.return_value = 0.4
+        angle = f.angle_random(weirdness)
+        self.assertEqual(angle, math.pi / -2)
+
+        # action >= weirdness / 6.0
+        weirdness = 1
+        angle = f.angle_random(weirdness)
+        self.assertEqual(angle, weirdness * (0.4 - 0.5) * math.pi / 2.0)
