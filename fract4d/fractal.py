@@ -655,7 +655,7 @@ class T(fctutils.T):
             if random.random() > 0.5:
                 return math.pi / 2.0
             else:
-                return math.pi / 2.0
+                return math.pi / -2.0
 
         return weirdness * (random.random() - 0.5) * math.pi / 2.0
 
