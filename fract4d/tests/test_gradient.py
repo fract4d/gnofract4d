@@ -4,6 +4,7 @@ import math
 import io
 import copy
 import re
+from unittest.mock import patch
 
 from . import testbase
 
@@ -722,6 +723,35 @@ opacity:
         self.assertEqual(
             [0x94 / 255.0, 0xAE / 255.0, 0x89 / 255.0, 1.0],
             g.segments[0].left_color)
+
+    @patch("fract4d.gradient.Gradient.randomize_spheres")
+    @patch("fract4d.gradient.Gradient.randomize_complementary")
+    @patch("random.random")
+    def testRandomize(self, mock_random, mock_complementary, mock_spheres):
+        class Complementary(Exception):
+            pass
+
+        class Spheres(Exception):
+            pass
+
+        def complementary(x):
+            raise Complementary
+
+        def spheres(x):
+            raise Spheres
+
+        mock_complementary.side_effect = complementary
+        mock_spheres.side_effect = spheres
+
+        g = gradient.Gradient()
+
+        mock_random.return_value = 0.1
+        with self.assertRaises(Complementary):
+            g.randomize(10)
+
+        mock_random.return_value = 0.6
+        with self.assertRaises(Spheres):
+            g.randomize(10)
 
     def testRandomizeComplementary(self):
         g = gradient.Gradient()
