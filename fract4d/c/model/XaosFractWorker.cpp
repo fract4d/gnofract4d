@@ -15,13 +15,24 @@
 void XaosFractWorker::set_context(IWorkerContext *context)
 {
     m_context = context;
-    const fract_geometry &geometry_current = m_context->get_geometry();
+}
+
+void XaosFractWorker::change_geometry(fract_geometry &&new_geometry)
+{
+    m_geometry_previous = m_context->get_geometry();
+    m_context->set_geometry(std::forward<fract_geometry>(new_geometry));
+    reuse_pixels();
+}
+
+void XaosFractWorker::reuse_pixels()
+{
     // this happens when the previous geometry doesn't exist (1st image spawm)
     if (m_geometry_previous.deltax[VX] == 0 || m_geometry_previous.deltay[VY] == 0) {
         m_im->clear();
         return;
     }
 
+    const fract_geometry &geometry_current = m_context->get_geometry();
     image * actual_image = dynamic_cast<image *>(m_im);
     if (!actual_image) return; // how so?
 
@@ -164,10 +175,7 @@ void XaosFractWorker::set_context(IWorkerContext *context)
             im.setIndex(x, y, 0, actual_image->getIndex(reusable_columns[x], reusable_rows[y], 0));
         }
     }
-    // swap the image buffers
     actual_image->swap_buffers(im);
-    // m_context->image_changed(0, 0, w, h);
-
 }
 
 void XaosFractWorker::work()

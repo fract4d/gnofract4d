@@ -163,6 +163,7 @@ void fractFunc::draw_all_xaos()
     const auto h = m_im->Yres();
 
     const auto rsize = 16;
+
     auto y = 0;
     for (; y < h - rsize; y += rsize)
     {
@@ -175,6 +176,41 @@ void fractFunc::draw_all_xaos()
 
     m_worker->flush();
     image_changed(0, 0, w, h);
+
+    double location[N_PARAMS];
+    XaosFractWorker *worker = dynamic_cast<XaosFractWorker *>(m_worker);
+    if (!worker) return;
+    while (!m_site->is_xaos_stopped())
+    {
+        if (!m_site->get_new_location(location)) continue;
+        // fprintf(stderr, "new frame with %f zoom \n", location[MAGNITUDE]);
+        worker->change_geometry(fract_geometry{
+            location,
+            static_cast<bool>(m_options.yflip),
+            m_im->totalXres(),
+            m_im->totalYres(),
+            m_im->Xoffset(),
+            m_im->Yoffset()
+        });
+        // TODO: dynamic resolution approximation (4x4 pixel areas for example)
+        // 1- draw 4x4 blocks
+        // 2- flush
+        // 3- check if there's already a new frame request
+        // 3a- if there is then update the image and continue loop (skip 2nd phase)
+        // 3b- this avoidance or 2nd phase skip cannot be done twice in a row
+        worker->init_thead_pool();
+        auto y = 0;
+        for (; y < h - rsize; y += rsize)
+        {
+            m_worker->box_row(w, y, rsize);
+        }
+        while(y < h) {
+            m_worker->row(0, y, w);
+            ++y;
+        }
+        worker->flush();
+        image_changed(0, 0, w, h);
+    }
 
     status_changed(GF4D_FRACTAL_DONE);
 }

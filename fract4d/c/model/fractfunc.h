@@ -57,8 +57,15 @@ public:
     // IWorkerContext
     inline void image_changed(int x1, int y1, int x2, int y2) const
     {
-        m_site->image_changed(x1, y1, x2, y2);
+        // @TODO: think about a more elegant way to do this
+        // maybe a different implementation of Site
+        if (dynamic_cast<XaosFractWorker *>(m_worker)) {
+            m_site->xaos_image_changed(x1, y1, x2, y2);
+        } else {
+            m_site->image_changed(x1, y1, x2, y2);
+        }
     }
+
     inline void progress_changed(float progress) const
     {
         const float adjusted_progress = m_min_progress + progress * m_delta_progress;
@@ -73,6 +80,9 @@ public:
     }
     inline const fract_geometry& get_geometry() const {
         return m_geometry;
+    }
+    inline void set_geometry(fract_geometry &&geometry) {
+        m_geometry = geometry;
     }
     inline const calc_options& get_options() const {
         return m_options;

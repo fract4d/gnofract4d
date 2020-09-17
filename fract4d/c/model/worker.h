@@ -61,6 +61,7 @@ enum
 class IWorkerContext {
 public:
     virtual const fract_geometry& get_geometry() const = 0;
+    virtual void set_geometry(fract_geometry &&) = 0;
     virtual const calc_options& get_options() const = 0;
     virtual bool try_finished_cond() const = 0;
     virtual int get_debug_flags() const = 0;
@@ -232,11 +233,7 @@ public:
         im->Yoffset()
     }
     {
-        const int nthreads = std::thread::hardware_concurrency();
-        for(auto i = 0; i < nthreads; i++)
-        {
-            m_pool.push_back(std::thread(&XaosFractWorker::work, this));
-        }
+        init_thead_pool();
     };
 
     ~XaosFractWorker()
@@ -257,6 +254,19 @@ public:
     // thread pool
     void work();
     void add_job(std::function<void()> &&);
+    inline void init_thead_pool()
+    {
+        m_terminate_pool = false;
+        const int nthreads = std::thread::hardware_concurrency();
+        for(auto i = 0; i < nthreads; i++)
+        {
+            m_pool.push_back(std::thread(&XaosFractWorker::work, this));
+        }
+    }
+
+    // zooming in or out
+    void change_geometry(fract_geometry &&);
+
 
 private:
     // calculate a single pixel
@@ -273,6 +283,9 @@ private:
     int Pixel2INT(int x, int y);
     void rectangle_with_iter(rgba_t, fate_t, int iter, float index, int x, int y, int w, int h);
 
+    // reuse pixels from previous geometry
+    void reuse_pixels();
+
     IImage *m_im;
     pointFunc m_pf;
     int m_lastPointIters; // how many iterations did last pixel take
@@ -283,7 +296,7 @@ private:
     std::mutex m_queue_mutex;
     std::condition_variable m_condition;
     std::queue<std::function<void()>> m_jobs;
-    bool m_terminate_pool = false;
+    bool m_terminate_pool;
 
 };
 

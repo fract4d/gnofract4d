@@ -15,27 +15,6 @@ from gi.repository import Gtk, Gdk, GObject, GdkPixbuf, GLib
 from fract4d_compiler import fracttypes
 from fract4d import fractal, fract4dc, image, messages
 
-import threading
-
-# from https://stackoverflow.com/questions/2697039/python-equivalent-of-setinterval
-class ThreadJob(threading.Thread):
-    def __init__(self, callback, event, interval):
-        '''runs the callback function after interval seconds
-        :param callback:  callback function to invoke
-        :param event: external event for controlling the update operation
-        :param interval: time in seconds after which are required to fire the callback
-        :type callback: function
-        :type interval: int
-        '''
-        self.callback = callback
-        self.event = event
-        self.interval = interval
-        super(ThreadJob, self).__init__()
-
-    def run(self):
-        while not self.event.wait(self.interval):
-            self.callback()
-
 
 class Hidden(GObject.GObject):
     """This class implements a fractal which calculates asynchronously
@@ -97,6 +76,7 @@ class Hidden(GObject.GObject):
             self.width, self.height, total_width, total_height)
 
         self.msgbuf = b""
+        self.cz_running = False
 
     def try_init_fractal(self):
         f = fractal.T(self.compiler, self.site)
@@ -224,7 +204,6 @@ class Hidden(GObject.GObject):
         elif t == fract4dc.MESSAGE_TYPE_STATUS:
             if m.status == fract4dc.CALC_DONE:  # DONE
                 self.running = False
-                self.waiting_last_frame = False
             if not self.skip_updates:
                 self.status_changed(m.status)
         elif t == fract4dc.MESSAGE_TYPE_PIXEL:
@@ -334,7 +313,7 @@ class Hidden(GObject.GObject):
         cmap = self.f.get_colormap()
         self.running = True
         try:
-            if self.continuous_zoom_is_active():
+            if self.cz_running:
                 self.f.calcxaos(image, cmap, nthreads, self.site, True)
             else:
                 self.f.calc(image, cmap, nthreads, self.site, True)
@@ -514,33 +493,37 @@ class T(Hidden):
 
         self.widget = drawing_area
 
-        self.cz_event = threading.Event()
-        self.cz_thread_job = None
+        self.cz_timer = None
 
     def continuous_zoom_start(self):
-        # try 20 fps
-        if (not self.cz_thread_job or not self.cz_thread_job.is_alive()):
-            self.cz_thread_job = ThreadJob(self.continuous_zoom_print, self.cz_event, 0.05)
-            self.cz_thread_job.start()
+        self.freeze() # don't emit paramter-changed signals
+        # launch calculation and wait until is running, then start zooming in
+        self.cz_running = True
+        self.draw_image()
+        while not self.running:
+            Gtk.main_iteration()
+        self.cz_timer = GLib.timeout_add(50, self.continuous_zoom_recenter)
 
     def continuous_zoom_stop(self):
-        if (self.cz_thread_job.is_alive()):
-            self.cz_event.set()
-            self.cz_thread_job.join()
-        self.cz_event.clear()
+        if self.cz_timer is None:
+            return
 
-    def continuous_zoom_print(self):
-        if not self.waiting_last_frame:
-            self.waiting_last_frame = True
-            self.continuous_zoom_recenter()
+        self.cz_running = False
+        GLib.source_remove(self.cz_timer)
+        self.cz_timer = None
+        fract4dc.interruptxaos(self.site)
+
+        if self.thaw():
+            self.changed()
 
     def continuous_zoom_recenter(self):
-        self.widget.queue_draw()
-        self.freeze()
+        if not self.cz_running:
+            return False # we want to stop zooming
+
         centerX = x = self.width / 2
         centerY = y = self.height / 2
-        clickedXPosition = self.newx if self.newx < self.width else self.width
-        clickedYPosition = self.newy if self.newy < self.height else self.height
+        clickedXPosition = max(min(self.newx, self.width), 0)
+        clickedYPosition = max(min(self.newy, self.height), 0)
 
         if self.continuousZoomEventButton == 1:
             if centerX != clickedXPosition:
@@ -555,7 +538,7 @@ class T(Hidden):
                     y = centerY + y
                 else:
                     y = centerY - y
-            zoom = 0.9
+            zoom = 0.95
         else:
             if centerX != clickedXPosition:
                 x = abs(centerX - clickedXPosition) * 0.1
@@ -569,12 +552,11 @@ class T(Hidden):
                     y = centerY + y
                 else:
                     y = centerY - y
-            zoom = 1.1
+            zoom = 1.05
 
         self.recenter(x, y, zoom)
-
-        if self.thaw():
-            self.changed()
+        fract4dc.updatexaos(self.site, self.f.params)
+        return True # continue with continuous zooming
 
     def image_changed(self, x1, y1, x2, y2):
         self.widget.queue_draw_area(x1, y1, x2 - x1, y2 - y1)
@@ -656,6 +638,8 @@ class T(Hidden):
         self.button = event.button
 
         if self.continuous_zoom_is_active():
+            if self.notice_mouse:
+                return
             self.continuousZoomEventButton = event.button
             if self.button == 1 or self.button == 3:
                 self.notice_mouse = True
@@ -714,52 +698,52 @@ class T(Hidden):
         return False
 
     def onButtonRelease(self, widget, event):
-        self.widget.queue_draw()
+        # self.widget.queue_draw()
         self.button = 0
         self.notice_mouse = False
 
         if self.continuous_zoom_is_active():
             self.continuous_zoom_stop()
+            return
 
         self.selection_rect.clear()
         if self.filterPaintModeRelease(event):
             return
 
-        if not self.continuous_zoom_is_active():
-            self.freeze()
-            if event.button == 1:
-                if self.x == self.newx or self.y == self.newy:
-                    zoom = 0.5
-                    x = self.x
-                    y = self.y
-                else:
-                    zoom = (1 + abs(self.x - self.newx)) / float(self.width)
-                    x = 0.5 + (self.x + self.newx) / 2.0
-                    y = 0.5 + (self.y + self.newy) / 2.0
-
-                # with shift held, don't zoom
-                if hasattr(event, "state") and event.get_state() & Gdk.ModifierType.SHIFT_MASK:
-                    zoom = 1.0
-                self.recenter(x, y, zoom)
-
-            elif event.button == 2:
-                (x, y) = (event.x, event.y)
-                zoom = 1.0
-                self.recenter(x, y, zoom)
-                if self.is4D():
-                    self.flip_to_julia()
-
+        self.freeze()
+        if event.button == 1:
+            if self.x == self.newx or self.y == self.newy:
+                zoom = 0.5
+                x = self.x
+                y = self.y
             else:
-                if hasattr(event, "state") and event.get_state(
-                ) & Gdk.ModifierType.CONTROL_MASK:
-                    zoom = 20.0
-                else:
-                    zoom = 2.0
-                (x, y) = (event.x, event.y)
-                self.recenter(x, y, zoom)
+                zoom = (1 + abs(self.x - self.newx)) / float(self.width)
+                x = 0.5 + (self.x + self.newx) / 2.0
+                y = 0.5 + (self.y + self.newy) / 2.0
 
-            if self.thaw():
-                self.changed()
+            # with shift held, don't zoom
+            if hasattr(event, "state") and event.get_state() & Gdk.ModifierType.SHIFT_MASK:
+                zoom = 1.0
+            self.recenter(x, y, zoom)
+
+        elif event.button == 2:
+            (x, y) = (event.x, event.y)
+            zoom = 1.0
+            self.recenter(x, y, zoom)
+            if self.is4D():
+                self.flip_to_julia()
+
+        else:
+            if hasattr(event, "state") and event.get_state(
+            ) & Gdk.ModifierType.CONTROL_MASK:
+                zoom = 20.0
+            else:
+                zoom = 2.0
+            (x, y) = (event.x, event.y)
+            self.recenter(x, y, zoom)
+
+        if self.thaw():
+            self.changed()
 
     def redraw_rect(self, widget, cairo_ctx):
         result, r = Gdk.cairo_get_clip_rectangle(cairo_ctx)

@@ -12,6 +12,7 @@ public:
     void iters_changed(int numiters);
     void tolerance_changed(double tolerance);
     void image_changed(int x1, int y1, int x2, int y2);
+    void xaos_image_changed(int x1, int y1, int x2, int y2) {}
     void progress_changed(float progress);
     void stats_changed(pixel_stat_t &stats);
     void status_changed(int status_val);

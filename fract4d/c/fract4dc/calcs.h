@@ -13,6 +13,8 @@ namespace calcs {
     PyObject * pystop_calc(PyObject *self, PyObject *args);
     PyObject * pycalc(PyObject *self, PyObject *args, PyObject *kwds);
     PyObject * pycalc_xaos(PyObject *self, PyObject *args, PyObject *kwds);
+    PyObject * pyupdate_xaos(PyObject *self, PyObject *args);
+    PyObject * pystop_xaos(PyObject *self, PyObject *args);
 }
 
 #endif
