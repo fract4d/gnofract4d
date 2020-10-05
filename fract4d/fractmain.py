@@ -55,8 +55,8 @@ class T:
 
     def buildonly(self, options, outfile):
         outdirname = os.path.dirname(options.buildonly)
-        if len(outdirname) > 0:
-            os.makedirs(outdirname)
+        if outdirname:
+            os.makedirs(outdirname, exist_ok=True)
 
         shutil.copy(outfile, options.buildonly)
         (base, ext) = os.path.splitext(outfile)
