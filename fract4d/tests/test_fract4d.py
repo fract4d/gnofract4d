@@ -576,7 +576,7 @@ class Test(testbase.ClassSetup):
                     # wait up to 1 sec until we can read, otherwise we assume the counterpart is gone (an error ocurred on the C++ layer)
                     r, w, e = select.select([rfd], [], [], 1)
                     if rfd in r:
-                        temp = os.read(rfd, nb)
+                        temp = os.read(rfd, nb - len(bytes))
                     else:
                         self.fail("no one on the other side")
                     bytes = bytes + temp
