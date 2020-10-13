@@ -283,6 +283,8 @@ private:
     int Pixel2INT(int x, int y);
     void rectangle_with_iter(rgba_t, fate_t, int iter, float index, int x, int y, int w, int h);
 
+    void row_internal(int x, int y, int n);
+
     // reuse pixels from previous geometry
     void reuse_pixels();
 

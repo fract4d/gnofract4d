@@ -220,16 +220,15 @@ void XaosFractWorker::flush()
 
 void XaosFractWorker::row(int x, int y, int n)
 {
-    // for (auto i = 0; i < n; ++i)
-    // {
-    //     pixel(x + i, y, 1, 1);
-    // }
-    add_job(std::bind([this](int x, int y, int n){
-        for (auto i = 0; i < n; ++i)
-        {
-            pixel(x + i, y, 1, 1);
-        }
-    }, x, y, n));
+    add_job(std::bind(&XaosFractWorker::row_internal, this, x, y, n));
+}
+
+void XaosFractWorker::row_internal(int x, int y, int n)
+{
+    for (auto i = 0; i < n; ++i)
+    {
+        pixel(x + i, y, 1, 1);
+    }
 }
 
 void XaosFractWorker::box_row(int w, int y, int rsize)
@@ -241,11 +240,14 @@ void XaosFractWorker::box_row(int w, int y, int rsize)
         // box(x, y, rsize);
         add_job(std::bind(&XaosFractWorker::box, this, x, y, rsize));
     }
-    // extra pixels at the row
-    for (auto y2 = y; y2 < y + rsize; ++y2)
-    {
-        row(x, y2, w - x);
-    }
+
+    add_job(std::bind([this, x](int w, int y, int rsize){
+        // extra pixels at the row
+        for (auto y2 = y; y2 < y + rsize; ++y2)
+        {
+            row_internal(x, y2, w - x);
+        }
+    }, w, y, rsize));
 }
 
 void XaosFractWorker::box(int x, int y, int rsize)
@@ -297,7 +299,7 @@ void XaosFractWorker::box(int x, int y, int rsize)
         // we do need to calculate the interior points individually
         for (auto y2 = y + 1; y2 < bottom_y; ++y2)
         {
-            row(x + 1, y2, rsize - 2);
+            row_internal(x + 1, y2, rsize - 2);
         }
     }
 }

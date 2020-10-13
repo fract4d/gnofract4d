@@ -192,20 +192,19 @@ void fractFunc::draw_all_xaos()
             m_im->Xoffset(),
             m_im->Yoffset()
         });
-        // TODO: dynamic resolution approximation (4x4 pixel areas for example)
-        // 1- draw 4x4 blocks
-        // 2- flush
-        // 3- check if there's already a new frame request
-        // 3a- if there is then update the image and continue loop (skip 2nd phase)
-        // 3b- this avoidance or 2nd phase skip cannot be done twice in a row
+
+        // TODO: dynamic resolution approximation
+        // 1- start calculating pixels from the center (zooming in) or the edges (zooming out)
+        // 2- if a new frame request comes in, interrupt pixel calculation and approximate the rest (interpolaton with reused pixels)
+
         worker->init_thead_pool();
         auto y = 0;
         for (; y < h - rsize; y += rsize)
         {
-            m_worker->box_row(w, y, rsize);
+            worker->box_row(w, y, rsize);
         }
         while(y < h) {
-            m_worker->row(0, y, w);
+            worker->row(0, y, w);
             ++y;
         }
         worker->flush();
