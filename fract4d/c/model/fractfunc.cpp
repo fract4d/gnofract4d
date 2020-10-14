@@ -192,21 +192,11 @@ void fractFunc::draw_all_xaos()
             m_im->Xoffset(),
             m_im->Yoffset()
         });
-
         // TODO: dynamic resolution approximation
         // 1- start calculating pixels from the center (zooming in) or the edges (zooming out)
         // 2- if a new frame request comes in, interrupt pixel calculation and approximate the rest (interpolaton with reused pixels)
-
         worker->init_thead_pool();
-        auto y = 0;
-        for (; y < h - rsize; y += rsize)
-        {
-            worker->box_row(w, y, rsize);
-        }
-        while(y < h) {
-            worker->row(0, y, w);
-            ++y;
-        }
+        worker->box_spiral(16);
         worker->flush();
         image_changed(0, 0, w, h);
     }

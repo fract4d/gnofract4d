@@ -247,6 +247,7 @@ public:
     void row(int x, int y, int n);
     void qbox_row(int w, int y, int rsize, int drawsize) {};
     void box_row(int w, int y, int rsize);
+    void box_spiral(int rsize);
     void reset_counts() {};
     const pixel_stat_t &get_stats() const { return m_stats; };
     void flush();
@@ -267,7 +268,6 @@ public:
     // zooming in or out
     void change_geometry(fract_geometry &&);
 
-
 private:
     // calculate a single pixel
     void pixel(int x, int y, int h, int w);
@@ -284,6 +284,7 @@ private:
     void rectangle_with_iter(rgba_t, fate_t, int iter, float index, int x, int y, int w, int h);
 
     void row_internal(int x, int y, int n);
+    void virtual_box(int x, int y, int rsize, int w, int h);
 
     // reuse pixels from previous geometry
     void reuse_pixels();

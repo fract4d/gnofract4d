@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <utility>
 #include <map>
+#include <algorithm>
 
 #include "model/worker.h"
 
@@ -248,6 +249,67 @@ void XaosFractWorker::box_row(int w, int y, int rsize)
             row_internal(x, y2, w - x);
         }
     }, w, y, rsize));
+}
+
+// TODO: pass a lambda as a parameter called finish_cond
+void XaosFractWorker::box_spiral(int rsize)
+{
+    //1- spiral loop from the center/corner to calculate boxes
+    // TODO:
+    //2- if the process should be sttoped, pixels not calculated or reused (fate_unknown) are approximated with the closest (reused or calculated)
+    //3- mark approximated pixels as reused with the value of the reused pixel so in next iteration this is considered
+    // ?? approximation or interpolation ??
+    const int X = m_im->Xres();
+    const int Y = m_im->Yres();
+    // algorithm is coordinate center based, so we need the offset to refer to the actual pixels (where top-left is (0,0))
+    const int x_offset = (X - 1) / 2;
+    const int y_offset = (Y - 1) / 2;
+    int x, y, dx, dy;
+    x = y = dx = 0;
+    dy = -rsize;
+    // the actual image rectangle is contained in a square of max size. We add the rsize to include partial boxes at the edges
+    int t = (std::max(X, Y) + rsize) / rsize;
+    int maxI = t*t;
+    for(int i = 0; i < maxI; i++)
+    {
+        // if ((-(X+1)/2 < x) && (x <= X/2) && (-(Y+1)/2 < y) && (y <= Y/2))
+        // {
+        //     // pixel(x + x_offset, y + y_offset, 1, 1);
+        // }
+        add_job(std::bind(&XaosFractWorker::virtual_box, this, x + x_offset, y + y_offset, rsize, X, Y));
+
+        if( (x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == rsize-y)))
+        {
+            t = dx;
+            dx = -dy;
+            dy = t;
+        }
+        x += dx;
+        y += dy;
+    }
+}
+
+void XaosFractWorker::virtual_box(int x, int y, int rsize, int w, int h)
+{
+    // check if box is contained inside image
+    if (0 <= x && x + rsize <= w && 0 <= y && y + rsize <= h)
+    {
+        box(x, y, rsize);
+        return;
+    }
+    // if not inside just calculate the pixels inside the image
+    auto x1 = x < 0 ? 0 : x;
+    const auto x2 = std::min(x + rsize, w);
+    const auto y2 = std::min(y + rsize, h);
+    for (; x1 < x2; x1++)
+    {
+        auto y1 = y < 0 ? 0 : y;
+        for (; y1 < y2; y1++)
+        {
+            pixel(x1, y1, 1, 1);
+        }
+    }
+    // TODO: this unit of work would decide to call box or approximate pixels depending on an atomic property (hurry_up?)
 }
 
 void XaosFractWorker::box(int x, int y, int rsize)
