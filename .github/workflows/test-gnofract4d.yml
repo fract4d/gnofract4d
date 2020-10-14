@@ -1,10 +1,10 @@
 name: Test Gnofract 4D
 
 on:
-    pull_request:
-      types: [opened, reopened, ready_for_review, synchronize]
-    push:
-      branches: ["master"]
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+  push:
+    branches: ["master"]
 
 jobs:
   run:
@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04]
-        python: [3.8,3.9.0-rc.1]
+        python: [3.8, 3.9]
         toxenv: [py]
         include:
           - os: macos-10.15
