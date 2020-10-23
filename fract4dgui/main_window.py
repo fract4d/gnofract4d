@@ -81,7 +81,7 @@ class MainWindow:
         self.window.add(self.vbox)
 
         self.f = gtkfractal.T(self.compiler, self)
-        self.f.freeze()  # create frozen - main prog will thaw us
+        self.f.freeze()  # create frozen - main prog queues first_draw() to thaw
         self.create_subfracts(self.f)
 
         self.set_filename(None)
@@ -441,6 +441,10 @@ class MainWindow:
             title += "*"
 
         self.window.set_title(title)
+
+    def first_draw(self):
+        self.on_fractal_change()
+        self.f.thaw()
 
     def on_fractal_change(self, *args):
         self.draw()
