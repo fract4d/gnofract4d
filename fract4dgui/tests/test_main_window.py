@@ -7,7 +7,8 @@ import os
 
 from . import testgui
 
-from gi.repository import Gtk
+from gi.repository import Gio, Gtk
+import pytest
 
 from fract4d import fractal
 from fract4dgui import main_window
@@ -117,8 +118,12 @@ class Test(testgui.TestCase):
 
     def testDialogs(self):
         self.mw.settings(None, None)
-        self.mw.contents(None, None)
         self.mw.painter(None, None)
+
+    @pytest.mark.skipif(Gio.AppInfo.get_default_for_uri_scheme("http") is None,
+                        reason="No web browser found")
+    def testHelp(self):
+        self.mw.contents(None, None)
 
     def testFileDialogs(self):
         self.mw.get_save_as_fs()
