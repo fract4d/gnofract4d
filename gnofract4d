@@ -63,10 +63,9 @@ def gtkmain(userConfig, options):
     mainWindow = main_window.MainWindow(userConfig)
     mainWindow.apply_options(options)
 
-    if mainWindow.f.thaw():
-        gi.require_version('GLib', '2.0')
-        from gi.repository import GLib
-        GLib.idle_add(mainWindow.on_fractal_change)
+    gi.require_version('GLib', '2.0')
+    from gi.repository import GLib
+    GLib.idle_add(mainWindow.first_draw)
 
     Gtk.main()
 
