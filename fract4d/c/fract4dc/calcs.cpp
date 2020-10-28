@@ -46,11 +46,14 @@ namespace calcs {
 
         if (cargs->asynchronous)
         {
-            auto &site = *cargs->site;
-            site.interrupt();
-            site.wait();
-            site.start();
-            site.set_thread(std::thread(calculation_thread, cargs));
+            std::thread t([cargs](){
+                auto &site = *cargs->site;
+                site.interrupt();
+                site.wait();
+                site.start();
+                site.set_thread(std::thread(calculation_thread, cargs));
+            });
+            t.detach();
         }
         else
         {
@@ -76,6 +79,21 @@ namespace calcs {
     }
 }
 
+struct GIL_guard {
+    PyGILState_STATE state;
+    bool active;
+    GIL_guard():
+        state(PyGILState_Ensure()), active(true) {}
+    void restore()
+    {
+        PyGILState_Release(state);
+        active = false;
+    }
+    ~GIL_guard()
+    {
+        if (active) restore();
+    }
+};
 
 void * calculation_thread(calc_args *args)
 {
@@ -94,9 +112,8 @@ void * calculation_thread(calc_args *args)
 #ifdef DEBUG_THREADS
     std::cerr << args << " : CA : ENDCALC(" << std::this_thread::get_id() << ")\n";
 #endif
-    PyGILState_STATE gstate = PyGILState_Ensure();
+    GIL_guard e;
     delete args;
-    PyGILState_Release(gstate);
     return NULL;
 }
 
