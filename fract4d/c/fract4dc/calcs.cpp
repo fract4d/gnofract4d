@@ -46,10 +46,10 @@ namespace calcs {
 
         std::thread t([cargs](){
             auto &site = *cargs->site;
-            site.interrupt();
+            site.stop_xaos();
             site.wait();
-            site.start();
-            site.set_thread(std::thread(calculation_thread, cargs));
+            site.start_xaos();
+            site.set_thread(std::thread(calculation_thread_xaos, cargs));
         });
         t.detach();
 
@@ -166,9 +166,8 @@ void * calculation_thread_xaos(calc_args *args)
         args->im,
         0 // debug_flags
     );
-    // PyGILState_STATE gstate = PyGILState_Ensure();
+    GIL_guard e;
     delete args;
-    // PyGILState_Release(gstate);
     return NULL;
 }
 
