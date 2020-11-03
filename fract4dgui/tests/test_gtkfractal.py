@@ -4,7 +4,7 @@ import os.path
 
 from . import testgui
 
-from gi.repository import Gdk, Gtk
+from gi.repository import Gdk, Gtk, GLib
 
 from fract4dgui import gtkfractal
 
@@ -99,6 +99,139 @@ class TestHidden(testgui.TestCase):
         f.draw_image(hires_image)
         self.wait()
         self.assertEqual(True, os.path.exists(hires_image))
+
+    def testSetContinuousZoom(self):
+        f = gtkfractal.Hidden(TestHidden.g_comp, 64, 40)
+        cc = CallCounter()
+        f.connect('parameters-changed', cc.cb)
+
+        self.assertFalse(f.continuous_zoom)
+        self.assertEqual(cc.count, 0)
+
+        # the value of continuous zoom must change
+        # and trigger the parameters-changed signal
+        f.set_continuous_zoom(True)
+        self.assertTrue(f.continuous_zoom)
+        self.assertTrue(f.continuous_zoom_is_active())
+        self.assertEqual(cc.count, 1)
+
+        # if the value to set to continuous zoom is the same
+        # the value doesn't change and the signal is not triggered
+        f.set_continuous_zoom(True)
+        self.assertTrue(f.continuous_zoom)
+        self.assertTrue(f.continuous_zoom_is_active())
+        self.assertEqual(cc.count, 1)
+
+
+class TestContinuousZoom(testgui.TestCase):
+    def setUp(self):
+        self.window = Gtk.Window()
+        self.f = gtkfractal.T(TestContinuousZoom.g_comp)
+        self.window.add(self.f.widget)
+        self.f.widget.realize()
+        self.f.set_continuous_zoom(True)
+
+    def tearDown(self):
+        self.window.destroy()
+        self.f = None
+
+    def wait(self):
+        Gtk.main()
+
+    def testZoomIn(self):
+        f = self.f
+        mainloop = GLib.MainLoop()
+
+        # click+release in middle of screen zooms but doesn't change params
+        (xp, yp) = (f.width / 2, f.height / 2)
+        f.onButtonPress(f.widget, FakeEvent(x=xp, y=yp, button=1))
+        self.assertEqual((f.x, f.y, f.newx, f.newy), (xp, yp, xp, yp))
+
+        # Get original magnitude to check after release the button
+        original_parameters = copy.copy(f.params())
+        original_magnitude = original_parameters[f.MAGNITUDE]
+
+        def checkMagnitudeHasDecreased():
+            f.onButtonRelease(f.widget, FakeEvent(button=1))
+            self.assertLess(f.params()[f.MAGNITUDE], original_magnitude)
+            mainloop.quit()
+
+        # Wait one second to allow the fractal make zoom
+        GLib.timeout_add(100, checkMagnitudeHasDecreased)
+        mainloop.run()
+
+    def testMoveWhileZoomingIn(self):
+        f = self.f
+        mainloop = GLib.MainLoop()
+
+        # click+release in middle of screen zooms but doesn't change params
+        (xp, yp) = (f.width / 2, f.height / 2)
+        f.onButtonPress(f.widget, FakeEvent(x=xp, y=yp, button=1))
+        self.assertEqual((f.x, f.y, f.newx, f.newy), (xp, yp, xp, yp))
+        original_new_x = f.newx
+        original_new_y = f.newy
+        new_x = f.width - 1
+        new_y = f.height - 1
+
+        f.onMotionNotify(f.widget, FakeEvent(x=new_x, y=new_y, button=1))
+
+        def checkFractalHasBeenRecenterInOtherPoint():
+            f.onButtonRelease(f.widget, FakeEvent(button=1))
+            self.assertEqual((f.x, f.y, f.newx, f.newy), (f.x, f.y, new_x, new_y))
+            self.assertNotEqual(original_new_x, new_x)
+            self.assertNotEqual(original_new_y, new_y)
+            mainloop.quit()
+
+        # Wait one second to allow the fractal make zoom and move
+        GLib.timeout_add(100, checkFractalHasBeenRecenterInOtherPoint)
+        mainloop.run()
+
+    def testZoomOut(self):
+        f = self.f
+        mainloop = GLib.MainLoop()
+
+        # click+release in middle of screen zooms but doesn't change params
+        (xp, yp) = (f.width / 2, f.height / 2)
+        f.onButtonPress(f.widget, FakeEvent(x=xp, y=yp, button=3))
+        self.assertEqual((f.x, f.y, f.newx, f.newy), (xp, yp, xp, yp))
+
+        # Get original magnitude to check after release the button
+        original_parameters = copy.copy(f.params())
+        original_magnitude = original_parameters[f.MAGNITUDE]
+
+        def checkMagnitudeHasIncreased():
+            f.onButtonRelease(f.widget, FakeEvent(button=3))
+            self.assertGreater(f.params()[f.MAGNITUDE], original_magnitude)
+            mainloop.quit()
+
+        # Wait one second to allow the fractal make zoom
+        GLib.timeout_add(100, checkMagnitudeHasIncreased)
+        mainloop.run()
+
+    def testMoveWhileZoomingOut(self):
+        f = self.f
+        mainloop = GLib.MainLoop()
+
+        # click+release in middle of screen zooms but doesn't change params
+        (xp, yp) = (f.width / 2, f.height / 2)
+        f.onButtonPress(f.widget, FakeEvent(x=xp, y=yp, button=3))
+        self.assertEqual((f.x, f.y, f.newx, f.newy), (xp, yp, xp, yp))
+        original_new_x = f.newx
+        original_new_y = f.newy
+        new_x = new_y = 1
+
+        f.onMotionNotify(f.widget, FakeEvent(x=new_x, y=new_y, button=3))
+
+        def checkFractalHasBeenRecenterInOtherPoint():
+            f.onButtonRelease(f.widget, FakeEvent(button=3))
+            self.assertEqual((f.x, f.y, f.newx, f.newy), (f.x, f.y, new_x, new_y))
+            self.assertNotEqual(original_new_x, new_x)
+            self.assertNotEqual(original_new_y, new_y)
+            mainloop.quit()
+
+        # Wait one second to allow the fractal make zoom and move
+        GLib.timeout_add(100, checkFractalHasBeenRecenterInOtherPoint)
+        mainloop.run()
 
 
 class Test(testgui.TestCase):
