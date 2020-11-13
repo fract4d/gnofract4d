@@ -5,8 +5,10 @@
 	<meta name="generator" content="Hugo 0.78.1" />
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Gnofract 4D #  Introduction #   There is no excellent beauty which hath not some strangeness in the proportion. &ndash; Francis Bacon
- Gnofract 4D is a program which draws complex mathematical objects known as fractals, including the Mandelbrot and Julia sets and many others. It allows you to treat a fractal which has more than one parameter as a four-dimensional object and interactively view slices of this object from arbitrary angles, giving rise to some very unusual images.">
+<meta name="description" content="Gnofract 4D #  Installation #  Installation on Linux #  General instructions &amp; dependencies #  First step is to compile the program by running:
+./setup.py build Then you can install it with:
+./setup.py install Or you can just run Gnofract 4D on your local directory with:
+./gnofract4d To compile, you will need Python 3.5 or higher, a C&#43;&#43; compiler such as g&#43;&#43;, and header files for GTK3 and Python.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Gnofract 4D Manual" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
@@ -118,6 +120,11 @@ https://github.com/alex-shpak/hugo-book
   <ul>
     <li><a href="#gnofract-4d">Gnofract 4D</a>
       <ul>
+        <li><a href="#installation">Installation</a>
+          <ul>
+            <li><a href="#installation-on-linux">Installation on Linux</a></li>
+          </ul>
+        </li>
         <li><a href="#introduction">Introduction</a>
           <ul>
             <li><a href="#using-gnofract-4d">Using Gnofract 4D</a></li>
@@ -166,6 +173,7 @@ https://github.com/alex-shpak/hugo-book
             <li><a href="#threading">Threading</a></li>
           </ul>
         </li>
+        <li><a href="#faqs">FAQs</a></li>
         <li><a href="#bugs-and-known-issues">Bugs and Known Issues</a></li>
         <li><a href="#about-gnofract-4d">About Gnofract 4D</a></li>
         <li><a href="#credits-and-copyright">Credits and copyright</a></li>
@@ -186,6 +194,43 @@ https://github.com/alex-shpak/hugo-book
   Gnofract 4D
   <a class="anchor" href="#gnofract-4d">#</a>
 </h1>
+<h2 id="installation">
+  Installation
+  <a class="anchor" href="#installation">#</a>
+</h2>
+<h3 id="installation-on-linux">
+  Installation on Linux
+  <a class="anchor" href="#installation-on-linux">#</a>
+</h3>
+<h4 id="general-instructions--dependencies">
+  General instructions &amp; dependencies
+  <a class="anchor" href="#general-instructions--dependencies">#</a>
+</h4>
+<p>First step is to compile the program by running:</p>
+<pre><code>./setup.py build
+</code></pre><p>Then you can install it with:</p>
+<pre><code>./setup.py install
+</code></pre><p>Or you can just run Gnofract 4D on your local directory with:</p>
+<pre><code>./gnofract4d
+</code></pre><p>To compile, you will need Python 3.5 or higher, a C++ compiler such as g++, and header files for GTK3 and Python. Headers for Jpeglib and libpng are optional, but highly recommended - without them you can only use the extremely basic TGA file format.</p>
+<p>At runtime, you will need PyGTK 3, and a C compiler (because that gets invoked to compile the fractal formula you have written).</p>
+<p>Alternatively, you can download the 
+  <a href="https://github.com/fract4d/gnofract4d/releases">lastest version</a> of the program and install it with <code>pip</code> running:</p>
+<pre><code>pip3 install gnofract4d-4.3.tar.gz
+</code></pre><p>When the installation ends just run it by clicking on the desktop icon or typing:</p>
+<pre><code>gnofract4d
+</code></pre><h4 id="install-on-ubuntu-1504">
+  Install on Ubuntu 15.04
+  <a class="anchor" href="#install-on-ubuntu-1504">#</a>
+</h4>
+<p>Before running <code>./setup.py build</code> you have to install <code>python-dev</code>.</p>
+<p>Either find it in synaptic, or run <code>sudo apt-get install python-dev</code> from the command line.</p>
+<h4 id="install-on-ubuntu-1604-and-later-supported-releases">
+  Install on Ubuntu 16.04 and later supported releases
+  <a class="anchor" href="#install-on-ubuntu-1604-and-later-supported-releases">#</a>
+</h4>
+<p>You can install pre-build packages from this 
+  <a href="https://launchpad.net/~renbag/&#43;archive/ubuntu/gnofract4d">PPA</a> following the instructions given there.</p>
 <h2 id="introduction">
   Introduction
   <a class="anchor" href="#introduction">#</a>
@@ -3320,6 +3365,14 @@ check frequently - they then abandon their work and quit.</p>
 well on some libstdc++&rsquo;s. Gnofract 4D was originally written not to use exceptions
 as a result. This may no longer be an issue but I haven&rsquo;t tried it.</p>
 </blockquote>
+<h2 id="faqs">
+  FAQs
+  <a class="anchor" href="#faqs">#</a>
+</h2>
+<p><strong>When I zoom in a long way, the picture gets all blocky - is that a bug?</strong></p>
+<p>Not exactly. This means that you have reached the limit of the precision offered by the math chip on your PC - the area you are looking at is now so small that differences between adjacent pixels are too small for the processor to deal with. Some fractal programs support arbitrary precision math, which increases this limit, but this isn&rsquo;t implemented in Gnofract 4D yet.</p>
+<p><strong>What is this I saw on the web about a security vulnerability? It sounds scary!</strong></p>
+<p>There was a bug in Gnofract4d 2.0 and 2.1 where if you downloaded a parameter (.fct) file someone sent you, they could have snuck some evil code in it and Gnofract 4D would run that code. I actually found the bug and fixed it in version 2.2, but a security company &ldquo;helpfully&rdquo; decided to publish an inaccurate advisory claiming that it affected all versions. So if you use 2.0 or 2.1, upgrade. Otherwise, don&rsquo;t worry about it.</p>
 <h2 id="bugs-and-known-issues">
   Bugs and Known Issues
   <a class="anchor" href="#bugs-and-known-issues">#</a>
@@ -3403,6 +3456,11 @@ the <ulink url="http://tango.freedesktop.org">Tango icon set</ulink>.</p>
   <ul>
     <li><a href="#gnofract-4d">Gnofract 4D</a>
       <ul>
+        <li><a href="#installation">Installation</a>
+          <ul>
+            <li><a href="#installation-on-linux">Installation on Linux</a></li>
+          </ul>
+        </li>
         <li><a href="#introduction">Introduction</a>
           <ul>
             <li><a href="#using-gnofract-4d">Using Gnofract 4D</a></li>
@@ -3451,6 +3509,7 @@ the <ulink url="http://tango.freedesktop.org">Tango icon set</ulink>.</p>
             <li><a href="#threading">Threading</a></li>
           </ul>
         </li>
+        <li><a href="#faqs">FAQs</a></li>
         <li><a href="#bugs-and-known-issues">Bugs and Known Issues</a></li>
         <li><a href="#about-gnofract-4d">About Gnofract 4D</a></li>
         <li><a href="#credits-and-copyright">Credits and copyright</a></li>
