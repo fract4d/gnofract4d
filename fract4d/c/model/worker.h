@@ -248,7 +248,9 @@ public:
     void qbox_row(int w, int y, int rsize, int drawsize) {};
     void box_row(int w, int y, int rsize);
     void box_spiral(int rsize);
-    void reset_counts() {};
+    inline void reset_counts() {
+        m_stats.reset();
+    };
     const pixel_stat_t &get_stats() const { return m_stats; };
     void flush();
     void box(int x, int y, int rsize);
@@ -268,6 +270,8 @@ public:
     // zooming in or out
     void change_geometry(fract_geometry &&);
 
+    std::atomic<bool> hurry_up;
+
 private:
     // calculate a single pixel
     void pixel(int x, int y, int h, int w);
@@ -285,6 +289,7 @@ private:
 
     void row_internal(int x, int y, int n);
     void virtual_box(int x, int y, int rsize, int w, int h);
+    void approximate_box(int x, int y, int rsize, int w, int h);
 
     // reuse pixels from previous geometry
     void reuse_pixels();

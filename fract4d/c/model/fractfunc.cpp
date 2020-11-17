@@ -156,34 +156,40 @@ void fractFunc::draw_all_xaos()
 {
     status_changed(GF4D_FRACTAL_CALCULATING);
 
+    XaosFractWorker *worker = dynamic_cast<XaosFractWorker *>(m_worker);
+    if (!worker) return;
+
     // init RNG based on time before generating image
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     const auto w = m_im->Xres();
     const auto h = m_im->Yres();
-
     const auto rsize = 16;
 
+    reset_counts();
     auto y = 0;
     for (; y < h - rsize; y += rsize)
     {
-        m_worker->box_row(w, y, rsize);
+        worker->box_row(w, y, rsize);
     }
     while(y < h) {
-        m_worker->row(0, y, w);
+        worker->row(0, y, w);
         ++y;
     }
-
-    m_worker->flush();
+    worker->flush();
     image_changed(0, 0, w, h);
 
     double location[N_PARAMS];
-    XaosFractWorker *worker = dynamic_cast<XaosFractWorker *>(m_worker);
-    if (!worker) return;
     while (!m_site->is_xaos_stopped())
     {
-        if (!m_site->get_new_location(location)) continue;
-        // fprintf(stderr, "new frame with %f zoom \n", location[MAGNITUDE]);
+        // keep checking for frame request until we get one
+        // we pass a function delegate, so in case a new frame request comes in while processing the current one, the worker knows
+        if (!m_site->get_new_location(location, [worker](){
+            worker->hurry_up = true;
+        })) continue;
+        worker->hurry_up = false;
+        reset_counts();
+        // update the fractal geometry so pixels from previous frame can be reutilized
         worker->change_geometry(fract_geometry{
             location,
             static_cast<bool>(m_options.yflip),
@@ -192,11 +198,9 @@ void fractFunc::draw_all_xaos()
             m_im->Xoffset(),
             m_im->Yoffset()
         });
-        // TODO: dynamic resolution approximation
-        // 1- start calculating pixels from the center (zooming in) or the edges (zooming out)
-        // 2- if a new frame request comes in, interrupt pixel calculation and approximate the rest (interpolaton with reused pixels)
+        // perform calculations prioritizing center/edge pixels and in multithread mode
         worker->init_thead_pool();
-        worker->box_spiral(16);
+        worker->box_spiral(rsize);
         worker->flush();
         image_changed(0, 0, w, h);
     }

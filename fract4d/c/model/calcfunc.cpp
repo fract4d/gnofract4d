@@ -62,11 +62,6 @@ void calc_xaos(
         );
 
         ff.set_debug_flags(debug_flags);
-        // we don't do the image clear here as we need to reuse some data
-        // if (options.dirty)
-        // {
-        //     im->clear();
-        // }
         ff.draw_all_xaos();
     }
 }

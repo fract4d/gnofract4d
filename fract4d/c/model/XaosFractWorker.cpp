@@ -27,9 +27,12 @@ void XaosFractWorker::change_geometry(fract_geometry &&new_geometry)
 
 void XaosFractWorker::reuse_pixels()
 {
+
+    // todo: remove this check and the python-c interface parameter "params_previous"
+    // we don't need this anymore as the previous geometry is being updated constantly by pyxaos_update
     // this happens when the previous geometry doesn't exist (1st image spawm)
     if (m_geometry_previous.deltax[VX] == 0 || m_geometry_previous.deltay[VY] == 0) {
-        m_im->clear();
+        m_im->clear(); // we're aleready doing this in the calc function...
         return;
     }
 
@@ -174,6 +177,7 @@ void XaosFractWorker::reuse_pixels()
             im.setIter(x, y, actual_image->getIter(reusable_columns[x], reusable_rows[y]));
             im.setFate(x, y, 0, actual_image->getFate(reusable_columns[x], reusable_rows[y], 0));
             im.setIndex(x, y, 0, actual_image->getIndex(reusable_columns[x], reusable_rows[y], 0));
+            ++m_stats.s[PIXELS_SKIPPED];
         }
     }
     actual_image->swap_buffers(im);
@@ -251,14 +255,9 @@ void XaosFractWorker::box_row(int w, int y, int rsize)
     }, w, y, rsize));
 }
 
-// TODO: pass a lambda as a parameter called finish_cond
+
 void XaosFractWorker::box_spiral(int rsize)
 {
-    //1- spiral loop from the center/corner to calculate boxes
-    // TODO:
-    //2- if the process should be sttoped, pixels not calculated or reused (fate_unknown) are approximated with the closest (reused or calculated)
-    //3- mark approximated pixels as reused with the value of the reused pixel so in next iteration this is considered
-    // ?? approximation or interpolation ??
     const int X = m_im->Xres();
     const int Y = m_im->Yres();
     // algorithm is coordinate center based, so we need the offset to refer to the actual pixels (where top-left is (0,0))
@@ -269,15 +268,12 @@ void XaosFractWorker::box_spiral(int rsize)
     dy = -rsize;
     // the actual image rectangle is contained in a square of max size. We add the rsize to include partial boxes at the edges
     int t = (std::max(X, Y) + rsize) / rsize;
+    // number of boxes/iterations for a grid containing the actual image
     int maxI = t*t;
     for(int i = 0; i < maxI; i++)
     {
-        // if ((-(X+1)/2 < x) && (x <= X/2) && (-(Y+1)/2 < y) && (y <= Y/2))
-        // {
-        //     // pixel(x + x_offset, y + y_offset, 1, 1);
-        // }
         add_job(std::bind(&XaosFractWorker::virtual_box, this, x + x_offset, y + y_offset, rsize, X, Y));
-
+        // points where we should change direction
         if( (x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == rsize-y)))
         {
             t = dx;
@@ -291,10 +287,23 @@ void XaosFractWorker::box_spiral(int rsize)
 
 void XaosFractWorker::virtual_box(int x, int y, int rsize, int w, int h)
 {
+    bool quick_mode {false};
+    if (hurry_up)
+    {
+        double pixel_ratio = static_cast<double>(m_stats.s[PIXELS_CALCULATED] + m_stats.s[PIXELS_SKIPPED]) / (w*h);
+        quick_mode = pixel_ratio >= 0.7;
+    }
     // check if box is contained inside image
     if (0 <= x && x + rsize <= w && 0 <= y && y + rsize <= h)
     {
-        box(x, y, rsize);
+        if (quick_mode)
+        {
+            approximate_box(x, y, rsize, w, h);
+        }
+        else
+        {
+            box(x, y, rsize);
+        }
         return;
     }
     // if not inside just calculate the pixels inside the image
@@ -309,7 +318,76 @@ void XaosFractWorker::virtual_box(int x, int y, int rsize, int w, int h)
             pixel(x1, y1, 1, 1);
         }
     }
-    // TODO: this unit of work would decide to call box or approximate pixels depending on an atomic property (hurry_up?)
+}
+
+void XaosFractWorker::approximate_box(int x, int y, int rsize, int w, int h)
+{
+    // edges are shared between adjacent boxes
+    const auto bottom_y = std::min(y + rsize, h - 1);
+    const auto right_x = std::min(x + rsize, w - 1);
+
+    // calculate top and bottom edges of the box
+    for (int x2 = x; x2 <= right_x; ++x2)
+    {
+        pixel(x2, y, 1, 1);
+        pixel(x2, bottom_y, 1, 1);
+    }
+    // calc left and right edges of the box
+    for (int y2 = y; y2 <= bottom_y; ++y2)
+    {
+        pixel(x, y2, 1, 1);
+        pixel(right_x, y2, 1, 1);
+    }
+
+    // bilinear interpolation
+    // interpolate pixel colors between 2 calculated pixels
+    // @TODO: avoid using a fixed max distance between 2 calculated pixels to interpolate the one's in the middle
+    // phase 1: rows
+    const auto interpolate_horizontal = [this](int x, int y, rgba_t *color, int left, int right)
+    {
+        const double factor = (x - left) / static_cast<double>(right - left);
+        rgba_t result = color[0] * (1-factor) + color[1] * factor;
+        m_im->put(x, y, result);
+    };
+    for (auto j = y; j <= bottom_y; j++)
+    {
+        int bookmark = x;
+        rgba_t color[2];
+        color[0] = m_im->get(x, j);
+        for (auto i = x + 1; i <= right_x; i++)
+        {
+            if (i - bookmark > 4) pixel(i, j, 1, 1);
+            if (m_im->getFate(i, j, 0) == FATE_UNKNOWN) continue;
+            color[1] = m_im->get(i, j);
+            for (auto k = bookmark + 1; k < i; k++) interpolate_horizontal(k, j, color, bookmark, i);
+            color[0] = color[1];
+            bookmark = i;
+        }
+    }
+    // phase 1: columns
+    // give each phase row/column a 50% weight
+    const auto interpolate_vertical = [this](int x, int y, rgba_t *color, int top, int bottom)
+    {
+        const double factor = (y - top) / static_cast<double>(bottom - top);
+        rgba_t result = (color[0] * (1-factor) + color[1] * factor) * 0.5 + m_im->get(x, y) * 0.5;
+        m_im->put(x, y, result);
+    };
+    for (auto i = x; i <= right_x; i++)
+    {
+        int bookmark = y;
+        rgba_t color[2];
+        color[0] = m_im->get(i, y);
+        for (auto j = y + 1; j <= bottom_y; j++)
+        {
+            if (j - bookmark > 4) pixel(i, j, 1, 1);
+            if (m_im->getFate(i, j, 0) == FATE_UNKNOWN) continue;
+            color[1] = m_im->get(i, j);
+            for (auto k = bookmark + 1; k < j; k++) interpolate_vertical(i, k, color, bookmark, j);
+            color[0] = color[1];
+            bookmark = j;
+        }
+    }
+
 }
 
 void XaosFractWorker::box(int x, int y, int rsize)
@@ -396,8 +474,6 @@ inline void XaosFractWorker::rectangle_with_iter(
     }
 }
 
-
-
 void XaosFractWorker::pixel(int x, int y, int h, int w)
 {
     const calc_options &options = m_context->get_options();
@@ -408,7 +484,7 @@ void XaosFractWorker::pixel(int x, int y, int h, int w)
     if (fate == FATE_UNKNOWN)
     {
         int iter = 0;
-        const dvec4 pos =  geometry.vec_for_point_2d(x, y); //m_ff->topleft + x * m_ff->deltax + y * m_ff->deltay;
+        const dvec4 pos = geometry.vec_for_point_2d(x, y); // m_ff->topleft + x * m_ff->deltax + y * m_ff->deltay;
         const int min_period_iters = periodGuess();
         m_pf.calc(
             pos.n,
@@ -418,6 +494,7 @@ void XaosFractWorker::pixel(int x, int y, int h, int w)
             options.warp_param,
             x, y, 0,
             &pixel, &iter, &index, &fate);
+        ++m_stats.s[PIXELS_CALCULATED];
         periodSet(iter);
         m_im->setIter(x, y, iter);
         m_im->setFate(x, y, 0, fate);

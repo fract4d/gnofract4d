@@ -62,14 +62,20 @@ public:
         const std::lock_guard<std::mutex> lock(location_lock);
         std::memcpy(m_location, location, N_PARAMS * sizeof(double));
         location_updated = true;
+        if (location_updated_delegate)
+        {
+            location_updated_delegate();
+        }
     }
 
-    inline bool get_new_location(double *location)
+    // TODO: change name to something like pop_location
+    inline bool get_new_location(double *location, std::function<void()> &&delegate)
     {
         const std::lock_guard<std::mutex> lock(location_lock);
         if (!location_updated) return false;
         std::memcpy(location, m_location, N_PARAMS * sizeof(double));
         location_updated = false;
+        location_updated_delegate = std::move(delegate);
         return true;
     }
 
@@ -81,8 +87,6 @@ public:
     inline void stop_xaos()
     {
         xaos_stopped = true;
-        const std::lock_guard<std::mutex> lock(location_lock);
-        location_updated = false;
     }
 
     inline void start_xaos()
@@ -98,6 +102,7 @@ protected:
     double m_location[N_PARAMS];
     bool location_updated = false;
     std::atomic<bool> xaos_stopped;
+    std::function<void()> location_updated_delegate;
 };
 
 // write the callbacks to a file descriptor
