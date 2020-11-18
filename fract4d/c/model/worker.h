@@ -8,6 +8,7 @@
 #include <functional>
 #include <condition_variable>
 #include <mutex>
+#include <atomic>
 
 #include "model/vectors.h"
 #include "model/stats.h"
