@@ -5,6 +5,7 @@
 #include <mutex>
 #include <atomic>
 #include <cstring>
+#include <functional>
 
 #include "model/enums.h"
 #include "pf.h"
