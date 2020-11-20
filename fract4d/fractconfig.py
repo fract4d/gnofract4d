@@ -254,7 +254,7 @@ class DarwinConfig(T):
         return "open %s"
 
     def get_default_compiler_options(self):
-        return "-fPIC -DPIC -O2 -dynamiclib -flat_namespace -undefined suppress -ffast-math"
+        return "-fPIC -DPIC -O2 -dynamiclib -flat_namespace -undefined suppress -ffast-math -Wno-implicit-function-declaration"
 
 
 def userConfig():
