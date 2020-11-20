@@ -384,7 +384,6 @@ class T(fctutils.T):
     def reset(self):
         # set global default values, then override from formula
         # set up defaults
-        self.params_previous = None
         self.params = [
             0.0, 0.0, 0.0, 0.0,  # center
             4.0,  # size
@@ -721,8 +720,6 @@ class T(fctutils.T):
         if dx == 0 and dy == 0 and zoom == 1.0:
             return
 
-        self.params_previous = list(self.params)
-
         m = fract4dc.rot_matrix(self.params)
 
         deltax = self.mul_vs(m[axis], dx)
@@ -848,8 +845,6 @@ class T(fctutils.T):
             "dirty" : self.clear_image,
             "asynchronous" : asynchronous
         }
-        if (self.params_previous):
-            args["params_previous"] = self.params_previous
         fract4dc.calcxaos(**args)
 
     def calc(self, image, colormap, nthreads, site, asynchronous):

@@ -159,7 +159,6 @@ void * calculation_thread_xaos(calc_args *args)
     calc_xaos(
         args->options,
         args->params,
-        args->params_previous,
         args->pfo,
         args->cmap,
         args->site,
@@ -196,7 +195,6 @@ void * calculation_thread(calc_args *args)
 calc_args * parse_calc_args(PyObject *args, PyObject *kwds)
 {
     PyObject *pyparams, *pypfo, *pycmap, *pyim, *pysite;
-    PyObject *pyparams_previous = NULL;
     calc_args *cargs = new calc_args();
 
     const char *kwlist[] = {
@@ -205,7 +203,6 @@ calc_args * parse_calc_args(PyObject *args, PyObject *kwds)
         "pfo",
         "cmap",
         "params",
-        "params_previous",
         "antialias",
         "maxiter",
         "yflip",
@@ -223,13 +220,11 @@ calc_args * parse_calc_args(PyObject *args, PyObject *kwds)
     if (!PyArg_ParseTupleAndKeywords(
             args,
             kwds,
-            "OOOOO|Oiiiiiiiiiidi",
+            "OOOOO|iiiiiiiiiidi",
             const_cast<char **>(kwlist),
-
             &pyim, &pysite,
             &pypfo, &pycmap,
             &pyparams,
-            &pyparams_previous,
             &cargs->options.eaa,
             &cargs->options.maxiter,
             &cargs->options.yflip,
@@ -249,14 +244,6 @@ calc_args * parse_calc_args(PyObject *args, PyObject *kwds)
     if (!parse_posparams(pyparams, cargs->params))
     {
         goto error;
-    }
-
-    if (pyparams_previous != NULL)
-    {
-        if (!parse_posparams(pyparams_previous, cargs->params_previous))
-        {
-            goto error;
-        }
     }
 
     cargs->set_cmap(pycmap);

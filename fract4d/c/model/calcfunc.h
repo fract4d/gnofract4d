@@ -28,7 +28,6 @@ extern "C"
     void calc_xaos(
         calc_options,
         d *params,
-        d *params_previous,
         pf_obj *,
         ColorMap *,
         IFractalSite *,

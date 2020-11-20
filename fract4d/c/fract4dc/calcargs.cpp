@@ -15,7 +15,6 @@ calc_args::calc_args()
     fprintf(stderr, "%p : CA : CTOR\n", this);
 #endif
     params = new double[N_PARAMS];
-    params_previous = new double[N_PARAMS]{}; // initialize to 0's because it's actually optional
 }
 
 void calc_args::set_cmap(PyObject *pycmap_)

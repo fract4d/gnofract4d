@@ -220,19 +220,11 @@ public:
         pf_obj * pfo,
         ColorMap * cmap,
         IImage * im,
-        double * params_previous,
         calc_options options):
     m_im{im},
     m_pf{pfo, cmap},
     m_lastPointIters{0},
-    m_geometry_previous{
-        params_previous,
-        static_cast<bool>(options.yflip),
-        im->totalXres(),
-        im->totalYres(),
-        im->Xoffset(),
-        im->Yoffset()
-    }
+    m_geometry_previous{}
     {
         init_thead_pool();
     };

@@ -42,7 +42,6 @@ void calc(
 void calc_xaos(
     calc_options options,
     d *params,
-    d *params_previous,
     pf_obj *pfo,
     ColorMap *cmap,
     IFractalSite *site,
@@ -50,7 +49,7 @@ void calc_xaos(
     int debug_flags)
 {
 
-    std::unique_ptr<IFractWorker> worker {new XaosFractWorker(pfo, cmap, im, params_previous, options)};
+    std::unique_ptr<IFractWorker> worker {new XaosFractWorker(pfo, cmap, im, options)};
     if (worker)
     {
         fractFunc ff(
@@ -62,6 +61,10 @@ void calc_xaos(
         );
 
         ff.set_debug_flags(debug_flags);
+        if (options.dirty)
+        {
+            im->clear();
+        }
         ff.draw_all_xaos();
     }
 }

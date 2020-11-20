@@ -20,6 +20,8 @@ public:
     dvec4 aa_topleft;             // topleft - offset to 1st subpixel to draw
     dvec4 eye_point;              // where user's eye is (for 3d mode)
 
+    fract_geometry() {};
+
     fract_geometry(
         double *location, // x, y, z, w, magnitude, xy, xz, xw, yz, yw, zw
         bool y_flip,
