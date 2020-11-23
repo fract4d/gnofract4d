@@ -98,6 +98,7 @@ fract4d_sources = [
     'fract4d/c/model/pointfunc.cpp',
     'fract4d/c/model/stats.cpp',
     'fract4d/c/model/colorutils.cpp',
+    'fract4d/c/model/imageutils.cpp',
 
     'fract4d/c/fract_stdlib.cpp'
 ]
@@ -162,7 +163,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     packages=['fract4d_compiler', 'fract4d', 'fract4dgui'],
     package_data={
         'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml', 'gnofract4d.css'],
-        'fract4d': ['c/pf.h', 'c/fract_stdlib.h']
+        'fract4d': ['c/pf.h', 'c/fract_stdlib.h', 'c/model/imageutils.h', 'c/model/colorutils.h']
     },
     ext_modules=[module_fract4dc],
     scripts=['gnofract4d'],

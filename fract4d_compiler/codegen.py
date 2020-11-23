@@ -63,6 +63,8 @@ class T:
 
 #include "fract_stdlib.h"
 #include "pf.h"
+#include "model/imageutils.h"
+#include "model/colorutils.h"
 
 typedef struct {
     pf_obj parent;

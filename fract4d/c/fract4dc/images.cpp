@@ -9,6 +9,7 @@
 #include "model/imagereader.h"
 #include "model/imagewriter.h"
 #include "model/image.h"
+#include "model/imageutils.h"
 
 namespace images {
 
