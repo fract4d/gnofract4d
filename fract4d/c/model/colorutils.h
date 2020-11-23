@@ -4,8 +4,9 @@
 
 /* functions called by compiled formulas */
 
-extern "C"
-{
+#ifdef __cplusplus
+extern "C" {
+#endif
     void rgb_to_hsv(
         double r, double g, double b,
         double *h, double *s, double *v);
@@ -37,6 +38,8 @@ extern "C"
     void gradient(
         void *grad_object, double index,
         double *r, double *g, double *b);
+#ifdef __cplusplus
 }
+#endif
 
 #endif /* __COLORUTILS_H_INCLUDED__ */

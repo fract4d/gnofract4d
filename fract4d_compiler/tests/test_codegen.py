@@ -174,6 +174,7 @@ int main()
 
         #include "model/colorutils.cpp"
         #include "model/image.cpp"
+        #include "model/imageutils.cpp"
         #include "model/colormap.cpp"
         #include "fract_stdlib.cpp"
         #include "pf.h"
