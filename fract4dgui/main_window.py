@@ -558,11 +558,6 @@ class MainWindow:
                 break
         fs.hide()
 
-    def get_all_actions(self):
-        return self.get_toggle_actions() + \
-            self.get_main_actions() + \
-            self.get_fourd_actions()
-
     def get_toggle_actions(self):
         return [
             ('ToolsExplorerAction', 'explorer_mode', _('Explorer'),
