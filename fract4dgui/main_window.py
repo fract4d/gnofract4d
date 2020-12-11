@@ -687,18 +687,13 @@ class MainWindow:
         self.model.seq.make_redo_sensitive(redo)
 
         # command reference
-        if (not Gtk.check_version(3, 19, 0)):
-            # this version of Gtk *is* new enough to support shortcuts widget
-            builder = Gtk.Builder.new_from_file(
-                os.path.join(this_path, "shortcuts-gnofract4d.ui"))
-            self.shortcuts_window = builder.get_object("shortcuts-gnofract4d")
-            self.shortcuts_window.set_transient_for(self.window)
-            self.shortcuts_window.connect(
-                "delete-event",
-                lambda widget, event: Gtk.Window.hide_on_delete(widget))
-        else:
-            # older GTK builds don't understand shortcuts ui and rudely crash
-            self.shortcuts_window = None
+        builder = Gtk.Builder.new_from_file(
+            os.path.join(this_path, "shortcuts-gnofract4d.ui"))
+        self.shortcuts_window = builder.get_object("shortcuts-gnofract4d")
+        self.shortcuts_window.set_transient_for(self.window)
+        self.shortcuts_window.connect(
+            "delete-event",
+            lambda widget, event: Gtk.Window.hide_on_delete(widget))
 
     def director(self, *args):
         """Display the Director (animation) window."""
@@ -749,10 +744,9 @@ class MainWindow:
             self.bar.hide()
             self.swindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
 
-            screen = self.window.get_screen()
-            monitor_id = screen.get_monitor_at_window(
-                screen.get_active_window())
-            geometry = screen.get_monitor_geometry(monitor_id)
+            display = self.window.get_display()
+            monitor = display.get_monitor_at_window(self.window.get_window())
+            geometry = monitor.get_geometry()
             self.userPrefs.set_size(geometry.width, geometry.height)
 
         else:
@@ -1272,10 +1266,7 @@ class MainWindow:
         self.display_help()
 
     def command_reference(self, *args):
-        if self.shortcuts_window:
-            self.shortcuts_window.show_all()
-        else:
-            self.display_help("command-reference")
+        self.shortcuts_window.show_all()
 
     def report_bug(self, *args):
         url = "https://github.com/fract4d/gnofract4d/issues"
