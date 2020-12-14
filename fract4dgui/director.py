@@ -109,8 +109,8 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         dialog = Gtk.FileChooserDialog(title="Choose keyframe...",
                                        transient_for=self,
                                        action=Gtk.FileChooserAction.OPEN)
-        dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                           Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+        dialog.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL,
+                           _("_Open"), Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.OK)
         # ----setting filters---------
         filter = Gtk.FileFilter()
@@ -135,8 +135,8 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         dialog = Gtk.FileChooserDialog(title="Save AVI file...",
                                        transient_for=self,
                                        action=Gtk.FileChooserAction.SAVE)
-        dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                           Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+        dialog.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL,
+                           _("_OK"), Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.OK)
         current_file = self.txt_temp_avi.get_text()
         dialog.set_current_name(current_file if current_file else "video.webm")
@@ -163,8 +163,8 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         dialog = Gtk.FileChooserDialog(title="Save animation...",
                                        transient_for=self,
                                        action=Gtk.FileChooserAction.SAVE)
-        dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                           Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+        dialog.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL,
+                           _("Save"), Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_current_name("animation.fcta")
         # ----setting filters---------
@@ -190,8 +190,8 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         dialog = Gtk.FileChooserDialog(title="Choose animation...",
                                        transient_for=self,
                                        action=Gtk.FileChooserAction.OPEN)
-        dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                           Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+        dialog.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL,
+                           _("_Open"), Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.OK)
         # ----setting filters---------
         filter = Gtk.FileFilter()
