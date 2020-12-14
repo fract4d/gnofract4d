@@ -48,19 +48,6 @@ def input_add(fd, cb):
                              GLib.IO_IN | GLib.IO_HUP | GLib.IO_PRI, cb)
 
 
-def find_in_path(exe):
-    # find an executable along PATH env var
-    pathstring = os.environ["PATH"]
-    if not pathstring:
-        return None
-    paths = pathstring.split(":")
-    for path in paths:
-        full_path = os.path.join(path, exe)
-        if os.path.exists(full_path):
-            return full_path
-    return None
-
-
 def stack_trace():
     stack = inspect.stack()
     str = ""
