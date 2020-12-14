@@ -2,6 +2,7 @@
 
 # unit tests for renderqueue module
 
+from unittest.mock import patch
 import os.path
 
 from . import testgui
@@ -61,6 +62,28 @@ class Test(testgui.TestCase):
             self.assertEqual(True, os.path.exists(video_file))
 
         dd.destroy()
+
+    @patch("gi.repository.Gtk.FileChooserDialog.run")
+    @patch("gi.repository.Gtk.FileChooserDialog.get_filename")
+    def testFileChoosers(self, mock_dialog_get_filename, mock_dialog_run):
+        filename = "test_file"
+        mock_dialog_get_filename.side_effect = lambda : filename
+
+        f = fractal.T(Test.g_comp)
+        parent = Gtk.Window()
+        dd = director.DirectorDialog(parent, f, Test.userConfig)
+
+        mock_dialog_run.side_effect = lambda : Gtk.ResponseType.OK
+        self.assertEqual(dd.get_fct_file(), filename)
+        self.assertEqual(dd.get_avi_file(), filename)
+        self.assertEqual(dd.get_cfg_file_save(), filename)
+        self.assertEqual(dd.get_cfg_file_open(), filename)
+
+        mock_dialog_run.side_effect = lambda : Gtk.ResponseType.CANCEL
+        self.assertEqual(dd.get_fct_file(), "")
+        self.assertEqual(dd.get_avi_file(), "")
+        self.assertEqual(dd.get_cfg_file_save(), "")
+        self.assertEqual(dd.get_cfg_file_open(), "")
 
     def assertRaisesMessage(self, excClass, msg, callable, *args, **kwargs):
         try:
