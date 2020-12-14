@@ -90,10 +90,6 @@ def get_directory_chooser(title, parent):
     return chooser
 
 
-def get_file_chooser_extra_widget(chooser):
-    return chooser.get_extra_widget()
-
-
 def set_file_chooser_filename(chooser, name):
     if name:
         chooser.set_current_folder(os.path.abspath(os.path.dirname(name)))
