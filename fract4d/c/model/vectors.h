@@ -100,7 +100,7 @@ public:
 	{
 		return n[i];
 	};
-	T mag()
+	T mag() const
 	{
 		return n[VX] * n[VX] + n[VY] * n[VY] + n[VZ] * n[VZ] + n[VW] * n[VW];
 	}
