@@ -7,8 +7,9 @@ import re
 import gi
 
 gi.require_version('Gdk', '3.0')
+gi.require_version('GLib', '2.0')
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gdk, Gtk
+from gi.repository import Gdk, GLib, Gtk
 
 from fract4d_compiler import fc, fracttypes
 from fract4d import fractal, image, fractconfig
@@ -19,9 +20,25 @@ from . import (gtkfractal, model, preferences, autozoom, settings, toolbar,
 re_ends_with_num = re.compile(r'\d+\Z')
 re_cleanup = re.compile(r'[\s\(\)]+')
 
+class Application(Gtk.Application):
+    def __init__(self, options, userConfig):
+        super().__init__(application_id="io.github.fract4d")
+        self.mainWindow = None
+        self.options = options
+        self.userConfig = userConfig
+
+    def do_activate(self):
+        if not self.mainWindow:
+            self.mainWindow = MainWindow(self, self.userConfig)
+            self.mainWindow.apply_options(self.options)
+            GLib.idle_add(self.mainWindow.first_draw)
+
+        self.mainWindow.window.present()
+
 
 class MainWindow:
-    def __init__(self, userConfig, extra_paths=[]):
+    def __init__(self, application, userConfig, extra_paths=[]):
+        self.application = application
         self.quit_when_done = False
         self.save_filename = None
         self.compress_saves = True
@@ -36,7 +53,7 @@ class MainWindow:
         self.four_d_sensitives = []
 
         # window widget
-        self.window = Gtk.Window()
+        self.window = Gtk.ApplicationWindow(application=application)
         self.window.set_default_size(
             self.userPrefs.getint("main_window", "width"),
             self.userPrefs.getint("main_window", "height"))
@@ -1401,7 +1418,7 @@ class MainWindow:
                 del f
             self.compiler.clear_cache()
         finally:
-            Gtk.main_quit()
+            self.application.quit()
 
     def apply_options(self, opts):
         "Deal with opts gathered from cmd-line"

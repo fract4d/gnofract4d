@@ -43,15 +43,6 @@ def main(args):
         raise
 
 def gtkmain(userConfig, options):
-    # GTK+
-    import gi
-    gi.require_version('Gtk', '3.0')
-    try:
-        from gi.repository import Gtk
-    except ImportError as err:
-        print(_("Can't find Gtk. You need to install it before you can run Gnofract 4D."))
-        sys.exit(1)
-
     try:
         # GUI module
         from fract4dgui import main_window
@@ -60,14 +51,8 @@ def gtkmain(userConfig, options):
         print(_("Error was: '%s'") % err)
         sys.exit(1)
 
-    mainWindow = main_window.MainWindow(userConfig)
-    mainWindow.apply_options(options)
-
-    gi.require_version('GLib', '2.0')
-    from gi.repository import GLib
-    GLib.idle_add(mainWindow.first_draw)
-
-    Gtk.main()
+    app = main_window.Application(options, userConfig)
+    app.run()
 
 def plainmain(userConfig, options):
     t = fractmain.T(userConfig)

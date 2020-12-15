@@ -18,7 +18,7 @@ class WrapMainWindow(main_window.MainWindow):
     @patch('fract4d.fractconfig.T.get_data_path')
     def __init__(self, config, extra_paths=[]):
         self.errors = []
-        main_window.MainWindow.__init__(self, config, ['formulas'])
+        main_window.MainWindow.__init__(self, Gtk.Application(), config, ['formulas'])
 
     def show_error_message(self, message, exception):
         self.errors.append((message, exception))
@@ -30,11 +30,11 @@ class Test(testgui.TestCase):
         self.assertEqual(self.mw.filename, None, "shouldn't have a filename")
 
     def wait(self):
-        Gtk.main()
+        self.mw.application.run()
 
     def quitloop(self, f, status):
         if status == 0:
-            Gtk.main_quit()
+            self.mw.application.quit()
 
     def testLoad(self):
         # load good file
