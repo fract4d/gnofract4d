@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include <thread>
-#include <queue>
+#include <list>
 #include <functional>
 #include <condition_variable>
 #include <mutex>
@@ -296,8 +296,9 @@ private:
     std::vector<std::thread> m_pool;
     std::mutex m_queue_mutex;
     std::condition_variable m_condition;
-    std::queue<std::function<void()>> m_jobs;
+    std::list<std::function<void()>> m_jobs;
     bool m_terminate_pool;
+    bool m_zooming_in = true;
 
 };
 

@@ -34,6 +34,8 @@ void XaosFractWorker::reuse_pixels()
     const auto w = m_im->Xres();
     const auto h = m_im->Yres();
 
+    m_zooming_in = std::abs(m_geometry_previous.deltax[VX]) > std::abs(geometry_current.deltax[VX]);
+
     // Nearest neighbor value interpolation (reuse pixels from previous frame)
     // inspired by merge function from mergeSort as the series of values L and R are, by nature, ordered
 
@@ -149,8 +151,18 @@ void XaosFractWorker::work()
             std::unique_lock<std::mutex> lock(m_queue_mutex);
             m_condition.wait(lock, [this]{return !m_jobs.empty() || m_terminate_pool;});
             if (m_terminate_pool && m_jobs.empty()) return;
-            job = m_jobs.front();
-            m_jobs.pop();
+            // when doing spiral iteration, inner boxes are in the front of the list
+            // when zooming in, inner boxes have more priority
+            if (m_zooming_in)
+            {
+                job = m_jobs.front();
+                m_jobs.pop_front();
+            }
+            else
+            {
+                job = m_jobs.back();
+                m_jobs.pop_back();
+            }
         }
         job();
     }
@@ -160,7 +172,7 @@ void XaosFractWorker::add_job(std::function<void()> &&job)
 {
     {
         const std::unique_lock<std::mutex> lock(m_queue_mutex);
-        m_jobs.push(job);
+        m_jobs.push_back(std::forward<std::function<void()>>(job));
     }
     m_condition.notify_one();
 }
