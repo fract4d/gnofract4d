@@ -11,7 +11,7 @@ import gi
 
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gdk, Gtk, GObject
+from gi.repository import Gdk, Gio, Gtk, GObject
 
 from fract4d_compiler import fc
 from fract4d import animation, fractal, fractconfig
@@ -453,18 +453,18 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         return 0
 
     # loads configuration from pickled file
-    def load_configuration_clicked(self, widget, data=None):
+    def load_configuration_clicked(self, *args):
         cfg = self.get_cfg_file_open()
         if cfg != "":
             self.load_configuration(cfg)
 
     # reset all field to defaults
-    def new_configuration_clicked(self, widget, data=None):
+    def new_configuration_clicked(self, *args):
         self.animation.reset()
         self.updateGUI()
 
     # save configuration in file
-    def save_configuration_clicked(self, widget, data=None):
+    def save_configuration_clicked(self, *args):
         cfg = self.get_cfg_file_save()
         if cfg != "":
             try:
@@ -474,7 +474,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
                     _("Error saving animation"),
                     str(err))
 
-    def preferences_clicked(self, widget, data=None):
+    def preferences_clicked(self, *args):
         dlg = director_prefs.DirectorPrefs(self.animation, self)
         dlg.show()
 
@@ -498,45 +498,74 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         self.box_main = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
         self.box_main.set_homogeneous(False)
         # --------------------menu-------------------------------
-        self.manager = Gtk.UIManager()
-        accelgroup = self.manager.get_accel_group()
+        accelgroup = Gtk.AccelGroup()
         self.add_accel_group(accelgroup)
 
-        actiongroup = Gtk.ActionGroup.new("Director")
-        actiongroup.add_actions([
-            ('DirectorMenuAction', None, _('_Director')),
-            ('DirectorEditAction', None, _('_Edit')),
+        accelerators = [
+            (Gdk.KEY_n, self.new_configuration_clicked),
+            (Gdk.KEY_o, self.load_configuration_clicked),
+            (Gdk.KEY_s, self.save_configuration_clicked),
+            (Gdk.KEY_p, self.preferences_clicked),
+        ]
 
-            ('DirectorNewAction', Gtk.STOCK_NEW, _('_New Animation'),
-             '<control>N', None, self.new_configuration_clicked),
-            ('DirectorOpenAction', Gtk.STOCK_OPEN, _('_Open Animation'),
-             '<control>O', None, self.load_configuration_clicked),
-            ('DirectorSaveAction', Gtk.STOCK_SAVE, _('_Save Animation'),
-             '<control>S', None, self.save_configuration_clicked),
-            ('DirectorEditPrefsAction', Gtk.STOCK_PREFERENCES, _('_Preferences'),
-             '<control>P', None, self.preferences_clicked),
-        ])
+        for key, handler in accelerators:
+            accelgroup.connect(
+                key, Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE, handler)
 
-        self.manager.insert_action_group(actiongroup, 0)
+        def add_action(name, handler):
+            action = Gio.SimpleAction(name=name)
+            action.connect("activate", handler)
+            actiongroup.add_action(action)
+
+        actions = [
+            ("new", self.new_configuration_clicked),
+            ("open", self.load_configuration_clicked),
+            ("save", self.save_configuration_clicked),
+            ("edit_prefs", self.preferences_clicked),
+        ]
+
+        actiongroup = Gio.SimpleActionGroup()
+        # SimpleActionGroup.add_action_entries() requires override from PyGObject 3.29.2
+        for name, handler in actions:
+            add_action(name, handler)
+        self.insert_action_group("director", actiongroup)
 
         menu = '''
-<ui>
-<menubar>
-<menu name="Director" action="DirectorMenuAction">
-    <menuitem action="DirectorNewAction"/>
-    <menuitem action="DirectorOpenAction"/>
-    <menuitem action="DirectorSaveAction"/>
-</menu>
-<menu name="Edit" action="DirectorEditAction">
-    <menuitem action="DirectorEditPrefsAction"/>
-</menu>
-</menubar>
-</ui>
+<interface>
+  <menu id="menubar">
+    <submenu>
+      <attribute name="label" translatable="yes">_Director</attribute>
+      <item>
+        <attribute name="action">director.new</attribute>
+        <attribute name="label" translatable="yes">_New Animation</attribute>
+        <attribute name="accel">&lt;control&gt;N</attribute>
+      </item>
+      <item>
+        <attribute name="action">director.open</attribute>
+        <attribute name="label" translatable="yes">_Open Animation</attribute>
+        <attribute name="accel">&lt;control&gt;O</attribute>
+      </item>
+      <item>
+        <attribute name="action">director.save</attribute>
+        <attribute name="label" translatable="yes">_Save Animation</attribute>
+        <attribute name="accel">&lt;control&gt;S</attribute>
+      </item>
+    </submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_Edit</attribute>
+        <item>
+          <attribute name="action">director.edit_prefs</attribute>
+          <attribute name="label" translatable="yes">_Preferences</attribute>
+          <attribute name="accel">&lt;control&gt;P</attribute>
+        </item>
+    </submenu>
+  </menu>
+</interface>
 '''
-        self.manager.add_ui_from_string(menu)
 
-        self.menubar = self.manager.get_widget('/menubar')
-        self.box_main.pack_start(self.menubar, False, True, 0)
+        menubar = Gtk.MenuBar.new_from_model(
+            Gtk.Builder.new_from_string(menu, -1).get_object("menubar"))
+        self.box_main.pack_start(menubar, False, True, 0)
 
         # -----------creating popup menu-------------------------------
         # popup menu for keyframes
