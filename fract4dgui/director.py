@@ -388,21 +388,6 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
             # set default interpolation type
             self.cmb_interpolation_type.set_active(animation.INT_LINEAR)
 
-    def add_keyframe_clicked(self, widget, event):
-        if event.type == Gdk.EventType.BUTTON_PRESS:
-            widget.popup(
-                None,
-                None,
-                None,
-                None,
-                event.get_button()[1],
-                event.time)
-            # Tell calling code that we have handled this event the buck
-            # stops here.
-            return True
-        # Tell calling code that we have not handled this event pass it on.
-        return False
-
     def remove_keyframe_clicked(self, widget, data=None):
         # is anything selected
         (model, it) = self.tv_keyframes.get_selection().get_selected()
@@ -567,20 +552,13 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
             Gtk.Builder.new_from_string(menu, -1).get_object("menubar"))
         self.box_main.pack_start(menubar, False, True, 0)
 
-        # -----------creating popup menu-------------------------------
-        # popup menu for keyframes
-        self.popup_menu = Gtk.Menu()
-        self.mnu_pop_add_file = Gtk.MenuItem.new_with_label("From file")
-        self.popup_menu.append(self.mnu_pop_add_file)
-        self.mnu_pop_add_file.connect("activate", self.add_from_file, None)
-        self.mnu_pop_add_file.show()
-        self.mnu_pop_add_current = Gtk.MenuItem.new_with_label(
-            "From current fractal")
-        self.popup_menu.append(self.mnu_pop_add_current)
-        self.mnu_pop_add_current.connect(
-            "activate", self.add_from_current, None)
-        self.mnu_pop_add_current.show()
+        # -----------creating keyframes popup menu model----------------
+        add_action("file_keyframe", self.add_from_file)
+        add_action("current_keyframe", self.add_from_current)
 
+        popup_menu = Gio.Menu()
+        popup_menu.append("From file", "director.file_keyframe")
+        popup_menu.append("From current fractal", "director.current_keyframe")
         # --------------Keyframes box-----------------------------------
         self.frm_kf = Gtk.Frame.new("Keyframes")
         self.frm_kf.set_border_width(10)
@@ -633,10 +611,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         self.tv_keyframes.get_selection().set_select_function(self.before_selection, None)
         self.current_select = -1
 
-        self.btn_add_keyframe = Gtk.Button.new_with_label("Add")
-        # self.btn_add_keyframe.connect("clicked",self.add_keyframe_clicked,None)
-        self.btn_add_keyframe.connect_object(
-            "event", self.add_keyframe_clicked, self.popup_menu)
+        self.btn_add_keyframe = Gtk.MenuButton(label="Add", menu_model=popup_menu)
 
         self.btn_remove_keyframe = Gtk.Button.new_with_label("Remove")
         self.btn_remove_keyframe.connect(
@@ -819,6 +794,11 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
                 GObject.signal_stop_emission_by_name(self, "response")
             else:
                 self.hide()
+
+    def quit(self, widget, event):
+        # GTK 3 popover menu blocks application if showing when dialog is closed
+        self.btn_add_keyframe.get_popover().hide()
+        return super().quit(widget, event)
 
     def main(self):
         Gtk.main()
