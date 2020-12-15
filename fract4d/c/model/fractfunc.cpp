@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <cassert>
+#include <thread>
 
 #include "fractfunc.h"
 #include "model/image.h"
@@ -184,10 +185,14 @@ void fractFunc::draw_all_xaos()
     {
         // keep checking for frame request until we get one
         // we pass a function delegate, so in case a new frame request comes in while processing the current one, the worker knows
+        worker->hurry_up = false;
         if (!m_site->get_new_location(location, [worker](){
             worker->hurry_up = true;
-        })) continue;
-        worker->hurry_up = false;
+        }))
+        {
+            std::this_thread::yield();
+            continue;
+        }
         reset_counts();
         // update the fractal geometry so pixels from previous frame can be reutilized
         worker->change_geometry(fract_geometry{
