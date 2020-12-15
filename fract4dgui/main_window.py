@@ -653,10 +653,9 @@ class MainWindow:
 
         self.application.set_menubar(builder.get_object("menubar"))
 
-        undo = self.application.lookup_action("EditUndoAction")
-        self.model.seq.make_undo_sensitive(undo)
-        redo = self.application.lookup_action("EditRedoAction")
-        self.model.seq.make_redo_sensitive(redo)
+        self.model.seq.register_callbacks(
+            self.application.lookup_action("EditRedoAction").set_enabled,
+            self.application.lookup_action("EditUndoAction").set_enabled)
 
         # command reference
         builder = Gtk.Builder.new_from_file(

@@ -26,6 +26,7 @@ class Test(testgui.TestCase):
         Test.g_comp.load_formula_file("gf4d.cfrm")
         self.f = gtkfractal.T(Test.g_comp)
         self.m = model.Model(self.f)
+        self.m.seq.register_callbacks(lambda x: x, lambda x: x)
 
     def tearDown(self):
         self.f = self.m = None
