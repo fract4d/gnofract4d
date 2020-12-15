@@ -608,7 +608,7 @@ class MainWindow:
             ("ToolsPainterAction", self.painter),
 
             ("HelpContentsAction", self.contents),
-            ("HelpCommandReferenceAction", self.command_reference),
+            # Command Reference action is win.show-help-overlay
             ("HelpReportBugAction", self.report_bug),
             ("HelpAboutAction", self.about),
 
@@ -660,11 +660,7 @@ class MainWindow:
         # command reference
         builder = Gtk.Builder.new_from_file(
             os.path.join(this_path, "shortcuts-gnofract4d.ui"))
-        self.shortcuts_window = builder.get_object("shortcuts-gnofract4d")
-        self.shortcuts_window.set_transient_for(self.window)
-        self.shortcuts_window.connect(
-            "delete-event",
-            lambda widget, event: Gtk.Window.hide_on_delete(widget))
+        self.window.set_help_overlay(builder.get_object("shortcuts-gnofract4d"))
 
     def director(self, *args):
         """Display the Director (animation) window."""
@@ -1229,9 +1225,6 @@ class MainWindow:
     def contents(self, *args):
         """Show help file contents page."""
         self.display_help()
-
-    def command_reference(self, *args):
-        self.shortcuts_window.show_all()
 
     def report_bug(self, *args):
         url = "https://github.com/fract4d/gnofract4d/issues"

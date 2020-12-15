@@ -161,7 +161,7 @@
         <attribute name="accel">F1</attribute>
       </item>
       <item>
-        <attribute name="action">app.HelpCommandReferenceAction</attribute>
+        <attribute name="action">win.show-help-overlay</attribute>
         <attribute name="label" translatable="yes">Command _Reference</attribute>
       </item>
       <item>
