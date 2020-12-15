@@ -337,8 +337,9 @@ namespace images {
         }
         int offset = 3 * (y * i->Xres() + x); // @TODO: this number 3 means "bytes per pixel" and it's hardcoded here and in the image class
         assert(offset > -1 && offset < i->bytes());
+        // see: https://docs.python.org/3/c-api/buffer.html
         Py_buffer *buffer = new Py_buffer;
-        PyBuffer_FillInfo(buffer, NULL, i->getBuffer() + offset, i->bytes() - offset, 0, PyBUF_WRITABLE);
+        PyBuffer_FillInfo(buffer, NULL, i->getBuffer() + offset, i->bytes() - offset, 0, PyBUF_SIMPLE);
         pybuf = PyMemoryView_FromBuffer(buffer);
         Py_XINCREF(pybuf);
         //Py_XINCREF(pyim);

@@ -760,14 +760,14 @@ class T(Hidden):
             return
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_bytes(
-            GLib.Bytes(buf),
+            GLib.Bytes.new(buf),
             GdkPixbuf.Colorspace.RGB,
             False,
             8,
             min(self.width - x, w),
             min(self.height - y, h),
             self.width * 3)
-        Gdk.cairo_set_source_pixbuf(cairo_ctx, pixbuf.copy(), x, y)
+        Gdk.cairo_set_source_pixbuf(cairo_ctx, pixbuf, x, y)
         cairo_ctx.paint()
 
         if self.selection_rect:
