@@ -9,7 +9,7 @@ import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('GLib', '2.0')
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gdk, GLib, Gtk
+from gi.repository import Gdk, Gio, GLib, Gtk
 
 from fract4d_compiler import fc, fracttypes
 from fract4d import fractal, image, fractconfig
@@ -332,7 +332,8 @@ class MainWindow:
         is4d = f.is4D()
         for widget in self.four_d_sensitives:
             widget.set_sensitive(is4d)
-        self.fourd_actiongroup.set_sensitive(is4d)
+        for name in self.fourd_actiongroup.list_actions():
+            self.application.lookup_action(name).set_enabled(is4d)
 
     def create_fractal(self, f):
         self.swindow = Gtk.ScrolledWindow()
@@ -553,7 +554,7 @@ class MainWindow:
         height = int(table.height.get_text())
         return (width, height)
 
-    def save_hires_image(self, action):
+    def save_hires_image(self, *args):
         """Add the current fractal to the render queue."""
         save_filename = self.default_image_filename(".png")
 
@@ -576,126 +577,85 @@ class MainWindow:
         fs.hide()
 
     def get_toggle_actions(self):
-        return [
-            ('ToolsExplorerAction', 'explorer_mode', _('Explorer'),
-             '<control>E', _('Create random fractals similar to this one'),
-             self.toggle_explorer)
-        ]
+        return (
+            "ToolsExplorerAction", self.toggle_explorer
+        )
 
     def get_main_actions(self):
         return [
-            ('FileMenuAction', None, _('_File')),
-            ('FileOpenAction', Gtk.STOCK_OPEN, _('_Open...'),
-             None, _('Open a Parameter or Formula File'), self.open),
-            ('FileSaveAction', Gtk.STOCK_SAVE, None,
-             None, _("Save current parameters"), self.save),
-            ('FileSaveAsAction', Gtk.STOCK_SAVE_AS, None,
-             '<control><shift>S', _("Save current parameters in a new location"), self.saveas),
-            ('FileSaveImageAction', None, _('Save Current _Image'),
-             '<control>I', _('Save the current image'), self.save_image),
-            ('FileSaveHighResImageAction', None, _('Save _High-Res Image...'),
-             '<control><shift>I', _(
-                 'Save a higher-resolution version of the current image'),
-             self.save_hires_image),
+            ("FileOpenAction", self.open),
+            ("FileSaveAction", self.save),
+            ("FileSaveAsAction", self.saveas),
+            ("FileSaveImageAction", self.save_image),
+            ("FileSaveHighResImageAction", self.save_hires_image),
+            ("FileQuitAction", self.quit),
 
-            ('FileQuitAction', Gtk.STOCK_QUIT, None,
-             None, _('Quit'), self.quit),
+            ("EditFractalSettingsAction", self.settings),
+            ("EditPreferencesAction", self.preferences),
+            ("EditUndoAction", self.undo),
+            ("EditRedoAction", self.redo),
+            ("EditResetAction", self.reset),
+            ("EditResetZoomAction", self.reset_zoom),
+            ("EditPasteAction", self.paste),
 
-            ('EditMenuAction', None, _('_Edit')),
-            ('EditFractalSettingsAction', Gtk.STOCK_PROPERTIES, _('_Fractal Settings...'),
-             '<control>F', _('Edit the fractal\'s settings'), self.settings),
-            ('EditPreferencesAction', Gtk.STOCK_PREFERENCES, None,
-             None, _('Edit user preferences'), self.preferences),
-            ('EditUndoAction', Gtk.STOCK_UNDO, None,
-             '<control>Z', _('Undo the last command'), self.undo),
-            ('EditRedoAction', Gtk.STOCK_REDO, None,
-             '<control><shift>Z', _('Redo the last undone command'), self.redo),
-            ('EditResetAction', Gtk.STOCK_HOME, _('_Reset'),
-             'Home', _('Reset all parameters to defaults'), self.reset),
-            ('EditResetZoomAction', Gtk.STOCK_ZOOM_100, _('Re_set Zoom'),
-             '<control>Home', _('Reset Magnification'), self.reset_zoom),
-            ('EditPasteAction', Gtk.STOCK_PASTE, _("Paste Gradient"), 
-             '<control>V', _("Paste"), self.paste),
+            ("ViewFullScreenAction", self.full_screen),
 
-            ('ViewMenuAction', None, _('_View')),
-            ('ViewFullScreenAction', Gtk.STOCK_FULLSCREEN, _('_Full Screen'),
-             'F11', _('Full Screen (press Esc to finish)'), self.full_screen),
-
-            ('ToolsMenuAction', None, _('_Tools')),
-            ('ToolsAutozoomAction', 'autozoom', _('_Autozoom'),
-             '<control>A', _('Automatically zoom in to interesting regions'), self.autozoom),
+            ("ToolsAutozoomAction", self.autozoom),
             # explorer is a toggle, see above
-            ('ToolsBrowserAction', None, _('Formula _Browser'),
-             '<control>B', _('Browse available formulas'), self.browser),
-            ('ToolsDirectorAction', None, _('_Director'),
-             '<control>D', _('Create animations'), self.director),
-            ('ToolsRandomizeAction', 'randomize', _('_Randomize Colors'),
-             '<control>R', _('Apply a new random color scheme'), self.randomize_colors),
-            ('ToolsPainterAction', 'draw_brush', _('_Painter'),
-             None, _('Change colors interactively'), self.painter),
+            ("ToolsBrowserAction", self.browser),
+            ("ToolsDirectorAction", self.director),
+            ("ToolsRandomizeAction", self.randomize_colors),
+            ("ToolsPainterAction", self.painter),
 
-            ('HelpMenuAction', None, _('_Help')),
-            ('HelpContentsAction', Gtk.STOCK_HELP, _('_Contents'),
-             'F1', _('Display manual'), self.contents),
-            ('HelpCommandReferenceAction', None, _('Command _Reference'),
-             None, _('A list of keyboard and mouse shortcuts'), self.command_reference),
-            ('HelpReportBugAction', 'face_sad', _('_Report a Bug'),
-             '', _('Report a bug you\'ve found'), self.report_bug),
-            ('HelpAboutAction', Gtk.STOCK_ABOUT, _('_About'),
-             None, _('About Gnofract 4D'), self.about)
+            ("HelpContentsAction", self.contents),
+            ("HelpCommandReferenceAction", self.command_reference),
+            ("HelpReportBugAction", self.report_bug),
+            ("HelpAboutAction", self.about),
+
+            ("ImproveNow", self.improve_now),
         ]
 
     def get_fourd_actions(self):
         return [
-            ('PlanesMenuAction', None, _('Planes')),
-            ('PlanesXYAction', None, _('_XY (Mandelbrot)'),
-             '<control>1', None, self.set_xy_plane),
-            ('PlanesZWAction', None, _('_ZW (Julia)'),
-             '<control>2', None, self.set_zw_plane),
-            ('PlanesXZAction', None, _('_XZ (Oblate)'),
-             '<control>3', None, self.set_xz_plane),
-            ('PlanesXWAction', None, _('_XW (Parabolic)'),
-             '<control>4', None, self.set_xw_plane),
-            ('PlanesYZAction', None, _('_ZY (Elliptic)'),
-             '<control>5', None, self.set_yz_plane),
-            ('PlanesWYAction', None, _('_WY (Rectangular)'),
-             '<control>6', None, self.set_wy_plane)
-        ]
+            ("PlanesXYAction", self.set_xy_plane),
+            ("PlanesZWAction", self.set_zw_plane),
+            ("PlanesXZAction", self.set_xz_plane),
+            ("PlanesXWAction", self.set_xw_plane),
+            ("PlanesYZAction", self.set_yz_plane),
+            ("PlanesWYAction", self.set_wy_plane),
+            ]
 
     def create_ui(self):
-        self.manager = Gtk.UIManager()
-        accelgroup = self.manager.get_accel_group()
-        self.window.add_accel_group(accelgroup)
+        def add_action(name, handler, toggle=False):
+            action = Gio.SimpleAction(
+                name=name, state=GLib.Variant("b", False) if toggle else None)
+            action.connect("activate", handler)
+            self.application.add_action(action)
+            return action
 
-        main_actiongroup = Gtk.ActionGroup.new('Gnofract4D')
-        self.main_actiongroup = main_actiongroup
+        # Missing override for Gtk.Application.add_action_entries():
+        # https://gitlab.gnome.org/GNOME/pygobject/-/issues/426
+        # main actions
+        for name, handler in self.get_main_actions():
+            add_action(name, handler)
 
-        main_actiongroup.add_toggle_actions(self.get_toggle_actions())
-        self.explorer_menu_item = main_actiongroup.get_action(
-            'ToolsExplorerAction')
-
-        main_actiongroup.add_actions(self.get_main_actions())
-
-        self.manager.insert_action_group(main_actiongroup, 0)
+        # explorer action
+        self.explorer_action = add_action(*self.get_toggle_actions(), True)
 
         # actions which are only available if we're in 4D mode
-        self.fourd_actiongroup = Gtk.ActionGroup.new('4D-sensitive widgets')
-
-        self.fourd_actiongroup.add_actions(self.get_fourd_actions())
-
-        self.manager.insert_action_group(self.fourd_actiongroup, 1)
+        self.fourd_actiongroup = Gio.SimpleActionGroup()
+        for name, handler in self.get_fourd_actions():
+            action = add_action(name, handler)
+            self.fourd_actiongroup.add_action(action)
 
         this_path = os.path.dirname(sys.modules[__name__].__file__)
-        ui_location = os.path.join(this_path, "ui.xml")
-        self.manager.add_ui_from_file(ui_location)
+        builder = Gtk.Builder.new_from_file(os.path.join(this_path, "ui.xml"))
 
-        self.menubar = self.manager.get_widget('/MenuBar')
-        self.vbox.pack_start(self.menubar, False, True, 0)
+        self.application.set_menubar(builder.get_object("menubar"))
 
-        # this could be done with an actiongroup, but since it already works...
-        undo = self.manager.get_widget(_("/MenuBar/EditMenu/EditUndo"))
+        undo = self.application.lookup_action("EditUndoAction")
         self.model.seq.make_undo_sensitive(undo)
-        redo = self.manager.get_widget(_("/MenuBar/EditMenu/EditRedo"))
+        redo = self.application.lookup_action("EditRedoAction")
         self.model.seq.make_redo_sensitive(redo)
 
         # command reference
@@ -729,9 +689,10 @@ class MainWindow:
         self.renderQueue.add(self.f.f, name, w, h)
         self.renderQueue.start()
 
-    def toggle_explorer(self, action):
+    def toggle_explorer(self, action, parameter):
         """Enter (or leave) Explorer mode."""
-        self.explorer_toolbar_button.set_active(action.get_active())
+        state = action.get_state() == GLib.Variant("b", False)
+        self.set_explorer_state(state)
 
     def full_screen(self, *args):
         """Show main window full-screen."""
@@ -751,7 +712,7 @@ class MainWindow:
                     self.userPrefs.getint("display", "height"))
 
             self.window.fullscreen()
-            self.menubar.hide()
+            self.window.set_show_menubar(False)
             self.toolbar.hide()
             self.bar.hide()
             self.swindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
@@ -769,7 +730,7 @@ class MainWindow:
             self.swindow.set_policy(
                 Gtk.PolicyType.AUTOMATIC,
                 Gtk.PolicyType.AUTOMATIC)
-            self.menubar.show()
+            self.window.set_show_menubar(True)
             self.toolbar.show()
             self.bar.show()
             self.window.unfullscreen()
@@ -795,7 +756,7 @@ class MainWindow:
         auto_deepen = self.userPrefs.getboolean("display", "autodeepen")
         self.preview.draw_image(False, auto_deepen)
 
-    def improve_now(self, widget):
+    def improve_now(self, *args):
         self.f.improve_quality()
 
     def create_toolbar(self):
@@ -856,7 +817,7 @@ class MainWindow:
         self.toolbar.add_button(
             "improve_now",
             _("Double the maximum number of iterations and tighten periodicity. This will fill in some black areas but increase drawing time"),
-            self.improve_now)
+            "app.ImproveNow")
 
         res_menu = self.create_resolution_menu()
 
@@ -871,16 +832,12 @@ class MainWindow:
         self.toolbar.add_button(
             "edit-undo",
             _("Undo the last change"),
-            self.undo)
-
-        self.model.seq.make_undo_sensitive(self.toolbar.get_children()[-1])
+            "app.EditUndoAction")
 
         self.toolbar.add_button(
             "edit-redo",
             _("Redo the last undone change"),
-            self.redo)
-
-        self.model.seq.make_redo_sensitive(self.toolbar.get_children()[-1])
+            "app.EditRedoAction")
 
         # explorer mode widgets
         self.toolbar.add_space()
@@ -888,7 +845,7 @@ class MainWindow:
         self.explorer_toolbar_button = self.toolbar.add_toggle(
             "explorer_mode",
             _("Toggle Explorer Mode"),
-            self.toolbar_toggle_explorer)
+            "app.ToolsExplorerAction")
 
         # explorer weirdness
         self.weirdbox = Gtk.Grid()
@@ -980,11 +937,8 @@ class MainWindow:
 
         return res_menu
 
-    def toolbar_toggle_explorer(self, widget):
-        self.set_explorer_state(widget.get_active())
-
     def set_explorer_state(self, active):
-        self.explorer_menu_item.set_active(active)
+        self.explorer_action.set_state(GLib.Variant("b", active))
         self.update_subfract_visibility(active)
 
     def create_angle_widget(self, name, tip, axis, is4dsensitive):
@@ -1096,14 +1050,14 @@ class MainWindow:
                 _("Error saving to file %s") % file, err)
             return False
 
-    def save(self, action):
+    def save(self, *args):
         """Save the current parameters."""
         if self.filename is None:
-            self.saveas(action)
+            self.saveas()
         else:
             self.save_file(self.filename)
 
-    def saveas(self, action):
+    def saveas(self, *args):
         """Save the current parameters into a new file."""
         fs = self.get_save_as_fs()
         save_filename = self.default_save_filename()
@@ -1308,7 +1262,7 @@ class MainWindow:
             url,
             self.window)
 
-    def open(self, action):
+    def open(self, *args):
         """Open a parameter or formula file."""
         fs = self.get_open_fs()
         fs.show_all()

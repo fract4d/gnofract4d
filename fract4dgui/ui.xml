@@ -1,49 +1,177 @@
-<ui>
-  <menubar name="MenuBar">
-    <menu name="FileMenu" action = "FileMenuAction">
-       <menuitem name="OpenFile" action="FileOpenAction"/>
-       <menuitem name="Save" action="FileSaveAction"/>
-       <menuitem name="SaveAs" action="FileSaveAsAction"/>
-       <menuitem name="SaveImage" action="FileSaveImageAction"/>
-       <menuitem name="SaveHiResImage" action="FileSaveHighResImageAction"/>
-       <separator/>
-       <menuitem name="Quit" action="FileQuitAction"/>
-    </menu>
-    <menu name="EditMenu" action="EditMenuAction">
-      <menuitem name="EditSettings" action="EditFractalSettingsAction"/>
-      <menuitem name="EditPreferences" action="EditPreferencesAction"/>
-      <separator/>
-      <menuitem name="EditUndo" action="EditUndoAction"/>
-      <menuitem name="EditRedo" action="EditRedoAction"/>
-      <separator/>
-      <menuitem name="EditReset" action="EditResetAction"/>
-      <menuitem name="EditResetZoom" action="EditResetZoomAction"/>   
-      <menuitem name="EditPaste" action="EditPasteAction"/>   
-    </menu>
-    <menu name="ViewMenu" action="ViewMenuAction">
-      <menuitem name="ViewFullScreen" action="ViewFullScreenAction"/>
-      <menu name="PlanesMenu" action="PlanesMenuAction">
-	<menuitem name="PlanesXY" action="PlanesXYAction"/>
-	<menuitem name="PlanesZW" action="PlanesZWAction"/>
-	<menuitem name="PlanesXZ" action="PlanesXZAction"/>
-	<menuitem name="PlanesXW" action="PlanesXWAction"/>
-	<menuitem name="PlanesYZ" action="PlanesYZAction"/>
-	<menuitem name="PlanesWY" action="PlanesWYAction"/>
-      </menu>
-    </menu>
-    <menu name="ToolsMenu" action="ToolsMenuAction">
-      <menuitem name="ToolsAutozoom" action="ToolsAutozoomAction"/>
-      <menuitem name="ToolsExplorer" action="ToolsExplorerAction"/>
-      <menuitem name="ToolsBrowser" action="ToolsBrowserAction"/>
-      <menuitem name="ToolsDirector" action="ToolsDirectorAction"/>
-      <menuitem name="ToolsRandomize" action="ToolsRandomizeAction"/>
-      <menuitem name="ToolsPainter" action="ToolsPainterAction"/>
-    </menu>
-    <menu name="HelpMenu" action="HelpMenuAction">
-      <menuitem name="HelpContents" action="HelpContentsAction"/>
-      <menuitem name="HelpCommandRef" action="HelpCommandReferenceAction"/>
-      <menuitem name="HelpReportBug" action="HelpReportBugAction"/>
-      <menuitem name="HelpAbout" action="HelpAboutAction"/>
-    </menu>
-  </menubar>
-</ui>
+<interface>
+  <menu id="menubar">
+    <submenu>
+      <attribute name="label" translatable="yes">_File</attribute>
+      <section>
+        <item>
+          <attribute name="action">app.FileOpenAction</attribute>
+          <attribute name="label" translatable="yes">_Open...</attribute>
+          <attribute name="accel">&lt;control&gt;O</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.FileSaveAction</attribute>
+          <attribute name="label" translatable="yes">_Save</attribute>
+          <attribute name="accel">&lt;control&gt;S</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.FileSaveAsAction</attribute>
+          <attribute name="label" translatable="yes">Save _As...</attribute>
+          <attribute name="accel">&lt;control&gt;&lt;shift&gt;S</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.FileSaveImageAction</attribute>
+          <attribute name="label" translatable="yes">Save Current _Image</attribute>
+          <attribute name="accel">&lt;control&gt;I</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.FileSaveHighResImageAction</attribute>
+          <attribute name="label" translatable="yes">Save _High-Res Image...</attribute>
+          <attribute name="accel">&lt;control&gt;&lt;shift&gt;I</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="action">app.FileQuitAction</attribute>
+          <attribute name="label" translatable="yes">_Quit</attribute>
+          <attribute name="accel">&lt;control&gt;Q</attribute>
+        </item>
+      </section>
+    </submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_Edit</attribute>
+      <section>
+        <item>
+          <attribute name="action">app.EditFractalSettingsAction</attribute>
+          <attribute name="label" translatable="yes">_Fractal Settings...</attribute>
+          <attribute name="accel">&lt;control&gt;F</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.EditPreferencesAction</attribute>
+          <attribute name="label" translatable="yes">_Preferences</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="action">app.EditUndoAction</attribute>
+          <attribute name="label" translatable="yes">_Undo</attribute>
+          <attribute name="accel">&lt;control&gt;Z</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.EditRedoAction</attribute>
+          <attribute name="label" translatable="yes">_Redo</attribute>
+          <attribute name="accel">&lt;control&gt;&lt;shift&gt;Z</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="action">app.EditResetAction</attribute>
+          <attribute name="label" translatable="yes">_Reset</attribute>
+          <attribute name="accel">Home</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.EditResetZoomAction</attribute>
+          <attribute name="label" translatable="yes">Re_set Zoom</attribute>
+          <attribute name="accel">&lt;control&gt;Home</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.EditPasteAction</attribute>
+          <attribute name="label" translatable="yes">Paste Gradient</attribute>
+          <attribute name="accel">&lt;control&gt;V</attribute>
+        </item>
+      </section>
+    </submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_View</attribute>
+      <item>
+        <attribute name="action">app.ViewFullScreenAction</attribute>
+        <attribute name="label" translatable="yes">_Full Screen</attribute>
+        <attribute name="accel">F11</attribute>
+      </item>
+      <submenu>
+        <attribute name="label" translatable="yes">Planes</attribute>
+        <item>
+          <attribute name="action">app.PlanesXYAction</attribute>
+          <attribute name="label" translatable="yes">_XY (Mandelbrot)</attribute>
+          <attribute name="accel">&lt;control&gt;1</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.PlanesZWAction</attribute>
+          <attribute name="label" translatable="yes">_ZW (Julia)</attribute>
+          <attribute name="accel">&lt;control&gt;2</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.PlanesXZAction</attribute>
+          <attribute name="label" translatable="yes">_XZ (Oblate)</attribute>
+          <attribute name="accel">&lt;control&gt;3</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.PlanesXWAction</attribute>
+          <attribute name="label" translatable="yes">_XW (Parabolic)</attribute>
+          <attribute name="accel">&lt;control&gt;4</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.PlanesYZAction</attribute>
+          <attribute name="label" translatable="yes">_ZY (Elliptic)</attribute>
+          <attribute name="accel">&lt;control&gt;5</attribute>
+        </item>
+        <item>
+          <attribute name="action">app.PlanesWYAction</attribute>
+          <attribute name="label" translatable="yes">_WY (Rectangular)</attribute>
+          <attribute name="accel">&lt;control&gt;6</attribute>
+        </item>
+      </submenu>
+    </submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_Tools</attribute>
+      <item>
+        <attribute name="action">app.ToolsAutozoomAction</attribute>
+        <attribute name="label" translatable="yes">_Autozoom</attribute>
+        <attribute name="accel">&lt;control&gt;A</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.ToolsExplorerAction</attribute>
+        <attribute name="label" translatable="yes">Explorer</attribute>
+        <attribute name="accel">&lt;control&gt;E</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.ToolsBrowserAction</attribute>
+        <attribute name="label" translatable="yes">Formula _Browser</attribute>
+        <attribute name="accel">&lt;control&gt;B</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.ToolsDirectorAction</attribute>
+        <attribute name="label" translatable="yes">_Director</attribute>
+        <attribute name="accel">&lt;control&gt;D</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.ToolsRandomizeAction</attribute>
+        <attribute name="label" translatable="yes">_Randomize Colors</attribute>
+        <attribute name="accel">&lt;control&gt;R</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.ToolsPainterAction</attribute>
+        <attribute name="label" translatable="yes">_Painter</attribute>
+      </item>
+    </submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_Help</attribute>
+      <item>
+        <attribute name="action">app.HelpContentsAction</attribute>
+        <attribute name="label" translatable="yes">_Contents</attribute>
+        <attribute name="accel">F1</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.HelpCommandReferenceAction</attribute>
+        <attribute name="label" translatable="yes">Command _Reference</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.HelpReportBugAction</attribute>
+        <attribute name="label" translatable="yes">_Report a Bug</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.HelpAboutAction</attribute>
+        <attribute name="label" translatable="yes">_About</attribute>
+      </item>
+    </submenu>
+  </menu>
+</interface>
