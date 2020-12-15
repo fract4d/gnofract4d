@@ -177,3 +177,9 @@ class Test(testgui.TestCase):
             self.assertRaises(IOError, WrapMainWindow, Test.userConfig)
         finally:
             fractal.T.DEFAULT_FORMULA_FILE = old_default
+
+
+class TestApplication(testgui.TestCase):
+    def testApplication(self):
+        app = main_window.Application(None, Test.userConfig)
+        self.assertEqual(app.userConfig, Test.userConfig)
