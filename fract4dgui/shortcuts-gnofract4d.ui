@@ -172,14 +172,7 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.ViewFullScreenAction</property>
-                <property name="title" translatable="yes">Show main window full-screen</property>
-                <property name="visible">1</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="accelerator">Escape</property>
-                <property name="title" translatable="yes">Quit full-screen mode</property>
+                <property name="title" translatable="yes">Toggle main window full-screen</property>
                 <property name="visible">1</property>
               </object>
             </child>

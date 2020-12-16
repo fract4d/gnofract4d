@@ -81,7 +81,6 @@ class MainWindow:
             Gdk.KEY_Right: self.on_key_right,
             Gdk.KEY_Up: self.on_key_up,
             Gdk.KEY_Down: self.on_key_down,
-            Gdk.KEY_Escape: self.on_key_escape
         }
 
         self.window.connect('key-press-event', self.on_key_press)
@@ -579,9 +578,10 @@ class MainWindow:
         fs.hide()
 
     def get_toggle_actions(self):
-        return (
-            "ToolsExplorerAction", self.toggle_explorer
-        )
+        return [
+            ("ToolsExplorerAction", self.toggle_explorer),
+            ("ViewFullScreenAction", self.toggle_full_screen),
+        ]
 
     def get_main_actions(self):
         return [
@@ -600,7 +600,7 @@ class MainWindow:
             ("EditResetZoomAction", self.reset_zoom),
             ("EditPasteAction", self.paste),
 
-            ("ViewFullScreenAction", self.full_screen),
+            # View Full Screen is a toggle, see above
 
             ("ToolsAutozoomAction", self.autozoom),
             # explorer is a toggle, see above
@@ -640,9 +640,9 @@ class MainWindow:
         for name, handler in self.get_main_actions():
             add_action(name, handler)
 
-        # explorer action
-        self.explorer_action = \
-            add_action(*self.get_toggle_actions(), state=GLib.Variant("b", False))
+        # stateful actions
+        self.explorer_action, self.fullscreen_action = \
+            [add_action(*x, state=GLib.Variant("b", False)) for x in self.get_toggle_actions()]
 
         # actions which are only available if we're in 4D mode
         self.fourd_actiongroup = Gio.SimpleActionGroup()
@@ -691,15 +691,10 @@ class MainWindow:
         state = action.get_state() == GLib.Variant("b", False)
         self.set_explorer_state(state)
 
-    def full_screen(self, *args):
-        """Show main window full-screen."""
-        self.set_full_screen(True)
-
-    def on_key_escape(self, state):
-        self.set_full_screen(False)
-
-    def set_full_screen(self, is_full):
-        if is_full:
+    def toggle_full_screen(self, action, parameter):
+        """Switch main window to/from full-screen."""
+        to_full = action.get_state() == GLib.Variant("b", False)
+        if to_full:
             if not self.normal_window_size:
                 self.normal_window_size = self.window.get_size()
 
@@ -720,7 +715,6 @@ class MainWindow:
             self.userPrefs.set_size(geometry.width, geometry.height)
 
         else:
-            print("shrinking")
             if self.normal_display_size:
                 self.userPrefs.set_size(*self.normal_display_size)
                 self.normal_display_size = None
@@ -731,6 +725,8 @@ class MainWindow:
             self.toolbar.show()
             self.bar.show()
             self.window.unfullscreen()
+
+        self.fullscreen_action.set_state(GLib.Variant("b", to_full))
 
     def create_status_bar(self):
         self.bar = Gtk.ProgressBar()
