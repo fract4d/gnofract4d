@@ -11,7 +11,7 @@ import gi
 
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gdk, Gtk, GObject
+from gi.repository import Gdk, Gio, Gtk, GObject
 
 from fract4d_compiler import fc
 from fract4d import animation, fractal, fractconfig
@@ -388,21 +388,6 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
             # set default interpolation type
             self.cmb_interpolation_type.set_active(animation.INT_LINEAR)
 
-    def add_keyframe_clicked(self, widget, event):
-        if event.type == Gdk.EventType.BUTTON_PRESS:
-            widget.popup(
-                None,
-                None,
-                None,
-                None,
-                event.get_button()[1],
-                event.time)
-            # Tell calling code that we have handled this event the buck
-            # stops here.
-            return True
-        # Tell calling code that we have not handled this event pass it on.
-        return False
-
     def remove_keyframe_clicked(self, widget, data=None):
         # is anything selected
         (model, it) = self.tv_keyframes.get_selection().get_selected()
@@ -453,18 +438,18 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         return 0
 
     # loads configuration from pickled file
-    def load_configuration_clicked(self, widget, data=None):
+    def load_configuration_clicked(self, *args):
         cfg = self.get_cfg_file_open()
         if cfg != "":
             self.load_configuration(cfg)
 
     # reset all field to defaults
-    def new_configuration_clicked(self, widget, data=None):
+    def new_configuration_clicked(self, *args):
         self.animation.reset()
         self.updateGUI()
 
     # save configuration in file
-    def save_configuration_clicked(self, widget, data=None):
+    def save_configuration_clicked(self, *args):
         cfg = self.get_cfg_file_save()
         if cfg != "":
             try:
@@ -474,7 +459,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
                     _("Error saving animation"),
                     str(err))
 
-    def preferences_clicked(self, widget, data=None):
+    def preferences_clicked(self, *args):
         dlg = director_prefs.DirectorPrefs(self.animation, self)
         dlg.show()
 
@@ -498,60 +483,82 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         self.box_main = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
         self.box_main.set_homogeneous(False)
         # --------------------menu-------------------------------
-        self.manager = Gtk.UIManager()
-        accelgroup = self.manager.get_accel_group()
+        accelgroup = Gtk.AccelGroup()
         self.add_accel_group(accelgroup)
 
-        actiongroup = Gtk.ActionGroup.new("Director")
-        actiongroup.add_actions([
-            ('DirectorMenuAction', None, _('_Director')),
-            ('DirectorEditAction', None, _('_Edit')),
+        accelerators = [
+            (Gdk.KEY_n, self.new_configuration_clicked),
+            (Gdk.KEY_o, self.load_configuration_clicked),
+            (Gdk.KEY_s, self.save_configuration_clicked),
+            (Gdk.KEY_p, self.preferences_clicked),
+        ]
 
-            ('DirectorNewAction', Gtk.STOCK_NEW, _('_New Animation'),
-             '<control>N', None, self.new_configuration_clicked),
-            ('DirectorOpenAction', Gtk.STOCK_OPEN, _('_Open Animation'),
-             '<control>O', None, self.load_configuration_clicked),
-            ('DirectorSaveAction', Gtk.STOCK_SAVE, _('_Save Animation'),
-             '<control>S', None, self.save_configuration_clicked),
-            ('DirectorEditPrefsAction', Gtk.STOCK_PREFERENCES, _('_Preferences'),
-             '<control>P', None, self.preferences_clicked),
-        ])
+        for key, handler in accelerators:
+            accelgroup.connect(
+                key, Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE, handler)
 
-        self.manager.insert_action_group(actiongroup, 0)
+        def add_action(name, handler):
+            action = Gio.SimpleAction(name=name)
+            action.connect("activate", handler)
+            actiongroup.add_action(action)
+
+        actions = [
+            ("new", self.new_configuration_clicked),
+            ("open", self.load_configuration_clicked),
+            ("save", self.save_configuration_clicked),
+            ("edit_prefs", self.preferences_clicked),
+        ]
+
+        actiongroup = Gio.SimpleActionGroup()
+        # SimpleActionGroup.add_action_entries() requires override from PyGObject 3.29.2
+        for name, handler in actions:
+            add_action(name, handler)
+        self.insert_action_group("director", actiongroup)
 
         menu = '''
-<ui>
-<menubar>
-<menu name="Director" action="DirectorMenuAction">
-    <menuitem action="DirectorNewAction"/>
-    <menuitem action="DirectorOpenAction"/>
-    <menuitem action="DirectorSaveAction"/>
-</menu>
-<menu name="Edit" action="DirectorEditAction">
-    <menuitem action="DirectorEditPrefsAction"/>
-</menu>
-</menubar>
-</ui>
+<interface>
+  <menu id="menubar">
+    <submenu>
+      <attribute name="label" translatable="yes">_Director</attribute>
+      <item>
+        <attribute name="action">director.new</attribute>
+        <attribute name="label" translatable="yes">_New Animation</attribute>
+        <attribute name="accel">&lt;control&gt;N</attribute>
+      </item>
+      <item>
+        <attribute name="action">director.open</attribute>
+        <attribute name="label" translatable="yes">_Open Animation</attribute>
+        <attribute name="accel">&lt;control&gt;O</attribute>
+      </item>
+      <item>
+        <attribute name="action">director.save</attribute>
+        <attribute name="label" translatable="yes">_Save Animation</attribute>
+        <attribute name="accel">&lt;control&gt;S</attribute>
+      </item>
+    </submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_Edit</attribute>
+        <item>
+          <attribute name="action">director.edit_prefs</attribute>
+          <attribute name="label" translatable="yes">_Preferences</attribute>
+          <attribute name="accel">&lt;control&gt;P</attribute>
+        </item>
+    </submenu>
+  </menu>
+</interface>
 '''
-        self.manager.add_ui_from_string(menu)
 
-        self.menubar = self.manager.get_widget('/menubar')
-        self.box_main.pack_start(self.menubar, False, True, 0)
+        menubar = Gtk.MenuBar.new_from_model(
+            Gtk.Builder.new_from_string(menu, -1).get_object("menubar"))
+        self.box_main.pack_start(menubar, False, True, 0)
 
-        # -----------creating popup menu-------------------------------
-        # popup menu for keyframes
-        self.popup_menu = Gtk.Menu()
-        self.mnu_pop_add_file = Gtk.MenuItem.new_with_label("From file")
-        self.popup_menu.append(self.mnu_pop_add_file)
-        self.mnu_pop_add_file.connect("activate", self.add_from_file, None)
-        self.mnu_pop_add_file.show()
-        self.mnu_pop_add_current = Gtk.MenuItem.new_with_label(
-            "From current fractal")
-        self.popup_menu.append(self.mnu_pop_add_current)
-        self.mnu_pop_add_current.connect(
-            "activate", self.add_from_current, None)
-        self.mnu_pop_add_current.show()
+        # -----------creating keyframes popup menu model----------------
+        add_action("file_keyframe", self.add_from_file)
+        add_action("current_keyframe", self.add_from_current)
 
+        popup_menu = Gio.Menu()
+        popup_menu.append("From file", "director.file_keyframe")
+        popup_menu.append("From current fractal", "director.current_keyframe")
         # --------------Keyframes box-----------------------------------
         self.frm_kf = Gtk.Frame.new("Keyframes")
         self.frm_kf.set_border_width(10)
@@ -604,10 +611,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         self.tv_keyframes.get_selection().set_select_function(self.before_selection, None)
         self.current_select = -1
 
-        self.btn_add_keyframe = Gtk.Button.new_with_label("Add")
-        # self.btn_add_keyframe.connect("clicked",self.add_keyframe_clicked,None)
-        self.btn_add_keyframe.connect_object(
-            "event", self.add_keyframe_clicked, self.popup_menu)
+        self.btn_add_keyframe = Gtk.MenuButton(label="Add", menu_model=popup_menu)
 
         self.btn_remove_keyframe = Gtk.Button.new_with_label("Remove")
         self.btn_remove_keyframe.connect(
@@ -790,6 +794,11 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
                 GObject.signal_stop_emission_by_name(self, "response")
             else:
                 self.hide()
+
+    def quit(self, widget, event):
+        # GTK 3 popover menu blocks application if showing when dialog is closed
+        self.btn_add_keyframe.get_popover().hide()
+        return super().quit(widget, event)
 
     def main(self):
         Gtk.main()

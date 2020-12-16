@@ -39,9 +39,13 @@ class UndoTest(unittest.TestCase):
         self.assertEqual(self.redo_cb_status.count, undoer.can_redo())
 
     def testCreateUndoRedo(self):
-        status = Status()
-        self.undo_cb_status = Status()
-        self.redo_cb_status = Status()
+        class Status1(Status):
+            def set_enabled(self, state):
+                self.count = state
+
+        status = Status1()
+        self.undo_cb_status = Status1()
+        self.redo_cb_status = Status1()
 
         def inc_status(x):
             status.count += x
@@ -49,22 +53,14 @@ class UndoTest(unittest.TestCase):
         def dec_status(x):
             status.count -= x
 
-        def set_undoable(sequence, state):
-            # print "undo_status: %s" % state
-            self.undo_cb_status.count = state
-
-        def set_redoable(sequence, state):
-            # print "redo_status: %s" % state
-            self.redo_cb_status.count = state
-
         self.assertEqual(status.count, 0)
         self.assertEqual(self.undo_cb_status.count, 0)
         self.assertEqual(self.redo_cb_status.count, 0)
 
         # create sequence
         undoer = undo.Sequence()
-        undoer.connect('can-undo', set_undoable)
-        undoer.connect('can-redo', set_redoable)
+        undoer.register_callbacks(
+            self.redo_cb_status.set_enabled, self.undo_cb_status.set_enabled)
 
         self.assertEqual(undoer.can_undo(), False)
         self.assertEqual(undoer.can_redo(), False)
@@ -123,6 +119,7 @@ class UndoTest(unittest.TestCase):
 
         # create sequence
         undoer = undo.Sequence()
+        undoer.register_callbacks(lambda x: x, lambda x: x)
         inc_status(1)
         undoer.do(inc_status, 1, dec_status, 1)
         make_status_string("foo")
@@ -147,6 +144,7 @@ class UndoTest(unittest.TestCase):
 
         # perform 3 actions, undo 2, do 1 again
         undoer = undo.Sequence()
+        undoer.register_callbacks(lambda x: x, lambda x: x)
         inc_status(1)
         undoer.do(inc_status, 1, dec_status, 1)
         inc_status(1)

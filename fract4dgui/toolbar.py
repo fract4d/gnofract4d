@@ -23,17 +23,17 @@ class T(Gtk.Toolbar):
         toolitem.set_tooltip_text(tip_text)
         self.insert(toolitem, -1)
 
-    def add_button(self, icon_name, tip_text, cb):
+    def add_button(self, icon_name, tip_text, action):
         toolitem = Gtk.ToolButton.new()
         toolitem.set_icon_name(icon_name)
-        toolitem.connect('clicked', cb)
+        toolitem.set_action_name(action)
         toolitem.set_tooltip_text(tip_text)
         self.insert(toolitem, -1)
 
-    def add_toggle(self, icon_name, tip_text, cb):
+    def add_toggle(self, icon_name, tip_text, action):
         toolitem = Gtk.ToggleToolButton.new()
         toolitem.set_icon_name(icon_name)
-        toolitem.connect('toggled', cb)
+        toolitem.set_action_name(action)
         toolitem.set_tooltip_text(tip_text)
         self.insert(toolitem, -1)
         return toolitem
