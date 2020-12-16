@@ -167,8 +167,9 @@ class MainWindow:
             action=Gtk.FileChooserAction.SAVE)
 
         chooser.add_buttons(
-            Gtk.STOCK_OK, Gtk.ResponseType.OK,
-            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+            _("_Save"), Gtk.ResponseType.OK,
+            _("_Cancel"), Gtk.ResponseType.CANCEL)
+        chooser.set_default_response(Gtk.ResponseType.OK)
 
         filter = Gtk.FileFilter()
         for pattern in patterns:
@@ -247,8 +248,9 @@ class MainWindow:
             action=Gtk.FileChooserAction.OPEN)
 
         self.open_fs.add_buttons(
-            Gtk.STOCK_OK, Gtk.ResponseType.OK,
-            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+            _("_Open"), Gtk.ResponseType.OK,
+            _("_Cancel"), Gtk.ResponseType.CANCEL)
+        self.open_fs.set_default_response(Gtk.ResponseType.OK)
 
         self.add_filters(self.open_fs)
 

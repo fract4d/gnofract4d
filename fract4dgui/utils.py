@@ -70,14 +70,11 @@ def get_directory_chooser(title, parent):
         action=Gtk.FileChooserAction.SELECT_FOLDER)
 
     chooser.add_buttons(
-        Gtk.STOCK_OK, Gtk.ResponseType.OK,
-        Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        _("_OK"), Gtk.ResponseType.OK,
+        _("_Cancel"), Gtk.ResponseType.CANCEL)
+    chooser.set_default_response(Gtk.ResponseType.OK)
 
     return chooser
-
-
-def get_file_chooser_extra_widget(chooser):
-    return chooser.get_extra_widget()
 
 
 def set_file_chooser_filename(chooser, name):
