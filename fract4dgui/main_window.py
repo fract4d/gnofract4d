@@ -628,9 +628,8 @@ class MainWindow:
             ]
 
     def create_ui(self):
-        def add_action(name, handler, toggle=False):
-            action = Gio.SimpleAction(
-                name=name, state=GLib.Variant("b", False) if toggle else None)
+        def add_action(name, handler, state=None):
+            action = Gio.SimpleAction(name=name, state=state)
             action.connect("activate", handler)
             self.application.add_action(action)
             return action
@@ -642,7 +641,8 @@ class MainWindow:
             add_action(name, handler)
 
         # explorer action
-        self.explorer_action = add_action(*self.get_toggle_actions(), True)
+        self.explorer_action = \
+            add_action(*self.get_toggle_actions(), state=GLib.Variant("b", False))
 
         # actions which are only available if we're in 4D mode
         self.fourd_actiongroup = Gio.SimpleActionGroup()
