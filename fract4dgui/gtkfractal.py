@@ -187,8 +187,6 @@ class Hidden(GObject.GObject):
 
         m = messages.parse(t, bytes)
 
-        Gdk.threads_enter()
-
         # print "msg: %s %d %d %d %d" % (m,p1,p2,p3,p4)
         if t == fract4dc.MESSAGE_TYPE_ITERS:
             if not self.skip_updates:
@@ -222,7 +220,6 @@ class Hidden(GObject.GObject):
         else:
             print("Unknown message from fractal thread; %s" % list(bytes))
 
-        Gdk.threads_leave()
         return True
 
     def __getattr__(self, name):
