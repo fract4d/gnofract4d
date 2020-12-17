@@ -526,6 +526,7 @@ class T(Hidden):
         widget.connect('focus-out-event', set_fractal, form, order)
 
         if hasattr(param, "min") and hasattr(param, "max"):
+            widget.freeze = False
             # add a slider
             adj = Gtk.Adjustment(
                 value=0.0,
@@ -534,11 +535,16 @@ class T(Hidden):
 
             def set_adj():
                 if adj.get_value() != form.params[order]:
+                    widget.freeze = True
                     adj.set_value(form.params[order])
+                    widget.freeze = False
 
             set_adj()
 
             def adj_changed(adjustment, form, order):
+                if widget.freeze:
+                    return
+
                 utils.idle_add(
                     form.set_param, order, adjustment.get_value())
 
