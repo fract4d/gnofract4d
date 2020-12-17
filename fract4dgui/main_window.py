@@ -918,10 +918,10 @@ class MainWindow:
                 res_menu.append_text(item)
                 index = len(self.resolutions) - 1
 
-            utils.set_selected(res_menu, index)
+            res_menu.set_active(int(index))
 
         def set_resolution(*args):
-            index = utils.get_selected(res_menu)
+            index = res_menu.get_active()
             if index != -1:
                 (w, h) = self.resolutions[index]
                 self.userPrefs.set_size(w, h)

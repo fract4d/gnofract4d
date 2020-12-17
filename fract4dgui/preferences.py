@@ -405,12 +405,10 @@ class PrefsDialog(dialog.T):
         optMenu = utils.create_option_menu(["None", "Fast", "Best"])
 
         def set_widget(*args):
-            utils.set_selected(
-                optMenu, self.prefs.getint(
-                    "display", "antialias"))
+            optMenu.set_active(self.prefs.getint("display", "antialias"))
 
         def set_prefs(*args):
-            index = utils.get_selected(optMenu)
+            index = optMenu.get_active()
             if index != -1:
                 self.prefs.set("display", "antialias", str(index))
 

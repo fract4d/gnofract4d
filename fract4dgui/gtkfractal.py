@@ -646,10 +646,10 @@ class T(Hidden):
                 print(err)
                 return
 
-            utils.set_selected(widget, index)
+            widget.set_active(index)
 
         def set_fractal(entry, form, order):
-            new_value = utils.get_selected(widget)
+            new_value = widget.get_active()
             form.set_param(order, new_value)
 
         set_selected_value(self)
@@ -765,10 +765,10 @@ class T(Hidden):
                 # print "bad cname"
                 return
 
-            utils.set_selected(widget, index)
+            widget.set_active(index)
 
         def set_fractal_function(om, f, param, formula):
-            index = utils.get_selected(om)
+            index = om.get_active()
             if index != -1:
                 # this shouldn't be necessary but I got weird errors
                 # trying to reuse the old funclist

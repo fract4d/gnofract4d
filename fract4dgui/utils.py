@@ -73,14 +73,6 @@ def set_menu_from_list(menu, items):
     menu.set_model(model)
 
 
-def set_selected(menu, i):
-    menu.set_active(int(i))
-
-
-def get_selected(menu):
-    return menu.get_active()
-
-
 def get_selected_value(menu):
     iter = menu.get_active_iter()
     if not iter:
