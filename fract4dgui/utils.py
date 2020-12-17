@@ -21,26 +21,10 @@ threads_enabled = False
 break_new_things = False
 
 
-def threads_enter():
-    if threads_enabled:
-        Gdk.threads_enter()
-
-
-def threads_leave():
-    if threads_enabled:
-        Gdk.threads_leave()
-
-
-def idle_wrapper(callable, *args):
-    threads_enter()
-    callable(*args)
-    threads_leave()
-
-
 def idle_add(callable, *args):
     """A wrapper around GObject.idle_add which wraps the callback in
     threads_enter/threads_leave if required"""
-    GLib.idle_add(idle_wrapper, callable, *args)
+    GLib.idle_add(callable, *args)
 
 
 def input_add(fd, cb):
