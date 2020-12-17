@@ -17,15 +17,6 @@ from gi.repository import Gtk, Gdk, Gio, GLib
 
 from . import hig
 
-threads_enabled = False
-break_new_things = False
-
-
-def idle_add(callable, *args):
-    """A wrapper around GObject.idle_add which wraps the callback in
-    threads_enter/threads_leave if required"""
-    GLib.idle_add(callable, *args)
-
 
 def input_add(fd, cb):
     return GLib.io_add_watch(fd, GLib.PRIORITY_DEFAULT,

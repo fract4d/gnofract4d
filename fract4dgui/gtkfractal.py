@@ -187,8 +187,7 @@ class Hidden(GObject.GObject):
 
         m = messages.parse(t, bytes)
 
-        if utils.threads_enabled:
-            Gdk.threads_enter()
+        Gdk.threads_enter()
 
         # print "msg: %s %d %d %d %d" % (m,p1,p2,p3,p4)
         if t == fract4dc.MESSAGE_TYPE_ITERS:
@@ -223,8 +222,7 @@ class Hidden(GObject.GObject):
         else:
             print("Unknown message from fractal thread; %s" % list(bytes))
 
-        if utils.threads_enabled:
-            Gdk.threads_leave()
+        Gdk.threads_leave()
         return True
 
     def __getattr__(self, name):
@@ -385,7 +383,7 @@ class Hidden(GObject.GObject):
         self.height = new_height
 
         self.image.resize_full(new_width, new_height)
-        utils.idle_add(self.changed)
+        GLib.idle_add(self.changed)
 
 
 # explain our existence to GTK's object system
@@ -508,14 +506,14 @@ class T(Hidden):
 
         def set_fractal(entry, event, form, order):
             try:
-                utils.idle_add(
+                GLib.idle_add(
                     form.set_param, order, entry.get_text())
             except Exception as err:
                 # FIXME: produces too many errors
                 msg = "Invalid value '%s': must be a number" % \
                       entry.get_text()
                 print(msg)
-                # utils.idle_add(f.warn,msg)
+                # GLib.idle_add(f.warn,msg)
             return False
 
         set_entry()
@@ -545,7 +543,7 @@ class T(Hidden):
                 if widget.freeze:
                     return
 
-                utils.idle_add(
+                GLib.idle_add(
                     form.set_param, order, adjustment.get_value())
 
             adj.connect('value-changed', adj_changed, form, order)
@@ -585,11 +583,11 @@ class T(Hidden):
 
         def set_fractal(entry, form, order):
             try:
-                utils.idle_add(form.set_param, order, entry.get_active())
+                GLib.idle_add(form.set_param, order, entry.get_active())
             except Exception as err:
                 msg = "error setting bool param: %s" % str(err)
                 print(msg)
-                #utils.idle_add(f.warn, msg)
+                #GLib.idle_add(f.warn, msg)
 
             return False
 
@@ -812,7 +810,7 @@ class T(Hidden):
                 except ValueError as err:
                     msg = "Invalid value '%s': must be a number" % \
                           widget.get_text()
-                    utils.idle_add(self.warn, msg)
+                    GLib.idle_add(self.warn, msg)
             except Exception as exn:
                 print(exn)
             return False
@@ -876,7 +874,7 @@ class T(Hidden):
             Hidden.set_size(self, new_width, new_height)
             self.widget.set_size_request(new_width, new_height)
         except MemoryError as err:
-            utils.idle_add(self.warn, str(err))
+            GLib.idle_add(self.warn, str(err))
 
     def draw_image(self, aa=None, auto_deepen=None):
         try:
@@ -884,9 +882,9 @@ class T(Hidden):
         except fracttypes.TranslationError as err:
             advice = _(
                 "\nCheck that your compiler settings and formula file are correct.")
-            utils.idle_add(self.error,
-                           _("Error compiling fractal:"),
-                           err.msg + advice)
+            GLib.idle_add(self.error,
+                          _("Error compiling fractal:"),
+                          err.msg + advice)
             return
 
     def onMotionNotify(self, widget, event):

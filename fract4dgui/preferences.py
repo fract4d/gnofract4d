@@ -3,7 +3,7 @@
 import gi
 
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk, GObject, GLib
 
 from . import dialog, utils
 
@@ -116,7 +116,7 @@ class PrefsDialog(dialog.T):
                 try:
                     width = int(entry.get_text())
                 except ValueError:
-                    Gtk.idle_add(
+                    GLib.idle_add(
                         self.show_error,
                         "Invalid value for width: '%s'. Must be an integer" %
                         entry.get_text())
@@ -125,7 +125,7 @@ class PrefsDialog(dialog.T):
                 if self.fix_ratio.get_active():
                     height = int(width * float(height) / self.f.width)
 
-                utils.idle_add(self.prefs.set_size, width, height)
+                GLib.idle_add(self.prefs.set_size, width, height)
             except Exception as exn:
                 print(exn)
             return False
@@ -148,7 +148,7 @@ class PrefsDialog(dialog.T):
                 try:
                     height = int(entry.get_text())
                 except ValueError:
-                    utils.idle_add(
+                    GLib.idle_add(
                         self.show_error,
                         "Invalid value for height: '%s'. Must be an integer" %
                         entry.get_text())
