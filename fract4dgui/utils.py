@@ -94,10 +94,6 @@ def set_selected_value(menu, val):
         i += 1
 
 
-def create_color(r, g, b):
-    return Gdk.RGBA(int(r * 65535), int(g * 65535), int(b * 65535))
-
-
 def floatColorFrom256(rgba):
     return [rgba[0] / 255.0, rgba[1] / 255.0, rgba[2] / 255.0, rgba[3] / 255.0]
 
@@ -125,20 +121,19 @@ class ColorButton(Gtk.ColorButton):
         self.set_color(rgb)
         self.changed_cb = changed_cb
         self.is_left = is_left
-
+        self.set_property("show-editor", True)
         self.connect('color-set', self.on_color_set)
 
     def on_color_set(self, widget):
         self.color_changed(self.get_color())
 
     def set_color(self, rgb):
-        self.color = create_color(rgb[0], rgb[1], rgb[2])
+        self.color = Gdk.RGBA(rgb[0], rgb[1], rgb[2], 1.0)
         Gtk.ColorButton.set_rgba(self, self.color)
 
     def color_changed(self, color):
-        self.color = color
-        self.changed_cb(
-            color.red / 65535.0,
-            color.green / 65535.0,
-            color.blue / 65535.0,
-            self.is_left)
+        # get_color() returns each component in the range 0-65535. Normalize to float 0-1.0
+        self.color = Gdk.RGBA(color.red / 65535.0,
+                              color.green / 65535.0, color.blue / 65535.0, 1.0)
+        self.changed_cb(self.color.red, self.color.green,
+                        self.color.blue, self.is_left)

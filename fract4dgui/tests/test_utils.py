@@ -26,9 +26,3 @@ class Test(unittest.TestCase):
         utils.set_selected_value(om, "world")
         i = om.get_active()
         self.assertEqual(1, i)
-
-    def testCreateColor(self):
-        cyan = utils.create_color(0.0, 1.0, 1.0)
-        self.assertEqual(cyan.red, 0)
-        self.assertEqual(cyan.green, 65535)
-        self.assertEqual(cyan.blue, 65535)

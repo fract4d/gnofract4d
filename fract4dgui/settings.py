@@ -127,7 +127,8 @@ class SettingsPane(Gtk.Box):
         self.outer_solid_button.set_color(
             utils.floatColorFrom256(self.f.solids[0]))
 
-        self.edit_online_button.set_sensitive(self.f.get_gradient().is_coolorable())
+        self.edit_online_button.set_sensitive(
+            self.f.get_gradient().is_coolorable())
 
     def create_colors_table(self):
         gradbox = Gtk.VBox()
@@ -223,7 +224,7 @@ class SettingsPane(Gtk.Box):
     def edit_online(self, widget):
         grad = self.f.get_gradient()
         url = grad.get_coolor_url()
-        #print(url)
+        # print(url)
         utils.launch_browser(
             url,
             self.main_window.window)
@@ -275,6 +276,7 @@ class SettingsPane(Gtk.Box):
             is_left,
             r, g, b)
 
+        self.f.changed()
         self.redraw()
 
     def select_segment(self, i):
