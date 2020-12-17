@@ -20,6 +20,7 @@ from . import (gtkfractal, model, preferences, autozoom, settings, toolbar,
 re_ends_with_num = re.compile(r'\d+\Z')
 re_cleanup = re.compile(r'[\s\(\)]+')
 
+
 class Application(Gtk.Application):
     def __init__(self, options, userConfig):
         super().__init__(application_id="io.github.fract4d")
@@ -215,7 +216,8 @@ class MainWindow:
             _("Formula Files"), formula_patterns)
         chooser.add_filter(formula_filter)
 
-        gradient_patterns = ["*.map", "*.ggr", "*.ugr", "*.cs", "*.pal", "*.ase"]
+        gradient_patterns = ["*.map", "*.ggr",
+                             "*.ugr", "*.cs", "*.pal", "*.ase"]
         gradient_filter = self.get_filter(
             _("Gradient Files"), gradient_patterns)
         chooser.add_filter(gradient_filter)
@@ -625,7 +627,7 @@ class MainWindow:
             ("PlanesXWAction", self.set_xw_plane),
             ("PlanesYZAction", self.set_yz_plane),
             ("PlanesWYAction", self.set_wy_plane),
-            ]
+        ]
 
     def create_ui(self):
         def add_action(name, handler, toggle=False):
@@ -662,7 +664,8 @@ class MainWindow:
         # command reference
         builder = Gtk.Builder.new_from_file(
             os.path.join(this_path, "shortcuts-gnofract4d.ui"))
-        self.window.set_help_overlay(builder.get_object("shortcuts-gnofract4d"))
+        self.window.set_help_overlay(
+            builder.get_object("shortcuts-gnofract4d"))
 
     def director(self, *args):
         """Display the Director (animation) window."""
@@ -912,7 +915,7 @@ class MainWindow:
                 # not found
                 self.resolutions.append(res)
                 item = "%dx%d" % (w, h)
-                utils.add_menu_item(res_menu, item)
+                res_menu.append_text(item)
                 index = len(self.resolutions) - 1
 
             utils.set_selected(res_menu, index)
@@ -1173,7 +1176,7 @@ class MainWindow:
         text = clipboard.wait_for_text()
         if text is None:
             return
-        
+
         #print("paste! %s" % text)
         grad = self.f.get_gradient()
         grad.load_from_url(text)

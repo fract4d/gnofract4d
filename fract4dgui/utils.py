@@ -73,10 +73,6 @@ def set_menu_from_list(menu, items):
     menu.set_model(model)
 
 
-def add_menu_item(menu, item):
-    menu.append_text(item)
-
-
 def set_selected(menu, i):
     menu.set_active(int(i))
 

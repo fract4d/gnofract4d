@@ -10,7 +10,7 @@ from fract4dgui import utils
 class Test(unittest.TestCase):
     def testOptionMenu(self):
         om = utils.create_option_menu(["foo", "bar", "Bazniculate Geometry"])
-        utils.add_menu_item(om, "fishy")
+        om.append_text("fishy")
         utils.set_selected(om, 3)
         self.assertEqual(3, utils.get_selected(om))
 
