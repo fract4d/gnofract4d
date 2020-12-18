@@ -4,9 +4,9 @@ Continuous zooming feature allows the user to dynamically explore the fractal by
 
 ## User experience
 
-While the CZ feature is running, a fixed amount of zoom is performed in/out depending on which button the user is holding (left/right). The framerate is fixed, as well as the amount of zooming, but since some computers could take longer than the time expected to render a single frame, the frame rate might drop and not be constant. As it might be already obvious, the higher the resolution the more chances for the frame rate to drop, always depending on the CPU power.
+While the CZ feature is running, a fixed amount of zoom is performed in/out depending on which button the user is holding (left/right). The frame rate is fixed, as well as the amount of zooming, but since some computers could take longer than the time expected to render a single frame, the frame rate might drop and not be constant. As it might be already obvious, the higher the resolution the more chances for the frame rate to drop, always depending on the CPU power.
 
-CZ uses different algorithms to enhance performance and get a decent framerate, including _pixel reutilization_ or _dynamic resolution_ which are explained further below in this document. Nevertheless, since Gnofract 4D is highly customizable and allows the user the create his own fractals, the computing power needed to render each frame could vary a lot.
+CZ uses different algorithms to enhance performance and get a decent frame rate, including _pixel reutilization_ or _dynamic resolution_ which are explained further below in this document. Nevertheless, since Gnofract 4D is highly customizable and allows the user the create his own fractals, the computing power needed to render each frame could vary a lot.
 
 Some of the regular preferences or features of Gnofract 4D do not take effect when working in CZ mode. That includes _auto deepen_, _auto tolerance_ and _antialiasing_.
 
@@ -38,7 +38,7 @@ With this basic idea in mind, and in a few words, Gnofract 4D sends all the para
 
 While the communication scheme subtlely explained above is fine for the regular functioning mode, it presents some drawbacks for the CZ mode.
 
-In the regular mode, every time a new fractal image has to be drawn, C++ performs some boilerplate initializations. Doing this for an on-going animation that creates an new image every few miliseconds is unbearable.
+In the regular mode, every time a new fractal image has to be drawn, C++ performs some boilerplate initializations. Doing this for an on-going animation that creates a new image every few miliseconds is unbearable.
 
 For that reason, scheme communication for CZ is slightly different. Instead of using the _regular_ image calculation trigger API from the `fract4dc` extension, a new API has been created with the following conceptual facade:
 - start CZ process: this triggers the image calculation process and perform boilerplate initializations on the C++ layer. It also creates an infinite loop waiting for updates from the python layer.
@@ -53,7 +53,7 @@ The basic idea behind this is that, for every new frame you want to draw there a
 
 While Gnofract 4D utilizes some algorithms to improve performance, the basic idea behind the image calculation process is that every single pixel of the image is assigned a point in the complex plane XY (actually Gnofract allows to work in a 4D space with six plane rotation), and that point is the _driving_ parameter to pass to the fractal formula to calculate every pixel color.
 
-`Location` (`X`, `Y` ... and `Z`, `W` in 4D space) and `Size` params will determine which point of the complex plane correspond to every pixel of the image (we leave out from this explanation the plane rotation params). This makes very likely to happen that subsequent frames, where location and size would change slightly, have pixels with the same, or very close point in the complex plane. So it makes sense to, instead of calculate the color of that pixel again (which is the heaviest process) we take the already calculated value.
+`Location` (`X`, `Y` ... and `Z`, `W` in 4D space) and `Size` parameters will determine which point of the complex plane correspond to every pixel of the image (we leave out from this explanation the plane rotation parameters). This makes very likely to happen that subsequent frames, where location and size would change slightly, have pixels with the same, or very close point in the complex plane. So it makes sense to, instead of calculate the color of that pixel again (which is the heaviest process) we take the already calculated value.
 
 The process to find those pixels with same or close complex plane point values, in an efficient way, is based in the assumption that _imaginary values `y` remain constant while moving across X axis, while real values `x` do the same for the Y axis_. And it consist in the following steps:
 - find all the `x` values or columns for the new fractal (image) that are close enough to the previous image ones.
@@ -64,14 +64,14 @@ The third step of the process states _pixel might be reused_ because pixels cann
 
 #### Dynamic resolution
 
-As explained before, there're multiple factors that influence the ability of Gnofract 4D to keep up the frame rate while running CZ. CPU power, fractal formula complexity and image resolution are the main ones.
+As explained before, there are multiple factors that influence the ability of Gnofract 4D to keep up the frame rate while running CZ. CPU power, fractal formula complexity and image resolution are the main ones.
 
-This algorithm is not a magic solution to produce smooth animations under every condition, but it should help to boot framerate in some cases.
+This algorithm is not a magic solution to produce smooth animations under every condition, but it should help to boot frame rate in some cases.
 
 At a high level point of view, this algorithm gives more priority to pixels close to the center of the image when zooming in and the other way around when zooming out. This is because, for example, when zooming in, pixels around the center are more likely to be reused in further frames. That said, at a certain point, we stop calculating pixels and instead we use reused pixels from previous frame to interpolate remaining ones.
 That _certain point_ is enabled when:
-- the time to calculate the current frame is over (we cannot keep up framerate)
-- we have calculated/reused a minumun number of pixels. Otherwise, we wouldn't have enough detail, and it will get worse for subsequent frames (no pixels to reuse).
+- the time to calculate the current frame is over (we cannot keep up frame rate)
+- we have calculated/reused a minimum number of pixels. Otherwise, we wouldn't have enough detail, and it will get worse for subsequent frames (no pixels to reuse).
 
 The regular calculation process, without taking into account advanced algorithms like _box-guessing_, basically calculates pixels row by row from left to right.
 CZ calculation process does this using a spiral loop, this way inner/outer pixels can be calculated before.
@@ -85,5 +85,5 @@ Some have been ported to CZ implementation.
 - calculate edge pixels
 - if all pixels in edges are equal then fill the whole box with the same color. Otherwise divide the box in four pieces and for each one start over this process.
 
-**Thread pool** to take advantage of multithreading, Gnofract 4D implements a job thread pool. Every piece of work (calculating a box using _box guessig_ for example) is put into this pool an proceesed as soon as a thread is available.
+**Thread pool** to take advantage of multithreading, Gnofract 4D implements a job thread pool. Every piece of work (calculating a box using _box guessing_ for example) is put into this pool an proceesed as soon as a thread is available.
 For CZ, we have adapted this algorithm, so using _dynamic resolution_ approach (spiral loop) we put every box calculation into the pool. Then instead of a `queue` we use a `list` so we are able to take jobs from the front or from the back, depending which ones we want to prioritize.
