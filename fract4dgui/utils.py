@@ -23,21 +23,6 @@ def input_add(fd, cb):
                              GLib.IO_IN | GLib.IO_HUP | GLib.IO_PRI, cb)
 
 
-def stack_trace():
-    stack = inspect.stack()
-    str = ""
-    for frame in stack[1:]:
-        (frame_obj, filename, line, funcname, context, context_index) = frame
-        try:
-            args = inspect.formatargvalues(*inspect.getargvalues(frame_obj))
-        except Exception:
-            args = "<unavailable>"
-
-        frame_desc = "%s(%s)\t\t%s(%s)\n" % (filename, line, funcname, args)
-        str += frame_desc
-    return str
-
-
 def get_directory_chooser(title, parent):
     chooser = Gtk.FileChooserDialog(
         title=title,
