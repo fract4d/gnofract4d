@@ -75,17 +75,6 @@ class MainWindow:
                                               'explorer_mode.png',
                                               'pixmaps')))
 
-        # keyboard handling
-        self.keymap = {
-            Gdk.KEY_Left: self.on_key_left,
-            Gdk.KEY_Right: self.on_key_right,
-            Gdk.KEY_Up: self.on_key_up,
-            Gdk.KEY_Down: self.on_key_down,
-        }
-
-        self.window.connect('key-press-event', self.on_key_press)
-        self.window.connect('key-release-event', self.on_key_release)
-
         # create fractal compiler and load standard formula and
         # coloring algorithm files
         self.compiler = fc.Compiler(userConfig)
@@ -483,47 +472,17 @@ class MainWindow:
             y *= 10.0
         self.f.nudge(x, y, axis)
 
-    def on_key_left(self, state):
-        self.nudge(-1, 0, state)
+    def on_key_left(self, action, parameter):
+        self.nudge(-1, 0, parameter.unpack())
 
-    def on_key_right(self, state):
-        self.nudge(1, 0, state)
+    def on_key_right(self, action, parameter):
+        self.nudge(1, 0, parameter.unpack())
 
-    def on_key_up(self, state):
-        self.nudge(0, -1, state)
+    def on_key_up(self, action, parameter):
+        self.nudge(0, -1, parameter.unpack())
 
-    def on_key_down(self, state):
-        self.nudge(0, 1, state)
-
-    def on_key_press(self, widget, event):
-        # don't allow cursor keys to navigate toolbar
-        if widget.get_focus() is None and self.keymap.get(event.keyval):
-            return True
-        # don't do EditResetAction or EditResetZoomAction if a widget is
-        # focussed
-        if widget.get_focus() is not None and event.keyval == Gdk.KEY_Home and \
-                not event.get_state() & Gdk.ModifierType.SHIFT_MASK:
-            return True
-
-    def on_key_release(self, widget, event):
-        current_widget = self.window.get_focus()
-        if current_widget is not None:
-            # otherwise we steal cursor motion through entry
-            if event.keyval == Gdk.KEY_Home and \
-                not event.get_state() & Gdk.ModifierType.SHIFT_MASK and (
-                    isinstance(current_widget, Gtk.Entry) or
-                    isinstance(current_widget, Gtk.TextView)):
-                # do Ctrl+Home/Home cursor action
-                current_widget.emit("move-cursor",
-                                    Gtk.MovementStep.BUFFER_ENDS
-                                    if event.get_state() & Gdk.ModifierType.CONTROL_MASK
-                                    else Gtk.MovementStep.DISPLAY_LINE_ENDS,
-                                    -1, False)
-                return True
-            return
-        fn = self.keymap.get(event.keyval)
-        if fn:
-            fn(event.get_state())
+    def on_key_down(self, action, parameter):
+        self.nudge(0, 1, parameter.unpack())
 
     def progress_changed(self, f, progress):
         self.bar.set_fraction(progress / 100.0)
@@ -617,6 +576,14 @@ class MainWindow:
             ("ImproveNow", self.improve_now),
         ]
 
+    def get_arrow_actions(self):
+        return [
+            ("Left", self.on_key_left),
+            ("Right", self.on_key_right),
+            ("Up", self.on_key_up),
+            ("Down", self.on_key_down),
+        ]
+
     def get_fourd_actions(self):
         return [
             ("PlanesXYAction", self.set_xy_plane),
@@ -628,8 +595,9 @@ class MainWindow:
             ]
 
     def create_ui(self):
-        def add_action(name, handler, state=None):
-            action = Gio.SimpleAction(name=name, state=state)
+        def add_action(name, handler, parameter_type=None, state=None):
+            action = Gio.SimpleAction(
+                name=name, parameter_type=parameter_type, state=state)
             action.connect("activate", handler)
             self.application.add_action(action)
             return action
@@ -640,6 +608,10 @@ class MainWindow:
         for name, handler in self.get_main_actions():
             add_action(name, handler)
 
+        # actions with parameters
+        for name, handler in self.get_arrow_actions():
+            add_action(name, handler, parameter_type=GLib.VariantType("i"))
+
         # stateful actions
         self.explorer_action, self.fullscreen_action = \
             [add_action(*x, state=GLib.Variant("b", False)) for x in self.get_toggle_actions()]
@@ -649,6 +621,21 @@ class MainWindow:
         for name, handler in self.get_fourd_actions():
             action = add_action(name, handler)
             self.fourd_actiongroup.add_action(action)
+
+        # keyboard accelerators for actions
+        for key in [x[0] for x in self.get_arrow_actions()]:
+            self.application.set_accels_for_action(
+                f"app.{key}(0)",
+                [f"<Release>{key}"])
+            self.application.set_accels_for_action(
+                f"app.{key}({int(Gdk.ModifierType.SHIFT_MASK)})",
+                [f"<Release><Shift>{key}"])
+            self.application.set_accels_for_action(
+                f"app.{key}({int(Gdk.ModifierType.CONTROL_MASK)})",
+                [f"<Release><Control>{key}"])
+            self.application.set_accels_for_action(
+                f"app.{key}({int(Gdk.ModifierType.SHIFT_MASK | Gdk.ModifierType.CONTROL_MASK)})",
+                [f"<Release><Shift><Control>{key}"])
 
         this_path = os.path.dirname(sys.modules[__name__].__file__)
         builder = Gtk.Builder.new_from_file(os.path.join(this_path, "ui.xml"))
