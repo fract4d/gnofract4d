@@ -8,7 +8,6 @@
 #    fall back to the 'old way'
 
 import os
-import inspect
 
 import gi
 gi.require_version('Gdk', '3.0')
