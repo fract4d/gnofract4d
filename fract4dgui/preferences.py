@@ -296,12 +296,12 @@ class PrefsDialog(dialog.T):
 
         entry = self.create_compiler_entry("name")
         entry.set_tooltip_text(_("The C compiler to use"))
+        entry.set_hexpand(True)
         table.attach(entry, 1, 0, 1, 1)
 
         name_label = Gtk.Label(label=_("Compi_ler :"))
         name_label.set_use_underline(True)
         name_label.set_mnemonic_widget(entry)
-        name_label.set_hexpand(True)
         table.attach(name_label, 0, 0, 1, 1)
 
         entry = self.create_compiler_entry("options")
