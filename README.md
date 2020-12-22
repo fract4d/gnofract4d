@@ -56,4 +56,4 @@ You can install pre-build packages from this [PPA](https://launchpad.net/~renbag
 
 For more details you can visit the [website](https://fract4d.github.io/gnofract4d).
 
-There you will find two manuals, one focused on basic users and other for developers.
+For a more developer focused details you can visit the [developer's guide](https://github.com/fract4d/gnofract4d/doc/developers-guide/index.md).
