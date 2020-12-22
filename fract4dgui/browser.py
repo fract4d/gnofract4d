@@ -11,6 +11,7 @@ from . import dialog, utils, gtkfractal, browser_model
 
 # pylint: disable=no-member
 
+
 class BrowserDialog(dialog.T):
     RESPONSE_REFRESH = 2
 
@@ -82,10 +83,10 @@ class BrowserDialog(dialog.T):
         self.model.apply(self.f)
 
     def set_type_cb(self, optmenu):
-        self.set_type(utils.get_selected(optmenu))
+        self.set_type(optmenu.get_active())
 
     def on_type_changed(self):
-        utils.set_selected(self.funcTypeMenu, self.model.current_type)
+        self.funcTypeMenu.set_active(int(self.model.current_type))
         try:
             self.set_file(self.f.forms[self.model.current_type].funcFile)
         except IndexError:
@@ -216,7 +217,7 @@ class BrowserDialog(dialog.T):
              _("Transform Function"),
              _("Gradient")])
 
-        utils.set_selected(self.funcTypeMenu, self.model.current_type)
+        self.funcTypeMenu.set_active(int(self.model.current_type))
 
         self.funcTypeMenu.set_tooltip_text(
             _("Which formula of the current fractal to change"))

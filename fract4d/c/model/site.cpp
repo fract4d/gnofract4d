@@ -4,7 +4,8 @@
 #include "site.h"
 #include "model/stats.h"
 
-IFractalSite::~IFractalSite() {
+IFractalSite::~IFractalSite()
+{
     wait();
 }
 
@@ -20,6 +21,12 @@ void IFractalSite::wait()
 {
     if (m_thread.joinable())
     {
+        if (m_thread.get_id() == std::this_thread::get_id())
+        {
+            // something is very wrong
+            std::cerr << this << "Waiting on own thread in IFractalSite::wait()!" << m_thread.get_id() << "\n";
+            throw std::exception();
+        }
 #ifdef DEBUG_THREADS
         std::cerr << this << " : CA : WAIT(" << m_thread.get_id() << ")\n";
 #endif
@@ -120,7 +127,8 @@ void FDSite::interrupt()
     interrupted = true;
 }
 
-void FDSite::start() {
+void FDSite::start()
+{
     interrupted = false;
 }
 
