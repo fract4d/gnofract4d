@@ -3,6 +3,7 @@
 import sys
 import os
 import math
+import platform
 import re
 import gi
 
@@ -640,7 +641,10 @@ class MainWindow:
         this_path = os.path.dirname(sys.modules[__name__].__file__)
         builder = Gtk.Builder.new_from_file(os.path.join(this_path, "ui.xml"))
 
-        self.application.set_menubar(builder.get_object("menubar"))
+        if platform.system() == "Darwin":
+            self.application.set_app_menu(builder.get_object("menubar"))
+        else:
+            self.application.set_menubar(builder.get_object("menubar"))
 
         self.model.seq.register_callbacks(
             self.application.lookup_action("EditRedoAction").set_enabled,
