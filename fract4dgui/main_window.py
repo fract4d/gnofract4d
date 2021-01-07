@@ -317,9 +317,6 @@ class MainWindow:
                 self.compiler, f.width // 4, f.height // 4)
             self.subfracts[i].set_master(f)
 
-    def attach_subfract(self, i, x, y):
-        self.ftable.attach(self.subfracts[i].widget, x, y, 1, 1)
-
     def on_formula_change(self, f):
         is4d = f.is4D()
         for widget in self.four_d_sensitives:
@@ -336,25 +333,27 @@ class MainWindow:
         f.connect('parameters-changed', self.on_fractal_change)
         f.connect('formula-changed', self.on_formula_change)
 
-        self.ftable = Gtk.Grid()
-        self.ftable.attach(f.widget, 1, 1, 2, 2)
+        ftable = Gtk.Grid()
+        ftable.attach(f.widget, 1, 1, 2, 2)
 
-        self.attach_subfract(0, 0, 0)
-        self.attach_subfract(1, 1, 0)
-        self.attach_subfract(2, 2, 0)
-        self.attach_subfract(3, 3, 0)
+        for i, x, y in [(0, 0, 0),
+                        (1, 1, 0),
+                        (2, 2, 0),
+                        (3, 3, 0),
 
-        self.attach_subfract(4, 0, 1)
-        self.attach_subfract(5, 3, 1)
-        self.attach_subfract(6, 0, 2)
-        self.attach_subfract(7, 3, 2)
+                        (4, 0, 1),
+                        (5, 3, 1),
+                        (6, 0, 2),
+                        (7, 3, 2),
 
-        self.attach_subfract(8, 0, 3)
-        self.attach_subfract(9, 1, 3)
-        self.attach_subfract(10, 2, 3)
-        self.attach_subfract(11, 3, 3)
+                        (8, 0, 3),
+                        (9, 1, 3),
+                        (10, 2, 3),
+                        (11, 3, 3),
+                        ]:
+            ftable.attach(self.subfracts[i].widget, x, y, 1, 1)
 
-        self.swindow.add(self.ftable)
+        self.swindow.add(ftable)
         self.swindow.get_child().set_shadow_type(Gtk.ShadowType.NONE)
 
         f.connect('progress_changed', self.progress_changed)
