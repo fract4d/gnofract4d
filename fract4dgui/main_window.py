@@ -326,9 +326,6 @@ class MainWindow:
 
     def create_fractal(self, f):
         self.swindow = Gtk.ScrolledWindow()
-        self.swindow.set_policy(
-            Gtk.PolicyType.AUTOMATIC,
-            Gtk.PolicyType.AUTOMATIC)
 
         f.connect('parameters-changed', self.on_fractal_change)
         f.connect('formula-changed', self.on_formula_change)
