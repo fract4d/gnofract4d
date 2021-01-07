@@ -6,19 +6,6 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 
-def make_label_box(parent, title):
-    label_box = Gtk.HBox()
-    label_box.set_name('dialog_label_box')
-    label = Gtk.Label(label=title)
-    label_box.pack_start(label, False, False, 0)
-    close = Gtk.Button.new_with_label("Close")
-    label_box.pack_end(close, False, False, 0)
-    label_box.show_all()
-
-    close.connect('clicked', lambda x: parent.hide())
-    return label_box
-
-
 class T(Gtk.Dialog):
     def __init__(self, title=None, parent=None, buttons=None, modal=Gtk.DialogFlags.MODAL):
         Gtk.Dialog.__init__(self,
