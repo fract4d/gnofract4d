@@ -463,7 +463,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         dlg.show()
 
     # creating window...
-    def __init__(self, main_window, f, userConfig, conf_file=""):
+    def __init__(self, main_window, f, userConfig):
         #pylint: disable=no-member
         dialog.T.__init__(
             self,
@@ -757,10 +757,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
             self.box_main.pack_end(warning_box, True, True, 0)
 
         # initialise default settings
-        if conf_file:
-            self.load_configuration(conf_file)
-        else:
-            self.updateGUI()
+        self.updateGUI()
 
         # don't connect signals until after settings initialised
         self.spin_height.connect(
