@@ -11,14 +11,23 @@ from gi.repository import Gio, Gtk
 import pytest
 
 from fract4d import fractal
-from fract4dgui import main_window
+from fract4d_compiler import fc
+from fract4dgui import main_window, preferences
 
+
+class Application(Gtk.Application):
+    def __init__(self, config):
+        super().__init__()
+        self.userConfig = config
+        self.userPrefs = preferences.Preferences(config)
+        self.compiler = fc.Compiler(config)
+        self.compiler.add_func_path('formulas')
 
 class WrapMainWindow(main_window.MainWindow):
     @patch('fract4d.fractconfig.T.get_data_path')
     def __init__(self, config, extra_paths=[]):
         self.errors = []
-        main_window.MainWindow.__init__(self, Gtk.Application(), config, ['formulas'])
+        main_window.MainWindow.__init__(self, Application(config), ['formulas'])
 
     def show_error_message(self, message, exception):
         self.errors.append((message, exception))
