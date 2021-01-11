@@ -1,0 +1,10 @@
+codecov:
+  notify:
+    # Ensure both Mac and Linux results are uploaded
+    after_n_builds: 4
+
+coverage:
+  status:
+    project:
+      default:
+        threshold: 0.05%
