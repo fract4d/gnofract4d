@@ -30,7 +30,7 @@ class Application(Gtk.Application):
 
     def do_activate(self):
         if not self.mainWindow:
-            self.mainWindow = MainWindow(self, self.userConfig)
+            self.mainWindow = MainWindow(self)
             self.mainWindow.apply_options(self.options)
             GLib.idle_add(self.mainWindow.first_draw)
 
@@ -38,7 +38,7 @@ class Application(Gtk.Application):
 
 
 class MainWindow:
-    def __init__(self, application, userConfig, extra_paths=[]):
+    def __init__(self, application, extra_paths=[]):
         self.application = application
         self.quit_when_done = False
         self.save_filename = None
@@ -48,8 +48,7 @@ class MainWindow:
         self.normal_display_size = None
         self.normal_window_size = None
 
-        self.userConfig = userConfig
-        self.userPrefs = preferences.Preferences(userConfig)
+        self.userPrefs = preferences.Preferences(application.userConfig)
 
         self.four_d_sensitives = []
 
@@ -78,7 +77,7 @@ class MainWindow:
 
         # create fractal compiler and load standard formula and
         # coloring algorithm files
-        self.compiler = fc.Compiler(userConfig)
+        self.compiler = fc.Compiler(application.userConfig)
 
         for path in extra_paths:
             self.compiler.add_func_path(path)
@@ -145,7 +144,7 @@ class MainWindow:
         self.f.set_saved(True)
 
         self.directorDialog = director.DirectorDialog(
-            self.window, self.f, self.userConfig)
+            self.window, self.f, application.userConfig)
         self.painterDialog = painter.PainterDialog(self.window, self.f)
         self.renderqueueDialog = renderqueue.QueueDialog(
             self.window, self.f, self.renderQueue)

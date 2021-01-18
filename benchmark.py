@@ -43,8 +43,9 @@ class Benchmark:
 
     def run_gui(self):
 
-        userConfig = fractconfig.userConfig()
-        window = main_window.MainWindow(Gtk.Application(), userConfig)
+        application = Gtk.Application()
+        application.userConfig = fractconfig.userConfig()
+        window = main_window.MainWindow(application)
 
         window.f.set_size(self.w, self.h)
         window.f.thaw()
