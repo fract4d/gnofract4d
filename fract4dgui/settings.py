@@ -9,7 +9,7 @@ from gi.repository import Gdk, Gtk
 
 from fract4d_compiler.fc import FormulaTypes
 
-from . import hig, dialog, browser, utils, browser_model
+from . import hig, browser, utils, browser_model
 
 
 class SettingsPane(Gtk.Box):
@@ -20,7 +20,7 @@ class SettingsPane(Gtk.Box):
         self.main_window = main_window
         self.f = f
 
-        label_box = dialog.make_label_box(self, _("Fractal Settings"))
+        label_box = self.make_label_box(_("Fractal Settings"))
         self.notebook = Gtk.Notebook()
         self.notebook.set_name("settings_notebook")
         self.pack_start(label_box, False, False, 0)
@@ -38,6 +38,17 @@ class SettingsPane(Gtk.Box):
         self.create_colors_page()
 
         self.notebook.show_all()
+
+    def make_label_box(self, title):
+        label_box = Gtk.HBox(name="dialog_label_box")
+        label = Gtk.Label(label=title)
+        label_box.pack_start(label, False, False, 0)
+        close = Gtk.Button(label=_("Close"))
+        label_box.pack_end(close, False, False, 0)
+        label_box.show_all()
+
+        close.connect('clicked', lambda x: self.hide())
+        return label_box
 
     def gradarea_mousedown(self, widget, event):
         pass
