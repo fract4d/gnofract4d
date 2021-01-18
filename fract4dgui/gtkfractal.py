@@ -121,7 +121,11 @@ class Hidden(GObject.GObject):
             self.f.saved = val
 
     def input_add(self, fd, cb):
-        utils.input_add(fd, cb)
+        GLib.io_add_watch(
+            fd,
+            GLib.PRIORITY_DEFAULT,
+            GLib.IO_IN | GLib.IO_HUP | GLib.IO_PRI,
+            cb)
 
     def error(self, msg, err):
         print("Error: %s %s" % (msg, err))
