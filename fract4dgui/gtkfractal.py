@@ -1066,11 +1066,8 @@ class Preview(T):
 
 
 class SubFract(T):
-    def __init__(self, comp, width=640, height=480):
+    def __init__(self, comp, width=640, height=480, master=None):
         T.__init__(self, comp, None, width, height)
-        self.master = None
-
-    def set_master(self, master):
         self.master = master
 
     def onButtonRelease(self, widget, event):

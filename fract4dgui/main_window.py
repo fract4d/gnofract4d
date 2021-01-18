@@ -310,11 +310,10 @@ class MainWindow:
             f.draw_image(aa, auto_deepen)
 
     def create_subfracts(self, f):
-        self.subfracts = [None] * 12
-        for i in range(12):
-            self.subfracts[i] = gtkfractal.SubFract(
-                self.compiler, f.width // 4, f.height // 4)
-            self.subfracts[i].set_master(f)
+        self.subfracts = [
+            gtkfractal.SubFract(self.compiler, f.width // 4, f.height // 4, f)
+            for i in range(12)
+        ]
 
     def on_formula_change(self, f):
         is4d = f.is4D()
