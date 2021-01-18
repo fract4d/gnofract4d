@@ -17,11 +17,6 @@ from gi.repository import Gtk, Gdk, Gio, GLib
 from . import hig
 
 
-def input_add(fd, cb):
-    return GLib.io_add_watch(fd, GLib.PRIORITY_DEFAULT,
-                             GLib.IO_IN | GLib.IO_HUP | GLib.IO_PRI, cb)
-
-
 def get_directory_chooser(title, parent):
     chooser = Gtk.FileChooserDialog(
         title=title,
