@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import copy
+import enum
 import io
 import math
 import random
@@ -17,6 +18,12 @@ BLEND_NEAREST = 0
 BLEND_FURTHEST = 1
 BLEND_CW = 2
 BLEND_CCW = 3
+
+
+class AntialiasModes(enum.IntEnum):
+    none = 0
+    fast = 1
+    best = 2
 
 
 class T(fctutils.T):
@@ -72,7 +79,7 @@ class T(fctutils.T):
         self.auto_epsilon = False  # automatically set @epsilon param, if found
         self.auto_deepen = True  # automatically adjust maxiter
         self.auto_tolerance = True  # automatically adjust periodicity
-        self.antialias = 1
+        self.antialias = AntialiasModes.fast.value
         self.compiler = compiler
         self.outputfile = None
         self.render_type = 0
@@ -603,7 +610,7 @@ class T(fctutils.T):
             self.set_cmap(options.map)
 
         if options.antialias is not None:
-            self.antialias = options.antialias
+            self.antialias = AntialiasModes[options.antialias].value
 
     def compile(self):
         if self.forms[0].formula is None:
