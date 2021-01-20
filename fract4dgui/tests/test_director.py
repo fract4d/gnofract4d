@@ -18,15 +18,6 @@ class Test(testgui.TestCase):
         # ensure any dialog boxes are dismissed without human interaction
         hig.timeout = 250
 
-    def tearDown(self):
-        pass
-
-    def wait(self):
-        Gtk.main()
-
-    def quitloop(self, rq):
-        Gtk.main_quit()
-
     def testDirectorDialog(self):
         f = fractal.T(Test.g_comp)
         parent = Gtk.Window()

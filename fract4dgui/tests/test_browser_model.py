@@ -35,9 +35,6 @@ class Test(testbase.ClassSetup):
         cls.g_comp.load_formula_file("gf4d.cfrm")
         cls.g_comp.load_formula_file("gf4d.uxf")
 
-    def setUp(self):
-        pass
-
     def testCreation(self):
         bm = browser_model.T(Test.g_comp)
 

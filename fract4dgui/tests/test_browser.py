@@ -4,8 +4,6 @@
 
 from . import testgui
 
-from gi.repository import Gtk
-
 from fract4d import fractal
 from fract4dgui import browser
 
@@ -16,13 +14,6 @@ class Test(testgui.TestCase):
 
     def tearDown(self):
         browser._model = None
-
-    def wait(self):
-        Gtk.main()
-
-    def quitloop(self, f, status):
-        if status == 0:
-            Gtk.main_quit()
 
     def testCreate(self):
         b = browser.BrowserDialog(None, self.f)

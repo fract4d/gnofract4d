@@ -15,16 +15,6 @@ class Test(testgui.TestCase):
         self.f = gtkfractal.T(Test.g_comp)
         self.settings = settings.SettingsPane(None, self.f)
 
-    def tearDown(self):
-        pass
-
-    def wait(self):
-        Gtk.main()
-
-    def quitloop(self, f, status):
-        if status == 0:
-            Gtk.main_quit()
-
     def search_for_named_widget(self, page, label_name):
         for child in page.get_children():
             if isinstance(child, Gtk.Label):

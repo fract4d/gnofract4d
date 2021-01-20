@@ -30,16 +30,6 @@ class Test(unittest.TestCase):
     def setUp(self):
         hig.timeout = 0
 
-    def tearDown(self):
-        pass
-
-    def wait(self):
-        Gtk.main()
-
-    def quitloop(self, f, status):
-        if status == 0:
-            Gtk.main_quit()
-
     def testCreate(self):
         d = hig.Alert(
             transient_for=toplevel,

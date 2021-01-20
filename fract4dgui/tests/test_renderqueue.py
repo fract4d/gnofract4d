@@ -18,12 +18,6 @@ class Test(testgui.TestCase):
         testgui.TestCase.setUpClass()
         cls.userPrefs = preferences.Preferences(testgui.TestCase.userConfig)
 
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
     def wait(self):
         Gtk.main()
 

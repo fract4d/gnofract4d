@@ -11,28 +11,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, Gtk
 
 
-class EmitCounter:
-    def __init__(self):
-        self.count = 0
-
-    def onCallback(self, *args):
-        self.count += 1
-
-
 class Test(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def wait(self):
-        Gtk.main()
-
-    def quitloop(self, f, status):
-        if status == 0:
-            Gtk.main_quit()
-
     def testCreate(self):
         f = fourway.T("hello")
         self.assertTrue(f)
