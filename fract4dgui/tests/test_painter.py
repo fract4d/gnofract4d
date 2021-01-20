@@ -20,16 +20,6 @@ class Test(testgui.TestCase):
         parent = Gtk.Window()
         self.settings = painter.PainterDialog(parent, self.f)
 
-    def tearDown(self):
-        pass
-
-    def wait(self):
-        Gtk.main()
-
-    def quitloop(self, f, status):
-        if status == 0:
-            Gtk.main_quit()
-
     def testPaintOnUnknown(self):
         self.settings.show()
         self.assertEqual(True, self.f.paint_mode)

@@ -67,13 +67,6 @@ class Test(testgui.TestCase):
         self.mw.apply_options(opts)
         self.assertEqual(self.mw.f.width, 123)
 
-    def wait(self):
-        self.mw.application.run()
-
-    def quitloop(self, f, status):
-        if status == 0:
-            self.mw.application.quit()
-
     def testLoad(self):
         # load good file
         fn_good = "testdata/test.fct"

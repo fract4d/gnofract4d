@@ -6,8 +6,6 @@ import io
 
 from . import testgui
 
-from gi.repository import Gtk
-
 from fract4dgui import model, gtkfractal
 
 
@@ -30,13 +28,6 @@ class Test(testgui.TestCase):
 
     def tearDown(self):
         self.f = self.m = None
-
-    def wait(self):
-        Gtk.main()
-
-    def quitloop(self, f, status):
-        if status == 0:
-            Gtk.main_quit()
 
     def testCreate(self):
         self.assertTrue(self.f)

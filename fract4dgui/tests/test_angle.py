@@ -2,42 +2,13 @@
 
 # unit tests for model
 
-from fract4dgui import angle
-from gi.repository import Gtk
-import unittest
 import math
+import unittest
 
-import gi
-gi.require_version('Gtk', '3.0')
-
-
-class EmitCounter:
-    def __init__(self):
-        self.count = 0
-
-    def onCallback(self, *args):
-        self.count += 1
-
-
-class FakeEvent:
-    def __init__(self, **kwds):
-        self.__dict__.update(kwds)
+from fract4dgui import angle
 
 
 class Test(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def wait(self):
-        Gtk.main()
-
-    def quitloop(self, f, status):
-        if status == 0:
-            Gtk.main_quit()
-
     def testCreate(self):
         a = angle.T("hello")
         self.assertTrue(a)
@@ -83,9 +54,6 @@ class Test(unittest.TestCase):
         self.assertNearlyEqual(
             a.pointer_coords(40, 3.0 * math.pi / 2.0),
             (0, -(40 - angle.T.ptr_radius)))
-
-    def testMouseInteraction(self):
-        pass
 
     def testUpdateFromMouse(self):
         a = angle.T('foo')
