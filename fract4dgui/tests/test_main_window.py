@@ -4,13 +4,14 @@
 
 from unittest.mock import patch
 import os
+from unittest.mock import patch
 
 from . import testgui
 
 from gi.repository import Gio, Gtk
 import pytest
 
-from fract4d import fractal
+from fract4d import fractal, options
 from fract4d_compiler import fc
 from fract4dgui import main_window, preferences
 
@@ -31,6 +32,28 @@ class WrapMainWindow(main_window.MainWindow):
 
     def show_error_message(self, message, exception):
         self.errors.append((message, exception))
+
+
+class MockMainWindow:
+    @classmethod
+    def first_draw(cls):
+        pass
+
+    @classmethod
+    def present(cls):
+        pass
+
+    def apply_options(self):
+        pass
+
+
+class TestApplication(testgui.TestCase):
+    @patch("fract4dgui.main_window.MainWindow")
+    def testApplication(self, mock_mainwindow):
+        mock_mainwindow.return_value = MockMainWindow
+        opts = options.Arguments().parse_args(["--path", "formulas"])
+        app = main_window.Application(opts, TestApplication.userConfig)
+        app.run()
 
 
 class Test(testgui.TestCase):
@@ -186,9 +209,3 @@ class Test(testgui.TestCase):
             self.assertRaises(IOError, WrapMainWindow, Test.userConfig)
         finally:
             fractal.T.DEFAULT_FORMULA_FILE = old_default
-
-
-class TestApplication(testgui.TestCase):
-    def testApplication(self):
-        app = main_window.Application(None, Test.userConfig)
-        self.assertEqual(app.userConfig, Test.userConfig)
