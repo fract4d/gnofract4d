@@ -105,3 +105,14 @@ class Test(testgui.TestCase):
 
         self.m.redo()
         self.assertEqual(f.forms[0].get_func_value("@bailfunc"), "real2")
+
+    def testExtractX(self):
+        value = self.m.extract_x_from_dump("x=3")
+        self.assertEqual(value, "x=3")
+        value = self.m.extract_x_from_dump("abc")
+        self.assertEqual(value, "eek")
+
+    def testDumpHistory(self):
+        f = self.m.f
+        f.set_param(f.MAGNITUDE, 9.0)
+        self.m.dump_history()

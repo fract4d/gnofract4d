@@ -4,7 +4,8 @@
 
 from . import testgui
 
-from gi.repository import Gtk
+import cairo
+from gi.repository import Gdk, Gtk
 
 from fract4dgui import gtkfractal, settings
 
@@ -81,6 +82,27 @@ class Test(testgui.TestCase):
         self.f.append_transform("gf4d.uxf", "Inverse")
 
         self.assertEqual("Inverse", self.get_first_transform())
+
+    def testDrawHandle(self):
+        w = Gtk.Window()
+        ct = cairo.Context(cairo.ImageSurface(cairo.Format.A8, 100, 100))
+        self.settings.draw_handle(w, ct, 10, None)
+        self.settings.draw_handle(w, ct, 10, True)
+
+    def testReDrawRect(self):
+        w = Gtk.Window()
+        rectangle = Gdk.Rectangle()
+        rectangle.width = 100
+        rectangle.height = 100
+        w.size_allocate(rectangle)
+        ct = cairo.Context(cairo.ImageSurface(cairo.Format.A8, 100, 100))
+        self.settings.redraw_rect(w, ct)
+
+    def testSelectedSegment(self):
+        self.settings.copy_left(None)
+        self.settings.copy_right(None)
+        self.settings.split(None)
+        self.settings.remove(None)
 
     def testPages(self):
         notebook = self.settings.notebook
