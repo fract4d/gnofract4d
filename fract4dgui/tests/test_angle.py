@@ -87,6 +87,10 @@ class Test(unittest.TestCase):
     def testMouseInteraction(self):
         pass
 
+    def testUpdateFromMouse(self):
+        a = angle.T('foo')
+        a.update_from_mouse(100, 100)
+
     def assertNearlyEqual(self, a, b):
         # check that each element is within epsilon of expected value
         epsilon = 1.0e-12

@@ -2,13 +2,13 @@
 
 # high-level unit tests for main window
 
-from unittest.mock import patch
 import os
+import tempfile
 from unittest.mock import patch
 
 from . import testgui
 
-from gi.repository import Gio, Gtk
+from gi.repository import Gio, GLib, Gtk
 import pytest
 
 from fract4d import fractal, options
@@ -60,6 +60,12 @@ class Test(testgui.TestCase):
     def setUp(self):
         self.mw = WrapMainWindow(Test.userConfig)
         self.assertEqual(self.mw.filename, None, "shouldn't have a filename")
+
+    def testApplyOptions(self):
+        opts = options.Arguments().parse_args(
+            ["--width", "123", "--explorer", "--quit"])
+        self.mw.apply_options(opts)
+        self.assertEqual(self.mw.f.width, 123)
 
     def wait(self):
         self.mw.application.run()
@@ -148,6 +154,12 @@ class Test(testgui.TestCase):
 
         self.assertEqual(fct1, fct2)
 
+    @patch("gi.repository.Gtk.Dialog.run")
+    def testAbout(self, mock_dialog_run):
+        mock_dialog_run.side_effect = lambda : Gtk.ResponseType.OK
+
+        self.mw.about()
+
     def testDialogs(self):
         self.mw.settings(None, None)
         self.mw.painter(None, None)
@@ -209,3 +221,17 @@ class Test(testgui.TestCase):
             self.assertRaises(IOError, WrapMainWindow, Test.userConfig)
         finally:
             fractal.T.DEFAULT_FORMULA_FILE = old_default
+
+    def testToggleFullScreen(self):
+        action = Gio.SimpleAction.new_stateful("ViewFullScreenAction", None, GLib.Variant("b", False))
+        self.mw.toggle_full_screen(action, None)
+        self.assertTrue(self.mw.fullscreen_action.get_state().unpack())
+        action.set_state(GLib.Variant("b", True))
+        self.mw.toggle_full_screen(action, None)
+        self.assertFalse(self.mw.fullscreen_action.get_state().unpack())
+
+    def testQuit(self):
+        tmpdir = tempfile.TemporaryDirectory(prefix="testQuit_")
+        self.mw.application.userConfig.file = os.path.join(tmpdir.name, "testquit.config")
+        self.mw.quit(None)
+        tmpdir.cleanup()
