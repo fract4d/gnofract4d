@@ -34,11 +34,18 @@ class Application(Gtk.Application):
             self.mainWindow.apply_options(self.options)
             GLib.idle_add(self.mainWindow.first_draw)
 
-        self.mainWindow.window.present()
+        self.mainWindow.present()
 
 
-class MainWindow:
+class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, application, extra_paths=[]):
+        self.userPrefs = preferences.Preferences(application.userConfig)
+        super().__init__(
+            application=application,
+            default_width=self.userPrefs.getint("main_window", "width"),
+            default_height=self.userPrefs.getint("main_window", "height"),
+            name="main_window",
+        )
         self.application = application
         self.quit_when_done = False
         self.save_filename = None
@@ -53,13 +60,8 @@ class MainWindow:
         self.four_d_sensitives = []
 
         # window widget
-        self.window = Gtk.ApplicationWindow(application=application)
-        self.window.set_default_size(
-            self.userPrefs.getint("main_window", "width"),
-            self.userPrefs.getint("main_window", "height"))
-        self.window.connect('delete-event', self.quit)
-        self.window.connect('window-state-event', self.on_window_state_event)
-        self.window.set_name('main_window')
+        self.connect('delete-event', self.quit)
+        self.connect('window-state-event', self.on_window_state_event)
 
         theme_provider = Gtk.CssProvider()
         css_file = "gnofract4d.css"
@@ -83,7 +85,7 @@ class MainWindow:
             self.compiler.add_func_path(path)
 
         self.vbox = Gtk.VBox()
-        self.window.add(self.vbox)
+        self.add(self.vbox)
 
         self.f = gtkfractal.T(self.compiler, self)
         self.f.freeze()  # create frozen - main prog queues first_draw() to thaw
@@ -116,7 +118,7 @@ class MainWindow:
         self.panes.pack1(self.swindow, resize=True, shrink=True)
 
         # show everything apart from the settings pane
-        self.window.show_all()
+        self.show_all()
 
         self.settingsPane = settings.SettingsPane(self, self.f)
         self.panes.pack2(self.settingsPane, resize=False, shrink=False)
@@ -144,10 +146,10 @@ class MainWindow:
         self.f.set_saved(True)
 
         self.directorDialog = director.DirectorDialog(
-            self.window, self.f, application.userConfig)
-        self.painterDialog = painter.PainterDialog(self.window, self.f)
+            self, self.f, application.userConfig)
+        self.painterDialog = painter.PainterDialog(self, self.f)
         self.renderqueueDialog = renderqueue.QueueDialog(
-            self.window, self.f, self.renderQueue)
+            self, self.f, self.renderQueue)
 
     def create_rtd_widgets(self):
         table = Gtk.Grid()
@@ -221,7 +223,7 @@ class MainWindow:
         if self.saveas_fs is None:
             self.saveas_fs = self.get_file_save_chooser(
                 _("Save Parameters"),
-                self.window,
+                self,
                 ["*.fct"])
         return self.saveas_fs
 
@@ -229,7 +231,7 @@ class MainWindow:
         if self.saveimage_fs is None:
             self.saveimage_fs = self.get_file_save_chooser(
                 _("Save Image"),
-                self.window,
+                self,
                 image.file_matches())
         return self.saveimage_fs
 
@@ -237,7 +239,7 @@ class MainWindow:
         if self.hires_image_fs is None:
             self.hires_image_fs = self.get_file_save_chooser(
                 _("Save High Resolution Image"),
-                self.window,
+                self,
                 image.file_matches())
 
             rtd_widgets = self.create_rtd_widgets()
@@ -250,7 +252,7 @@ class MainWindow:
             return self.open_fs
 
         self.open_fs = Gtk.FileChooserDialog(
-            title=_("Open File"), transient_for=self.window,
+            title=_("Open File"), transient_for=self,
             action=Gtk.FileChooserAction.OPEN)
 
         self.open_fs.add_buttons(
@@ -355,7 +357,7 @@ class MainWindow:
         f.connect('status_changed', self.status_changed)
         f.connect('stats-changed', self.stats_changed)
 
-    def draw(self):
+    def draw_image(self):
         nt = self.userPrefs.getint("general", "threads")
         self.f.set_nthreads(nt)
 
@@ -392,7 +394,7 @@ class MainWindow:
         self.update_compiler_prefs(prefs)
         self.update_image_prefs(prefs)
         if self.f.thaw():
-            self.draw()
+            self.draw_image()
 
     def display_filename(self):
         if self.filename is None:
@@ -436,7 +438,7 @@ class MainWindow:
     def on_window_state_event(self, widget, event):
         if not event.new_window_state & Gdk.WindowState.FULLSCREEN and \
                 self.normal_window_size:
-            self.window.resize(*self.normal_window_size)
+            self.resize(*self.normal_window_size)
             self.normal_window_size = None
 
     def set_window_title(self):
@@ -444,14 +446,14 @@ class MainWindow:
         if not self.f.get_saved():
             title += "*"
 
-        self.window.set_title(title)
+        self.set_title(title)
 
     def first_draw(self):
         self.on_fractal_change()
         self.f.thaw()
 
     def on_fractal_change(self, *args):
-        self.draw()
+        self.draw_image()
         self.set_window_title()
         self.update_subfracts()
 
@@ -645,7 +647,7 @@ class MainWindow:
         # command reference
         builder = Gtk.Builder.new_from_file(
             os.path.join(this_path, "shortcuts-gnofract4d.ui"))
-        self.window.set_help_overlay(
+        self.set_help_overlay(
             builder.get_object("shortcuts-gnofract4d"))
 
     def director(self, *args):
@@ -654,7 +656,7 @@ class MainWindow:
 
     def browser(self, *args):
         """Display formula browser."""
-        dialog = browser.BrowserDialog(self.window, self.f)
+        dialog = browser.BrowserDialog(self, self.f)
         dialog.run()
         dialog.destroy()
 
@@ -680,21 +682,21 @@ class MainWindow:
         to_full = action.get_state() == GLib.Variant("b", False)
         if to_full:
             if not self.normal_window_size:
-                self.normal_window_size = self.window.get_size()
+                self.normal_window_size = self.get_size()
 
             if not self.normal_display_size:
                 self.normal_display_size = (
                     self.userPrefs.getint("display", "width"),
                     self.userPrefs.getint("display", "height"))
 
-            self.window.fullscreen()
-            self.window.set_show_menubar(False)
+            self.fullscreen()
+            self.set_show_menubar(False)
             self.toolbar.hide()
             self.bar.hide()
             self.swindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
 
-            display = self.window.get_display()
-            monitor = display.get_monitor_at_window(self.window.get_window())
+            display = self.get_display()
+            monitor = display.get_monitor_at_window(self.get_window())
             geometry = monitor.get_geometry()
             self.userPrefs.set_size(geometry.width, geometry.height)
 
@@ -705,10 +707,10 @@ class MainWindow:
             self.swindow.set_policy(
                 Gtk.PolicyType.AUTOMATIC,
                 Gtk.PolicyType.AUTOMATIC)
-            self.window.set_show_menubar(True)
+            self.set_show_menubar(True)
             self.toolbar.show()
             self.bar.show()
-            self.window.unfullscreen()
+            self.unfullscreen()
 
         self.fullscreen_action.set_state(GLib.Variant("b", to_full))
 
@@ -904,7 +906,7 @@ class MainWindow:
                 self.userPrefs.set_size(w, h)
                 self.update_subfracts()
             # prevent cursor keys navigating toolbar
-            self.window.set_focus()
+            self.set_focus()
 
         set_selected_resolution(self.userPrefs)
         res_menu.connect('changed', set_resolution)
@@ -1062,7 +1064,7 @@ class MainWindow:
             msg = _("File %s already exists. Overwrite?") % name
             d = hig.ConfirmationAlert(
                 primary=msg,
-                transient_for=self.window,
+                transient_for=self,
                 proceed_button=_("Overwrite"))
 
             response = d.run()
@@ -1072,7 +1074,7 @@ class MainWindow:
             return True
 
     def show_warning(self, message):
-        d = Gtk.MessageDialog(self.window, Gtk.DialogFlags.MODAL,
+        d = Gtk.MessageDialog(self, Gtk.DialogFlags.MODAL,
                               Gtk.MessageType.WARNING, Gtk.ButtonsType.OK,
                               message)
         d.run()
@@ -1090,7 +1092,7 @@ class MainWindow:
         d = hig.ErrorAlert(
             primary=message,
             secondary=secondary_message,
-            transient_for=self.window)
+            transient_for=self)
         d.run()
         d.destroy()
 
@@ -1134,7 +1136,7 @@ class MainWindow:
 
     def preferences(self, *args):
         """Change current preferences."""
-        dialog = preferences.PrefsDialog(self.window, self.f, self.userPrefs)
+        dialog = preferences.PrefsDialog(self, self.f, self.userPrefs)
         dialog.run()
         dialog.destroy()
 
@@ -1200,7 +1202,7 @@ class MainWindow:
 
     def autozoom(self, *args):
         """Display AutoZoom dialog."""
-        dialog = autozoom.AutozoomDialog(self.window, self.f)
+        dialog = autozoom.AutozoomDialog(self, self.f)
         dialog.run()
         dialog.destroy()
 
@@ -1212,7 +1214,7 @@ class MainWindow:
         url = "https://github.com/fract4d/gnofract4d/issues"
         utils.launch_browser(
             url,
-            self.window)
+            self)
 
     def display_help(self, section=None):
         helpfile = fractconfig.T.find_resource(
@@ -1234,7 +1236,7 @@ class MainWindow:
         url = "file://%s%s" % (abs_file, anchor)
         utils.launch_browser(
             url,
-            self.window)
+            self)
 
     def open(self, *args):
         """Open a parameter or formula file."""
@@ -1267,7 +1269,7 @@ class MainWindow:
     def load_formula(self, file):
         try:
             self.compiler.load_formula_file(file)
-            dialog = browser.BrowserDialog(self.window, self.f)
+            dialog = browser.BrowserDialog(self, self.f)
             dialog.load_file(file)
             dialog.run()
             dialog.destroy()
@@ -1282,7 +1284,7 @@ class MainWindow:
         while not self.f.is_saved():
             d = hig.SaveConfirmationAlert(
                 document_name=self.display_filename(),
-                transient_for=self.window)
+                transient_for=self)
 
             response = d.run()
             d.destroy()
@@ -1298,7 +1300,7 @@ class MainWindow:
                 primary=_("Render queue still processing."),
                 secondary=_("If you proceed, queued images will not be saved"),
                 proceed_button=_("Close anyway"),
-                transient_for=self.window)
+                transient_for=self)
 
             response = d.run()
             d.destroy()
@@ -1312,7 +1314,7 @@ class MainWindow:
 
     def about(self, *args):
         aboutDialog = Gtk.AboutDialog.new()
-        aboutDialog.set_transient_for(self.window)
+        aboutDialog.set_transient_for(self)
         aboutDialog.set_modal(True)
         aboutDialog.set_comments(_("Easy to use fractal image generator"
                                    " supporting multiple views of a"
@@ -1339,7 +1341,7 @@ class MainWindow:
             return True
 
         try:
-            self.userPrefs.set_main_window_size(*self.window.get_size())
+            self.userPrefs.set_main_window_size(*self.get_size())
             self.userPrefs.save()
             del self.f
             for f in self.subfracts:
