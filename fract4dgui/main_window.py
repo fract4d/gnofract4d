@@ -52,11 +52,9 @@ class MainWindow(Actions, ApplicationWindow):
         self.model = model.Model(self.f)
         self.renderQueue = renderqueue.T(self.userPrefs)
 
-        self.directorDialog = director.DirectorDialog(
-            self, self.f, application.userConfig)
-        self.painterDialog = painter.PainterDialog(self, self.f)
-        self.renderqueueDialog = renderqueue.QueueDialog(
-            self, self.f, self.renderQueue)
+        self.directorDialog = director.DirectorDialog(self)
+        self.painterDialog = painter.PainterDialog(self)
+        self.renderqueueDialog = renderqueue.QueueDialog(self)
 
         self.update_subfract_visibility(False)
         self.populate_warpmenu(self.f)

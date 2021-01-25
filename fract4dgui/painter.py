@@ -9,7 +9,7 @@ from . import dialog
 
 
 class PainterDialog(dialog.T):
-    def __init__(self, main_window, f):
+    def __init__(self, main_window):
         # pylint: disable=no-member
         dialog.T.__init__(
             self,
@@ -19,7 +19,7 @@ class PainterDialog(dialog.T):
             modal=False
         )
 
-        self.f = f
+        self.f = main_window.f
         self.paint_toggle = Gtk.ToggleButton.new_with_label(_("Painting"))
         self.paint_toggle.connect('toggled', self.onChangePaintMode)
         self.csel = Gtk.ColorSelection()

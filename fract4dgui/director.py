@@ -463,7 +463,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         dlg.show()
 
     # creating window...
-    def __init__(self, main_window, f, userConfig):
+    def __init__(self, main_window):
         #pylint: disable=no-member
         dialog.T.__init__(
             self,
@@ -474,9 +474,9 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         )
 
         hig.MessagePopper.__init__(self)
-        self.animation = animation.T(f.compiler, userConfig)
-        self.f = f
-        self.compiler = f.compiler
+        self.f = main_window.f
+        self.compiler = main_window.f.compiler
+        self.animation = animation.T(self.compiler, main_window.application.userConfig)
 
         # main VBox
         self.box_main = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
