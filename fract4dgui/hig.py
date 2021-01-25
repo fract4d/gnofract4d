@@ -36,7 +36,7 @@ class Alert(Gtk.MessageDialog):
 class InformationAlert(Alert):
     def __init__(self, **kwds):
         kwds.setdefault("type", Gtk.MessageType.INFO)
-        kwds.setdefault("buttons", (Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT))
+        kwds.setdefault("buttons", (_("_OK"), Gtk.ResponseType.ACCEPT))
         Alert.__init__(self, **kwds)
 
 
@@ -50,7 +50,7 @@ class ErrorAlert(Alert):
         buttons = list(kwds.get("buttons", ()))
         if fix_button:
             buttons = [fix_button, ErrorAlert.FIX]
-        buttons += [Gtk.STOCK_OK, Gtk.ResponseType.ACCEPT]
+        buttons += [_("_OK"), Gtk.ResponseType.ACCEPT]
 
         kwds["buttons"] = tuple(buttons)
         kwds.setdefault("type", Gtk.MessageType.ERROR)
@@ -62,9 +62,9 @@ class ConfirmationAlert(Alert):
     ALTERNATE = 1
 
     def __init__(self, **kwds):
-        proceed_button = kwds.get("proceed_button", Gtk.STOCK_OK)
+        proceed_button = kwds.get("proceed_button", _("_OK"))
         alternate_button = kwds.get("alternate_button")
-        cancel_button = kwds.get("cancel_button", Gtk.STOCK_CANCEL)
+        cancel_button = kwds.get("cancel_button", _("_Cancel"))
         # if optional fix button supplied, add to list of buttons
         buttons = list(kwds.get("buttons", ()))
         if alternate_button:
@@ -109,7 +109,7 @@ class SaveConfirmationAlert(ConfirmationAlert):
             _('Save changes to document "%s" before closing?') %
             document_name)
         kwds.setdefault("secondary", text)
-        kwds.setdefault("proceed_button", Gtk.STOCK_SAVE)
+        kwds.setdefault("proceed_button", _("_Save"))
         kwds.setdefault("alternate_button", _("_Close without Saving"))
 
         ConfirmationAlert.__init__(self, **kwds)
@@ -148,8 +148,8 @@ class MessagePopper:
             primary=msg,
             secondary=secondary,
             type=Gtk.MessageType.QUESTION,
-            proceed_button=Gtk.STOCK_YES,
-            cancel_button=Gtk.STOCK_NO)
+            proceed_button=_("_Yes"),
+            cancel_button=_("_No"))
 
         return self.do(d)
 

@@ -97,7 +97,7 @@ class QueueDialog(dialog.T):
             self,
             _("Render Queue"),
             main_window,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+            (_("_Close"), Gtk.ResponseType.CLOSE)
         )
 
         self.q = main_window.renderQueue

@@ -20,10 +20,10 @@ class BrowserDialog(dialog.T):
             self,
             _("Formula Browser"),
             main_window,
-            (Gtk.STOCK_REFRESH, BrowserDialog.RESPONSE_REFRESH,
-             Gtk.STOCK_APPLY, Gtk.ResponseType.APPLY,
-             Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+            (_("_Refresh"), BrowserDialog.RESPONSE_REFRESH,
+             _("_Apply"), Gtk.ResponseType.APPLY,
+             _("_OK"), Gtk.ResponseType.OK,
+             _("_Close"), Gtk.ResponseType.CLOSE)
         )
 
         self.set_default_response(Gtk.ResponseType.OK)

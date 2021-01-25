@@ -26,7 +26,7 @@ class AVIGeneration:
             modal=True,
             destroy_with_parent=True
         )
-        self.dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        self.dialog.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL)
         self.spinner = Gtk.Spinner()
         label = Gtk.Label.new("Please wait...")
         self.dialog.vbox.pack_start(self.spinner, True, True, 10)
