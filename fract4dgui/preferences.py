@@ -228,32 +228,23 @@ class PrefsDialog(dialog.T):
         table.attach(cache_entry, 1, 2, 1, 1)
 
     def create_formula_directory_list(self, section_name):
-        self.path_list = Gtk.ListStore(GObject.TYPE_STRING)
+        path_list = Gtk.ListStore(str)
 
         path_treeview = Gtk.TreeView(
-            model=self.path_list, headers_visible=False,
+            model=path_list, headers_visible=False,
             tooltip_text=_("Directories to search for formulas"))
 
         renderer = Gtk.CellRendererText()
         column = Gtk.TreeViewColumn(_('_Directory'), renderer, text=0)
         path_treeview.append_column(column)
 
-        paths = self.prefs.get_list(section_name)
-        for path in paths:
-            iter = self.path_list.append()
-            self.path_list.set(iter, 0, path)
+        for path in self.prefs.get_list(section_name):
+            path_list.append([path])
 
         return path_treeview
 
     def update_prefs(self, name, model):
-        list = []
-
-        def append_func(m, path, iter, dummy):
-            list.append(model.get_value(iter, 0))
-
-        model.foreach(append_func, None)
-
-        self.prefs.set_list(name, list)
+        self.prefs.set_list(name, [row[0] for row in model])
 
     def browse_for_dir(self, widget, name, pathlist):
         self.dirchooser.show_all()
