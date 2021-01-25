@@ -9,7 +9,6 @@ from unittest.mock import patch
 from . import testgui
 
 from gi.repository import Gio, GLib, Gtk
-import pytest
 
 from fract4d import fractal, options
 from fract4d_compiler import fc
@@ -157,8 +156,7 @@ class Test(testgui.TestCase):
         self.mw.settings(None, None)
         self.mw.painter(None, None)
 
-    @pytest.mark.skipif(Gio.AppInfo.get_default_for_uri_scheme("http") is None,
-                        reason="No web browser found")
+    @testgui.skip_if_no_web_browser()
     def testHelp(self):
         self.mw.contents(None, None)
 

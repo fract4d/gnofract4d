@@ -2,12 +2,15 @@
 
 # unit tests for settings window
 
+from unittest.mock import patch
+
 from . import testgui
 
 import cairo
 from gi.repository import Gdk, Gtk
 
 from fract4dgui import gtkfractal, settings
+from fract4dgui.browser import browser_model
 
 
 class Test(testgui.TestCase):
@@ -111,3 +114,13 @@ class Test(testgui.TestCase):
             i += 1
 
         self.assertEqual(exp_pagelist, pagelist)
+
+    @patch("fract4d.gradient.Gradient.get_coolor_url")
+    def testEditOnline(self, mock_get_coolor_url):
+        mock_get_coolor_url.side_effect = lambda : "about:blank"
+        self.settings.edit_online(None)
+
+    @testgui.skip_if_no_web_browser()
+    @patch("gi.repository.Gtk.Dialog.run")
+    def testShowBrowser(self, mock_dialog_run):
+        self.settings.show_browser(None, browser_model.FRACTAL)

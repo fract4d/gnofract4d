@@ -13,8 +13,12 @@ import gettext
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
 
+import pytest
+
 gi.require_version('Gdk', '3.0')
+gi.require_version('Gio', '2.0')
 gi.require_version('Gtk', '3.0')
+from gi.repository import Gio
 
 
 class TestCase(unittest.TestCase):
@@ -40,3 +44,8 @@ class TestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.tmpdir.cleanup()
+
+def skip_if_no_web_browser():
+    return pytest.mark.skipif(
+        Gio.AppInfo.get_default_for_uri_scheme("http") is None,
+        reason="No web browser found")
