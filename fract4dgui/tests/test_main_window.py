@@ -24,11 +24,11 @@ class Application(Gtk.Application):
         self.compiler = fc.Compiler(config)
         self.compiler.add_func_path('formulas')
 
+
 class WrapMainWindow(main_window.MainWindow):
-    @patch('fract4d.fractconfig.T.get_data_path')
-    def __init__(self, config, extra_paths=[]):
+    def __init__(self, config):
         self.errors = []
-        main_window.MainWindow.__init__(self, Application(config), ['formulas'])
+        main_window.MainWindow.__init__(self, Application(config))
 
     def show_error_message(self, message, exception):
         self.errors.append((message, exception))
@@ -59,7 +59,7 @@ class TestApplication(testgui.TestCase):
 class Test(testgui.TestCase):
     def setUp(self):
         self.mw = WrapMainWindow(Test.userConfig)
-        self.assertEqual(self.mw.filename, None, "shouldn't have a filename")
+        self.assertEqual(self.mw.filename.filename, None, "shouldn't have a filename")
 
     def testApplyOptions(self):
         opts = options.Arguments().parse_args(
@@ -72,14 +72,14 @@ class Test(testgui.TestCase):
         fn_good = "testdata/test.fct"
         result = self.mw.load(fn_good)
         self.assertTrue(result, "load failed")
-        self.assertEqual(self.mw.filename, fn_good)
+        self.assertEqual(self.mw.filename.filename, fn_good)
 
         # load bad file
         fn_bad = "test_main_window.py"
         result = self.mw.load(fn_bad)
         self.assertEqual(result, False, "load of bad file succeeded")
         # filename shouldn't change
-        self.assertEqual(self.mw.filename, fn_good)
+        self.assertEqual(self.mw.filename.filename, fn_good)
         self.assertEqual(
             self.mw.errors[0][0], "Error opening test_main_window.py")
 
@@ -88,7 +88,7 @@ class Test(testgui.TestCase):
         result = self.mw.load(fn_bad)
         self.assertEqual(result, False, "load of missing file succeeded")
         # filename shouldn't change
-        self.assertEqual(self.mw.filename, fn_good)
+        self.assertEqual(self.mw.filename.filename, fn_good)
         self.assertEqual(
             self.mw.errors[1][0], "Error opening wibble.fct")
 
@@ -102,12 +102,12 @@ class Test(testgui.TestCase):
         mytest_file = os.path.join(Test.tmpdir.name, "mytest.fct")
         result = self.mw.save_file(mytest_file)
         self.assertEqual(result, True, "save file failed")
-        self.assertEqual(self.mw.filename, mytest_file)
+        self.assertEqual(self.mw.filename.filename, mytest_file)
 
         # fail to save to bad location
         result = self.mw.save_file("/no_such_dir/mytest.fct")
         self.assertEqual(result, False, "save file to bad location succeeded")
-        self.assertEqual(self.mw.filename, mytest_file)
+        self.assertEqual(self.mw.filename.filename, mytest_file)
         self.assertEqual(
             self.mw.errors[0][0],
             "Error saving to file /no_such_dir/mytest.fct")
@@ -166,7 +166,7 @@ class Test(testgui.TestCase):
         self.mw.get_save_as_fs()
         self.mw.get_save_image_as_fs()
         self.mw.get_save_hires_image_as_fs()
-        self.mw.get_open_fs()
+        self.mw.get_open_fs(fc.Compiler(Test.userConfig))
 
     def testExplorer(self):
         self.mw.load("testdata/nexus.fct")
@@ -174,14 +174,14 @@ class Test(testgui.TestCase):
         self.mw.update_subfracts()
         sub3_file = os.path.join(Test.tmpdir.name, "sub3.fct")
         with open(sub3_file, "w") as fh:
-            self.mw.subfracts[3].save(fh, False)
+            self.mw.fractalWindow.subfracts[3].save(fh, False)
 
-        self.mw.subfracts[3].onButtonRelease(None, None)
+        self.mw.fractalWindow.subfracts[3].onButtonRelease(None, None)
         main_file = os.path.join(Test.tmpdir.name, "main.fct")
         with open(main_file, "w") as fh:
             self.mw.f.save(fh, False)
 
-        self.assertEqual(self.mw.subfracts[3].serialize(),
+        self.assertEqual(self.mw.fractalWindow.subfracts[3].serialize(),
                          self.mw.f.serialize())
 
         self.mw.set_explorer_state(False)
@@ -193,19 +193,19 @@ class Test(testgui.TestCase):
         self.mw.randomize_colors(8, None)
 
     def testDefaultFilenames(self):
-        self.assertEqual("Mandelbrot.fct", self.mw.default_save_filename())
+        self.assertEqual("Mandelbrot.fct", self.mw.filename.default_save_filename())
         self.assertEqual(
             "Mandelbrot.png",
-            self.mw.default_save_filename(".png"))
-        self.assertEqual("Mandelbrot.png", self.mw.default_image_filename())
+            self.mw.filename.default_save_filename(".png"))
+        self.assertEqual("Mandelbrot.png", self.mw.filename.default_image_filename())
 
         self.mw.load("testdata/elfglow.fct")
         self.assertEqual(
             "testdata/elfglow002.fct",
-            self.mw.default_save_filename())
+            self.mw.filename.default_save_filename())
         self.assertEqual(
             "testdata/elfglow.png",
-            self.mw.image_save_filename("testdata/elfglow.fct"))
+            self.mw.filename.image_save_filename("testdata/elfglow.fct"))
 
     def testCantFindDefault(self):
         old_default = fractal.T.DEFAULT_FORMULA_FILE
