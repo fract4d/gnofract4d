@@ -32,17 +32,6 @@ class Test(testbase.TestSetup):
         l2 = c.get_list("map_path")
         self.assertEqual(l, l2)
 
-    def testRemoveSectionItem(self):
-        c = fractconfig.T("")
-        l = c.get_list("map_path")
-        c.remove_section_item("map_path", 1)
-        l2 = c.get_list("map_path")
-        self.assertEqual(len(l) - 1, len(l2))
-        self.assertEqual(l[0], l2[0])
-
-        for i in range(1, len(l2) - 1):
-            self.assertEqual(l[i + 1], l2[i])
-
     def testSetSize(self):
         c = self.userConfig
         c.set_size(871, 313)

@@ -54,9 +54,6 @@ class Preferences(GObject.GObject):
     def set_list(self, name, list):
         self.config.set_list(name, list)
 
-    def remove_section_item(self, section, number):
-        self.config.remove_section_item(section, number)
-
     def remove_all_in_list_section(self, name):
         self.config.remove_all_in_list_section(name)
 
