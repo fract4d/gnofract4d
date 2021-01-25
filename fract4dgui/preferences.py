@@ -82,7 +82,6 @@ class PrefsDialog(dialog.T):
             _("Select a Formula Directory"),
             self)
 
-        self.set_default_response(Gtk.ResponseType.CLOSE)
         self.f = f
         self.notebook = Gtk.Notebook()
         self.vbox.add(self.notebook)
