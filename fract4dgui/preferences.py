@@ -83,7 +83,7 @@ class PrefsDialog(dialog.T):
             self)
 
         self.f = f
-        self.notebook = Gtk.Notebook()
+        self.notebook = Gtk.Notebook(vexpand=True)
         self.vbox.add(self.notebook)
         self.prefs = userPrefs
         self.create_image_options_page()
@@ -268,7 +268,7 @@ class PrefsDialog(dialog.T):
             self.update_prefs(name, model)
 
     def create_compiler_options_page(self):
-        table = Gtk.Grid(column_homogeneous=False, column_spacing=5, row_spacing=5)
+        table = Gtk.Grid(column_spacing=5, row_spacing=5)
         label = Gtk.Label(label=_("_Compiler"), use_underline=True)
         self.notebook.append_page(table, label)
 
@@ -291,14 +291,18 @@ class PrefsDialog(dialog.T):
         sw = Gtk.ScrolledWindow(
             shadow_type=Gtk.ShadowType.ETCHED_IN,
             hscrollbar_policy=Gtk.PolicyType.NEVER,
-            vscrollbar_policy=Gtk.PolicyType.AUTOMATIC)
+            vscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
+            vexpand=True)
         form_path_section = "formula_path"
         pathlist = self.create_formula_directory_list(form_path_section)
         sw.add(pathlist)
         table.attach(sw, 1, 2, 1, 3)
 
         pathlist_label = Gtk.Label(
-            label=_("Formula Search _Path :"), mnemonic_widget=pathlist, use_underline=True)
+            label=_("Formula Search _Path :"),
+            mnemonic_widget=pathlist,
+            use_underline=True,
+            vexpand=True)
         table.attach(pathlist_label, 0, 2, 1, 1)
 
         add_button = Gtk.Button(label="Add")
