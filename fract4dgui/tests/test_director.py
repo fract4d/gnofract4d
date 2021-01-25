@@ -18,10 +18,14 @@ class Test(testgui.TestCase):
         # ensure any dialog boxes are dismissed without human interaction
         hig.timeout = 250
 
+        application = Gtk.Window()
+        application.userConfig = Test.userConfig
+        self.parent = Gtk.Window()
+        self.parent.f = fractal.T(Test.g_comp)
+        self.parent.application = application
+
     def testDirectorDialog(self):
-        f = fractal.T(Test.g_comp)
-        parent = Gtk.Window()
-        dd = director.DirectorDialog(parent, f, Test.userConfig)
+        dd = director.DirectorDialog(self.parent)
         dd.show()
         dd.animation.set_png_dir(Test.tmpdir.name)
         dd.animation.set_fct_enabled(False)
@@ -60,9 +64,7 @@ class Test(testgui.TestCase):
         filename = "test_file"
         mock_dialog_get_filename.side_effect = lambda : filename
 
-        f = fractal.T(Test.g_comp)
-        parent = Gtk.Window()
-        dd = director.DirectorDialog(parent, f, Test.userConfig)
+        dd = director.DirectorDialog(self.parent)
 
         mock_dialog_run.side_effect = lambda : Gtk.ResponseType.OK
         self.assertEqual(dd.get_fct_file(), filename)
@@ -90,8 +92,7 @@ class Test(testgui.TestCase):
 
     def testOwnSanity(self):
         # exercise each of the checks in the check_sanity function
-        f = fractal.T(Test.g_comp)
-        dd = director.DirectorDialog(None, f, Test.userConfig)
+        dd = director.DirectorDialog(self.parent)
 
         dd.animation.add_keyframe(
             "/foo/director1.fct", 1, 10, animation.INT_LOG)
@@ -132,8 +133,7 @@ class Test(testgui.TestCase):
             dd.check_sanity)
 
     def testKeyframeClash(self):
-        f = fractal.T(Test.g_comp)
-        dd = director.DirectorDialog(None, f, Test.userConfig)
+        dd = director.DirectorDialog(self.parent)
 
         dd.check_for_keyframe_clash("/a", "/b")
 
@@ -145,8 +145,7 @@ class Test(testgui.TestCase):
             dd.check_for_keyframe_clash, os.path.join(Test.tmpdir.name, "foo.fct"), Test.tmpdir.name)
 
     def testPNGGen(self):
-        f = fractal.T(Test.g_comp)
-        dd = director.DirectorDialog(None, f, Test.userConfig)
+        dd = director.DirectorDialog(self.parent)
         dd.animation.add_keyframe(
             "testdata/director1.fct", 1, 10, animation.INT_LOG)
         dd.animation.add_keyframe(

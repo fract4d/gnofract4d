@@ -92,7 +92,7 @@ class CellRendererProgress(Gtk.CellRendererProgress):
 
 
 class QueueDialog(dialog.T):
-    def __init__(self, main_window, f, renderQueue):
+    def __init__(self, main_window):
         dialog.T.__init__(
             self,
             _("Render Queue"),
@@ -100,7 +100,7 @@ class QueueDialog(dialog.T):
             (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         )
 
-        self.q = renderQueue
+        self.q = main_window.renderQueue
 
         self.q.connect('changed', self.onQueueChanged)
         self.q.connect('progress-changed', self.onProgressChanged)

@@ -60,6 +60,7 @@ class Test(testgui.TestCase):
         rq.connect('done', self.quitloop)
         rq.start()
         parent = Gtk.Window()
-        d = renderqueue.QueueDialog(parent, f, rq)
+        parent.renderQueue = rq
+        d = renderqueue.QueueDialog(parent)
         d.show()
         self.wait()
