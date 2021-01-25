@@ -238,7 +238,7 @@ class SettingsPane(Gtk.Box):
         # print(url)
         utils.launch_browser(
             url,
-            self.main_window.window)
+            self.main_window)
 
     def copy_left(self, widget):
         i = self.selected_segment
@@ -564,7 +564,7 @@ class SettingsPane(Gtk.Box):
         d = hig.ErrorAlert(
             primary=message,
             secondary=secondary_message,
-            transient_for=self.main_window.window)
+            transient_for=self.main_window)
         d.run()
         d.destroy()
 
@@ -722,7 +722,7 @@ class SettingsPane(Gtk.Box):
                 self.update_all_widgets(fractal, widget)  # recurse
 
     def show_browser(self, button, type):
-        dialog = browser.BrowserDialog(self.main_window.window, self.f, type)
+        dialog = browser.BrowserDialog(self.main_window, self.f, type)
         dialog.run()
         dialog.destroy()
 
