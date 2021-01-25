@@ -103,9 +103,8 @@ class PrefsDialog(dialog.T):
         d.destroy()
 
     def create_width_entry(self):
-        entry = Gtk.Entry()
-        entry.set_tooltip_text("The image's width in pixels")
-        entry.set_activates_default(True)
+        entry = Gtk.Entry(
+            tooltip_text="The image's width in pixels", activates_default=True)
 
         def set_entry(*args):
             entry.set_text(self.prefs.get("display", "width"))
@@ -136,9 +135,8 @@ class PrefsDialog(dialog.T):
         return entry
 
     def create_height_entry(self):
-        entry = Gtk.Entry()
-        entry.set_tooltip_text("The image's height in pixels")
-        entry.set_activates_default(True)
+        entry = Gtk.Entry(
+            tooltip_text="The image's height in pixels", activates_default=True)
 
         def set_entry(*args):
             entry.set_text(self.prefs.get("display", "height"))
@@ -167,12 +165,11 @@ class PrefsDialog(dialog.T):
         entry.connect('focus-out-event', set_prefs)
         return entry
 
-    def create_compiler_entry(self, propname):
-        return self.create_option_entry("compiler", propname)
+    def create_compiler_entry(self, propname, **properties):
+        return self.create_option_entry("compiler", propname, **properties)
 
-    def create_option_entry(self, section, propname):
-        entry = Gtk.Entry()
-        entry.set_activates_default(True)
+    def create_option_entry(self, section, propname, **properties):
+        entry = Gtk.Entry(activates_default=True, **properties)
 
         def set_entry(*args):
             entry.set_text(self.prefs.get(section, propname))
@@ -190,10 +187,10 @@ class PrefsDialog(dialog.T):
         return entry
 
     def create_save_compress_widget(self):
-        widget = Gtk.CheckButton(label=_("Compress _Parameter Files"))
-        widget.set_tooltip_text(
-            _("Write .fct files in a shorter but unreadable format"))
-        widget.set_use_underline(True)
+        widget = Gtk.CheckButton(
+            label=_("Compress _Parameter Files"),
+            tooltip_text=_("Write .fct files in a shorter but unreadable format"),
+            use_underline=True)
 
         def set_widget(*args):
             widget.set_active(self.prefs.getboolean("general", "compress_fct"))
@@ -208,23 +205,18 @@ class PrefsDialog(dialog.T):
         return widget
 
     def create_general_page(self):
-        table = Gtk.Grid()
-        table.set_column_spacing(5)
-        table.set_row_spacing(5)
-        table.set_column_homogeneous(False)
-        label = Gtk.Label(label=_("_General"))
-        label.set_use_underline(True)
+        table = Gtk.Grid(column_spacing=5, row_spacing=5, column_homogeneous=False)
+        label = Gtk.Label(label=_("_General"), use_underline=True)
         self.notebook.append_page(table, label)
 
-        entry = self.create_option_entry("general", "threads")
-        entry.set_tooltip_text(_("How many threads to use for calculations"))
-        name_label = Gtk.Label(label=_("_Number of threads :"))
-        name_label.set_use_underline(True)
-        name_label.set_mnemonic_widget(entry)
+        entry = self.create_option_entry(
+            "general", "threads", tooltip_text=_("How many threads to use for calculations"))
+        name_label = Gtk.Label(
+            label=_("_Number of threads :"), mnemonic_widget=entry, use_underline=True)
 
-        cache_entry = self.create_option_entry("general", "cache_dir")
-        cache_entry.set_tooltip_text(_("Restart program to use new directory"))
-        cache_entry.set_hexpand(True)
+        cache_entry = self.create_option_entry(
+            "general", "cache_dir", hexpand=True,
+            tooltip_text=_("Restart program to use new directory"))
         cache_label = Gtk.Label(label=_("Cache directory :"))
 
         table.attach(name_label, 0, 0, 1, 1)
@@ -235,16 +227,16 @@ class PrefsDialog(dialog.T):
         table.attach(cache_label, 0, 2, 1, 1)
         table.attach(cache_entry, 1, 2, 1, 1)
 
-    def create_directory_list(self, section_name):
-        self.path_list = Gtk.ListStore(
-            GObject.TYPE_STRING)
+    def create_formula_directory_list(self, section_name):
+        self.path_list = Gtk.ListStore(GObject.TYPE_STRING)
 
-        path_treeview = Gtk.TreeView(model=self.path_list)
+        path_treeview = Gtk.TreeView(
+            model=self.path_list, headers_visible=False,
+            tooltip_text=_("Directories to search for formulas"))
 
         renderer = Gtk.CellRendererText()
         column = Gtk.TreeViewColumn(_('_Directory'), renderer, text=0)
         path_treeview.append_column(column)
-        path_treeview.set_headers_visible(False)
 
         paths = self.prefs.get_list(section_name)
         for path in paths:
@@ -286,48 +278,40 @@ class PrefsDialog(dialog.T):
             self.update_prefs(name, model)
 
     def create_compiler_options_page(self):
-        table = Gtk.Grid()
-        table.set_column_homogeneous(False)
-        table.set_column_spacing(5)
-        table.set_row_spacing(5)
-        label = Gtk.Label(label=_("_Compiler"))
-        label.set_use_underline(True)
+        table = Gtk.Grid(column_homogeneous=False, column_spacing=5, row_spacing=5)
+        label = Gtk.Label(label=_("_Compiler"), use_underline=True)
         self.notebook.append_page(table, label)
 
-        entry = self.create_compiler_entry("name")
-        entry.set_tooltip_text(_("The C compiler to use"))
-        entry.set_hexpand(True)
+        entry = self.create_compiler_entry(
+            "name", hexpand=True, tooltip_text=_("The C compiler to use"))
         table.attach(entry, 1, 0, 1, 1)
 
-        name_label = Gtk.Label(label=_("Compi_ler :"))
-        name_label.set_use_underline(True)
-        name_label.set_mnemonic_widget(entry)
+        name_label = Gtk.Label(
+            label=_("Compi_ler :"), mnemonic_widget=entry, use_underline=True)
         table.attach(name_label, 0, 0, 1, 1)
 
-        entry = self.create_compiler_entry("options")
-        entry.set_tooltip_text(_("Options to pass to the C compiler"))
+        entry = self.create_compiler_entry(
+            "options", tooltip_text=_("Options to pass to the C compiler"))
         table.attach(entry, 1, 1, 1, 1)
 
-        flags_label = Gtk.Label(label=_("Compiler _Flags :"))
-        flags_label.set_use_underline(True)
+        flags_label = Gtk.Label(
+            label=_("Compiler _Flags :"), mnemonic_widget=entry, use_underline=True)
         table.attach(flags_label, 0, 1, 1, 1)
-        flags_label.set_mnemonic_widget(entry)
 
-        sw = Gtk.ScrolledWindow()
-        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        sw = Gtk.ScrolledWindow(
+            shadow_type=Gtk.ShadowType.ETCHED_IN,
+            hscrollbar_policy=Gtk.PolicyType.NEVER,
+            vscrollbar_policy=Gtk.PolicyType.AUTOMATIC)
         form_path_section = "formula_path"
-        pathlist = self.create_directory_list(form_path_section)
-        pathlist.set_tooltip_text(_("Directories to search for formulas"))
+        pathlist = self.create_formula_directory_list(form_path_section)
         sw.add(pathlist)
         table.attach(sw, 1, 2, 1, 3)
 
-        pathlist_label = Gtk.Label(label=_("Formula Search _Path :"))
-        pathlist_label.set_use_underline(True)
+        pathlist_label = Gtk.Label(
+            label=_("Formula Search _Path :"), mnemonic_widget=pathlist, use_underline=True)
         table.attach(pathlist_label, 0, 2, 1, 1)
-        pathlist_label.set_mnemonic_widget(pathlist)
 
-        add_button = Gtk.Button.new_with_label("Add")
+        add_button = Gtk.Button(label="Add")
         add_button.connect(
             'clicked',
             self.browse_for_dir,
@@ -335,7 +319,7 @@ class PrefsDialog(dialog.T):
             pathlist)
         table.attach(add_button, 0, 3, 1, 1)
 
-        remove_button = Gtk.Button.new_with_label("Remove")
+        remove_button = Gtk.Button(label="Remove")
         remove_button.connect(
             'clicked',
             self.remove_dir,
@@ -344,29 +328,22 @@ class PrefsDialog(dialog.T):
         table.attach(remove_button, 0, 4, 1, 1)
 
     def create_helper_options_page(self):
-        table = Gtk.Grid()
-        table.set_column_homogeneous(False)
-        table.set_column_spacing(5)
-        table.set_row_spacing(5)
-        label = Gtk.Label(label=_("_Helpers"))
-        label.set_use_underline(True)
+        table = Gtk.Grid(column_homogeneous=False, column_spacing=5, row_spacing=5)
+        label = Gtk.Label(label=_("_Helpers"), use_underline=True)
         self.notebook.append_page(table, label)
 
-        entry = self.create_option_entry("helpers", "editor")
-        entry.set_tooltip_text(
-            _("The text editor to use for changing formulas"))
-        entry.set_hexpand(True)
+        entry = self.create_option_entry(
+            "helpers", "editor", hexpand=True,
+            tooltip_text=_("The text editor to use for changing formulas"))
         table.attach(entry, 1, 0, 1, 1)
 
-        name_label = Gtk.Label(label="_Editor :")
-        name_label.set_use_underline(True)
-        name_label.set_mnemonic_widget(entry)
+        name_label = Gtk.Label(label="_Editor :", mnemonic_widget=entry, use_underline=True)
         table.attach(name_label, 0, 0, 1, 1)
 
     def create_auto_deepen_widget(self):
-        widget = Gtk.CheckButton(label="Auto _Deepen")
-        widget.set_tooltip_text("Adjust number of iterations automatically")
-        widget.set_use_underline(True)
+        widget = Gtk.CheckButton(
+            label="Auto _Deepen", use_underline=True,
+            tooltip_text="Adjust number of iterations automatically")
 
         def set_widget(*args):
             widget.set_active(self.prefs.getboolean("display", "autodeepen"))
@@ -381,9 +358,10 @@ class PrefsDialog(dialog.T):
         return widget
 
     def create_auto_tolerance_widget(self):
-        widget = Gtk.CheckButton(label="Auto _Tolerance")
-        widget.set_tooltip_text("Adjust periodicity tolerance automatically")
-        widget.set_use_underline(True)
+        widget = Gtk.CheckButton(
+            label="Auto _Tolerance",
+            tooltip_text="Adjust periodicity tolerance automatically",
+            use_underline=True)
 
         def set_widget(*args):
             widget.set_active(
@@ -418,35 +396,28 @@ class PrefsDialog(dialog.T):
         return optMenu
 
     def create_image_options_page(self):
-        table = Gtk.Grid()
-        table.set_column_spacing(5)
-        table.set_row_spacing(5)
-        label = Gtk.Label(label="_Image")
-        label.set_use_underline(True)
+        table = Gtk.Grid(column_spacing=5, row_spacing=5)
+        label = Gtk.Label(label="_Image", use_underline=True)
         self.notebook.append_page(table, label)
 
         wentry = self.create_width_entry()
         table.attach(wentry, 1, 0, 1, 1)
 
-        wlabel = Gtk.Label(label="_Width :")
-        wlabel.set_mnemonic_widget(wentry)
-        wlabel.set_use_underline(True)
+        wlabel = Gtk.Label(label="_Width :", mnemonic_widget=wentry, use_underline=True)
         table.attach(wlabel, 0, 0, 1, 1)
 
         hentry = self.create_height_entry()
         table.attach(hentry, 1, 1, 1, 1)
 
-        hlabel = Gtk.Label(label="_Height :")
-        hlabel.set_mnemonic_widget(hentry)
-        hlabel.set_use_underline(True)
+        hlabel = Gtk.Label(label="_Height :", mnemonic_widget=hentry, use_underline=True)
         table.attach(hlabel, 0, 1, 1, 1)
 
-        self.fix_ratio = Gtk.CheckButton(label="Maintain Aspect _Ratio")
-        self.fix_ratio.set_tooltip_text(
-            "Keep the image rectangle the same shape when changing its size")
-        self.fix_ratio.set_use_underline(True)
+        self.fix_ratio = Gtk.CheckButton(
+            label="Maintain Aspect _Ratio", 
+            tooltip_text="Keep the image rectangle the same shape when changing its size",
+            use_underline=True,
+            active=True)
         table.attach(self.fix_ratio, 0, 2, 2, 1)
-        self.fix_ratio.set_active(True)
 
         # auto deepening
         self.auto_deepen = self.create_auto_deepen_widget()
@@ -460,7 +431,6 @@ class PrefsDialog(dialog.T):
         optMenu = self.create_antialias_menu()
         table.attach(optMenu, 1, 5, 1, 1)
 
-        aalabel = Gtk.Label(label="_Antialiasing : ")
-        aalabel.set_use_underline(True)
-        aalabel.set_mnemonic_widget(optMenu)
+        aalabel = Gtk.Label(
+            label="_Antialiasing : ", mnemonic_widget=optMenu, use_underline=True)
         table.attach(aalabel, 0, 5, 1, 1)
