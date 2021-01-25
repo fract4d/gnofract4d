@@ -12,6 +12,7 @@ from . import testbase
 
 from fract4d_compiler import fc, fracttypes
 from fract4d import fractal, image, formsettings
+from fract4d.options import Arguments
 
 g_testfile = '''gnofract4d parameter file
 version=2.0
@@ -1654,6 +1655,13 @@ solids=[
         blend = f.blend(f2, 0.5)
 
         self.assertEqual(math.pi / 8.0, blend.get_param(f.XYANGLE))
+
+    def testAntialiasArgument(self):
+        o = Arguments()
+        ns = o.parse_args(["--antialias", "best"])
+        f = fractal.T(Test.g_comp)
+        f.apply_options(ns)
+        self.assertEqual(f.antialias, 2)
 
     def testSetCompilerOptions(self):
         f = fractal.T(Test.g_comp)

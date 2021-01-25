@@ -2,7 +2,7 @@ import argparse
 import collections
 import os.path
 import sys
-from . import fractal
+from . import fractal as fract4d_fractal
 
 # version of Gnofract 4D
 VERSION = '4.3'
@@ -12,7 +12,6 @@ POSITION_ARGUMENTS = ("xcenter", "ycenter", "zcenter", "wcenter",
                       "magnitude")
 
 Formula = collections.namedtuple('Formula', ['path', 'name', 'func'])
-
 
 def formula_type_parse(name, string):
     n = string.rfind('#')
@@ -112,9 +111,10 @@ class Arguments(argparse.ArgumentParser):
         output.add_argument("-j", "--height", type=int, metavar="N",
                             help="Make image N pixels tall")
 
+        aa_modes = [i.name for i in fract4d_fractal.AntialiasModes]
         output.add_argument("--antialias", metavar="MODE",
-                            choices=['none', 'fast', 'best'],
-                            help="Antialiasing MODE (one of none|fast|best)")
+                            choices=aa_modes,
+                            help=f"Antialiasing MODE (one of {'|'.join(aa_modes)})")
 
         for p in POSITION_ARGUMENTS:
             position.add_argument("--%s" % p, type=int, metavar="N")
@@ -166,7 +166,7 @@ class Arguments(argparse.ArgumentParser):
         for a in POSITION_ARGUMENTS:
             val = getattr(opts, a)
             if val is not None:
-                pnum = getattr(fractal.T, a.upper())
+                pnum = getattr(fract4d_fractal.T, a.upper())
                 opts.paramchanges[pnum] = val
 
         return opts
