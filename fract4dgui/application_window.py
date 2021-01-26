@@ -354,9 +354,10 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
     def add_warpmenu(self, tip):
         self.warpmenu = utils.create_option_menu(["None"], tip)
+        self.warpmenu.set_id_column(0)
 
         def update_warp_param(menu, f):
-            param = utils.get_selected_value(menu)
+            param = menu.get_active_id()
             if param == "None":
                 param = None
 
