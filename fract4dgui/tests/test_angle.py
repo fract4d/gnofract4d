@@ -10,14 +10,14 @@ from fract4dgui import angle
 
 class Test(unittest.TestCase):
     def testCreate(self):
-        a = angle.T("hello")
+        a = angle.T("hello", "angle")
         self.assertTrue(a)
         self.assertEqual(a.adjustment.get_lower(), -math.pi)
         self.assertEqual(a.adjustment.get_upper(), math.pi)
         self.assertEqual(a.adjustment.get_value(), 0.0)
 
     def testAngles(self):
-        a = angle.T('foo')
+        a = angle.T("foo", "angle")
 
         self.assertEqual(a.get_current_angle(), 0.0)
 
@@ -28,7 +28,7 @@ class Test(unittest.TestCase):
         self.assertEqual(a.get_current_angle(), math.pi)
 
     def testPointerCoords(self):
-        a = angle.T('foo')
+        a = angle.T("foo", "angle")
 
         # 0 should point right
         self.assertNearlyEqual(
@@ -56,7 +56,7 @@ class Test(unittest.TestCase):
             (0, -(40 - angle.T.ptr_radius)))
 
     def testUpdateFromMouse(self):
-        a = angle.T('foo')
+        a = angle.T("foo", "angle")
         a.update_from_mouse(100, 100)
 
     def assertNearlyEqual(self, a, b):

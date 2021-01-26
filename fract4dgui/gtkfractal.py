@@ -709,9 +709,8 @@ class T(Hidden):
         table.attach(widget, 1, i + 1, 1, 1)
 
         name = self.param_display_name(name, param)
-        fway = fourway.T(name)
         tip = self.param_tip(name, param)
-        fway.set_tooltip_text(tip)
+        fway = fourway.T(name, tip)
         fway.set_hexpand(True)
 
         fway.connect('value-changed', self.fourway_released, order, form)

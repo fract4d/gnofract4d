@@ -365,6 +365,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.filename = application_widgets.FractalFilename(self.f)
 
         self.preview = gtkfractal.Preview(application.compiler, 48, 48)
+        self.preview.widget.set_tooltip_text(_("Preview"))
 
         theme_provider = Gtk.CssProvider()
         css_file = "gnofract4d.css"
@@ -419,11 +420,8 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.panes.pack2(self.settingsPane, resize=False, shrink=False)
 
     def add_fourway(self, name, tip, axis, is4dsensitive):
-        my_fourway = fourway.T(name)
-        self.toolbar.add_widget(
-            my_fourway,
-            tip,
-            None)
+        my_fourway = fourway.T(name, tip)
+        self.toolbar.add(my_fourway)
 
         my_fourway.axis = axis
 
@@ -434,7 +432,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
             self.four_d_sensitives.append(my_fourway)
 
     def add_warpmenu(self, tip):
-        self.warpmenu = utils.create_option_menu(["None"])
+        self.warpmenu = utils.create_option_menu(["None"], tip)
 
         def update_warp_param(menu, f):
             param = utils.get_selected_value(menu)
@@ -450,13 +448,10 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         self.warpmenu.connect("changed", update_warp_param, self.f)
 
-        self.toolbar.add_widget(
-            self.warpmenu,
-            tip,
-            None)
+        self.toolbar.add(self.warpmenu)
 
     def create_angle_widget(self, name, tip, axis, is4dsensitive):
-        my_angle = angle.T(name)
+        my_angle = angle.T(name, tip)
         my_angle.connect('value-slightly-changed',
                          self.on_angle_slightly_changed)
         my_angle.connect('value-changed',
@@ -467,10 +462,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         my_angle.axis = axis
 
-        self.toolbar.add_widget(
-            my_angle,
-            tip,
-            tip)
+        self.toolbar.add(my_angle)
 
         if is4dsensitive:
             self.four_d_sensitives.append(my_angle)
@@ -490,7 +482,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         res_names = ["%dx%d" % (w, h) for (w, h) in self.resolutions]
 
-        res_menu = utils.create_option_menu(res_names)
+        res_menu = utils.create_option_menu(res_names, _("Resolution"))
 
         def set_selected_resolution(prefs):
             res = (w, h) = (prefs.getint("display", "width"),
@@ -531,10 +523,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         # preview
         self.toolbar.add_space()
 
-        self.toolbar.add_widget(
-            self.preview.widget,
-            _("Preview"),
-            _("Shows what the next operation would do"))
+        self.toolbar.add(self.preview.widget)
 
         # angles
         self.toolbar.add_space()
@@ -580,10 +569,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         res_menu = self.create_resolution_menu()
 
-        self.toolbar.add_widget(
-            res_menu,
-            _("Resolution"),
-            _("Change fractal's resolution"))
+        self.toolbar.add(res_menu)
 
         # undo/redo
         self.toolbar.add_space()
@@ -607,7 +593,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
             "app.ToolsExplorerAction")
 
         # explorer weirdness
-        self.weirdbox = Gtk.Grid()
+        self.weirdbox = Gtk.Grid(tooltip_text=_("Weirdness"))
         self.weirdbox.set_column_homogeneous(False)
         self.weirdbox.set_row_spacing(5)
         self.weirdbox.set_name("weirdbox")
@@ -637,11 +623,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.weirdbox.attach(color_label, 0, 1, 1, 1)
         self.weirdbox.attach(self.color_weirdness, 1, 1, 1, 1)
 
-        self.toolbar.add_widget(
-            self.weirdbox,
-            _("Weirdness"),
-            _("How different to make the random mutant fractals"),
-            expand=True)
+        self.toolbar.add(self.weirdbox)
 
         def on_weirdness_changed(adjustment):
             self.update_subfracts()
