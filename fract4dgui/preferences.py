@@ -78,9 +78,7 @@ class PrefsDialog(dialog.T):
             (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         )
 
-        self.dirchooser = utils.get_directory_chooser(
-            _("Select a Formula Directory"),
-            self)
+        self.dirchooser = utils.DirectoryChooser(_("Select a Formula Directory"), self)
 
         self.set_default_response(Gtk.ResponseType.CLOSE)
         self.f = f

@@ -5,10 +5,50 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-from . import gtkfractal
+from . import gtkfractal, utils
 
 re_ends_with_num = re.compile(r'\d+\Z')
 re_cleanup = re.compile(r'[\s\(\)]+')
+
+
+class Fract4dOpenChooser(utils.FileOpenChooser):
+    def __init__(self, parent, preview):
+        super().__init__(
+            title=_("Open File"),
+            parent=parent)
+
+        self.add_filters()
+
+        def on_update_preview(chooser, preview):
+            filename = chooser.get_preview_filename()
+            try:
+                with open(filename) as f:
+                    preview.loadFctFile(f)
+                preview.draw_image(False, False)
+                active = True
+            except Exception as err:
+                active = False
+            chooser.set_preview_widget_active(active)
+
+        self.set_preview_widget(preview.widget)
+        self.connect('update-preview', on_update_preview, preview)
+
+    def add_filters(self):
+        param_patterns = ["*.fct"]
+        self.add_file_filter(_("Parameter Files"), param_patterns)
+
+        formula_patterns = ["*.frm", "*.ufm", "*.ucl", "*.cfrm", "*.uxf"]
+        self.add_file_filter(_("Formula Files"), formula_patterns)
+
+        gradient_patterns = ["*.map", "*.ggr",
+                             "*.ugr", "*.cs", "*.pal", "*.ase"]
+        self.add_file_filter(_("Gradient Files"), gradient_patterns)
+
+        all_filter = self.add_file_filter(
+            _("All Gnofract 4D Files"),
+            param_patterns + formula_patterns + gradient_patterns)
+
+        self.set_filter(all_filter)
 
 
 class FractalWindow(Gtk.ScrolledWindow):

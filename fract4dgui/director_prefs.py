@@ -4,18 +4,15 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject
 
+from . import utils
+
 
 class DirectorPrefs:
     # wrapper to show dialog for selecting folder
     # returns selected folder or empty string
     def get_folder(self):
         temp_folder = ""
-        dialog = Gtk.FileChooserDialog(title="Choose directory...",
-                                       transient_for=self.dialog,
-                                       action=Gtk.FileChooserAction.SELECT_FOLDER)
-        dialog.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL,
-                           _("_OK"), Gtk.ResponseType.OK)
-        dialog.set_default_response(Gtk.ResponseType.OK)
+        dialog = utils.DirectoryChooser("Choose directory...", self.dialog)
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             temp_folder = dialog.get_filename()

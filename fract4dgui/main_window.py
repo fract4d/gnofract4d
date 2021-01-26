@@ -220,7 +220,7 @@ class MainWindow(Actions, ApplicationWindow):
         save_filename = self.filename.default_image_filename(".png")
 
         fs = self.get_save_hires_image_as_fs()
-        utils.set_file_chooser_filename(fs, save_filename)
+        fs.set_filename(save_filename)
         fs.show_all()
 
         name = None
@@ -384,10 +384,10 @@ class MainWindow(Actions, ApplicationWindow):
 
     def saveas(self, *args):
         """Save the current parameters into a new file."""
-        fs = self.get_save_as_fs()
         save_filename = self.filename.default_save_filename()
 
-        utils.set_file_chooser_filename(fs, save_filename)
+        fs = self.get_save_as_fs()
+        fs.set_filename(save_filename)
         fs.show_all()
 
         name = None
@@ -409,7 +409,7 @@ class MainWindow(Actions, ApplicationWindow):
         save_filename = self.filename.default_image_filename(".png")
 
         fs = self.get_save_image_as_fs()
-        utils.set_file_chooser_filename(fs, save_filename)
+        fs.set_filename(save_filename)
         fs.show_all()
 
         name = None
