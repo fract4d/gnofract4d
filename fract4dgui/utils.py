@@ -45,34 +45,6 @@ def create_option_menu(items, tip=None):
     return widget
 
 
-def set_menu_from_list(menu, items):
-    model = Gtk.ListStore(str)
-    for item in items:
-        model.append((item,))
-    menu.set_model(model)
-
-
-def get_selected_value(menu):
-    iter = menu.get_active_iter()
-    if not iter:
-        return None
-    val = menu.get_model().get_value(iter, 0)
-    return val
-
-
-def set_selected_value(menu, val):
-    model = menu.get_model()
-    i = 0
-    iter = model.get_iter_first()
-    while iter is not None:
-        item = model.get_value(iter, 0)
-        if item == val:
-            menu.set_active(i)
-            return
-        iter = model.iter_next(iter)
-        i += 1
-
-
 def floatColorFrom256(rgba):
     return [rgba[0] / 255.0, rgba[1] / 255.0, rgba[2] / 255.0, rgba[3] / 255.0]
 

@@ -356,11 +356,13 @@ class MainWindow(Actions, ApplicationWindow):
         if params == []:
             self.warpmenu.hide()
         else:
-            utils.set_menu_from_list(self.warpmenu, ["None"] + params)
+            self.warpmenu.remove_all()
+            for entry in ["None"] + params:
+                self.warpmenu.append_text(entry)
             p = f.warp_param
             if p is None:
                 p = "None"
-            utils.set_selected_value(self.warpmenu, p)
+            self.warpmenu.set_active_id(p)
             self.warpmenu.show()
 
     def save_file(self, file):
