@@ -6,34 +6,29 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 
-class T(Gtk.Toolbar):
+class T(Gtk.Box):
     def __init__(self):
-        Gtk.Toolbar.__init__(self)
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, margin=5, spacing=1)
 
-        self.set_border_width(1)
+    @staticmethod
+    def button_args(icon_name, tip_text, action):
+        icon = Gtk.Image(icon_name=icon_name, icon_size=Gtk.IconSize.LARGE_TOOLBAR, margin=5)
+        return dict(
+            action_name=action, image=icon, relief=Gtk.ReliefStyle.NONE, tooltip_text=tip_text)
 
     def add_space(self):
-        self.insert(Gtk.SeparatorToolItem(), -1)
+        self.add(Gtk.Separator(
+            orientation=Gtk.Orientation.VERTICAL, margin_start=5, margin_end=5))
 
     def add_widget(self, widget, tip_text, private_text, expand=False):
-        toolitem = Gtk.ToolItem()
-        toolitem.add(widget)
-        toolitem.set_expand(expand)
-        toolitem.set_homogeneous(False)
-        toolitem.set_tooltip_text(tip_text)
-        self.insert(toolitem, -1)
+        box = Gtk.Box(hexpand=expand, tooltip_text=tip_text)
+        box.add(widget)
+        self.add(box)
 
     def add_button(self, icon_name, tip_text, action):
-        toolitem = Gtk.ToolButton.new()
-        toolitem.set_icon_name(icon_name)
-        toolitem.set_action_name(action)
-        toolitem.set_tooltip_text(tip_text)
-        self.insert(toolitem, -1)
+        self.add(Gtk.Button(**self.button_args(icon_name, tip_text, action)))
 
     def add_toggle(self, icon_name, tip_text, action):
-        toolitem = Gtk.ToggleToolButton.new()
-        toolitem.set_icon_name(icon_name)
-        toolitem.set_action_name(action)
-        toolitem.set_tooltip_text(tip_text)
-        self.insert(toolitem, -1)
+        toolitem = Gtk.ToggleButton(**self.button_args(icon_name, tip_text, action))
+        self.add(toolitem)
         return toolitem

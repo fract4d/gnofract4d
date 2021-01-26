@@ -526,7 +526,6 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
     def create_toolbar(self):
         self.toolbar = toolbar.T()
         # request enough space for toolbar items
-        self.toolbar.set_show_arrow(False)
         self.vbox.pack_start(self.toolbar, expand=False, fill=False, padding=0)
 
         # preview
