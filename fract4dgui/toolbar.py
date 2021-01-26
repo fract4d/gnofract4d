@@ -20,11 +20,6 @@ class T(Gtk.Box):
         self.add(Gtk.Separator(
             orientation=Gtk.Orientation.VERTICAL, margin_start=5, margin_end=5))
 
-    def add_widget(self, widget, tip_text, private_text, expand=False):
-        box = Gtk.Box(hexpand=expand, tooltip_text=tip_text)
-        box.add(widget)
-        self.add(box)
-
     def add_button(self, icon_name, tip_text, action):
         self.add(Gtk.Button(**self.button_args(icon_name, tip_text, action)))
 

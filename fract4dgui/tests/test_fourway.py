@@ -13,18 +13,18 @@ from gi.repository import Gdk, Gtk
 
 class Test(unittest.TestCase):
     def testCreate(self):
-        f = fourway.T("hello")
+        f = fourway.T("hello", "fourway")
         self.assertTrue(f)
 
     def testAddToWindow(self):
         w = Gtk.Window()
-        f = fourway.T("wibble")
+        f = fourway.T("wibble", "fourway")
         w.add(f)
         w.show()
         Gtk.main_iteration()
 
     def testMouseButton1(self):
-        f = fourway.T("button1")
+        f = fourway.T("button1", "fourway")
         event = Gdk.EventButton()
         event.button = 1
         event.x, event.y = 1, 1

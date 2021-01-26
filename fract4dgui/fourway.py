@@ -17,13 +17,13 @@ class T(Gtk.DrawingArea):
             None, (GObject.TYPE_INT, GObject.TYPE_INT))
     }
 
-    def __init__(self, text):
+    def __init__(self, text, tip):
         self.button = 0
         self.radius = 0
         self.last_x = 0
         self.last_y = 0
         self.text = text
-        Gtk.DrawingArea.__init__(self)
+        Gtk.DrawingArea.__init__(self, tooltip_text=tip)
 
         self.set_size_request(53, 53)
 
