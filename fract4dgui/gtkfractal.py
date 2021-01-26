@@ -641,7 +641,7 @@ class T(Hidden):
         label.set_valign(Gtk.Align.CENTER)
         table.attach(label, 0, i, 1, 1)
 
-        widget = utils.create_option_menu(param.enum.value)
+        widget = utils.combo_box_text_with_items(param.enum.value)
 
         def set_selected_value(*args):
             try:
@@ -755,7 +755,7 @@ class T(Hidden):
         table.attach(label, 0, i, 1, 1)
 
         funclist = self.construct_function_menu(param, form)
-        widget = utils.create_option_menu(funclist)
+        widget = utils.combo_box_text_with_items(funclist)
 
         formula = form.formula
 
