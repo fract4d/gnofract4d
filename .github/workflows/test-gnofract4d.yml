@@ -36,6 +36,9 @@ jobs:
       - name: Install macOS packages
         if: ${{ runner.os == 'macOS' }}
         run: brew install gtk+3 pygobject3
+        # Prevent delay caused by:
+        # `brew cleanup` has not been run in 30 days, running now...
+        env: HOMEBREW_NO_INSTALL_CLEANUP: 1
       - name: Install Ubuntu packages
         if: ${{ runner.os == 'Linux' }}
         # libgirepository1.0-dev required to build PyGObject from source
