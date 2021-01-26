@@ -65,7 +65,7 @@ class FileSaveChooser(BaseChooser):
             self.set_current_name(os.path.basename(name))
 
 
-def create_option_menu(items, tip=None):
+def combo_box_text_with_items(items, tip=None):
     widget = Gtk.ComboBoxText(tooltip_text=tip)
     for item in items:
         widget.append_text(item)

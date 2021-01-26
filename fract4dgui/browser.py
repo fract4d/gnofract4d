@@ -210,7 +210,7 @@ class BrowserDialog(dialog.T):
 
     def create_panes(self):
         # option menu for choosing Inner/Outer/Fractal
-        self.funcTypeMenu = utils.create_option_menu(
+        self.funcTypeMenu = utils.combo_box_text_with_items(
             [_("Fractal Function"),
              _("Outer Coloring Function"),
              _("Inner Coloring Function"),

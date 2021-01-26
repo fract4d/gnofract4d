@@ -353,7 +353,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
             self.four_d_sensitives.append(my_fourway)
 
     def add_warpmenu(self, tip):
-        self.warpmenu = utils.create_option_menu(["None"], tip)
+        self.warpmenu = utils.combo_box_text_with_items(["None"], tip)
         self.warpmenu.set_id_column(0)
 
         def update_warp_param(menu, f):
@@ -404,7 +404,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         res_names = ["%dx%d" % (w, h) for (w, h) in self.resolutions]
 
-        res_menu = utils.create_option_menu(res_names, _("Resolution"))
+        res_menu = utils.combo_box_text_with_items(res_names, _("Resolution"))
 
         def set_selected_resolution(prefs):
             res = (w, h) = (prefs.getint("display", "width"),
