@@ -301,12 +301,6 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
                                               'explorer_mode.png',
                                               'pixmaps')))
 
-        # command reference
-        builder = Gtk.Builder.new_from_file(
-            os.path.join(this_path, "shortcuts-gnofract4d.ui"))
-        self.set_help_overlay(
-            builder.get_object("shortcuts-gnofract4d"))
-
         # window
         self.vbox = Gtk.VBox()
         self.add(self.vbox)

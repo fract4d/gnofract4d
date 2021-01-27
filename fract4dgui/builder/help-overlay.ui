@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.22 -->
-  <object class="GtkShortcutsWindow" id="shortcuts-gnofract4d">
+  <object class="GtkShortcutsWindow" id="help_overlay">
     <property name="modal">1</property>
     <child>
       <object class="GtkShortcutsSection">
