@@ -4,6 +4,7 @@
 .coverage
 coverage.xml
 gnofract4d.egg-info
+gnofract4d.gresource
 MANIFEST
 token
 

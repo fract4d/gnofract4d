@@ -44,7 +44,8 @@ jobs:
         if: ${{ runner.os == 'Linux' }}
         # libgirepository1.0-dev required to build PyGObject from source
         # gvfs is needed for Gio.AppInfo.launch_default_for_uri()
-        run: sudo apt install gir1.2-gtk-3.0 gvfs libgirepository1.0-dev xvfb
+        # libxml2-utils provides xmllint for xml-stripblanks in gresource.xml
+        run: sudo apt install gir1.2-gtk-3.0 gvfs libgirepository1.0-dev libxml2-utils xvfb
       - name: Setup Python
         uses: actions/setup-python@v2
         with:

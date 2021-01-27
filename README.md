@@ -47,11 +47,12 @@ To build from source you also need:
 
 - headers for libpng and libjpeg
 - Python headers
+- glib-compile-resources and optionally xmllint
 - pkg-config
 
 On Ubuntu, these can be installed with:
 
-    sudo apt install libjpeg-dev libpng-dev libpython3-dev pkg-config
+    sudo apt install libglib2.0-dev-bin libjpeg-dev libpng-dev libpython3-dev libxml2-utils pkg-config
 
 If FFmpeg is installed it will be possible to create videos.
 

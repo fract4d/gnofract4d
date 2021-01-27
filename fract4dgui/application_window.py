@@ -1,7 +1,6 @@
 # pylint: disable=no-member
 
 import os
-import sys
 
 import gi
 gi.require_version('Gdk', '3.0')
@@ -379,12 +378,6 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
                                           os.path.dirname(fractconfig.T.find_resource(
                                               'explorer_mode.png',
                                               'pixmaps')))
-
-        # menubar
-        this_path = os.path.dirname(sys.modules[__name__].__file__)
-        builder = Gtk.Builder.new_from_file(os.path.join(this_path, "ui.xml"))
-
-        application.set_menubar(builder.get_object("menubar"))
 
         # command reference
         builder = Gtk.Builder.new_from_file(

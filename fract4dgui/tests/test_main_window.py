@@ -3,6 +3,7 @@
 # high-level unit tests for main window
 
 import os
+import sys
 import tempfile
 from unittest.mock import patch
 
@@ -23,7 +24,13 @@ class Application(Gtk.Application):
         self.userPrefs = preferences.Preferences(config)
         self.compiler = fc.Compiler(config)
         self.compiler.add_func_path('formulas')
+        this_path = os.path.dirname(sys.modules[__name__].__file__)
+        resource = Gio.resource_load(os.path.join(this_path, "../../gnofract4d.gresource"))
+        Gio.Resource._register(resource)
+        self.menu_builder = Gtk.Builder.new_from_resource("/io/github/fract4d/gtk/menus.ui")
 
+    def get_menu_by_id(self, menuid):
+        return self.menu_builder.get_object(menuid)
 
 class WrapMainWindow(main_window.MainWindow):
     def __init__(self, config):
