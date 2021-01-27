@@ -164,6 +164,7 @@
       <item>
         <attribute name="action">win.show-help-overlay</attribute>
         <attribute name="label" translatable="yes">Command _Reference</attribute>
+        <attribute name="accel">&lt;Primary&gt;question</attribute>
       </item>
       <item>
         <attribute name="action">app.HelpReportBugAction</attribute>
