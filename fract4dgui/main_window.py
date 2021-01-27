@@ -5,8 +5,9 @@ import math
 import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gdk, GLib, Gtk
+from gi.repository import Gdk, Gio, GLib, Gtk
 
+from fract4d import fractconfig
 from fract4d_compiler import fc, fracttypes
 from .application_window import Actions, ApplicationWindow
 from . import (model, preferences, autozoom, browser, utils, hig, painter,
@@ -26,6 +27,10 @@ class Application(Gtk.Application):
         self.mainWindow = None
         self.options = options
         self.userConfig = userConfig
+
+        resource = Gio.resource_load(
+            fractconfig.T.find_resource("gnofract4d.gresource", ""))
+        Gio.Resource._register(resource)
 
     def do_startup(self):
         Gtk.Application.do_startup(self)

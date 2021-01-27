@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from setuptools import setup, Extension
+import setuptools.command.build_py
 import sysconfig
 import os
 import shutil
@@ -19,6 +20,11 @@ if sys.version_info < (3, 6):
 if not os.path.exists(os.path.join(sysconfig.get_config_var("INCLUDEPY"), "Python.h")):
     print("Python header files are required.")
     print("Please install libpython3-dev")
+    sys.exit(1)
+
+if not shutil.which("glib-compile-resources"):
+    print("glib-compile-resources is required.")
+    print("Please install libglib2.0-dev-bin")
     sys.exit(1)
 
 # by default python uses all the args which were used to compile it. But Python is C and some
@@ -67,6 +73,14 @@ jpeg_flags = call_package_config("libjpeg", "--cflags", True)
 jpeg_libs = call_package_config("libjpeg", "--libs", True)
 if jpeg_flags + jpeg_libs:
     define_macros.append(('JPG_ENABLED', 1))
+
+
+class fract4d_build_py(setuptools.command.build_py.build_py):
+    def run(self):
+        print("running fract4d_build_py")
+        subprocess.run("./bin/resources.sh", check=True)
+        super().run()
+
 
 fract4d_sources = [
     'fract4d/c/fract4dmodule.cpp',
@@ -162,12 +176,14 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     url='http://github.com/fract4d/gnofract4d/',
     packages=['fract4d_compiler', 'fract4d', 'fract4dgui'],
     package_data={
-        'fract4dgui': ['shortcuts-gnofract4d.ui', 'ui.xml', 'gnofract4d.css'],
+        'fract4dgui': ['shortcuts-gnofract4d.ui', 'gnofract4d.css'],
         'fract4d': ['c/pf.h', 'c/fract_stdlib.h', 'c/model/imageutils.h', 'c/model/colorutils.h']
     },
     ext_modules=[module_fract4dc],
     scripts=['gnofract4d'],
     data_files=[
+        # compiled GUI resources
+        ('share/gnofract4d', ['gnofract4d.gresource']),
         # color maps
         (
             'share/gnofract4d/maps',
@@ -213,6 +229,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
         # doc files
         ('share/doc/gnofract4d/', ['LICENSE', 'README.md'])
     ],
+    cmdclass={'build_py': fract4d_build_py,},
 )
 
 # I need to find the file I just built and copy it up out of the build

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/io/github/fract4d/gtk">
+    <file compressed="true" preprocess="xml-stripblanks" alias="menus.ui">builder/menus.ui</file>
+  </gresource>
+</gresources>
