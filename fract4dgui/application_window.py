@@ -294,10 +294,8 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
                                                  theme_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # custom icon images for toolbar buttons
-        Gtk.IconTheme.prepend_search_path(Gtk.IconTheme.get_default(),
-                                          os.path.dirname(fractconfig.T.find_resource(
-                                              'explorer_mode.png',
-                                              'pixmaps')))
+        Gtk.IconTheme.add_resource_path(
+            Gtk.IconTheme.get_default(), "/io/github/fract4d/pixmaps")
 
         # window
         self.vbox = Gtk.VBox()
