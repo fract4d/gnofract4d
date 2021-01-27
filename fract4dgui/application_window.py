@@ -288,10 +288,8 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.preview.widget.set_tooltip_text(_("Preview"))
 
         theme_provider = Gtk.CssProvider()
-        css_file = "gnofract4d.css"
-        this_path = os.path.dirname(sys.modules[__name__].__file__)
-        css_filepath = os.path.join(this_path, css_file)
-        theme_provider.load_from_path(css_filepath)
+        css_file = "/io/github/fract4d/gnofract4d.css"
+        theme_provider.load_from_resource(css_file)
         Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),
                                                  theme_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
