@@ -176,7 +176,6 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
     url='http://github.com/fract4d/gnofract4d/',
     packages=['fract4d_compiler', 'fract4d', 'fract4dgui'],
     package_data={
-        'fract4dgui': ['gnofract4d.css'],
         'fract4d': ['c/pf.h', 'c/fract_stdlib.h', 'c/model/imageutils.h', 'c/model/colorutils.h']
     },
     ext_modules=[module_fract4dc],
