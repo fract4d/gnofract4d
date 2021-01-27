@@ -204,14 +204,6 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
             get_files("help", "png") +
             get_files("help", "css")
         ),
-        # internal pixmaps
-        (
-            'share/gnofract4d/pixmaps',
-            [
-                'pixmaps/improve_now.png',
-                'pixmaps/explorer_mode.png',
-            ]
-        ),
         # icon
         ('share/pixmaps', ['pixmaps/logo/48x48/gnofract4d.png']),
         # theme icons

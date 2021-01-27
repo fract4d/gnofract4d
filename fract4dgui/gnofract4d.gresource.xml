@@ -7,4 +7,8 @@
     <file compressed="true" preprocess="xml-stripblanks" alias="help-overlay.ui">builder/help-overlay.ui</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="menus.ui">builder/menus.ui</file>
   </gresource>
+  <gresource prefix="/io/github/fract4d/pixmaps">
+    <file alias="explorer_mode.png">../pixmaps/explorer_mode.png</file>
+    <file alias="improve_now.png">../pixmaps/improve_now.png</file>
+  </gresource>
 </gresources>
