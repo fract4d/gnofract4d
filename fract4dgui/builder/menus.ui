@@ -176,4 +176,32 @@
       </item>
     </submenu>
   </menu>
+  <menu id="director_menubar">
+    <submenu>
+      <attribute name="label" translatable="yes">_Director</attribute>
+      <item>
+        <attribute name="action">director.new</attribute>
+        <attribute name="label" translatable="yes">_New Animation</attribute>
+        <attribute name="accel">&lt;control&gt;N</attribute>
+      </item>
+      <item>
+        <attribute name="action">director.open</attribute>
+        <attribute name="label" translatable="yes">_Open Animation</attribute>
+        <attribute name="accel">&lt;control&gt;O</attribute>
+      </item>
+      <item>
+        <attribute name="action">director.save</attribute>
+        <attribute name="label" translatable="yes">_Save Animation</attribute>
+        <attribute name="accel">&lt;control&gt;S</attribute>
+      </item>
+    </submenu>
+    <submenu>
+      <attribute name="label" translatable="yes">_Edit</attribute>
+        <item>
+          <attribute name="action">director.edit_prefs</attribute>
+          <attribute name="label" translatable="yes">_Preferences</attribute>
+          <attribute name="accel">&lt;control&gt;P</attribute>
+        </item>
+    </submenu>
+  </menu>
 </interface>

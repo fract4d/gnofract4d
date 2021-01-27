@@ -460,41 +460,8 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
             add_action(name, handler)
         self.insert_action_group("director", actiongroup)
 
-        menu = '''
-<interface>
-  <menu id="menubar">
-    <submenu>
-      <attribute name="label" translatable="yes">_Director</attribute>
-      <item>
-        <attribute name="action">director.new</attribute>
-        <attribute name="label" translatable="yes">_New Animation</attribute>
-        <attribute name="accel">&lt;control&gt;N</attribute>
-      </item>
-      <item>
-        <attribute name="action">director.open</attribute>
-        <attribute name="label" translatable="yes">_Open Animation</attribute>
-        <attribute name="accel">&lt;control&gt;O</attribute>
-      </item>
-      <item>
-        <attribute name="action">director.save</attribute>
-        <attribute name="label" translatable="yes">_Save Animation</attribute>
-        <attribute name="accel">&lt;control&gt;S</attribute>
-      </item>
-    </submenu>
-    <submenu>
-      <attribute name="label" translatable="yes">_Edit</attribute>
-        <item>
-          <attribute name="action">director.edit_prefs</attribute>
-          <attribute name="label" translatable="yes">_Preferences</attribute>
-          <attribute name="accel">&lt;control&gt;P</attribute>
-        </item>
-    </submenu>
-  </menu>
-</interface>
-'''
-
         menubar = Gtk.MenuBar.new_from_model(
-            Gtk.Builder.new_from_string(menu, -1).get_object("menubar"))
+            main_window.application.get_menu_by_id("director_menubar"))
         self.box_main.pack_start(menubar, False, True, 0)
 
         # -----------creating keyframes popup menu model----------------

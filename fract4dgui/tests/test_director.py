@@ -4,13 +4,26 @@
 
 from unittest.mock import patch
 import os.path
+import sys
 
 from . import testgui
 
-from gi.repository import Gtk
+from gi.repository import Gio, Gtk
 
 from fract4dgui import director, PNGGen, hig
 from fract4d import fractal, animation
+
+
+class Window(Gtk.Window):
+    def __init__(self):
+        super().__init__()
+        this_path = os.path.dirname(sys.modules[__name__].__file__)
+        resource = Gio.resource_load(os.path.join(this_path, "../../gnofract4d.gresource"))
+        Gio.Resource._register(resource)
+        self.menu_builder = Gtk.Builder.new_from_resource("/io/github/fract4d/gtk/menus.ui")
+
+    def get_menu_by_id(self, menuid):
+        return self.menu_builder.get_object(menuid)
 
 
 class Test(testgui.TestCase):
@@ -18,7 +31,7 @@ class Test(testgui.TestCase):
         # ensure any dialog boxes are dismissed without human interaction
         hig.timeout = 250
 
-        application = Gtk.Window()
+        application = Window()
         application.userConfig = Test.userConfig
         self.parent = Gtk.Window()
         self.parent.f = fractal.T(Test.g_comp)
