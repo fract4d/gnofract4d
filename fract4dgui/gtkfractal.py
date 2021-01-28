@@ -12,8 +12,6 @@ import gi
 import cairo
 gi.require_foreign('cairo')  # ensure Cairo integration support is available
 
-gi.require_version('Gdk', '3.0')
-gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GObject, GdkPixbuf, GLib
 
 from fract4d_compiler import fracttypes, function

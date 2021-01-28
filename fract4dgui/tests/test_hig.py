@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 from fract4dgui import hig
-from gi.repository import Gtk, GLib
+
 import unittest
 import gettext
 import os
 
 import gi
 gi.require_version('Gtk', '3.0')
-
+from gi.repository import Gtk, GLib
 
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')

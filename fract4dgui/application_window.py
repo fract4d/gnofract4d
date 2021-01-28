@@ -3,10 +3,6 @@
 import os
 import sys
 
-import gi
-gi.require_version('Gdk', '3.0')
-gi.require_version('GLib', '2.0')
-gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, Gio, GLib, Gtk
 
 from fract4d import fractal, fractconfig, image
