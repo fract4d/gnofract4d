@@ -6,6 +6,56 @@ draft: false
 
 # Gnofract 4D
 
+## Installation
+
+### Installation on Linux
+
+#### General instructions & dependencies
+
+First step is to compile the program by running:
+
+```
+./setup.py build
+```
+
+Then you can install it with:
+
+```
+./setup.py install
+```
+
+Or you can just run Gnofract 4D on your local directory with:
+
+```
+./gnofract4d
+```
+
+To compile, you will need Python 3.5 or higher, a C++ compiler such as g++, and header files for GTK3 and Python. Headers for Jpeglib and libpng are optional, but highly recommended - without them you can only use the extremely basic TGA file format.
+
+At runtime, you will need PyGTK 3, and a C compiler (because that gets invoked to compile the fractal formula you have written).
+
+Alternatively, you can download the [lastest version](https://github.com/fract4d/gnofract4d/releases) of the program and install it with `pip` running:
+
+```
+pip3 install gnofract4d-4.3.tar.gz
+```
+
+When the installation ends just run it by clicking on the desktop icon or typing:
+
+```
+gnofract4d
+```
+
+#### Install on Ubuntu 15.04
+
+Before running `./setup.py build` you have to install `python-dev`.
+
+Either find it in synaptic, or run `sudo apt-get install python-dev` from the command line.
+
+#### Install on Ubuntu 16.04 and later supported releases
+
+You can install pre-build packages from this [PPA](https://launchpad.net/~renbag/+archive/ubuntu/gnofract4d) following the instructions given there.
+
 ## Introduction
 
 > There is no excellent beauty which hath not some strangeness in the
@@ -751,6 +801,16 @@ check frequently - they then abandon their work and quit.
 > Warning: Multiple threads and C++ exceptions do not coexist
 well on some libstdc++'s. Gnofract 4D was originally written not to use exceptions 
 as a result. This may no longer be an issue but I haven't tried it.
+
+## FAQs
+
+**When I zoom in a long way, the picture gets all blocky - is that a bug?**
+
+Not exactly. This means that you have reached the limit of the precision offered by the math chip on your PC - the area you are looking at is now so small that differences between adjacent pixels are too small for the processor to deal with. Some fractal programs support arbitrary precision math, which increases this limit, but this isn't implemented in Gnofract 4D yet.
+
+**What is this I saw on the web about a security vulnerability? It sounds scary!**
+
+There was a bug in Gnofract4d 2.0 and 2.1 where if you downloaded a parameter (.fct) file someone sent you, they could have snuck some evil code in it and Gnofract 4D would run that code. I actually found the bug and fixed it in version 2.2, but a security company "helpfully" decided to publish an inaccurate advisory claiming that it affected all versions. So if you use 2.0 or 2.1, upgrade. Otherwise, don't worry about it.
 
 ## Bugs and Known Issues
 

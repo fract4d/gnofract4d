@@ -2,16 +2,18 @@
 <html lang="en" dir=>
 
 <head>
-	<meta name="generator" content="Hugo 0.68.3" />
+	<meta name="generator" content="Hugo 0.78.1" />
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Gnofract 4D Introduction  There is no excellent beauty which hath not some strangeness in the proportion. &ndash; Francis Bacon
- Gnofract 4D is a program which draws complex mathematical objects known as fractals, including the Mandelbrot and Julia sets and many others. It allows you to treat a fractal which has more than one parameter as a four-dimensional object and interactively view slices of this object from arbitrary angles, giving rise to some very unusual images.">
+<meta name="description" content="Gnofract 4D #  Installation #  Installation on Linux #  General instructions &amp; dependencies #  First step is to compile the program by running:
+./setup.py build Then you can install it with:
+./setup.py install Or you can just run Gnofract 4D on your local directory with:
+./gnofract4d To compile, you will need Python 3.5 or higher, a C&#43;&#43; compiler such as g&#43;&#43;, and header files for GTK3 and Python.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Gnofract 4D Manual" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="/" />
-<meta property="og:updated_time" content="2020-05-31T08:47:16-07:00" />
+<meta property="og:updated_time" content="2020-07-18T02:39:09+01:00" />
 <title>Gnofract 4D Manual | Gnofract 4D Manual</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
@@ -118,6 +120,11 @@ https://github.com/alex-shpak/hugo-book
   <ul>
     <li><a href="#gnofract-4d">Gnofract 4D</a>
       <ul>
+        <li><a href="#installation">Installation</a>
+          <ul>
+            <li><a href="#installation-on-linux">Installation on Linux</a></li>
+          </ul>
+        </li>
         <li><a href="#introduction">Introduction</a>
           <ul>
             <li><a href="#using-gnofract-4d">Using Gnofract 4D</a></li>
@@ -166,6 +173,7 @@ https://github.com/alex-shpak/hugo-book
             <li><a href="#threading">Threading</a></li>
           </ul>
         </li>
+        <li><a href="#faqs">FAQs</a></li>
         <li><a href="#bugs-and-known-issues">Bugs and Known Issues</a></li>
         <li><a href="#about-gnofract-4d">About Gnofract 4D</a></li>
         <li><a href="#credits-and-copyright">Credits and copyright</a></li>
@@ -182,8 +190,51 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="gnofract-4d">Gnofract 4D</h1>
-<h2 id="introduction">Introduction</h2>
+  <article class="markdown"><h1 id="gnofract-4d">
+  Gnofract 4D
+  <a class="anchor" href="#gnofract-4d">#</a>
+</h1>
+<h2 id="installation">
+  Installation
+  <a class="anchor" href="#installation">#</a>
+</h2>
+<h3 id="installation-on-linux">
+  Installation on Linux
+  <a class="anchor" href="#installation-on-linux">#</a>
+</h3>
+<h4 id="general-instructions--dependencies">
+  General instructions &amp; dependencies
+  <a class="anchor" href="#general-instructions--dependencies">#</a>
+</h4>
+<p>First step is to compile the program by running:</p>
+<pre><code>./setup.py build
+</code></pre><p>Then you can install it with:</p>
+<pre><code>./setup.py install
+</code></pre><p>Or you can just run Gnofract 4D on your local directory with:</p>
+<pre><code>./gnofract4d
+</code></pre><p>To compile, you will need Python 3.5 or higher, a C++ compiler such as g++, and header files for GTK3 and Python. Headers for Jpeglib and libpng are optional, but highly recommended - without them you can only use the extremely basic TGA file format.</p>
+<p>At runtime, you will need PyGTK 3, and a C compiler (because that gets invoked to compile the fractal formula you have written).</p>
+<p>Alternatively, you can download the 
+  <a href="https://github.com/fract4d/gnofract4d/releases">lastest version</a> of the program and install it with <code>pip</code> running:</p>
+<pre><code>pip3 install gnofract4d-4.3.tar.gz
+</code></pre><p>When the installation ends just run it by clicking on the desktop icon or typing:</p>
+<pre><code>gnofract4d
+</code></pre><h4 id="install-on-ubuntu-1504">
+  Install on Ubuntu 15.04
+  <a class="anchor" href="#install-on-ubuntu-1504">#</a>
+</h4>
+<p>Before running <code>./setup.py build</code> you have to install <code>python-dev</code>.</p>
+<p>Either find it in synaptic, or run <code>sudo apt-get install python-dev</code> from the command line.</p>
+<h4 id="install-on-ubuntu-1604-and-later-supported-releases">
+  Install on Ubuntu 16.04 and later supported releases
+  <a class="anchor" href="#install-on-ubuntu-1604-and-later-supported-releases">#</a>
+</h4>
+<p>You can install pre-build packages from this 
+  <a href="https://launchpad.net/~renbag/&#43;archive/ubuntu/gnofract4d">PPA</a> following the instructions given there.</p>
+<h2 id="introduction">
+  Introduction
+  <a class="anchor" href="#introduction">#</a>
+</h2>
 <blockquote>
 <p>There is no excellent beauty which hath not some strangeness in the
 proportion.  &ndash; <em>Francis Bacon</em></p>
@@ -198,7 +249,10 @@ images.</p>
 mathematical background behind it, information on how to use the
 graphical interface, and reference material on the language used to
 write fractal formulas.</p>
-<h3 id="using-gnofract-4d">Using Gnofract 4D</h3>
+<h3 id="using-gnofract-4d">
+  Using Gnofract 4D
+  <a class="anchor" href="#using-gnofract-4d">#</a>
+</h3>
 <p>Gnofract 4D&rsquo;s screen layout is deliberately simple. Most of the screen is
 taken up by a view of the fractal you&rsquo;re investigating. By
 default, this is the Mandelbrot set. You can directly click on this to
@@ -208,7 +262,10 @@ boxes brought up via the menu bar.</p>
 <p>Initially, just play around - after all, generating fractals isn&rsquo;t
 meant to be <em>work</em>. If you make a change you don&rsquo;t
 like, just hit Undo.</p>
-<h3 id="interacting-with-the-fractal">Interacting with the Fractal</h3>
+<h3 id="interacting-with-the-fractal">
+  Interacting with the Fractal
+  <a class="anchor" href="#interacting-with-the-fractal">#</a>
+</h3>
 <p>Each fractal is an infinitely complex image, which you can see a slice
 of in the main window. By left-clicking on the window, you can zoom in
 to view finer and finer details. Just click on an area you like to
@@ -244,7 +301,10 @@ the formula uses the <strong>#zwpixel</strong> variable.) In this
 case, the widgets for rotating in other dimensions, warping, and the
 middle mouse button will be disabled.</p>
 </blockquote>
-<h3 id="working-with-files">Working with Files</h3>
+<h3 id="working-with-files">
+  Working with Files
+  <a class="anchor" href="#working-with-files">#</a>
+</h3>
 <p>Gnofract 4D uses several different types of file. These have different
 purposes as listed in the table below.</p>
 <table>
@@ -269,7 +329,8 @@ purposes as listed in the table below.</p>
 <tr>
 <td>Formula File</td>
 <td><code>.frm</code>, <code>.ufm</code></td>
-<td>A formula file is a collection of formulas, each of which is a description of the algorithm used to draw a particular kind of fractal, expressed in a simple programming language (see [Formula Reference](#Formula Reference) for language details). Both Gnofract 4D and Fractint use <code>.frm</code> as the extension, and UltraFractal uses <code>.ufm</code>. In general, any formula which works in Fractint should work in Gnofract 4D and any which works in Gnofract 4D should work in UltraFractal, but the reverse is not true.</td>
+<td>A formula file is a collection of formulas, each of which is a description of the algorithm used to draw a particular kind of fractal, expressed in a simple programming language (see 
+  <a href="/#formula-language-reference">Formula Language Reference</a> for language details). Both Gnofract 4D and Fractint use <code>.frm</code> as the extension, and UltraFractal uses <code>.ufm</code>. In general, any formula which works in Fractint should work in Gnofract 4D and any which works in Gnofract 4D should work in UltraFractal, but the reverse is not true.</td>
 </tr>
 <tr>
 <td>Coloring Algorithm File</td>
@@ -283,8 +344,14 @@ purposes as listed in the table below.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="tools">Tools</h2>
-<h3 id="autozoom">Autozoom</h3>
+<h2 id="tools">
+  Tools
+  <a class="anchor" href="#tools">#</a>
+</h2>
+<h3 id="autozoom">
+  Autozoom
+  <a class="anchor" href="#autozoom">#</a>
+</h3>
 <p><strong>Autozoom</strong> automatically searches for interesting parts of the
 fractal by zooming in repeatedly, each time choosing the quadrant of
 the screen which has the largest number of different colors (with some
@@ -293,7 +360,10 @@ and see what it&rsquo;s found when you return, or guide it by clicking on
 parts you like as it goes. It&rsquo;ll stop when the image reaches the
 minimum size, which is set by default to stop just before you get to
 the limits of the precision Gnofract 4D offers.</p>
-<h3 id="explorer">Explorer</h3>
+<h3 id="explorer">
+  Explorer
+  <a class="anchor" href="#explorer">#</a>
+</h3>
 <p>The <strong>Explorer</strong> helps you find neat-looking fractals
 easily. It divides the screen into a large central section and smaller
 &ldquo;subfractals&rdquo; which surround it. The central section is the main image</p>
@@ -313,7 +383,10 @@ different the mutants are from the standard image. If Shape&rsquo;s set to
 100, they&rsquo;re almost unrecognizable - if it&rsquo;s 0, they&rsquo;re exactly the
 same. Similarly if Color&rsquo;s 100, each mutant is a different color, and
 0 keeps the colors all the same.</p>
-<h3 id="formula-browser">Formula Browser</h3>
+<h3 id="formula-browser">
+  Formula Browser
+  <a class="anchor" href="#formula-browser">#</a>
+</h3>
 <p>The <strong>Formula Browser</strong> allows you to look at all the
 fractal formulas, coloring functions and gradients which are currently loaded formula files. When you select a formula (from the Formula list in the middle), the source window shows you the contents of that formula. You can then use <strong>Apply</strong> to change the current fractal to use that formula. This also resets the formula&rsquo;s parameters to their defaults. Alternatively, <strong>OK</strong> applies the formula and closes the window.</p>
 <p>Tips:</p>
@@ -330,7 +403,10 @@ disabled. Check the Messages window to see what the errors
 are.</p>
 </li>
 </ul>
-<h3 id="director">Director</h3>
+<h3 id="director">
+  Director
+  <a class="anchor" href="#director">#</a>
+</h3>
 <p>The <strong>Director</strong> allows you to create fractal videos.
 You first define keyframes which are points in the video.
 Then, for each of them, you specify how long a still image of the keyframe will
@@ -353,9 +429,15 @@ the video using
 <p>You can always stop rendering images. As long as you use same animation setting again (for example, saving them before starting rendering), Director will start from where it stopped last time.</p>
 </li>
 </ul>
-<h3 id="randomize-colors">Randomize Colors</h3>
+<h3 id="randomize-colors">
+  Randomize Colors
+  <a class="anchor" href="#randomize-colors">#</a>
+</h3>
 <p>Replaces the current gradient with a randomly-generated new one.</p>
-<h3 id="painter">Painter</h3>
+<h3 id="painter">
+  Painter
+  <a class="anchor" href="#painter">#</a>
+</h3>
 <p>The <strong>painter</strong> dialog allows you to change the colors of your fractal by
 clicking on the place where you want the color to be different. First,
 select the color you want in the color selector. Then click on the
@@ -363,7 +445,10 @@ image - the part of the gradient most responsible for the color of
 that pixel will be updated with the color you chose. Toggle the
 &ldquo;painting&rdquo; button off if you want to interact with the fractal while
 the painter dialog is up.</p>
-<h2 id="toolbar-buttons">Toolbar buttons</h2>
+<h2 id="toolbar-buttons">
+  Toolbar buttons
+  <a class="anchor" href="#toolbar-buttons">#</a>
+</h2>
 <p>On the left of the toolbar you can see a small preview window, which
 updates as you change the angle or position buttons, to give you an
 idea of what the fractal will look like when you release the button.</p>
@@ -399,7 +484,10 @@ undo as many times as you like. Note that undo also affects parameters
 such as color, not just position on screen.  Lastly, the
 <strong>Explore</strong> button toggles Explorer Mode. See 
   <a href="/#explorer">Explorer</a>.</p>
-<h2 id="changing-fractal-settings">Changing Fractal Settings</h2>
+<h2 id="changing-fractal-settings">
+  Changing Fractal Settings
+  <a class="anchor" href="#changing-fractal-settings">#</a>
+</h2>
 <p>In Gnofract 4D, settings are divided into <strong>Fractal
 Settings</strong>, <strong>Gradients</strong> and
 <strong>Preferences</strong>. <strong>Fractal Settings</strong> and <strong>Gradients</strong> are saved in the
@@ -408,7 +496,10 @@ contrast, <strong>Preferences</strong> are your preferences for
 Gnofract 4D&rsquo;s general behavior and are saved in Gnofract 4D&rsquo;s config file
 (~/.gnofract4d), so they will still be active next time you
 start Gnofract 4D.</p>
-<h3 id="fractal-settings">Fractal Settings</h3>
+<h3 id="fractal-settings">
+  Fractal Settings
+  <a class="anchor" href="#fractal-settings">#</a>
+</h3>
 <p>The <strong>Formula</strong> section allows you to choose the
 formula used to calculate the fractal, and to set any parameters the
 formula has. You can modify the formula by choosing <strong>Browse</strong>, which invokes the Formula Browser. <strong>Max Iterations</strong> sets the number of iterations a point will go through before we give up and assume it&rsquo;s a member of the Julibrot. The other parameters on this pane are different depending on the fractal type.</p>
@@ -444,8 +535,14 @@ to modify the palette. You can start editing the current palette in Coolors
 by clicking <strong>Edit Gradient Online</strong> in the Colors tab. When you are done editing, in the Coolors UI
 choose <strong>Export</strong> &gt; <strong>Copy URL</strong>. Then paste into the Gnofract 4D window. This
 changes the current gradient to the one you edited online.</p>
-<h3 id="preferences">Preferences</h3>
-<h4 id="image">Image</h4>
+<h3 id="preferences">
+  Preferences
+  <a class="anchor" href="#preferences">#</a>
+</h3>
+<h4 id="image">
+  Image
+  <a class="anchor" href="#image">#</a>
+</h4>
 <p><strong>Width</strong> and <strong>Height</strong> set
 the size of the image in pixels. If <strong>Maintain Aspect Ratio</strong> is checked when you change either the width or
 height, the other automatically changes to keep the image the same
@@ -458,7 +555,10 @@ the image look smoother but takes extra time to do. The difference
 between &lsquo;fast&rsquo; and &lsquo;best&rsquo; is that fast antialiasing doesn&rsquo;t bother to
 recalculate points which are the same color as their neighbors. This
 speeds things up a lot but can miss a few details sometimes.</p>
-<h4 id="compiler">Compiler</h4>
+<h4 id="compiler">
+  Compiler
+  <a class="anchor" href="#compiler">#</a>
+</h4>
 <p>Gnofract 4D needs a C compiler to be available at runtime in order to work
 (it dynamically creates the code to compute a particular formula when
 you select it). The <strong>Compiler</strong> page allows you to
@@ -469,15 +569,24 @@ get noticeable performance gains by specifying the specific kind of
 processor you have. For example, some AMD processors will
 benefit by adding &ldquo;-mathlon -msse2 -m3dnow&rdquo; to the compiler flags.</p>
 <p>The <strong>Formula Search Path</strong> lists the directories where Gnofract 4D will look for formulas when a parameter file is loaded.</p>
-<h4 id="general">General</h4>
+<h4 id="general">
+  General
+  <a class="anchor" href="#general">#</a>
+</h4>
 <p><strong>Number of threads</strong> sets how many calculation
 threads to use. Generally, leave this at 1 unless you have a
 hyper-threaded or multi-processor computer, in which case set it to 1
 greater than the number of cores you have.</p>
-<h4 id="helpers">Helpers</h4>
+<h4 id="helpers">
+  Helpers
+  <a class="anchor" href="#helpers">#</a>
+</h4>
 <p>Gnofract 4D sometimes need to invoke a helper program. If the default is
 wrong you can designate a different program here.</p>
-<h2 id="hints">Hints</h2>
+<h2 id="hints">
+  Hints
+  <a class="anchor" href="#hints">#</a>
+</h2>
 <ul>
 <li>
 <p>If you zoom into a busy part of the fractal the image can look
@@ -493,7 +602,10 @@ see weird effects unless you disable periodicity checking.</p>
 <p>If the image looks pixelated, you&rsquo;ve zoomed in as far as we can go.</p>
 </li>
 </ul>
-<h2 id="command-reference">Command Reference</h2>
+<h2 id="command-reference">
+  Command Reference
+  <a class="anchor" href="#command-reference">#</a>
+</h2>
 
 
  
@@ -646,12 +758,18 @@ see weird effects unless you disable periodicity checking.</p>
 </table>
     
 
-<h2 id="about-the-math">About the math</h2>
+<h2 id="about-the-math">
+  About the math
+  <a class="anchor" href="#about-the-math">#</a>
+</h2>
 <aside class="notice">Warning: Dubious mathematics ahead!
 I'm not a mathematician. You may find this discussion
 insultingly oversimplified or just plain wrong.
 </aside>
-<h3 id="the-mandelbrot-set">The Mandelbrot Set</h3>
+<h3 id="the-mandelbrot-set">
+  The Mandelbrot Set
+  <a class="anchor" href="#the-mandelbrot-set">#</a>
+</h3>
 <p>The Mandelbrot may be
 defined as the set of all complex numbers which, when you
 repeatedly square them and add them again, never become infinite. (The
@@ -707,7 +825,10 @@ bailout:
 }
 </code></pre><p>
   <img src="mandelbrot_perturbed.png" alt="Perturbed Mandelbrot" /></p>
-<h3 id="the-julia-set">The Julia Set</h3>
+<h3 id="the-julia-set">
+  The Julia Set
+  <a class="anchor" href="#the-julia-set">#</a>
+</h3>
 <p>The Julia set is actually drawn by the same procedure as the
 Mandelbrot set. But instead of changing the value of
 <code>c</code> for each pixel, we keep <code>c</code>
@@ -732,7 +853,10 @@ If we use a different value of <strong>c</strong> we get something more
 interesting:</p>
 <p>
   <img src="julia_perturbed.png" alt="Julia" /></p>
-<h3 id="the-julibrot">The Julibrot</h3>
+<h3 id="the-julibrot">
+  The Julibrot
+  <a class="anchor" href="#the-julibrot">#</a>
+</h3>
 <p>Here we come to the heart of the matter. I said above that both the
 Julia and Mandelbrot sets are drawn with the <strong>same
 function</strong>.</p>
@@ -759,7 +883,10 @@ also look at other planes: here&rsquo;s an image of the
 <code>xw</code> plane:</p>
 <p>
   <img src="xw_plane.png" alt="XW Plane" /></p>
-<h3 id="viewing-in-four-dimensions">Viewing in Four Dimensions</h3>
+<h3 id="viewing-in-four-dimensions">
+  Viewing in Four Dimensions
+  <a class="anchor" href="#viewing-in-four-dimensions">#</a>
+</h3>
 <p>However, we can draw any 2D slice we like, not just those which are
 parallel to the Julibrot axes. To do this we&rsquo;ll need to describe our
 scene by four things. First, the (<code>x,y,z,w</code>)
@@ -784,7 +911,10 @@ looks decidedly odd:</p>
   <img src="hybrid.png" alt="Hybrid" /></p>
 <p>In fact, we can rotate to any angle in each of the planes,
 creating a whole world of bizarre pictures.</p>
-<h3 id="hypercomplex-fractals-and-quaternions">Hypercomplex Fractals and Quaternions</h3>
+<h3 id="hypercomplex-fractals-and-quaternions">
+  Hypercomplex Fractals and Quaternions
+  <a class="anchor" href="#hypercomplex-fractals-and-quaternions">#</a>
+</h3>
 <p>There are other kinds of fractal which are commonly described
 as &ldquo;four-dimensional&rdquo; - hypercomplex and quaternion-based
 fractals. Hypercomplex numbers have four components (one real and
@@ -793,7 +923,10 @@ hypercomplex mandelbrot has two hypercomplex parameters, in Gnofract 4D
 terms it&rsquo;s actually an eight-dimensional object. Gnofract 4D allows you to
 set four of these as part of the view - the other four have to be set
 via parameters. Gnofract 4D doesn&rsquo;t support quaternions at present.</p>
-<h2 id="writing-your-own-functions">Writing Your Own Functions</h2>
+<h2 id="writing-your-own-functions">
+  Writing Your Own Functions
+  <a class="anchor" href="#writing-your-own-functions">#</a>
+</h2>
 <p>When you get tired of the fractal functions which come with Gnofract
 4D, you can write your own, or take advantage of thousands of formulas
 written by other fractal enthusiasts. Gnofract4D can load most fractal
@@ -820,7 +953,10 @@ UltraFractal. Some of the coloring algorithms and forumlas will work with Gnofra
 Please report issues, since I aim to improve compatibility further in future
 releases.</li>
 </ul>
-<h3 id="writing-your-first-formula">Writing Your First Formula</h3>
+<h3 id="writing-your-first-formula">
+  Writing Your First Formula
+  <a class="anchor" href="#writing-your-first-formula">#</a>
+</h3>
 <p>This section steps you through the creation of a new fractal
 formula. By the way, the formulas for each of these steps can also be
 found in the file <code>formulas/tutorial.frm</code>.</p>
@@ -917,7 +1053,10 @@ provides a way to pre-populate your formula with values that work
 well. If you leave the default out Gnofract 4D will use &ldquo;ident&rdquo; for
 functions and 0 for numeric ones.</li>
 </ol>
-<h2 id="formula-language-reference">Formula Language Reference</h2>
+<h2 id="formula-language-reference">
+  Formula Language Reference
+  <a class="anchor" href="#formula-language-reference">#</a>
+</h2>
 
 
  
@@ -3104,7 +3243,10 @@ No documentation yet.
 </table>
     
 
-<h2 id="gnofract-4d-internals">Gnofract 4D Internals</h2>
+<h2 id="gnofract-4d-internals">
+  Gnofract 4D Internals
+  <a class="anchor" href="#gnofract-4d-internals">#</a>
+</h2>
 <p>This section explains how Gnofract 4D is structured. You don&rsquo;t need to know
 any of this to use the program, but it may come in handy if you want
 to change it or contribute to its development (which you&rsquo;re heartily
@@ -3115,7 +3257,10 @@ is made of Python unittest framework to keep everything working - each
 Python file <code>foo.py</code> is accompanied by
 <code>tests/test_foo.py</code>, which contains unit tests for that
 file&rsquo;s features. &lsquo;test.py&rsquo; for each folder runs all of the tests.</p>
-<h3 id="source-code-layout">Source Code Layout</h3>
+<h3 id="source-code-layout">
+  Source Code Layout
+  <a class="anchor" href="#source-code-layout">#</a>
+</h3>
 <p>The important directories in the source are:</p>
 <table>
 <thead>
@@ -3143,7 +3288,10 @@ file&rsquo;s features. &lsquo;test.py&rsquo; for each folder runs all of the tes
 </tr>
 </tbody>
 </table>
-<h3 id="compiler-1">Compiler</h3>
+<h3 id="compiler-1">
+  Compiler
+  <a class="anchor" href="#compiler-1">#</a>
+</h3>
 <p>The most complicated part of Gnofract 4D is the compiler. This takes
 as input an UltraFractal or Fractint formula file, and produces C
 code. We then invoke a C compiler (eg gcc) to produce a shared library
@@ -3189,7 +3337,10 @@ and the C++ code and Python code need to collaborate to work out which
 indices into this array correspond to which params- this is done by
 sorting them into alphabetic order. In general this area is a bit of a
 mess.</p>
-<h3 id="threading">Threading</h3>
+<h3 id="threading">
+  Threading
+  <a class="anchor" href="#threading">#</a>
+</h3>
 <p>One of the weirder parts of the code is how we deal with
 threading. Basically we want the calculation of the fractal to happen
 on a different thread (or multiple threads for SMP) from the main UI,
@@ -3211,15 +3362,32 @@ calculation in progress by setting a var which the calculation threads
 check frequently - they then abandon their work and quit.</p>
 <blockquote>
 <p>Warning: Multiple threads and C++ exceptions do not coexist
-well on some libstdc++'s. Gnofract 4D was originally written not to use exceptions
+well on some libstdc++&rsquo;s. Gnofract 4D was originally written not to use exceptions
 as a result. This may no longer be an issue but I haven&rsquo;t tried it.</p>
 </blockquote>
-<h2 id="bugs-and-known-issues">Bugs and Known Issues</h2>
+<h2 id="faqs">
+  FAQs
+  <a class="anchor" href="#faqs">#</a>
+</h2>
+<p><strong>When I zoom in a long way, the picture gets all blocky - is that a bug?</strong></p>
+<p>Not exactly. This means that you have reached the limit of the precision offered by the math chip on your PC - the area you are looking at is now so small that differences between adjacent pixels are too small for the processor to deal with. Some fractal programs support arbitrary precision math, which increases this limit, but this isn&rsquo;t implemented in Gnofract 4D yet.</p>
+<p><strong>What is this I saw on the web about a security vulnerability? It sounds scary!</strong></p>
+<p>There was a bug in Gnofract4d 2.0 and 2.1 where if you downloaded a parameter (.fct) file someone sent you, they could have snuck some evil code in it and Gnofract 4D would run that code. I actually found the bug and fixed it in version 2.2, but a security company &ldquo;helpfully&rdquo; decided to publish an inaccurate advisory claiming that it affected all versions. So if you use 2.0 or 2.1, upgrade. Otherwise, don&rsquo;t worry about it.</p>
+<h2 id="bugs-and-known-issues">
+  Bugs and Known Issues
+  <a class="anchor" href="#bugs-and-known-issues">#</a>
+</h2>
 <p>Please report any bugs you encounter, via <ulink><a href="https://github.com/fract4d/gnofract4d/issues">https://github.com/fract4d/gnofract4d/issues</a></ulink></p>
-<h2 id="about-gnofract-4d">About Gnofract 4D</h2>
-<p>This is Gnofract 4D version 4.2. You can find the most recent version of
+<h2 id="about-gnofract-4d">
+  About Gnofract 4D
+  <a class="anchor" href="#about-gnofract-4d">#</a>
+</h2>
+<p>This is Gnofract 4D version 4.3. You can find the most recent version of
 Gnofract 4D from <a href="https://github.com/edyoung/gnofract4d">https://github.com/edyoung/gnofract4d</a></p>
-<h2 id="credits-and-copyright">Credits and copyright</h2>
+<h2 id="credits-and-copyright">
+  Credits and copyright
+  <a class="anchor" href="#credits-and-copyright">#</a>
+</h2>
 <p>Gnofract 4D is Copyright 1999-2020 Edwin Young
 
   <a href="mailto:edwin@bathysphere.org">edwin@bathysphere.org</a>
@@ -3288,6 +3456,11 @@ the <ulink url="http://tango.freedesktop.org">Tango icon set</ulink>.</p>
   <ul>
     <li><a href="#gnofract-4d">Gnofract 4D</a>
       <ul>
+        <li><a href="#installation">Installation</a>
+          <ul>
+            <li><a href="#installation-on-linux">Installation on Linux</a></li>
+          </ul>
+        </li>
         <li><a href="#introduction">Introduction</a>
           <ul>
             <li><a href="#using-gnofract-4d">Using Gnofract 4D</a></li>
@@ -3336,6 +3509,7 @@ the <ulink url="http://tango.freedesktop.org">Tango icon set</ulink>.</p>
             <li><a href="#threading">Threading</a></li>
           </ul>
         </li>
+        <li><a href="#faqs">FAQs</a></li>
         <li><a href="#bugs-and-known-issues">Bugs and Known Issues</a></li>
         <li><a href="#about-gnofract-4d">About Gnofract 4D</a></li>
         <li><a href="#credits-and-copyright">Credits and copyright</a></li>
