@@ -20,8 +20,8 @@ class DlgAdvOptions:
             modal=True,
             destroy_with_parent=True
         )
-        self.dialog.add_buttons(Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        self.dialog.add_buttons(_("_OK"), Gtk.ResponseType.OK,
+                                _("_Cancel"), Gtk.ResponseType.CANCEL)
 
         self.current_kf = current_kf
         self.animation = animation

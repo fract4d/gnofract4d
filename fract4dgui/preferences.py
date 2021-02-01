@@ -75,7 +75,7 @@ class PrefsDialog(dialog.T):
             self,
             _("Gnofract 4D Preferences"),
             main_window,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+            (_("_Close"), Gtk.ResponseType.CLOSE)
         )
 
         self.dirchooser = utils.get_directory_chooser(

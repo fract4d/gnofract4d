@@ -15,7 +15,7 @@ class PainterDialog(dialog.T):
             self,
             _("Painter"),
             main_window,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE),
+            (_("_Close"), Gtk.ResponseType.CLOSE),
             modal=False
         )
 

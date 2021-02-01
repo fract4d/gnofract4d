@@ -16,7 +16,7 @@ class AutozoomDialog(dialog.T):
             self,
             _("Autozoom"),
             main_window,
-            (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+            (_("_Close"), Gtk.ResponseType.CLOSE)
         )
 
         self.f = f

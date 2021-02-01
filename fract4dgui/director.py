@@ -470,7 +470,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
             _("Director"),
             main_window,
             (_("_Render"), DirectorDialog.RESPONSE_RENDER,
-             Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+             _("_Close"), Gtk.ResponseType.CLOSE)
         )
 
         hig.MessagePopper.__init__(self)
