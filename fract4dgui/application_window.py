@@ -135,94 +135,15 @@ class ApplicationDialogs:
         table.attach(height, 1, 1, 1, 1)
         return table
 
-    def get_file_save_chooser(self, title, parent, patterns=[]):
-        chooser = Gtk.FileChooserDialog(
-            title=title,
-            transient_for=parent,
-            action=Gtk.FileChooserAction.SAVE)
-
-        chooser.add_buttons(
-            _("_Save"), Gtk.ResponseType.OK,
-            _("_Cancel"), Gtk.ResponseType.CANCEL)
-        chooser.set_default_response(Gtk.ResponseType.OK)
-
-        filter = Gtk.FileFilter()
-        for pattern in patterns:
-            filter.add_pattern(pattern)
-
-        chooser.set_filter(filter)
-
-        return chooser
-
-    def get_filter(self, name, patterns):
-        filter = Gtk.FileFilter()
-        filter.set_name(name)
-        for pattern in patterns:
-            filter.add_pattern(pattern)
-        return filter
-
-    def add_filters(self, chooser):
-        param_patterns = ["*.fct"]
-        param_filter = self.get_filter(
-            _("Parameter Files"), param_patterns)
-
-        chooser.add_filter(param_filter)
-
-        formula_patterns = ["*.frm", "*.ufm", "*.ucl", "*.cfrm", "*.uxf"]
-        formula_filter = self.get_filter(
-            _("Formula Files"), formula_patterns)
-        chooser.add_filter(formula_filter)
-
-        gradient_patterns = ["*.map", "*.ggr",
-                             "*.ugr", "*.cs", "*.pal", "*.ase"]
-        gradient_filter = self.get_filter(
-            _("Gradient Files"), gradient_patterns)
-        chooser.add_filter(gradient_filter)
-
-        all_filter = self.get_filter(
-            _("All Gnofract 4D Files"),
-            param_patterns + formula_patterns + gradient_patterns)
-
-        chooser.add_filter(all_filter)
-
-        chooser.set_filter(all_filter)
-
     def get_open_fs(self, compiler):
-        if self.open_fs is not None:
-            return self.open_fs
-
-        self.open_fs = Gtk.FileChooserDialog(
-            title=_("Open File"), transient_for=self,
-            action=Gtk.FileChooserAction.OPEN)
-
-        self.open_fs.add_buttons(
-            _("_Open"), Gtk.ResponseType.OK,
-            _("_Cancel"), Gtk.ResponseType.CANCEL)
-        self.open_fs.set_default_response(Gtk.ResponseType.OK)
-
-        self.add_filters(self.open_fs)     
-        
-        open_preview = gtkfractal.Preview(self.compiler)
-
-        def on_update_preview(chooser, preview):
-            filename = chooser.get_preview_filename()
-            try:
-                with open(filename) as f:
-                    preview.loadFctFile(f)
-                preview.draw_image(False, False)
-                active = True
-            except Exception as err:
-                active = False
-            chooser.set_preview_widget_active(active)
-
-        self.open_fs.set_preview_widget(open_preview.widget)
-        self.open_fs.connect('update-preview', on_update_preview, open_preview)
-
+        if self.open_fs is None:
+            self.open_fs = application_widgets.Fract4dOpenChooser(
+                self, gtkfractal.Preview(self.compiler))
         return self.open_fs
 
     def get_save_as_fs(self):
         if self.saveas_fs is None:
-            self.saveas_fs = self.get_file_save_chooser(
+            self.saveas_fs = utils.FileSaveChooser(
                 _("Save Parameters"),
                 self,
                 ["*.fct"])
@@ -230,7 +151,7 @@ class ApplicationDialogs:
 
     def get_save_image_as_fs(self):
         if self.saveimage_fs is None:
-            self.saveimage_fs = self.get_file_save_chooser(
+            self.saveimage_fs = utils.FileSaveChooser(
                 _("Save Image"),
                 self,
                 image.file_matches())
@@ -238,7 +159,7 @@ class ApplicationDialogs:
 
     def get_save_hires_image_as_fs(self):
         if self.hires_image_fs is None:
-            self.hires_image_fs = self.get_file_save_chooser(
+            self.hires_image_fs = utils.FileSaveChooser(
                 _("Save High Resolution Image"),
                 self,
                 image.file_matches())

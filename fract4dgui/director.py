@@ -14,7 +14,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, Gio, Gtk, GObject
 
 from fract4d import animation, fractconfig
-from . import dialog, hig, PNGGen, AVIGen, DlgAdvOpt, director_prefs
+from . import dialog, hig, PNGGen, AVIGen, DlgAdvOpt, director_prefs, utils
 
 
 class UserCancelledError(Exception):
@@ -105,22 +105,9 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
     # returns selected file or empty string
     def get_fct_file(self):
         temp_file = ""
-        dialog = Gtk.FileChooserDialog(title="Choose keyframe...",
-                                       transient_for=self,
-                                       action=Gtk.FileChooserAction.OPEN)
-        dialog.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL,
-                           _("_Open"), Gtk.ResponseType.OK)
-        dialog.set_default_response(Gtk.ResponseType.OK)
-        # ----setting filters---------
-        filter = Gtk.FileFilter()
-        filter.set_name("gnofract4d files (*.fct)")
-        filter.add_pattern("*.fct")
-        dialog.add_filter(filter)
-        filter = Gtk.FileFilter()
-        filter.set_name("All files")
-        filter.add_pattern("*")
-        dialog.add_filter(filter)
-        # ----------------------------
+        dialog = utils.FileOpenChooser("Choose keyframe...", self)
+        dialog.add_file_filter("gnofract4d files (*.fct)", ["*.fct"])
+        dialog.add_file_filter("All files", ["*"])
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             temp_file = dialog.get_filename()
@@ -131,24 +118,11 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
     # returns selected file or empty string
     def get_avi_file(self):
         temp_file = ""
-        dialog = Gtk.FileChooserDialog(title="Save AVI file...",
-                                       transient_for=self,
-                                       action=Gtk.FileChooserAction.SAVE)
-        dialog.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL,
-                           _("_OK"), Gtk.ResponseType.OK)
-        dialog.set_default_response(Gtk.ResponseType.OK)
+        dialog = utils.FileSaveChooser("Save AVI file...", self)
         current_file = self.txt_temp_avi.get_text()
         dialog.set_current_name(current_file if current_file else "video.webm")
-        # ----setting filters---------
-        filter = Gtk.FileFilter()
-        filter.set_name("webm video file (*.webm)")
-        filter.add_pattern("*.webm")
-        dialog.add_filter(filter)
-        filter = Gtk.FileFilter()
-        filter.set_name("All files")
-        filter.add_pattern("*")
-        dialog.add_filter(filter)
-        # ----------------------------
+        dialog.add_file_filter("webm video file (*.webm)", ["*.webm"])
+        dialog.add_file_filter("All files", ["*"])
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             temp_file = dialog.get_filename()
@@ -159,23 +133,10 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
     # returns selected file or empty string
     def get_cfg_file_save(self):
         temp_file = ""
-        dialog = Gtk.FileChooserDialog(title="Save animation...",
-                                       transient_for=self,
-                                       action=Gtk.FileChooserAction.SAVE)
-        dialog.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL,
-                           _("Save"), Gtk.ResponseType.OK)
-        dialog.set_default_response(Gtk.ResponseType.OK)
+        dialog = utils.FileSaveChooser("Save animation...", self)
         dialog.set_current_name("animation.fcta")
-        # ----setting filters---------
-        filter = Gtk.FileFilter()
-        filter.set_name("gnofract4d animation files (*.fcta)")
-        filter.add_pattern("*.fcta")
-        dialog.add_filter(filter)
-        filter = Gtk.FileFilter()
-        filter.set_name("All files")
-        filter.add_pattern("*")
-        dialog.add_filter(filter)
-        # ----------------------------
+        dialog.add_file_filter("gnofract4d animation files (*.fcta)", ["*.fcta"])
+        dialog.add_file_filter("All files", ["*"])
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             temp_file = dialog.get_filename()
@@ -186,27 +147,12 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
     # returns selected file or empty string
     def get_cfg_file_open(self):
         temp_file = ""
-        dialog = Gtk.FileChooserDialog(title="Choose animation...",
-                                       transient_for=self,
-                                       action=Gtk.FileChooserAction.OPEN)
-        dialog.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL,
-                           _("_Open"), Gtk.ResponseType.OK)
-        dialog.set_default_response(Gtk.ResponseType.OK)
-        # ----setting filters---------
-        filter = Gtk.FileFilter()
-        filter.set_name("gnofract4d animation files (*.fcta)")
-        filter.add_pattern("*.fcta")
-        dialog.add_filter(filter)
-        filter = Gtk.FileFilter()
-        filter.set_name("All files")
-        filter.add_pattern("*")
-        dialog.add_filter(filter)
-        # ----------------------------
+        dialog = utils.FileOpenChooser("Choose animation...", self)
+        dialog.add_file_filter("gnofract4d animation files (*.fcta)", ["*.fcta"])
+        dialog.add_file_filter("All files", ["*"])
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             temp_file = dialog.get_filename()
-        # elif response == Gtk.ResponseType.CANCEL:
-        #    print 'Closed, no files selected'
         dialog.destroy()
         return temp_file
 

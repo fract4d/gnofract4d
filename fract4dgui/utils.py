@@ -17,24 +17,52 @@ from gi.repository import Gtk, Gdk, Gio, GLib
 from . import hig
 
 
-def get_directory_chooser(title, parent):
-    chooser = Gtk.FileChooserDialog(
-        title=title,
-        transient_for=parent,
-        action=Gtk.FileChooserAction.SELECT_FOLDER)
+class BaseChooser(Gtk.FileChooserDialog):
+    def __init__(self, title, parent, action, ok_label):
+        super().__init__(
+            title=title,
+            transient_for=parent,
+            action=action)
 
-    chooser.add_buttons(
-        _("_OK"), Gtk.ResponseType.OK,
-        _("_Cancel"), Gtk.ResponseType.CANCEL)
-    chooser.set_default_response(Gtk.ResponseType.OK)
+        self.add_buttons(
+            ok_label, Gtk.ResponseType.OK,
+            _("_Cancel"), Gtk.ResponseType.CANCEL)
+        self.set_default_response(Gtk.ResponseType.OK)
 
-    return chooser
+    def add_file_filter(self, name, patterns):
+        """User-selectable file filter"""
+        file_filter = Gtk.FileFilter()
+        file_filter.set_name(name)
+        for pattern in patterns:
+            file_filter.add_pattern(pattern)
+        self.add_filter(file_filter)
+        return file_filter
 
 
-def set_file_chooser_filename(chooser, name):
-    if name:
-        chooser.set_current_folder(os.path.abspath(os.path.dirname(name)))
-        chooser.set_current_name(os.path.basename(name))
+class DirectoryChooser(BaseChooser):
+    def __init__(self, title, parent):
+        super().__init__(title, parent, Gtk.FileChooserAction.SELECT_FOLDER, _("_OK"))
+
+
+class FileOpenChooser(BaseChooser):
+    def __init__(self, title, parent):
+        super().__init__(title, parent, Gtk.FileChooserAction.OPEN, _("_Open"))
+
+
+class FileSaveChooser(BaseChooser):
+    def __init__(self, title, parent, patterns=[]):
+        super().__init__(title, parent, Gtk.FileChooserAction.SAVE, _("_Save"))
+
+        # Current file filter
+        file_filter = Gtk.FileFilter()
+        for pattern in patterns:
+            file_filter.add_pattern(pattern)
+        self.set_filter(file_filter)
+
+    def set_filename(self, name):
+        if name:
+            self.set_current_folder(os.path.abspath(os.path.dirname(name)))
+            self.set_current_name(os.path.basename(name))
 
 
 def create_option_menu(items):
