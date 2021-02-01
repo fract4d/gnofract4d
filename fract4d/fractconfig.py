@@ -68,19 +68,19 @@ class T(configparser.ConfigParser):
              OrderedDict()
              ),
             ("formula_path",
-             OrderedDict((
-                         ("0", "formulas"),
-                         ("1", _shared_formula_dir),
-                         ("2", os.path.expandvars(
-                             "${HOME}/gnofract4d/formulas")),
+             OrderedDict.fromkeys((
+                         "formulas",
+                         _shared_formula_dir,
+                         os.path.expandvars(
+                             "${HOME}/gnofract4d/formulas"),
                          ))
              ),
             ("map_path",
-             OrderedDict((
-                         ("0", "maps"),
-                         ("1", _shared_map_dir),
-                         ("2", os.path.expandvars("${HOME}/gnofract4d/maps")),
-                         ("3", "/usr/share/gimp/2.0/gradients"),
+             OrderedDict.fromkeys((
+                         "maps",
+                         _shared_map_dir,
+                         os.path.expandvars("${HOME}/gnofract4d/maps"),
+                         "/usr/share/gimp/2.0/gradients",
                          ))
              ),
             ("recent_files",
@@ -103,13 +103,24 @@ class T(configparser.ConfigParser):
             "compiler": True
         }
 
-        configparser.ConfigParser.__init__(self, interpolation=None)
+        configparser.ConfigParser.__init__(self, allow_no_value=True, interpolation=None)
         self.read_dict(_defaults)
         self.file = os.path.expanduser(file)
         self.read(self.file)
+        self.update_paths("formula_path")
+        self.update_paths("map_path")
 
         self.ensure_contains("formula_path", _shared_formula_dir)
         self.ensure_contains("map_path", _shared_map_dir)
+
+    def update_paths(self, section):
+        # Gnofract 4D 4.3 and earlier configuration used index numbers with
+        # formula and map path entries. This method converts such entries to the
+        # current format. It can be removed in future.
+        for key, value in self[section].items():
+            if value is not None:
+                self[section][value] = None
+                del self[section][key]
 
     def ensure_contains(self, section, required_item):
         l = self.get_list(section)
@@ -191,31 +202,17 @@ class T(configparser.ConfigParser):
         self.changed("main_window")
 
     def get_list(self, name):
-        i = 0
-        list = []
-        while(True):
-            try:
-                key = "%d" % i
-                val = self.get(name, key)
-                list.append(val)
-                i += 1
-            except configparser.NoOptionError:
-                return list
+        return list(self[name])
 
     def remove_all_in_list_section(self, name):
-        i = 0
-        items_left = True
-        while items_left:
-            items_left = self.remove_option(name, "%d" % i)
-            i += 1
+        for item in self[name]:
+            self.remove_option(name, item)
 
     def set_list(self, name, list):
         self.remove_all_in_list_section(name)
 
-        i = 0
         for item in list:
-            configparser.ConfigParser.set(self, name, "%d" % i, item)
-            i += 1
+            configparser.ConfigParser.set(self, name, item, None)
 
         self.changed(name)
 
