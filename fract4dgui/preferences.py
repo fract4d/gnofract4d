@@ -1,8 +1,5 @@
 # GUI for user settings
 
-import gi
-
-gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject, GLib
 
 from . import dialog, utils

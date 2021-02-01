@@ -1,8 +1,5 @@
 # GUI for painting colors onto the fractal
 
-import gi
-
-gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 from . import dialog

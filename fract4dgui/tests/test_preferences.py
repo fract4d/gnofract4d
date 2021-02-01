@@ -10,8 +10,6 @@ from fract4dgui import gtkfractal, preferences
 import gettext
 gettext.install('gnofract4d')
 
-import gi
-gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 
