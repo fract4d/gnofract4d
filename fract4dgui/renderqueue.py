@@ -1,8 +1,6 @@
 # A module which manages a queue of images to render in the background
 # and a UI for the same
 
-# pylint: disable=no-member
-
 import copy
 
 from gi.repository import Gtk, GObject
@@ -110,18 +108,16 @@ class QueueDialog(dialog.T):
             float  # % complete
         )
 
-        self.view = Gtk.TreeView.new_with_model(self.store)
-        column = Gtk.TreeViewColumn(
-            _('_Name'), Gtk.CellRendererText(), text=0)
-        self.view.append_column(column)
-        column = Gtk.TreeViewColumn(
-            _('_Size'), Gtk.CellRendererText(), text=1)
-        self.view.append_column(column)
-        column = Gtk.TreeViewColumn(
-            _('_Progress'), CellRendererProgress(), value=2)
-        self.view.append_column(column)
+        view = Gtk.TreeView(model=self.store)
+        view.append_column(Gtk.TreeViewColumn(
+            _('_Name'), Gtk.CellRendererText(), text=0))
+        view.append_column(Gtk.TreeViewColumn(
+            _('_Size'), Gtk.CellRendererText(), text=1))
+        view.append_column(Gtk.TreeViewColumn(
+            _('_Progress'), CellRendererProgress(), value=2))
 
-        self.vbox.add(self.view)
+        self.vbox.add(view)
+        self.vbox.show_all()
 
     def onQueueChanged(self, q):
         self.store.clear()
@@ -135,7 +131,3 @@ class QueueDialog(dialog.T):
 
     def onQueueDone(self, q):
         self.hide()
-
-    def show(self):
-        Gtk.Dialog.show(self)
-        self.vbox.show_all()
