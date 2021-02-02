@@ -16,7 +16,7 @@ class Test(testgui.TestCase):
 
     @patch("gi.repository.Gtk.Dialog.run")
     def testAutozoom(self, mock_dialog_run):
-        mock_dialog_run.side_effect = lambda : Gtk.ResponseType.CLOSE
+        mock_dialog_run.side_effect = lambda: Gtk.ResponseType.CLOSE
 
         azd = autozoom.AutozoomDialog(self.mw, self.f)
         self.assertEqual(azd.minsize_entry.get_text(), "1e-13")

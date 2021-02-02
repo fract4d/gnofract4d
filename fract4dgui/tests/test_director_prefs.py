@@ -27,13 +27,13 @@ class Test(testgui.TestCase):
     @patch("gi.repository.Gtk.FileChooserDialog.get_filename")
     def testGetFolder(self, mock_dialog_get_filename, mock_dialog_run):
         filename = "test_file"
-        mock_dialog_get_filename.side_effect = lambda : filename
+        mock_dialog_get_filename.side_effect = lambda: filename
 
         parent = Gtk.Window()
         dp = director_prefs.DirectorPrefs(self.test_animation, parent)
 
-        mock_dialog_run.side_effect = lambda : Gtk.ResponseType.OK
+        mock_dialog_run.side_effect = lambda: Gtk.ResponseType.OK
         self.assertEqual(dp.get_folder(), filename)
 
-        mock_dialog_run.side_effect = lambda : Gtk.ResponseType.CANCEL
+        mock_dialog_run.side_effect = lambda: Gtk.ResponseType.CANCEL
         self.assertEqual(dp.get_folder(), "")

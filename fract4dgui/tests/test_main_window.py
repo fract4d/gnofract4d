@@ -32,6 +32,7 @@ class Application(Gtk.Application):
     def get_menu_by_id(self, menuid):
         return self.menu_builder.get_object(menuid)
 
+
 class WrapMainWindow(main_window.MainWindow):
     def __init__(self, config):
         self.errors = []
@@ -156,7 +157,7 @@ class Test(testgui.TestCase):
 
     @patch("gi.repository.Gtk.Dialog.run")
     def testAbout(self, mock_dialog_run):
-        mock_dialog_run.side_effect = lambda : Gtk.ResponseType.OK
+        mock_dialog_run.side_effect = lambda: Gtk.ResponseType.OK
 
         self.mw.about()
 
@@ -223,7 +224,8 @@ class Test(testgui.TestCase):
             fractal.T.DEFAULT_FORMULA_FILE = old_default
 
     def testToggleFullScreen(self):
-        action = Gio.SimpleAction.new_stateful("ViewFullScreenAction", None, GLib.Variant("b", False))
+        action = Gio.SimpleAction.new_stateful(
+            "ViewFullScreenAction", None, GLib.Variant("b", False))
         self.mw.toggle_full_screen(action, None)
         self.assertTrue(self.mw.fullscreen_action.get_state().unpack())
         action.set_state(GLib.Variant("b", True))
