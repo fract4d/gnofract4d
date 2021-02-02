@@ -11,9 +11,7 @@ re_cleanup = re.compile(r'[\s\(\)]+')
 
 class Fract4dOpenChooser(utils.FileOpenChooser):
     def __init__(self, parent, preview):
-        super().__init__(
-            title=_("Open File"),
-            parent=parent)
+        super().__init__(title=_("Open File"),  parent=parent)
 
         self.add_filters()
 
@@ -24,7 +22,7 @@ class Fract4dOpenChooser(utils.FileOpenChooser):
                     preview.loadFctFile(f)
                 preview.draw_image(False, False)
                 active = True
-            except Exception as err:
+            except Exception:
                 active = False
             chooser.set_preview_widget_active(active)
 
@@ -38,8 +36,7 @@ class Fract4dOpenChooser(utils.FileOpenChooser):
         formula_patterns = ["*.frm", "*.ufm", "*.ucl", "*.cfrm", "*.uxf"]
         self.add_file_filter(_("Formula Files"), formula_patterns)
 
-        gradient_patterns = ["*.map", "*.ggr",
-                             "*.ugr", "*.cs", "*.pal", "*.ase"]
+        gradient_patterns = ["*.map", "*.ggr", "*.ugr", "*.cs", "*.pal", "*.ase"]
         self.add_file_filter(_("Gradient Files"), gradient_patterns)
 
         all_filter = self.add_file_filter(

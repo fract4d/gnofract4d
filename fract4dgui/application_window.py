@@ -108,7 +108,8 @@ class Actions:
                 f"app.{key}({int(Gdk.ModifierType.CONTROL_MASK)})",
                 [f"<Release><Control>{key}"])
             self.application.set_accels_for_action(
-                f"app.{key}({int(Gdk.ModifierType.SHIFT_MASK | Gdk.ModifierType.CONTROL_MASK)})",
+                f"app.{key}"
+                f"({int(Gdk.ModifierType.SHIFT_MASK | Gdk.ModifierType.CONTROL_MASK)})",
                 [f"<Release><Shift><Control>{key}"])
 
         self.model.seq.register_callbacks(
@@ -118,18 +119,6 @@ class Actions:
 
 class ApplicationDialogs:
     # pylint: disable=access-member-before-definition
-    def create_rtd_widgets(self):
-        table = Gtk.Grid(row_spacing=1, column_spacing=1)
-        table.width = width = Gtk.Entry(text="2048")
-        table.height = height = Gtk.Entry(text="1536")
-        wlabel = Gtk.Label(label=_("Width:"))
-        hlabel = Gtk.Label(label=_("Height:"))
-        table.attach(wlabel, 0, 0, 1, 1)
-        table.attach(hlabel, 0, 1, 1, 1)
-        table.attach(width, 1, 0, 1, 1)
-        table.attach(height, 1, 1, 1, 1)
-        return table
-
     def get_open_fs(self, compiler):
         if self.open_fs is None:
             self.open_fs = application_widgets.Fract4dOpenChooser(
@@ -139,31 +128,31 @@ class ApplicationDialogs:
     def get_save_as_fs(self):
         if self.saveas_fs is None:
             self.saveas_fs = utils.FileSaveChooser(
-                _("Save Parameters"),
-                self,
-                ["*.fct"])
+                _("Save Parameters"), self, ["*.fct"])
         return self.saveas_fs
 
     def get_save_image_as_fs(self):
         if self.saveimage_fs is None:
             self.saveimage_fs = utils.FileSaveChooser(
-                _("Save Image"),
-                self,
-                image.file_matches())
+                _("Save Image"), self, image.file_matches())
         return self.saveimage_fs
 
     def get_save_hires_image_as_fs(self):
         if self.hires_image_fs is None:
             self.hires_image_fs = utils.FileSaveChooser(
-                _("Save High Resolution Image"),
-                self,
-                image.file_matches())
+                _("Save High Resolution Image"), self, image.file_matches())
 
-            rtd_widgets = self.create_rtd_widgets()
-            self.hires_image_fs.set_extra_widget(rtd_widgets)
+            table = Gtk.Grid(row_spacing=1, column_spacing=1)
+            table.width = Gtk.Entry(text="2048")
+            table.height = Gtk.Entry(text="1536")
+            table.attach(Gtk.Label(label=_("Width:")), 0, 0, 1, 1)
+            table.attach(Gtk.Label(label=_("Height:")), 0, 1, 1, 1)
+            table.attach(table.width, 1, 0, 1, 1)
+            table.attach(table.height, 1, 1, 1, 1)
+            self.hires_image_fs.set_extra_widget(table)
 
-            self.hires_image_fs.get_hires_dimensions = lambda : (
-                int(rtd_widgets.width.get_text()), int(rtd_widgets.height.get_text())
+            self.hires_image_fs.get_hires_dimensions = lambda: (
+                int(table.width.get_text()), int(table.height.get_text())
             )
 
         return self.hires_image_fs
@@ -219,15 +208,12 @@ class ApplicationDialogs:
                 secondary_message = str(exception)
 
         d = hig.ErrorAlert(
-            primary=message,
-            secondary=secondary_message,
-            transient_for=self)
+            primary=message, secondary=secondary_message, transient_for=self)
         d.run()
         d.destroy()
 
     def display_help(self, section=None):
-        helpfile = fractconfig.T.find_resource(
-            "index.html", "help")
+        helpfile = fractconfig.T.find_resource("index.html", "help")
 
         abs_file = os.path.abspath(helpfile)
 
@@ -243,9 +229,8 @@ class ApplicationDialogs:
             anchor = "#" + section
 
         url = "file://%s%s" % (abs_file, anchor)
-        utils.launch_browser(
-            url,
-            self)
+        utils.launch_browser(url, self)
+
 
 class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
     def __init__(self, application):
@@ -271,7 +256,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.saveimage_fs = None
         self.hires_image_fs = None
         self.open_fs = None
-        
+
         self.four_d_sensitives = []
 
         # fractal objects
@@ -286,38 +271,37 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         theme_provider = Gtk.CssProvider()
         css_file = "/io/github/fract4d/gnofract4d.css"
         theme_provider.load_from_resource(css_file)
-        Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),
-                                                 theme_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(), theme_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # custom icon images for toolbar buttons
         Gtk.IconTheme.add_resource_path(
             Gtk.IconTheme.get_default(), "/io/github/fract4d/pixmaps")
 
         # window
-        self.vbox = Gtk.VBox()
+        self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.add(self.vbox)
 
         self.create_toolbar()
-        self.panes = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
-        self.vbox.add(self.panes)
+        panes = Gtk.Paned(expand=True)
+        self.vbox.add(panes)
         self.create_status_bar()
 
         try:
             # try to make default image more interesting
             self.f.set_cmap(
                 fractconfig.T.find_resource("basic.map", "maps"))
-        except Exception as ex:
-            # print(ex)
+        except Exception:
             pass
 
         self.fractalWindow = application_widgets.FractalWindow(self.f, application.compiler)
-        self.panes.pack1(self.fractalWindow, resize=True, shrink=True)
+        panes.pack1(self.fractalWindow, resize=True, shrink=True)
 
         # show everything apart from the settings pane
-        self.show_all()     
+        self.show_all()
 
         self.settingsPane = settings.SettingsPane(self, self.f)
-        self.panes.pack2(self.settingsPane, resize=False, shrink=False)
+        panes.pack2(self.settingsPane, resize=False, shrink=False)
 
     def add_fourway(self, name, tip, axis, is4dsensitive):
         my_fourway = fourway.T(name, tip)
@@ -494,42 +478,37 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
             "app.ToolsExplorerAction")
 
         # explorer weirdness
-        self.weirdbox = Gtk.Grid(tooltip_text=_("Weirdness"))
-        self.weirdbox.set_column_homogeneous(False)
-        self.weirdbox.set_row_spacing(5)
-        self.weirdbox.set_name("weirdbox")
+        self.weirdbox = Gtk.Grid(
+            name="weirdbox",
+            tooltip_text=_("Weirdness"),
+            column_homogeneous=False,
+            row_spacing=5)
         # shape
         self.weirdness_adjustment = Gtk.Adjustment.new(
             20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
-        self.weirdness = Gtk.Scale.new(
-            Gtk.Orientation.HORIZONTAL,
-            self.weirdness_adjustment)
-        self.weirdness.set_size_request(120, -1)
-        self.weirdness.set_value_pos(Gtk.PositionType.RIGHT)
-        shape_label = Gtk.Label(label=_("Shape:"))
-        shape_label.set_halign(Gtk.Align.START)
+        weirdness = Gtk.Scale(
+            adjustment=self.weirdness_adjustment,
+            width_request=120,
+            value_pos=Gtk.PositionType.RIGHT)
+        shape_label = Gtk.Label(label=_("Shape:"), halign=Gtk.Align.START)
 
         self.weirdbox.attach(shape_label, 0, 0, 1, 1)
-        self.weirdbox.attach(self.weirdness, 1, 0, 1, 1)
+        self.weirdbox.attach(weirdness, 1, 0, 1, 1)
         # color
         self.color_weirdness_adjustment = Gtk.Adjustment.new(
             20.0, 0.0, 100.0, 5.0, 5.0, 0.0)
-        self.color_weirdness = Gtk.Scale.new(
-            Gtk.Orientation.HORIZONTAL,
-            self.color_weirdness_adjustment)
-        self.color_weirdness.set_value_pos(Gtk.PositionType.RIGHT)
-        color_label = Gtk.Label(label=_("Color:"))
-        color_label.set_halign(Gtk.Align.START)
+        color_weirdness = Gtk.Scale(
+            adjustment=self.color_weirdness_adjustment,
+            value_pos=Gtk.PositionType.RIGHT)
+        color_label = Gtk.Label(label=_("Color:"), halign=Gtk.Align.START)
 
         self.weirdbox.attach(color_label, 0, 1, 1, 1)
-        self.weirdbox.attach(self.color_weirdness, 1, 1, 1, 1)
+        self.weirdbox.attach(color_weirdness, 1, 1, 1, 1)
 
         self.toolbar.add(self.weirdbox)
 
         def on_weirdness_changed(adjustment):
             self.update_subfracts()
 
-        self.weirdness_adjustment.connect(
-            'value-changed', on_weirdness_changed)
-        self.color_weirdness_adjustment.connect(
-            'value-changed', on_weirdness_changed)
+        self.weirdness_adjustment.connect('value-changed', on_weirdness_changed)
+        self.color_weirdness_adjustment.connect('value-changed', on_weirdness_changed)

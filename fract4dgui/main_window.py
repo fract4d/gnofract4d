@@ -471,7 +471,6 @@ class MainWindow(Actions, ApplicationWindow):
         if text is None:
             return
 
-        #print("paste! %s" % text)
         grad = self.f.get_gradient()
         grad.load_from_url(text)
         self.f.set_gradient(grad)
