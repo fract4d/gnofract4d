@@ -1,11 +1,4 @@
-# This file contains utility classes and functions used by the GUI
-# Many of them 'cover up' differences between pygtk versions - these
-# follow the general pattern
-#
-# try:
-#    do new thing
-# except:
-#    fall back to the 'old way'
+# This file contains utility classes and functions used across the GUI
 
 import os
 
