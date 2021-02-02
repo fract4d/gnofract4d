@@ -463,14 +463,14 @@ class T(Hidden):
 
         drawing_area = Gtk.DrawingArea()
         drawing_area.set_events(
-            Gdk.EventMask.BUTTON_RELEASE_MASK |
-            Gdk.EventMask.BUTTON1_MOTION_MASK |
-            Gdk.EventMask.POINTER_MOTION_MASK |
-            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
-            Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.KEY_PRESS_MASK |
-            Gdk.EventMask.KEY_RELEASE_MASK |
-            Gdk.EventMask.EXPOSURE_MASK
+            Gdk.EventMask.BUTTON_RELEASE_MASK
+            | Gdk.EventMask.BUTTON1_MOTION_MASK
+            | Gdk.EventMask.POINTER_MOTION_MASK
+            | Gdk.EventMask.POINTER_MOTION_HINT_MASK
+            | Gdk.EventMask.BUTTON_PRESS_MASK
+            | Gdk.EventMask.KEY_PRESS_MASK
+            | Gdk.EventMask.KEY_RELEASE_MASK
+            | Gdk.EventMask.EXPOSURE_MASK
         )
 
         self.notice_mouse = False
@@ -507,7 +507,7 @@ class T(Hidden):
             try:
                 GLib.idle_add(
                     form.set_param, order, entry.get_text())
-            except Exception as err:
+            except Exception:
                 # FIXME: produces too many errors
                 msg = "Invalid value '%s': must be a number" % \
                       entry.get_text()
@@ -547,10 +547,9 @@ class T(Hidden):
 
             adj.connect('value-changed', adj_changed, form, order)
 
-            hscale = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, adj)
-            hscale.set_draw_value(False)
+            hscale = Gtk.Scale(adjustment=adj, draw_value=False)
             hscale.update_function = set_adj
-            vbox = Gtk.VBox()
+            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
             vbox.pack_start(widget, True, True, 0)
             vbox.pack_start(hscale, True, True, 0)
             return vbox
@@ -586,7 +585,6 @@ class T(Hidden):
             except Exception as err:
                 msg = "error setting bool param: %s" % str(err)
                 print(msg)
-                #GLib.idle_add(f.warn, msg)
 
             return False
 
@@ -761,7 +759,7 @@ class T(Hidden):
             try:
                 selected_func_name = form.get_func_value(name)
                 index = funclist.index(selected_func_name)
-            except ValueError as err:
+            except ValueError:
                 # func.cname not in list
                 # print "bad cname"
                 return
@@ -805,7 +803,7 @@ class T(Hidden):
                 try:
                     i = int(widget.get_text())
                     self.set_maxiter(i)
-                except ValueError as err:
+                except ValueError:
                     msg = "Invalid value '%s': must be a number" % \
                           widget.get_text()
                     GLib.idle_add(self.warn, msg)
@@ -932,8 +930,7 @@ class T(Hidden):
 
     def get_paint_color(self):
         color = self.paint_color_sel.get_current_color()
-        return (color.red / 65535.0, color.green /
-                65535.0, color.blue / 65535.0)
+        return (color.red / 65535.0, color.green / 65535.0, color.blue / 65535.0)
 
     def onPaint(self, x, y):
         # obtain index
@@ -1029,7 +1026,7 @@ class T(Hidden):
 
         try:
             buf = self.image.image_buffer(x, y)
-        except MemoryError as err:
+        except MemoryError:
             # suppress these errors
             return
 
