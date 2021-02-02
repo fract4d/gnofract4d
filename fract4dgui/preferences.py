@@ -64,7 +64,6 @@ GObject.type_register(Preferences)
 
 class PrefsDialog(dialog.T):
     def __init__(self, main_window, f, userPrefs):
-        # pylint: disable=no-member
         dialog.T.__init__(
             self,
             _("Gnofract 4D Preferences"),
@@ -399,7 +398,7 @@ class PrefsDialog(dialog.T):
         table.attach(hlabel, 0, 1, 1, 1)
 
         self.fix_ratio = Gtk.CheckButton(
-            label="Maintain Aspect _Ratio", 
+            label="Maintain Aspect _Ratio",
             tooltip_text="Keep the image rectangle the same shape when changing its size",
             use_underline=True,
             active=True)
