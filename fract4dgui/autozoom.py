@@ -9,7 +9,6 @@ from . import dialog
 
 class AutozoomDialog(dialog.T):
     def __init__(self, main_window, f):
-        #pylint: disable=no-member
         dialog.T.__init__(
             self,
             _("Autozoom"),
@@ -19,28 +18,26 @@ class AutozoomDialog(dialog.T):
 
         self.f = f
 
-        table = Gtk.Grid()
-        table.set_column_spacing(5)
-        table.set_row_spacing(5)
+        table = Gtk.Grid(column_spacing=5, row_spacing=5)
         self.vbox.add(table)
 
-        self.zoombutton = Gtk.ToggleButton(label=_("Start _Zooming"))
-        self.zoombutton.set_tooltip_text(
-            _("Zoom into interesting areas automatically"))
-        self.zoombutton.set_use_underline(True)
+        self.zoombutton = Gtk.ToggleButton(
+            label=_("Start _Zooming"),
+            tooltip_text=_("Zoom into interesting areas automatically"),
+            use_underline=True)
         self.zoombutton.connect('toggled', self.onZoomToggle)
         f.connect('status-changed', self.onStatusChanged)
         table.attach(self.zoombutton, 0, 0, 2, 1)
 
         self.minsize = 1.0E-13  # FIXME, should calculate this better
 
-        self.minsize_entry = Gtk.Entry()
-        self.minsize_entry.set_tooltip_text(
-            _("Stop zooming when size of fractal is this small"))
-        minlabel = Gtk.Label(label=_("_Min Size"))
+        self.minsize_entry = Gtk.Entry(
+            tooltip_text=_("Stop zooming when size of fractal is this small"))
+        minlabel = Gtk.Label(
+            label=_("_Min Size"),
+            use_underline=True,
+            mnemonic_widget=self.minsize_entry)
         table.attach(minlabel, 0, 1, 1, 1)
-        minlabel.set_use_underline(True)
-        minlabel.set_mnemonic_widget(self.minsize_entry)
 
         def set_entry(*args):
             self.minsize_entry.set_text("%g" % self.minsize)
