@@ -37,7 +37,8 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
             fct_dir += "/"
         if keydir == fct_dir:
             raise SanityCheckError(
-                _("Keyframe %s is in the temporary .fct directory and could be overwritten. Please change temp directory." % keyframe))
+                _("Keyframe %s is in the temporary .fct directory and could be overwritten."
+                  " Please change temp directory." % keyframe))
 
     def check_fct_file_sanity(self):
         # things to check with fct temp dir
@@ -407,7 +408,6 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
 
     # creating window...
     def __init__(self, main_window):
-        #pylint: disable=no-member
         dialog.T.__init__(
             self,
             _("Director"),
@@ -422,8 +422,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         self.animation = animation.T(self.compiler, main_window.application.userConfig)
 
         # main VBox
-        self.box_main = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
-        self.box_main.set_homogeneous(False)
+        box_main = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         # --------------------menu-------------------------------
         accelgroup = Gtk.AccelGroup()
         self.add_accel_group(accelgroup)
@@ -459,7 +458,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
 
         menubar = Gtk.MenuBar.new_from_model(
             main_window.application.get_menu_by_id("director_menubar"))
-        self.box_main.pack_start(menubar, False, True, 0)
+        box_main.pack_start(menubar, False, True, 0)
 
         # -----------creating keyframes popup menu model----------------
         add_action("file_keyframe", self.add_from_file)
@@ -469,52 +468,22 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         popup_menu.append("From file", "director.file_keyframe")
         popup_menu.append("From current fractal", "director.current_keyframe")
         # --------------Keyframes box-----------------------------------
-        self.frm_kf = Gtk.Frame.new("Keyframes")
-        self.frm_kf.set_border_width(10)
-        vbox_kfs = Gtk.Box.new(Gtk.Orientation.VERTICAL, 8)
-        button_box_kfs = Gtk.ButtonBox()
-        button_box_kfs.set_layout(Gtk.ButtonBoxStyle.SPREAD)
-        self.sw = Gtk.ScrolledWindow()
-        self.sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        self.sw.set_size_request(-1, 100)
-#        filenames=Gtk.ListStore(GObject.TYPE_STRING,
-#            GObject.TYPE_STRING)
-#        self.tv_keyframes=Gtk.TreeView(filenames)
-#        self.tv_column_name = Gtk.TreeViewColumn('Keyframes')
-#        self.tv_keyframes.append_column(self.tv_column_name)
-#        self.tv_column_duration = Gtk.TreeViewColumn('Duration')
-#        self.tv_keyframes.append_column(self.tv_column_duration)
-#        self.cell_name = Gtk.CellRendererText()
-#        self.tv_column_name.pack_start(self.cell_name, True)
-#        self.tv_column_name.add_attribute(self.cell_name, 'text', 0)
-#        self.cell_duration = Gtk.CellRendererText()
-#        self.tv_column_name.pack_start(self.cell_duration, True)
-#        self.tv_column_name.add_attribute(self.cell_duration, 'text', 0)
-        filenames = Gtk.ListStore(GObject.TYPE_STRING, GObject.TYPE_UINT,
-                                  GObject.TYPE_UINT, GObject.TYPE_STRING)
-        self.tv_keyframes = Gtk.TreeView()
-        self.tv_keyframes.set_model(filenames)
-        column = Gtk.TreeViewColumn(
-            'Keyframes', Gtk.CellRendererText(), text=0)
-        self.tv_keyframes.append_column(column)
+        frm_kf = Gtk.Frame(label="Keyframes", border_width=10)
+        vbox_kfs = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        button_box_kfs = Gtk.ButtonBox(layout_style=Gtk.ButtonBoxStyle.SPREAD)
+        sw = Gtk.ScrolledWindow(width_request=-1, height_request=100)
 
-        column = Gtk.TreeViewColumn(
-            'Stopped for', Gtk.CellRendererText(), text=2)
-        self.tv_keyframes.append_column(column)
-
-        column = Gtk.TreeViewColumn(
-            'Transition duration',
-            Gtk.CellRendererText(),
-            text=1)
-        self.tv_keyframes.append_column(column)
-
-        column = Gtk.TreeViewColumn(
-            'Interpolation type',
-            Gtk.CellRendererText(),
-            text=3)
-        self.tv_keyframes.append_column(column)
-
-        self.sw.add(self.tv_keyframes)
+        filenames = Gtk.ListStore(str, int, int, str)
+        self.tv_keyframes = Gtk.TreeView(model=filenames)
+        self.tv_keyframes.append_column(Gtk.TreeViewColumn(
+            title='Keyframes', cell_renderer=Gtk.CellRendererText(), text=0))
+        self.tv_keyframes.append_column(Gtk.TreeViewColumn(
+            title='Stopped for', cell_renderer=Gtk.CellRendererText(), text=2))
+        self.tv_keyframes.append_column(Gtk.TreeViewColumn(
+            title='Transition duration', cell_renderer=Gtk.CellRendererText(), text=1))
+        self.tv_keyframes.append_column(Gtk.TreeViewColumn(
+            title='Interpolation type', cell_renderer=Gtk.CellRendererText(), text=3))
+        sw.add(self.tv_keyframes)
         self.tv_keyframes.get_selection().connect(
             "changed", self.selection_changed, None)
         self.tv_keyframes.get_selection().set_select_function(self.before_selection, None)
@@ -522,168 +491,140 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
 
         self.btn_add_keyframe = Gtk.MenuButton(label="Add", menu_model=popup_menu)
 
-        self.btn_remove_keyframe = Gtk.Button.new_with_label("Remove")
-        self.btn_remove_keyframe.connect(
-            "clicked", self.remove_keyframe_clicked, None)
+        btn_remove_keyframe = Gtk.Button(label="Remove")
+        btn_remove_keyframe.connect("clicked", self.remove_keyframe_clicked, None)
 
         button_box_kfs.pack_start(self.btn_add_keyframe, True, True, 0)
-        button_box_kfs.pack_start(self.btn_remove_keyframe, True, True, 0)
+        button_box_kfs.pack_start(btn_remove_keyframe, True, True, 0)
 
-        vbox_kfs.pack_start(self.sw, True, True, 0)
+        vbox_kfs.pack_start(sw, True, True, 0)
         vbox_kfs.pack_start(button_box_kfs, True, True, 10)
 
-        self.frm_kf.add(vbox_kfs)
-        self.box_main.pack_start(self.frm_kf, True, True, 0)
+        frm_kf.add(vbox_kfs)
+        box_main.pack_start(frm_kf, True, True, 0)
 
         # current keyframe box
-        self.current_kf = Gtk.Frame.new("Current Keyframe")
-        self.current_kf.set_border_width(10)
+        current_kf = Gtk.Frame(label="Current Keyframe", border_width=10)
+        box_main.pack_start(current_kf, True, True, 0)
 
-        self.box_main.pack_start(self.current_kf, True, True, 0)
+        tbl_keyframes_right = Gtk.Grid(
+            column_homogeneous=True,
+            row_homogeneous=True,
+            row_spacing=10,
+            column_spacing=10,
+            border_width=10)
 
-        self.tbl_keyframes_right = Gtk.Grid()
-        self.tbl_keyframes_right.set_column_homogeneous(True)
-        self.tbl_keyframes_right.set_row_homogeneous(True)
-        self.tbl_keyframes_right.set_row_spacing(10)
-        self.tbl_keyframes_right.set_column_spacing(10)
-        self.tbl_keyframes_right.set_border_width(10)
+        tbl_keyframes_right.attach(Gtk.Label(label="Keyframe stopped for:"), 0, 0, 1, 1)
 
-        self.lbl_kf_stop = Gtk.Label(label="Keyframe stopped for:")
-        self.tbl_keyframes_right.attach(self.lbl_kf_stop, 0, 0, 1, 1)
-
-        adj_kf_stop = Gtk.Adjustment.new(1, 1, 10000, 1, 10, 0)
-        self.spin_kf_stop = Gtk.SpinButton()
-        self.spin_kf_stop.set_adjustment(adj_kf_stop)
+        self.spin_kf_stop = Gtk.SpinButton(
+            adjustment=Gtk.Adjustment.new(1, 1, 10000, 1, 10, 0))
         self.spin_kf_stop.connect("output", self.stop_changed, None)
-        self.tbl_keyframes_right.attach(self.spin_kf_stop, 1, 0, 1, 1)
+        tbl_keyframes_right.attach(self.spin_kf_stop, 1, 0, 1, 1)
 
-        self.lbl_duration = Gtk.Label(label="Transition duration:")
-        self.tbl_keyframes_right.attach(self.lbl_duration, 0, 1, 1, 1)
+        tbl_keyframes_right.attach(Gtk.Label(label="Transition duration:"), 0, 1, 1, 1)
 
-        adj_duration = Gtk.Adjustment.new(25, 1, 10000, 1, 10, 0)
-        self.spin_duration = Gtk.SpinButton()
-        self.spin_duration.set_adjustment(adj_duration)
+        self.spin_duration = Gtk.SpinButton(
+            adjustment=Gtk.Adjustment.new(25, 1, 10000, 1, 10, 0))
         self.spin_duration.connect("output", self.duration_changed, None)
-        self.tbl_keyframes_right.attach(self.spin_duration, 1, 1, 1, 1)
+        tbl_keyframes_right.attach(self.spin_duration, 1, 1, 1, 1)
 
-        self.lbl_int_type = Gtk.Label(label="Interpolation type:")
-        self.tbl_keyframes_right.attach(self.lbl_int_type, 0, 2, 1, 1)
+        tbl_keyframes_right.attach(Gtk.Label(label="Interpolation type:"), 0, 2, 1, 1)
 
-        self.cmb_interpolation_type = Gtk.ComboBoxText()  # Gtk.ComboBox()
-        self.cmb_interpolation_type.append_text("Linear")
-        self.cmb_interpolation_type.append_text("Logarithmic")
-        self.cmb_interpolation_type.append_text("Inverse logarithmic")
-        self.cmb_interpolation_type.append_text("Cosine")
+        self.cmb_interpolation_type = utils.combo_box_text_with_items(
+            ["Linear", "Logarithmic", "Inverse logarithmic", "Cosine"])
         self.cmb_interpolation_type.set_active(0)
         self.cmb_interpolation_type.connect(
             "changed", self.interpolation_type_changed, None)
-        self.tbl_keyframes_right.attach(
+        tbl_keyframes_right.attach(
             self.cmb_interpolation_type, 1, 2, 1, 1)
 
-        self.btn_adv_opt = Gtk.Button(label="Advanced options")
-        self.btn_adv_opt.connect("clicked", self.adv_opt_clicked, None)
-        self.tbl_keyframes_right.attach(self.btn_adv_opt, 0, 3, 2, 1)
+        btn_adv_opt = Gtk.Button(label="Advanced options")
+        btn_adv_opt.connect("clicked", self.adv_opt_clicked, None)
+        tbl_keyframes_right.attach(btn_adv_opt, 0, 3, 2, 1)
 
-        self.current_kf.add(self.tbl_keyframes_right)
+        current_kf.add(tbl_keyframes_right)
         # -------------------------------------------------------------------
         # ----------------------output box-----------------------------------
-        self.frm_output = Gtk.Frame.new("Output options")
-        self.frm_output.set_border_width(10)
+        frm_output = Gtk.Frame(label="Output options", border_width=10)
 
-        self.box_output_main = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
-                                       homogeneous=True, spacing=10)
-        self.box_output_main.set_border_width(10)
-        self.box_output_file = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
-                                       homogeneous=False, spacing=10)
+        box_output_main = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            homogeneous=True,
+            spacing=10,
+            border_width=10)
 
-        self.lbl_temp_avi = Gtk.Label(label="Resulting video file:")
-        self.box_output_file.pack_start(self.lbl_temp_avi, False, False, 10)
+        box_output_file = Gtk.Box(spacing=10)
 
+        box_output_file.pack_start(Gtk.Label(label="Resulting video file:"), False, False, 10)
         self.txt_temp_avi = Gtk.Entry()
-        self.box_output_file.pack_start(self.txt_temp_avi, True, True, 10)
+        box_output_file.pack_start(self.txt_temp_avi, True, True, 10)
 
-        self.btn_temp_avi = Gtk.Button(label="Browse")
-        self.btn_temp_avi.connect("clicked", self.temp_avi_clicked, None)
-        self.box_output_file.pack_start(self.btn_temp_avi, True, True, 10)
+        btn_temp_avi = Gtk.Button(label="Browse")
+        btn_temp_avi.connect("clicked", self.temp_avi_clicked, None)
+        box_output_file.pack_start(btn_temp_avi, True, True, 10)
 
-        self.box_output_main.pack_start(self.box_output_file, True, True, 0)
+        box_output_main.pack_start(box_output_file, True, True, 0)
 
-        self.box_output_res = Gtk.HBox(homogeneous=False, spacing=10)
+        box_output_res = Gtk.Box(spacing=10)
 
-        self.lbl_res = Gtk.Label(label="Resolution:")
-        self.box_output_res.pack_start(self.lbl_res, False, False, 10)
+        box_output_res.pack_start(Gtk.Label(label="Resolution:"), False, False, 10)
+        self.spin_width = Gtk.SpinButton(
+            adjustment=Gtk.Adjustment.new(640, 320, 2048, 10, 100, 0))
+        box_output_res.pack_start(self.spin_width, False, False, 10)
 
-        adj_width = Gtk.Adjustment.new(640, 320, 2048, 10, 100, 0)
-        self.spin_width = Gtk.SpinButton()
-        self.spin_width.set_adjustment(adj_width)
-        self.box_output_res.pack_start(self.spin_width, False, False, 10)
+        box_output_res.pack_start(Gtk.Label(label="x"), False, False, 10)
+        self.spin_height = Gtk.SpinButton(
+            adjustment=Gtk.Adjustment.new(480, 240, 1536, 10, 100, 0))
+        box_output_res.pack_start(self.spin_height, False, False, 10)
 
-        self.lbl_x = Gtk.Label(label="x")
-        self.box_output_res.pack_start(self.lbl_x, False, False, 10)
+        box_output_main.pack_start(box_output_res, True, True, 0)
 
-        adj_height = Gtk.Adjustment.new(480, 240, 1536, 10, 100, 0)
-        self.spin_height = Gtk.SpinButton()
-        self.spin_height.set_adjustment(adj_height)
-        self.box_output_res.pack_start(self.spin_height, False, False, 10)
+        box_output_framerate = Gtk.Box(spacing=10)
 
-        self.box_output_main.pack_start(self.box_output_res, True, True, 0)
-
-        self.box_output_framerate = Gtk.HBox(homogeneous=False, spacing=10)
-
-        self.lbl_framerate = Gtk.Label(label="Frame rate:")
-        self.box_output_framerate.pack_start(
-            self.lbl_framerate, False, False, 10)
-
-        adj_framerate = Gtk.Adjustment.new(25, 5, 100, 1, 5, 0)
-        self.spin_framerate = Gtk.SpinButton()
-        self.spin_framerate.set_adjustment(adj_framerate)
-        self.box_output_framerate.pack_start(
-            self.spin_framerate, False, False, 10)
+        box_output_framerate.pack_start(Gtk.Label(label="Frame rate:"), False, False, 10)
+        self.spin_framerate = Gtk.SpinButton(
+            adjustment=Gtk.Adjustment.new(25, 5, 100, 1, 5, 0))
+        box_output_framerate.pack_start(self.spin_framerate, False, False, 10)
 
         self.chk_swapRB = Gtk.CheckButton(label="Swap red and blue component")
-        self.box_output_framerate.pack_start(self.chk_swapRB, False, False, 50)
+        box_output_framerate.pack_start(self.chk_swapRB, False, False, 50)
 
-        self.box_output_main.pack_start(
-            self.box_output_framerate, True, True, 0)
+        box_output_main.pack_start(box_output_framerate, True, True, 0)
 
-        self.frm_output.add(self.box_output_main)
-        self.box_main.pack_start(self.frm_output, False, False, 0)
+        frm_output.add(box_output_main)
+        box_main.pack_start(frm_output, False, False, 0)
 
         # check if video converter can be found
         self.converterpath = fractconfig.T.find_on_path("ffmpeg")
         if not self.converterpath:
             # put a message at the bottom to warn user
-            warning_box = Gtk.HBox()
-            image = Gtk.Image.new_from_icon_name(
-                "dialog-warning", Gtk.IconSize.BUTTON)
+            warning_box = Gtk.Box()
 
+            image = Gtk.Image(icon_name="dialog-warning", icon_size=Gtk.IconSize.BUTTON)
             warning_box.pack_start(image, True, True, 0)
 
             message = Gtk.Label(label=_(
-                "ffmpeg utility not found. Without it we can't generate any video but can still save sequences of still images."))
-
-            message.set_line_wrap(True)
+                "ffmpeg utility not found. Without it we can't generate any video"
+                " but can still save sequences of still images."),
+                wrap=True)
             warning_box.pack_start(message, True, True, 0)
-            self.box_main.pack_end(warning_box, True, True, 0)
+
+            box_main.pack_end(warning_box, True, True, 0)
 
         # initialise default settings
         self.updateGUI()
 
         # don't connect signals until after settings initialised
         self.spin_height.connect(
-            "value-changed",
-            self.output_height_changed,
-            None)
+            "value-changed", self.output_height_changed, None)
         self.spin_width.connect(
-            "value-changed",
-            self.output_width_changed,
-            None)
+            "value-changed", self.output_width_changed, None)
         self.spin_framerate.connect(
             "value-changed", self.output_framerate_changed, None)
         self.chk_swapRB.connect("toggled", self.swap_redblue_clicked, None)
 
         # --------------showing all-------------------------------
-        self.vbox.add(self.box_main)
+        self.vbox.add(box_main)
         self.vbox.show_all()
 
     def onResponse(self, widget, id):
