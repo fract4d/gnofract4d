@@ -19,18 +19,16 @@ class T(Gtk.DrawingArea):
         self.last_x = 0
         self.last_y = 0
         self.text = text
-        Gtk.DrawingArea.__init__(self, tooltip_text=tip)
-
-        self.set_size_request(53, 53)
+        Gtk.DrawingArea.__init__(self, tooltip_text=tip, width_request=53, height_request=53)
 
         self.set_events(
-            Gdk.EventMask.BUTTON_RELEASE_MASK |
-            Gdk.EventMask.BUTTON1_MOTION_MASK |
-            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
-            Gdk.EventMask.ENTER_NOTIFY_MASK |
-            Gdk.EventMask.LEAVE_NOTIFY_MASK |
-            Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.EXPOSURE_MASK
+            Gdk.EventMask.BUTTON_RELEASE_MASK
+            | Gdk.EventMask.BUTTON1_MOTION_MASK
+            | Gdk.EventMask.POINTER_MOTION_HINT_MASK
+            | Gdk.EventMask.ENTER_NOTIFY_MASK
+            | Gdk.EventMask.LEAVE_NOTIFY_MASK
+            | Gdk.EventMask.BUTTON_PRESS_MASK
+            | Gdk.EventMask.EXPOSURE_MASK
         )
 
         self.notice_mouse = False
@@ -55,8 +53,8 @@ class T(Gtk.DrawingArea):
     def onButtonRelease(self, widget, event):
         if event.button == 1:
             self.notice_mouse = False
-            (xc, yc) = (widget.get_allocated_width() //
-                        2, widget.get_allocated_height() // 2)
+            (xc, yc) = (widget.get_allocated_width() // 2,
+                        widget.get_allocated_height() // 2)
             dx = xc - self.last_x
             dy = yc - self.last_y
             if dx or dy:
