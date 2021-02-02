@@ -128,14 +128,6 @@ class T(configparser.ConfigParser):
         return path
 
     @staticmethod
-    def find_on_path(executable):
-        for path in os.environ["PATH"].split(":"):
-            fullname = os.path.join(path, executable)
-            if os.path.exists(fullname):
-                return fullname
-        return None
-
-    @staticmethod
     def find_resource(name, resource_dir):
         'try and find a file either locally or installed'
         local_name = os.path.join(resource_dir, name)

@@ -6,11 +6,12 @@
 
 import os
 import fnmatch
+import shutil
 import tempfile
 
 from gi.repository import Gdk, Gio, Gtk, GObject
 
-from fract4d import animation, fractconfig
+from fract4d import animation
 from . import dialog, hig, PNGGen, AVIGen, DlgAdvOpt, director_prefs, utils
 
 
@@ -650,7 +651,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
         self.box_main.pack_start(self.frm_output, False, False, 0)
 
         # check if video converter can be found
-        self.converterpath = fractconfig.T.find_on_path("ffmpeg")
+        self.converterpath = shutil.which("ffmpeg")
         if not self.converterpath:
             # put a message at the bottom to warn user
             warning_box = Gtk.HBox()
