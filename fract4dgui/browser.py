@@ -6,8 +6,6 @@ from gi.repository import Gtk, GObject
 
 from . import dialog, utils, gtkfractal, browser_model
 
-# pylint: disable=no-member
-
 
 class BrowserDialog(dialog.T):
     RESPONSE_REFRESH = 2
@@ -98,21 +96,16 @@ class BrowserDialog(dialog.T):
         self.model.set_type(type)
 
     def create_file_list(self):
-        sw = Gtk.ScrolledWindow()
+        sw = Gtk.ScrolledWindow(
+            shadow_type=Gtk.ShadowType.ETCHED_IN,
+            hscrollbar_policy=Gtk.PolicyType.NEVER)
 
-        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy(Gtk.PolicyType.NEVER,
-                      Gtk.PolicyType.AUTOMATIC)
-
-        self.filetreeview = Gtk.TreeView.new_with_model(self.file_list)
-        self.filetreeview.set_tooltip_text(
-            _("A list of files containing fractal formulas"))
-
+        self.filetreeview = Gtk.TreeView(
+            model=self.file_list,
+            tooltip_text=_("A list of files containing fractal formulas"))
         sw.add(self.filetreeview)
 
-        renderer = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn('_File', renderer, text=0)
-
+        column = Gtk.TreeViewColumn('_File', Gtk.CellRendererText(), text=0)
         self.filetreeview.append_column(column)
 
         return sw
@@ -175,33 +168,23 @@ class BrowserDialog(dialog.T):
             'changed', self.formula_selection_changed)
 
     def create_formula_list(self):
-        sw = Gtk.ScrolledWindow()
-        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy(Gtk.PolicyType.NEVER,
-                      Gtk.PolicyType.AUTOMATIC)
+        sw = Gtk.ScrolledWindow(
+            shadow_type=Gtk.ShadowType.ETCHED_IN,
+            hscrollbar_policy=Gtk.PolicyType.NEVER)
 
-        self.treeview = Gtk.TreeView.new_with_model(self.formula_list)
-
-        self.treeview.set_tooltip_text(
-            _("A list of formulas in the selected file"))
-
+        self.treeview = Gtk.TreeView(
+            model=self.formula_list,
+            tooltip_text=_("A list of formulas in the selected file"))
         sw.add(self.treeview)
 
-        renderer = Gtk.CellRendererText()
-        column = Gtk.TreeViewColumn(_('F_ormula'), renderer, text=0)
+        column = Gtk.TreeViewColumn(_('F_ormula'), Gtk.CellRendererText(), text=0)
         self.treeview.append_column(column)
 
         return sw
 
     def create_scrolled_textview(self, tip):
-        sw = Gtk.ScrolledWindow()
-        sw.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
-        sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-
-        textview = Gtk.TextView()
-        textview.set_tooltip_text(tip)
-        textview.set_editable(False)
-
+        sw = Gtk.ScrolledWindow(shadow_type=Gtk.ShadowType.ETCHED_IN)
+        textview = Gtk.TextView(tooltip_text=tip, editable=False)
         sw.add(textview)
         return (textview, sw)
 
@@ -212,35 +195,29 @@ class BrowserDialog(dialog.T):
              _("Outer Coloring Function"),
              _("Inner Coloring Function"),
              _("Transform Function"),
-             _("Gradient")])
-
-        self.funcTypeMenu.set_active(int(self.model.current_type))
-
-        self.funcTypeMenu.set_tooltip_text(
+             _("Gradient")],
             _("Which formula of the current fractal to change"))
-
+        self.funcTypeMenu.set_active(int(self.model.current_type))
         self.funcTypeMenu.connect('changed', self.set_type_cb)
 
         # label for the menu
-        hbox = Gtk.HBox()
-        label = Gtk.Label(label=_("Function _Type to Modify : "))
-        label.set_use_underline(True)
-        label.set_mnemonic_widget(self.funcTypeMenu)
-
+        hbox = Gtk.Box()
+        label = Gtk.Label(
+            label=_("Function _Type to Modify : "),
+            use_underline=True,
+            mnemonic_widget=self.funcTypeMenu)
         hbox.pack_start(label, False, False, 0)
-
         hbox.pack_start(self.funcTypeMenu, True, True, 0)
         self.vbox.pack_start(hbox, False, False, 0)
 
         # 3 panes: files, formulas, formula contents
-        panes1 = Gtk.HPaned()
+        panes1 = Gtk.Paned(border_width=5)
         self.vbox.pack_start(panes1, True, True, 0)
-        panes1.set_border_width(5)
 
         file_list = self.create_file_list()
         formula_list = self.create_formula_list()
 
-        panes2 = Gtk.HPaned()
+        panes2 = Gtk.Paned()
         # left-hand pane displays file list
         panes2.pack1(file_list, True, False)
         # middle is formula list for that file
@@ -251,24 +228,21 @@ class BrowserDialog(dialog.T):
         notebook = Gtk.Notebook()
 
         # preview
-        label = Gtk.Label(label=_('_Preview'))
-        label.set_use_underline(True)
+        label = Gtk.Label(label=_('_Preview'), use_underline=True)
         notebook.append_page(self.preview.widget, label)
 
         # source
         (self.sourcetext, sw) = self.create_scrolled_textview(
             _("The contents of the currently selected formula file"))
 
-        label = Gtk.Label(label=_('_Source'))
-        label.set_use_underline(True)
+        label = Gtk.Label(label=_('_Source'), use_underline=True)
         notebook.append_page(sw, label)
 
         # messages
         (self.msgtext, sw) = self.create_scrolled_textview(
             _("Any compiler warnings or errors in the current function"))
 
-        label = Gtk.Label(label=_('_Messages'))
-        label.set_use_underline(True)
+        label = Gtk.Label(label=_('_Messages'), use_underline=True)
         notebook.append_page(sw, label)
 
         panes1.add2(notebook)
