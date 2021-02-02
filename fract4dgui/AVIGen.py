@@ -10,7 +10,6 @@ from gi.repository import Gdk, Gtk, GLib
 
 class AVIGeneration:
     def __init__(self, animation, parent):
-        # pylint: disable=no-member
         self.animation = animation
         self.converterpath = parent.converterpath
         self.error_watch = None
@@ -81,16 +80,18 @@ class AVIGeneration:
         call.extend([
             "-c:v", "libvpx-vp9", "-crf", "30", "-b:v", "0",
             "-r", str(framerate), video_file])
-        self.pid, fd_in, fd_out, fd_err = GLib.spawn_async(call,
-                                                           flags=GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                           standard_output=False, standard_error=True)
+        self.pid, fd_in, fd_out, fd_err = GLib.spawn_async(
+            call,
+            flags=GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+            standard_output=False,
+            standard_error=True)
         self.fh_err = os.fdopen(fd_err, "r")
         GLib.child_watch_add(
             GLib.PRIORITY_DEFAULT,
             self.pid,
             self.video_complete)
-        self.error_watch = GLib.io_add_watch(self.fh_err, GLib.PRIORITY_DEFAULT,
-                                             GLib.IOCondition.IN, self.video_error)
+        self.error_watch = GLib.io_add_watch(
+            self.fh_err, GLib.PRIORITY_DEFAULT, GLib.IOCondition.IN, self.video_error)
 
     def video_error(self, source, condition):
         error_text = source.read()
@@ -122,7 +123,7 @@ class AVIGeneration:
 
         try:
             self.generate_avi()
-        except GLib.GError as err: #pylint: disable=catching-non-exception
+        except GLib.GError as err:  # pylint: disable=catching-non-exception
             error_dlg = Gtk.MessageDialog(
                 transient_for=self.dialog,
                 title=_("Error executing video converter"),

@@ -14,7 +14,6 @@ running = False
 
 class PNGGeneration(Gtk.Dialog, hig.MessagePopper):
     def __init__(self, animation, compiler, parent):
-        #pylint: disable=no-member
         Gtk.Dialog.__init__(
             self,
             transient_for=parent,
@@ -23,12 +22,10 @@ class PNGGeneration(Gtk.Dialog, hig.MessagePopper):
 
         self.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL)
         hig.MessagePopper.__init__(self)
-        self.lbl_image = Gtk.Label(label="Current image progress")
-        self.vbox.pack_start(self.lbl_image, True, True, 0)
+        self.vbox.pack_start(Gtk.Label(label="Current image progress"), True, True, 0)
         self.pbar_image = Gtk.ProgressBar()
         self.vbox.pack_start(self.pbar_image, True, True, 0)
-        self.lbl_overall = Gtk.Label(label="Overall progress")
-        self.vbox.pack_start(self.lbl_overall, True, True, 0)
+        self.vbox.pack_start(Gtk.Label(label="Overall progress"), True, True, 0)
         self.pbar_overall = Gtk.ProgressBar()
         self.vbox.pack_start(self.pbar_overall, True, True, 0)
         geometry = Gdk.Geometry()
@@ -64,7 +61,8 @@ class PNGGeneration(Gtk.Dialog, hig.MessagePopper):
                 try:
                     folder_png = self.anim.get_png_dir()
                     response = self.ask_question(
-                        _("The temporary directory: %s already contains at least one image" % folder_png),
+                        _("The temporary directory: %s already contains"
+                          " at least one image" % folder_png),
                         _("Use them to speed up generation?"))
 
                 except Exception as err:
