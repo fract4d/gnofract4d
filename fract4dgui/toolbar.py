@@ -5,7 +5,7 @@ from gi.repository import Gtk
 
 class T(Gtk.Box):
     def __init__(self):
-        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, margin=5, spacing=1)
+        super().__init__(margin=5, spacing=1)
 
     @staticmethod
     def button_args(icon_name, tip_text, action):
