@@ -17,7 +17,7 @@ class Test(testgui.TestCase):
 
     @patch("gi.repository.Gtk.Dialog.run")
     def testDlgAdvOptions(self, mock_dialog_run):
-        mock_dialog_run.side_effect = lambda : Gtk.ResponseType.OK
+        mock_dialog_run.side_effect = lambda: Gtk.ResponseType.OK
 
         parent = Gtk.Window()
         self.test_animation.add_keyframe(

@@ -82,7 +82,8 @@ class Test(unittest.TestCase):
         d = hig.ConfirmationAlert(
             transient_for=toplevel,
             primary="Convert sub-meson structure?",
-            secondary="The process is agonizingly painful and could result in permanent damage to the space-time continuum",
+            secondary="The process is agonizingly painful and could result"
+                      " in permanent damage to the space-time continuum",
             proceed_button="Convert",
             alternate_button="Go Fishing")
 

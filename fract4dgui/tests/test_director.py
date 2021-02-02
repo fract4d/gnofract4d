@@ -75,17 +75,17 @@ class Test(testgui.TestCase):
     @patch("gi.repository.Gtk.FileChooserDialog.get_filename")
     def testFileChoosers(self, mock_dialog_get_filename, mock_dialog_run):
         filename = "test_file"
-        mock_dialog_get_filename.side_effect = lambda : filename
+        mock_dialog_get_filename.side_effect = lambda: filename
 
         dd = director.DirectorDialog(self.parent)
 
-        mock_dialog_run.side_effect = lambda : Gtk.ResponseType.OK
+        mock_dialog_run.side_effect = lambda: Gtk.ResponseType.OK
         self.assertEqual(dd.get_fct_file(), filename)
         self.assertEqual(dd.get_avi_file(), filename)
         self.assertEqual(dd.get_cfg_file_save(), filename)
         self.assertEqual(dd.get_cfg_file_open(), filename)
 
-        mock_dialog_run.side_effect = lambda : Gtk.ResponseType.CANCEL
+        mock_dialog_run.side_effect = lambda: Gtk.ResponseType.CANCEL
         self.assertEqual(dd.get_fct_file(), "")
         self.assertEqual(dd.get_avi_file(), "")
         self.assertEqual(dd.get_cfg_file_save(), "")
@@ -141,8 +141,9 @@ class Test(testgui.TestCase):
 
         self.assertRaisesMessage(
             director.SanityCheckError,
-            "Keyframe {} is in the temporary .fct directory and could be overwritten. Please change temp directory.".format(
-                os.path.join(Test.tmpdir.name, "director2.fct")),
+            f"Keyframe {os.path.join(Test.tmpdir.name, 'director2.fct')} is in"
+            " the temporary .fct directory and could be overwritten."
+            " Please change temp directory.",
             dd.check_sanity)
 
     def testKeyframeClash(self):
@@ -152,10 +153,14 @@ class Test(testgui.TestCase):
 
         self.assertRaises(
             director.SanityCheckError,
-            dd.check_for_keyframe_clash, os.path.join(Test.tmpdir.name, "foo.fct"), Test.tmpdir.name)
+            dd.check_for_keyframe_clash,
+            os.path.join(Test.tmpdir.name, "foo.fct"),
+            Test.tmpdir.name)
         self.assertRaises(
             director.SanityCheckError,
-            dd.check_for_keyframe_clash, os.path.join(Test.tmpdir.name, "foo.fct"), Test.tmpdir.name)
+            dd.check_for_keyframe_clash,
+            os.path.join(Test.tmpdir.name, "foo.fct"),
+            Test.tmpdir.name)
 
     def testPNGGen(self):
         dd = director.DirectorDialog(self.parent)

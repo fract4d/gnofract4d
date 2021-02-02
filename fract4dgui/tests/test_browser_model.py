@@ -36,7 +36,7 @@ class Test(testbase.ClassSetup):
         cls.g_comp.load_formula_file("gf4d.uxf")
 
     def testCreation(self):
-        bm = browser_model.T(Test.g_comp)
+        browser_model.T(Test.g_comp)
 
     def testFuncMapping(self):
         bm = browser_model.T(Test.g_comp)
@@ -114,10 +114,10 @@ class Test(testbase.ClassSetup):
         bm.set_type(browser_model.FRACTAL)
         self.assertRaises(IOError, bm.set_file, "nonexistent.frm")
 
-    def assertListSorted(self, l):
+    def assertListSorted(self, sorted_list):
         last = ""
-        for f in l:
-            self.assertTrue(last < f.lower(), "list not sorted: %s" % l)
+        for f in sorted_list:
+            self.assertTrue(last < f.lower(), f"list not sorted: {sorted_list}")
             last = f.lower()
 
     def testFormulasSorted(self):
