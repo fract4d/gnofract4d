@@ -73,3 +73,11 @@ class Test(testbase.TestSetup):
     def testDarwin(self):
         c = fractconfig.DarwinConfig("testprefs")
         self.assertEqual("open -e", c.get_default_editor())
+
+    def testUpdatePaths(self):
+        self.userConfig["formula_path"] = {
+            "0": "formulas", "1": "/usr/share/gnofract4d", "2":"/home/fract4d/formulas"}
+        self.userConfig.update_paths("formula_path")
+        self.assertEqual(
+            self.userConfig["formula_path"],
+            {"formulas": None, "/usr/share/gnofract4d": None, "/home/fract4d/formulas": None})

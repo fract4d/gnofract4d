@@ -255,8 +255,8 @@ class ClassSetup(TestBase):
         cls.userConfig.set("general", "cache_dir",
                            os.path.join(cls.tmpdir.name, "gnofract4d-cache"))
 
-        cls.userConfig["formula_path"] = {"0": "formulas",
-                                          "1": "testdata/formulas"}
+        cls.userConfig["formula_path"] = {"formulas": None,
+                                          "testdata/formulas": None}
         cls.g_comp = fc.Compiler(cls.userConfig)
 
     @classmethod
@@ -277,7 +277,7 @@ class TestSetup(TestBase):
 
         self.userConfig.set("general", "cache_dir",
                             os.path.join(self.tmpdir.name, "gnofract4d-cache"))
-        self.userConfig["formula_path"] = {"0": "formulas"}
+        self.userConfig["formula_path"] = {"formulas": None}
         self.g_comp = fc.Compiler(self.userConfig)
 
     def tearDown(self):
