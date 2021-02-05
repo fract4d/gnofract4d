@@ -17,7 +17,8 @@ class T(Gtk.DrawingArea):
     two_pi = 2.0 * math.pi
     ptr_radius = 4
 
-    def __init__(self, text, tip):
+    def __init__(self, text, tip, axis):
+        self.axis = axis
         self.radius = 0
         self.text = text
 
