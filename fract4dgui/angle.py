@@ -36,13 +36,13 @@ class T(Gtk.DrawingArea):
         Gtk.DrawingArea.__init__(self, tooltip_text=tip, width_request=40, height_request=40)
 
         self.set_events(
-            Gdk.EventMask.BUTTON_RELEASE_MASK
-            | Gdk.EventMask.BUTTON1_MOTION_MASK
-            | Gdk.EventMask.POINTER_MOTION_HINT_MASK
-            | Gdk.EventMask.ENTER_NOTIFY_MASK
-            | Gdk.EventMask.LEAVE_NOTIFY_MASK
-            | Gdk.EventMask.BUTTON_PRESS_MASK
-            | Gdk.EventMask.EXPOSURE_MASK
+            Gdk.EventMask.BUTTON_RELEASE_MASK |
+            Gdk.EventMask.BUTTON1_MOTION_MASK |
+            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
+            Gdk.EventMask.ENTER_NOTIFY_MASK |
+            Gdk.EventMask.LEAVE_NOTIFY_MASK |
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.EXPOSURE_MASK
         )
 
         self.notice_mouse = False

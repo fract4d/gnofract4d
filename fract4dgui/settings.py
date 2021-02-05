@@ -150,12 +150,12 @@ class SettingsPane(Gtk.Box):
         self.gradarea = Gtk.DrawingArea(width_request=256, height_request=96)
 
         self.gradarea.add_events(
-            Gdk.EventMask.BUTTON_RELEASE_MASK
-            | Gdk.EventMask.BUTTON1_MOTION_MASK
-            | Gdk.EventMask.POINTER_MOTION_HINT_MASK
-            | Gdk.EventMask.BUTTON_PRESS_MASK
-            | Gdk.EventMask.KEY_PRESS_MASK
-            | Gdk.EventMask.KEY_RELEASE_MASK
+            Gdk.EventMask.BUTTON_RELEASE_MASK |
+            Gdk.EventMask.BUTTON1_MOTION_MASK |
+            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.KEY_PRESS_MASK |
+            Gdk.EventMask.KEY_RELEASE_MASK
         )
 
         self.gradarea.connect('draw', self.redraw_rect)
