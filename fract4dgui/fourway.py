@@ -13,7 +13,8 @@ class T(Gtk.DrawingArea):
             None, (GObject.TYPE_INT, GObject.TYPE_INT))
     }
 
-    def __init__(self, text, tip):
+    def __init__(self, text, tip, axis=None):
+        self.axis = axis
         self.button = 0
         self.radius = 0
         self.last_x = 0

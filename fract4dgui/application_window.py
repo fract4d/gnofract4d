@@ -320,10 +320,8 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.panes.pack2(self.settingsPane, resize=False, shrink=False)
 
     def add_fourway(self, name, tip, axis, is4dsensitive):
-        my_fourway = fourway.T(name, tip)
+        my_fourway = fourway.T(name, tip, axis)
         self.toolbar.add(my_fourway)
-
-        my_fourway.axis = axis
 
         my_fourway.connect('value-slightly-changed', self.on_drag_fourway)
         my_fourway.connect('value-changed', self.on_release_fourway)
@@ -352,7 +350,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.toolbar.add(self.warpmenu)
 
     def create_angle_widget(self, name, tip, axis, is4dsensitive):
-        my_angle = angle.T(name, tip)
+        my_angle = angle.T(name, tip, axis)
         my_angle.connect('value-slightly-changed',
                          self.on_angle_slightly_changed)
         my_angle.connect('value-changed',
@@ -360,8 +358,6 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         self.f.connect('parameters-changed',
                        self.update_angle_widget, my_angle)
-
-        my_angle.axis = axis
 
         self.toolbar.add(my_angle)
 
