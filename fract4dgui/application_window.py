@@ -349,7 +349,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         self.toolbar.add(self.warpmenu)
 
-    def create_angle_widget(self, name, tip, axis, is4dsensitive):
+    def add_angle(self, name, tip, axis, is4dsensitive):
         my_angle = angle.T(name, tip, axis)
         my_angle.connect('value-slightly-changed',
                          self.on_angle_slightly_changed)
@@ -425,22 +425,22 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         # angles
         self.toolbar.add_space()
 
-        self.create_angle_widget(
+        self.add_angle(
             _("xy"), _("Angle in the XY plane"), fractal.T.XYANGLE, False)
 
-        self.create_angle_widget(
+        self.add_angle(
             _("xz"), _("Angle in the XZ plane"), fractal.T.XZANGLE, True)
 
-        self.create_angle_widget(
+        self.add_angle(
             _("xw"), _("Angle in the XW plane"), fractal.T.XWANGLE, True)
 
-        self.create_angle_widget(
+        self.add_angle(
             _("yz"), _("Angle in the YZ plane"), fractal.T.YZANGLE, True)
 
-        self.create_angle_widget(
+        self.add_angle(
             _("yw"), _("Angle in the YW plane"), fractal.T.YWANGLE, True)
 
-        self.create_angle_widget(
+        self.add_angle(
             _("zw"), _("Angle in the ZW plane"), fractal.T.ZWANGLE, True)
 
         # fourways
