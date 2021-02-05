@@ -463,14 +463,14 @@ class T(Hidden):
 
         drawing_area = Gtk.DrawingArea()
         drawing_area.set_events(
-            Gdk.EventMask.BUTTON_RELEASE_MASK
-            | Gdk.EventMask.BUTTON1_MOTION_MASK
-            | Gdk.EventMask.POINTER_MOTION_MASK
-            | Gdk.EventMask.POINTER_MOTION_HINT_MASK
-            | Gdk.EventMask.BUTTON_PRESS_MASK
-            | Gdk.EventMask.KEY_PRESS_MASK
-            | Gdk.EventMask.KEY_RELEASE_MASK
-            | Gdk.EventMask.EXPOSURE_MASK
+            Gdk.EventMask.BUTTON_RELEASE_MASK |
+            Gdk.EventMask.BUTTON1_MOTION_MASK |
+            Gdk.EventMask.POINTER_MOTION_MASK |
+            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
+            Gdk.EventMask.BUTTON_PRESS_MASK |
+            Gdk.EventMask.KEY_PRESS_MASK |
+            Gdk.EventMask.KEY_RELEASE_MASK |
+            Gdk.EventMask.EXPOSURE_MASK
         )
 
         self.notice_mouse = False
