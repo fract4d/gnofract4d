@@ -197,10 +197,10 @@ class MainWindow(Actions, ApplicationWindow):
         self.nudge(0, 1, parameter.unpack())
 
     def progress_changed(self, f, progress):
-        self.bar.set_fraction(progress / 100.0)
+        self.statusbar.set_fraction(progress / 100.0)
 
     def stats_changed(self, f, stats):
-        self.bar.set_tooltip_text(stats.show())
+        self.statusbar.set_tooltip_text(stats.show())
 
     def status_changed(self, f, status):
         if status == 2:
@@ -218,7 +218,7 @@ class MainWindow(Actions, ApplicationWindow):
         else:
             text = STATUS[status]
 
-        self.bar.set_text(text)
+        self.statusbar.set_text(text)
 
     def save_hires_image(self, *args):
         """Add the current fractal to the render queue."""
@@ -283,7 +283,7 @@ class MainWindow(Actions, ApplicationWindow):
             self.fullscreen()
             self.set_show_menubar(False)
             self.toolbar.hide()
-            self.bar.hide()
+            self.statusbar.hide()
             self.fractalWindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
 
             display = self.get_display()
@@ -300,7 +300,7 @@ class MainWindow(Actions, ApplicationWindow):
                 Gtk.PolicyType.AUTOMATIC)
             self.set_show_menubar(True)
             self.toolbar.show()
-            self.bar.show()
+            self.statusbar.show()
             self.unfullscreen()
 
         self.fullscreen_action.set_state(GLib.Variant("b", to_full))
@@ -334,7 +334,7 @@ class MainWindow(Actions, ApplicationWindow):
     def on_angle_slightly_changed(self, widget, val):
         self.preview.set_param(widget.axis, val)
         angle_in_degrees = "%.2f" % (float(val) * 180.0 / math.pi)
-        self.bar.set_text(angle_in_degrees)
+        self.statusbar.set_text(angle_in_degrees)
         self.draw_preview()
 
     def on_angle_changed(self, widget, val):
