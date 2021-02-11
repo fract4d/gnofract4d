@@ -136,50 +136,6 @@ class Test(testgui.TestCase):
         self.f.set_param(self.f.MAGNITUDE, 0.7)
         self.assertEqual(r.count, 1)
 
-    def testParamSettings(self):
-        self.f.set_formula("test.frm", "test_func")
-        self.f.set_outer("test.cfrm", "flat")
-
-        table = Gtk.Grid()
-        self.f.populate_formula_settings(table, 0)
-
-        children = table.get_children()
-        list.reverse(children)
-
-        names = [x.get_text() for x in children if isinstance(x, Gtk.Label)]
-
-        self.assertEqual(names[0], "Max Iterations")
-        self.assertEqual(names[1], "Bailfunc")
-        self.assertEqual(names[2], "Bailout")
-        self.assertEqual(names[3], "Param with min and max")
-        self.assertEqual(names[4], "Myfunc")
-
-        table = Gtk.Grid()
-        self.f.populate_formula_settings(table, 1)
-
-        children = table.get_children()
-        list.reverse(children)
-
-        names = [x.get_text() for x in children if isinstance(x, Gtk.Label)]
-
-        self.assertEqual(
-            names,
-            ["Color Density", "Color Offset", "Transfer Function",
-             "Col", "Ep", "I", "Mycolorfunc", "Myfunc", "Val",
-             "Val2 (re)", "Val2 (i)", "Val2 (j)", "Val2 (k)"])
-
-    def testIntParamSetting(self):
-        self.f.set_formula("test.frm", "fn_with_intparam")
-
-        table = Gtk.Grid()
-        self.f.populate_formula_settings(table, 0)
-
-    def testAllSettingsTypes(self):
-        self.f.set_formula("test.frm", "test_all_types")
-
-        table = Gtk.Grid()
-        self.f.populate_formula_settings(table, 0)
-
     def testButton1(self):
         f = self.f
 

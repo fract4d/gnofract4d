@@ -6,7 +6,7 @@ from gi.repository import Gdk, Gtk
 
 from fract4d_compiler.fc import FormulaTypes
 
-from . import hig, browser, utils, browser_model
+from . import hig, browser, utils, browser_model, settings_widgets
 
 
 class SettingsPane(Gtk.Box):
@@ -619,9 +619,9 @@ class SettingsPane(Gtk.Box):
                 pass
 
         if self.selected_transform is not None:
-            self.tables[3] = Gtk.Grid(column_spacing=10)
-            self.f.populate_formula_settings(
-                self.tables[3],
+            self.tables[3] = settings_widgets.FractalSettingsTable(
+                self.f,
+                self.main_window,
                 self.selected_transform + 3)
 
             self.tables[3].show_all()
@@ -648,12 +648,13 @@ class SettingsPane(Gtk.Box):
                 except AttributeError:
                     pass
 
-            table = Gtk.Grid(row_spacing=5, column_spacing=10)
+            table = settings_widgets.FractalSettingsTable(
+                self.f,
+                self.main_window,
+                param_type,
+                row=1,
+                row_spacing=5)
             self.create_browsable_name(table, param_type, typename, tip)
-
-            self.f.populate_formula_settings(
-                table,
-                param_type, 1)
 
             table.show_all()
             parent.pack_start(table, True, True, 0)
