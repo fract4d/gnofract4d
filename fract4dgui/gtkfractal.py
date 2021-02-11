@@ -171,8 +171,7 @@ class Hidden(GObject.GObject):
         self.f.set_formula(fname, formula, index)
 
     def onData(self, fd, condition):
-        self.msgbuf = self.msgbuf + \
-            os.read(fd, 8 - len(self.msgbuf))
+        self.msgbuf = self.msgbuf + os.read(fd, 8 - len(self.msgbuf))
 
         if len(self.msgbuf) < 8:
             # print "incomplete message: %s" % list(self.msgbuf)
@@ -461,7 +460,8 @@ class T(Hidden):
 
         self.paint_mode = False
 
-        drawing_area = Gtk.DrawingArea()
+        drawing_area = Gtk.DrawingArea(
+            width_request=self.width, height_request=self.height)
         drawing_area.set_events(
             Gdk.EventMask.BUTTON_RELEASE_MASK |
             Gdk.EventMask.BUTTON1_MOTION_MASK |
@@ -482,8 +482,6 @@ class T(Hidden):
 
         self.selection_rect = []
 
-        drawing_area.set_size_request(self.width, self.height)
-
         self.widget = drawing_area
 
     def image_changed(self, x1, y1, x2, y2):
@@ -495,8 +493,7 @@ class T(Hidden):
         else:
             fmt = "%.17f"
 
-        widget = Gtk.Entry()
-        widget.set_activates_default(True)
+        widget = Gtk.Entry(activates_default=True)
 
         def set_entry():
             new_value = fmt % form.params[order]
@@ -509,8 +506,7 @@ class T(Hidden):
                     form.set_param, order, entry.get_text())
             except Exception:
                 # FIXME: produces too many errors
-                msg = "Invalid value '%s': must be a number" % \
-                      entry.get_text()
+                msg = f"Invalid value '{entry.get_text()}': must be a number"
                 print(msg)
                 # GLib.idle_add(f.warn,msg)
             return False
@@ -556,17 +552,17 @@ class T(Hidden):
 
         return widget
 
-    def make_numeric_widget(
-            self, table, i, form, name, part, param, order):
-
-        label = Gtk.Label.new(self.param_display_name(name, param) + part)
-        label.set_halign(Gtk.Align.END)
-        label.set_valign(Gtk.Align.CENTER)
-        table.attach(label, 0, i, 1, 1)
+    def make_numeric_widget(self, table, i, form, name, part, param, order):
 
         widget = self.make_numeric_entry(form, param, order)
 
-        label.set_mnemonic_widget(widget)
+        label = Gtk.Label(
+            label=self.param_display_name(name, param) + part,
+            halign=Gtk.Align.END,
+            valign=Gtk.Align.CENTER,
+            mnemonic_widget=widget)
+        table.attach(label, 0, i, 1, 1)
+
         return widget
 
     def make_bool_widget(self, form, name, param, order):
@@ -595,12 +591,12 @@ class T(Hidden):
         widget.connect('toggled', set_fractal, form, order)
         return widget
 
-    def make_color_widget(
-            self, table, i, form, name, param, order):
+    def make_color_widget(self, table, i, form, name, param, order):
 
-        label = Gtk.Label.new(self.param_display_name(name, param))
-        label.set_halign(Gtk.Align.END)
-        label.set_valign(Gtk.Align.CENTER)
+        label = Gtk.Label(
+            label=self.param_display_name(name, param),
+            halign=Gtk.Align.END,
+            valign=Gtk.Align.CENTER)
         table.attach(label, 0, i, 1, 1)
 
         def set_fractal(r, g, b, is_left):
@@ -629,14 +625,7 @@ class T(Hidden):
 
         return color_button
 
-    def make_enumerated_widget(
-            self, table, i, form, name, part, param, order):
-
-        label = Gtk.Label.new(self.param_display_name(name, param))
-        label.set_halign(Gtk.Align.END)
-        label.set_valign(Gtk.Align.CENTER)
-        table.attach(label, 0, i, 1, 1)
-
+    def make_enumerated_widget(self, table, i, form, name, part, param, order):
         widget = utils.combo_box_text_with_items(param.enum.value)
 
         def set_selected_value(*args):
@@ -657,14 +646,18 @@ class T(Hidden):
         widget.update_function = set_selected_value
 
         widget.f = self
-        widget.connect('changed',
-                       set_fractal, form, order)
+        widget.connect('changed', set_fractal, form, order)
 
-        label.set_mnemonic_widget(widget)
+        label = Gtk.Label(
+            label=self.param_display_name(name, param),
+            halign=Gtk.Align.END,
+            valign=Gtk.Align.CENTER,
+            mnemonic_widget=widget)
+        table.attach(label, 0, i, 1, 1)
+
         return widget
 
-    def add_formula_setting(
-            self, table, i, form, name, part, param, order):
+    def add_formula_setting(self, table, i, form, name, part, param, order):
 
         if param.type == fracttypes.Int:
             if hasattr(param, "enum"):
@@ -698,7 +691,6 @@ class T(Hidden):
             self, table, i, form, name, param, order, param_type):
 
         widget = self.make_numeric_entry(form, param, order)
-        widget.set_hexpand(True)
         table.attach(widget, 1, i, 1, 1)
 
         widget = self.make_numeric_entry(form, param, order + 1)
@@ -707,7 +699,6 @@ class T(Hidden):
         name = self.param_display_name(name, param)
         tip = self.param_tip(name, param)
         fway = fourway.T(name, tip)
-        fway.set_hexpand(True)
 
         fway.connect('value-changed', self.fourway_released, order, form)
 
@@ -745,9 +736,10 @@ class T(Hidden):
             print("Warning: ", msg)
 
     def add_formula_function(self, table, i, name, param, form):
-        label = Gtk.Label.new(self.param_display_name(name, param))
-        label.set_halign(Gtk.Align.END)
-        label.set_valign(Gtk.Align.CENTER)
+        label = Gtk.Label(
+            label=self.param_display_name(name, param),
+            halign=Gtk.Align.END,
+            valign=Gtk.Align.CENTER)
         table.attach(label, 0, i, 1, 1)
 
         funclist = self.construct_function_menu(param, form)
@@ -786,14 +778,7 @@ class T(Hidden):
         table.attach(widget, 1, i, 1, 1)
 
     def create_maxiter_widget(self, table, i):
-        label = Gtk.Label(label="_Max Iterations")
-        label.set_halign(Gtk.Align.END)
-        label.set_valign(Gtk.Align.CENTER)
-        label.set_use_underline(True)
-        table.attach(label, 0, i, 1, 1)
-
-        widget = Gtk.Entry()
-        widget.set_activates_default(True)
+        widget = Gtk.Entry(activates_default=True)
 
         def set_entry(*args):
             widget.set_text("%d" % self.f.maxiter)
@@ -817,7 +802,14 @@ class T(Hidden):
         self.connect('iters-changed', set_entry)
         widget.connect('focus-out-event', set_fractal)
 
-        label.set_mnemonic_widget(widget)
+        label = Gtk.Label(
+            label="_Max Iterations",
+            halign=Gtk.Align.END,
+            valign=Gtk.Align.CENTER,
+            use_underline=True,
+            mnemonic_widget=widget)
+
+        table.attach(label, 0, i, 1, 1)
         table.attach(widget, 1, i, 1, 1)
         return i + 1
 
@@ -840,9 +832,7 @@ class T(Hidden):
             else:
                 if param.type == fracttypes.Complex:
                     self.add_complex_formula_setting(
-                        table, row, form, name, param,
-                        op[name],
-                        param_type)
+                        table, row, form, name, param, op[name], param_type)
                     row += 1
                 elif param.type == fracttypes.Hyper:
                     suffixes = [" (re)", " (i)", " (j)", " (k)"]
@@ -853,8 +843,7 @@ class T(Hidden):
                     row += 3
                 elif param.type == fracttypes.Color:
                     self.add_formula_setting(
-                        table, row, form, name, "",
-                        param, op[name])
+                        table, row, form, name, "", param, op[name])
                     row += 3
                 elif param.type == fracttypes.Gradient:
                     # FIXME
@@ -1005,8 +994,7 @@ class T(Hidden):
                 self.flip_to_julia()
 
         else:
-            if hasattr(event, "state") and event.get_state(
-            ) & Gdk.ModifierType.CONTROL_MASK:
+            if hasattr(event, "state") and event.get_state() & Gdk.ModifierType.CONTROL_MASK:
                 zoom = 20.0
             else:
                 zoom = 2.0
