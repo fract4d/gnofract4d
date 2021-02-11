@@ -272,7 +272,9 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.create_toolbar()
         panes = Gtk.Paned(expand=True)
         self.vbox.add(panes)
-        self.create_status_bar()
+
+        self.statusbar = Gtk.ProgressBar(show_text=True)
+        self.vbox.pack_end(self.statusbar, False, True, 0)
 
         try:
             # try to make default image more interesting
@@ -334,10 +336,6 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         if is4dsensitive:
             self.four_d_sensitives.append(my_angle)
-
-    def create_status_bar(self):
-        self.bar = Gtk.ProgressBar(show_text=True)
-        self.vbox.pack_end(self.bar, False, True, 0)
 
     def create_resolution_menu(self):
         self.resolutions = [
