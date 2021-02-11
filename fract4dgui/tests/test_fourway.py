@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # unit tests for model
 
 from fract4dgui import fourway

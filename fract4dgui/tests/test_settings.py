@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # unit tests for settings window
 
 from . import testgui

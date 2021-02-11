@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # unit tests for undo code
 
 from fract4dgui import undo

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from fract4d.tests import testbase
 from fract4d_compiler import fc
 from fract4dgui import browser_model

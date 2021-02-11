@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # unit tests for renderqueue module
 
 from unittest.mock import patch

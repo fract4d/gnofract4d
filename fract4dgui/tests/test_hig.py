@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from fract4dgui import hig
 
 import unittest
