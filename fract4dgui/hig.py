@@ -22,10 +22,10 @@ class Alert(Gtk.MessageDialog):
             message_type=type,
             title=title,
             text=primary_text,
+            secondary_text=secondary_text,
             buttons=buttontype)
 
         self.add_buttons(*buttons)
-        self.format_secondary_text(secondary_text)
 
         self.show_all()
 
