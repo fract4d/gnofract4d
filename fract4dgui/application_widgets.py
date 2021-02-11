@@ -46,6 +46,24 @@ class Fract4dOpenChooser(utils.FileOpenChooser):
         self.set_filter(all_filter)
 
 
+class HiresImageSaveChooser(utils.FileSaveChooser):
+    def __init__(self, parent, file_matches):
+        super().__init__(
+            _("Save High Resolution Image"), parent, file_matches)
+
+        table = Gtk.Grid(row_spacing=1, column_spacing=1)
+        self.width = Gtk.Entry(text="2048")
+        self.height = Gtk.Entry(text="1536")
+        table.attach(Gtk.Label(label=_("Width:")), 0, 0, 1, 1)
+        table.attach(Gtk.Label(label=_("Height:")), 0, 1, 1, 1)
+        table.attach(self.width, 1, 0, 1, 1)
+        table.attach(self.height, 1, 1, 1, 1)
+        self.set_extra_widget(table)
+
+    def get_hires_dimensions(self):
+        return int(self.width.get_text()), int(self.height.get_text())
+
+
 class FractalWindow(Gtk.ScrolledWindow):
     def __init__(self, f, compiler):
         super().__init__()
