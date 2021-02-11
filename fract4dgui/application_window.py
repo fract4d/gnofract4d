@@ -270,7 +270,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.add(self.vbox)
 
         self.create_toolbar()
-        panes = Gtk.Paned(expand=True)
+        panes = Gtk.Paned(vexpand=True)
         self.vbox.add(panes)
 
         self.statusbar = Gtk.ProgressBar(show_text=True)
