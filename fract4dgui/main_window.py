@@ -30,7 +30,7 @@ class Application(Gtk.Application):
 
         resource = Gio.resource_load(
             fractconfig.T.find_resource("gnofract4d.gresource", ""))
-        Gio.Resource._register(resource)
+        Gio.resources_register(resource)
 
     def do_startup(self):
         Gtk.Application.do_startup(self)
