@@ -694,7 +694,12 @@ class SettingsPane(Gtk.Box):
         dialog.destroy()
 
     def create_param_entry(self, table, row, text, param):
-        label = Gtk.Label(label=text, use_underline=True, justify=Gtk.Justification.RIGHT)
+        label = Gtk.Label(
+            label=text,
+            halign=Gtk.Align.END,
+            justify=Gtk.Justification.RIGHT,
+            margin_end=5,
+            use_underline=True)
         table.attach(label, 0, row, 1, 1)
 
         entry = Gtk.Entry(activates_default=True, hexpand=True)
