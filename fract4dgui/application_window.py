@@ -6,7 +6,7 @@ from gi.repository import Gdk, Gio, GLib, Gtk
 
 from fract4d import fractal, fractconfig, image
 from fract4d.options import VERSION
-from . import angle, application_widgets, fourway, gtkfractal, hig, settings, toolbar, utils
+from . import angle, application_widgets, fourway, gtkfractal, hig, settings, utils
 
 
 class Actions:
@@ -397,7 +397,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         return res_menu
 
     def create_toolbar(self):
-        self.toolbar = toolbar.T()
+        self.toolbar = application_widgets.Toolbar()
         # request enough space for toolbar items
         self.vbox.pack_start(self.toolbar, expand=False, fill=False, padding=0)
 
