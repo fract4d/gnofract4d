@@ -163,7 +163,7 @@ class ApplicationDialogs:
             modal=True,
             comments=_("Easy to use fractal image generator supporting multiple"
                        " views of a four‑dimensional object"),
-            copyright=_("Copyright © 1999-2020, Edwin Young\n"
+            copyright=_("Copyright © 1999-2021, Edwin Young\n"
                         "All rights reserved.\n"
                         "Distributed under the BSD license."
                         ' See the file "LICENSE" for details.'),
