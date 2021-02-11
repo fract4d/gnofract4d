@@ -4,15 +4,14 @@
 
 from gi.repository import Gtk, GObject
 
-from . import dialog, utils, gtkfractal, browser_model
+from . import utils, gtkfractal, browser_model
 
 
-class BrowserDialog(dialog.T):
+class BrowserDialog(utils.Dialog):
     RESPONSE_REFRESH = 2
 
     def __init__(self, main_window, f, type=browser_model.FRACTAL):
-        dialog.T.__init__(
-            self,
+        super().__init__(
             _("Formula Browser"),
             main_window,
             (_("_Refresh"), BrowserDialog.RESPONSE_REFRESH,

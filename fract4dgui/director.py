@@ -12,7 +12,7 @@ import tempfile
 from gi.repository import Gdk, Gio, Gtk, GObject
 
 from fract4d import animation
-from . import dialog, hig, PNGGen, AVIGen, director_dialogs, utils
+from . import hig, PNGGen, AVIGen, director_dialogs, utils
 
 
 class UserCancelledError(Exception):
@@ -26,7 +26,7 @@ class SanityCheckError(Exception):
         Exception.__init__(self, msg)
 
 
-class DirectorDialog(dialog.T, hig.MessagePopper):
+class DirectorDialog(utils.Dialog, hig.MessagePopper):
     RESPONSE_RENDER = 1
 
     def check_for_keyframe_clash(self, keyframe, fct_dir):
@@ -409,7 +409,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
 
     # creating window...
     def __init__(self, main_window):
-        dialog.T.__init__(
+        utils.Dialog.__init__(
             self,
             _("Director"),
             main_window,

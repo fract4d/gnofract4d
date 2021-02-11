@@ -2,7 +2,7 @@
 
 from gi.repository import Gtk, GObject, GLib
 
-from . import dialog, utils
+from . import utils
 
 
 class Preferences(GObject.GObject):
@@ -62,10 +62,9 @@ class Preferences(GObject.GObject):
 GObject.type_register(Preferences)
 
 
-class PrefsDialog(dialog.T):
+class PrefsDialog(utils.Dialog):
     def __init__(self, main_window, f, userPrefs):
-        dialog.T.__init__(
-            self,
+        super().__init__(
             _("Gnofract 4D Preferences"),
             main_window,
             (_("_Close"), Gtk.ResponseType.CLOSE)
