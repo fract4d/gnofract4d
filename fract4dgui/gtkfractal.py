@@ -1055,6 +1055,9 @@ class Preview(T):
     def onButtonRelease(self, widget, event):
         pass
 
+    def onMotionNotify(self, widget, event):
+        pass
+
     def error(self, msg, exn):
         # suppress errors from previews
         pass
