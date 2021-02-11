@@ -4,13 +4,12 @@ import random
 
 from gi.repository import Gtk
 
-from . import dialog
+from . import utils
 
 
-class AutozoomDialog(dialog.T):
+class AutozoomDialog(utils.Dialog):
     def __init__(self, main_window, f):
-        dialog.T.__init__(
-            self,
+        super().__init__(
             _("Autozoom"),
             main_window,
             (_("_Close"), Gtk.ResponseType.CLOSE)

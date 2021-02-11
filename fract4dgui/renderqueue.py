@@ -5,7 +5,7 @@ import copy
 
 from gi.repository import Gtk, GObject
 
-from . import dialog, gtkfractal
+from . import gtkfractal, utils
 
 
 class QueueEntry:
@@ -87,10 +87,9 @@ class CellRendererProgress(Gtk.CellRendererProgress):
         self.set_property("text", "Progress")
 
 
-class QueueDialog(dialog.T):
+class QueueDialog(utils.Dialog):
     def __init__(self, main_window):
-        dialog.T.__init__(
-            self,
+        super().__init__(
             _("Render Queue"),
             main_window,
             (_("_Close"), Gtk.ResponseType.CLOSE)

@@ -2,13 +2,12 @@
 
 from gi.repository import Gtk
 
-from . import dialog
+from . import utils
 
 
-class PainterDialog(dialog.T):
+class PainterDialog(utils.Dialog):
     def __init__(self, main_window):
-        dialog.T.__init__(
-            self,
+        super().__init__(
             _("Painter"),
             main_window,
             (_("_Close"), Gtk.ResponseType.CLOSE),
