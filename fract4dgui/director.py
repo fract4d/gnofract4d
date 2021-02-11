@@ -12,7 +12,7 @@ import tempfile
 from gi.repository import Gdk, Gio, Gtk, GObject
 
 from fract4d import animation
-from . import dialog, hig, PNGGen, AVIGen, DlgAdvOpt, director_prefs, utils
+from . import dialog, hig, PNGGen, AVIGen, director_dialogs, utils
 
 
 class UserCancelledError(Exception):
@@ -231,7 +231,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
     def adv_opt_clicked(self, widget, data=None):
         if self.current_select == -1:
             return
-        dlg = DlgAdvOpt.DlgAdvOptions(
+        dlg = director_dialogs.DlgAdvOptions(
             self.current_select, self.animation, self)
         dlg.show()
 
@@ -404,7 +404,7 @@ class DirectorDialog(dialog.T, hig.MessagePopper):
                     str(err))
 
     def preferences_clicked(self, *args):
-        dlg = director_prefs.DirectorPrefs(self.animation, self)
+        dlg = director_dialogs.DirectorPrefs(self.animation, self)
         dlg.show()
 
     # creating window...
