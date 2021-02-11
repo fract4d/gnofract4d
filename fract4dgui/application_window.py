@@ -139,21 +139,8 @@ class ApplicationDialogs:
 
     def get_save_hires_image_as_fs(self):
         if self.hires_image_fs is None:
-            self.hires_image_fs = utils.FileSaveChooser(
-                _("Save High Resolution Image"), self, image.file_matches())
-
-            table = Gtk.Grid(row_spacing=1, column_spacing=1)
-            table.width = Gtk.Entry(text="2048")
-            table.height = Gtk.Entry(text="1536")
-            table.attach(Gtk.Label(label=_("Width:")), 0, 0, 1, 1)
-            table.attach(Gtk.Label(label=_("Height:")), 0, 1, 1, 1)
-            table.attach(table.width, 1, 0, 1, 1)
-            table.attach(table.height, 1, 1, 1, 1)
-            self.hires_image_fs.set_extra_widget(table)
-
-            self.hires_image_fs.get_hires_dimensions = lambda: (
-                int(table.width.get_text()), int(table.height.get_text())
-            )
+            self.hires_image_fs = application_widgets.HiresImageSaveChooser(
+                self, image.file_matches())
 
         return self.hires_image_fs
 
