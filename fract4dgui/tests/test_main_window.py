@@ -172,7 +172,7 @@ class Test(testgui.TestCase):
         self.mw.get_save_as_fs()
         self.mw.get_save_image_as_fs()
         self.mw.get_save_hires_image_as_fs()
-        self.mw.get_open_fs(fc.Compiler(Test.userConfig))
+        self.mw.get_open_fs(self.g_comp)
 
     def testExplorer(self):
         self.mw.load("testdata/nexus.fct")
