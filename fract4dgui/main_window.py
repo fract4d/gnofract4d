@@ -582,7 +582,8 @@ class MainWindow(Actions, ApplicationWindow):
             d.destroy()
             if response == Gtk.ResponseType.ACCEPT:
                 self.save(None)
-            elif response == Gtk.ResponseType.CANCEL:
+            elif response == Gtk.ResponseType.CANCEL \
+                    or response == Gtk.ResponseType.DELETE_EVENT:
                 return False
             elif response == hig.SaveConfirmationAlert.NOSAVE:
                 break
