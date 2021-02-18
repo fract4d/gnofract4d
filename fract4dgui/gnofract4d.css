@@ -39,3 +39,21 @@ notebook grid {
 #weirdbox scale {
     padding: 2px;
 }
+
+/* toolbar class style exists in GTK 4 */
+
+.toolbar {
+    padding: 4px;
+}
+
+.toolbar button {
+    margin: 1px;
+}
+
+.toolbar button image {
+    margin: 5px;
+}
+
+.toolbar separator.vertical {
+    margin: 0 5px 0 5px;
+}
