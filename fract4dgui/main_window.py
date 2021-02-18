@@ -526,9 +526,7 @@ class MainWindow(Actions, ApplicationWindow):
 
     def report_bug(self, *args):
         url = "https://github.com/fract4d/gnofract4d/issues"
-        utils.launch_browser(
-            url,
-            self)
+        utils.launch_browser(url, self)
 
     def open(self, *args):
         """Open a parameter or formula file."""
