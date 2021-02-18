@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # high-level unit tests for main window
 
 import os

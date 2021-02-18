@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Subclass of fract4d.fractal.T which works with a GUI
 
 import os

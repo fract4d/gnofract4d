@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Setup defaults for GUI tests including temp directory for cache
 
 from fract4d import fractconfig

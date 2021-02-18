@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # unit tests for director_prefs module
 
 from unittest.mock import patch

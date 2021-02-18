@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # a browser to examine fractal functions
 
 from gi.repository import Gtk, GObject
