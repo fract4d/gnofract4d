@@ -13,14 +13,15 @@ class T(Gtk.DrawingArea):
             None, (GObject.TYPE_INT, GObject.TYPE_INT))
     }
 
-    def __init__(self, text, tip, axis=None):
+    def __init__(self, text, tip, axis=None, size=53):
         self.axis = axis
         self.button = 0
         self.radius = 0
         self.last_x = 0
         self.last_y = 0
         self.text = text
-        Gtk.DrawingArea.__init__(self, tooltip_text=tip, width_request=53, height_request=53)
+        Gtk.DrawingArea.__init__(
+            self, tooltip_text=tip, width_request=size, height_request=size)
 
         self.set_events(
             Gdk.EventMask.BUTTON_RELEASE_MASK |

@@ -8,6 +8,8 @@ from fract4d import fractal, fractconfig, image
 from fract4d.options import VERSION
 from . import angle, application_widgets, fourway, gtkfractal, hig, settings, utils
 
+TOOLITEM_SIZE = 53
+
 
 class Actions:
     def get_toggle_actions(self):
@@ -252,7 +254,8 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         self.filename = application_widgets.FractalFilename(self.f)
 
-        self.preview = gtkfractal.Preview(application.compiler, 48, 48)
+        self.preview = gtkfractal.Preview(
+            application.compiler, TOOLITEM_SIZE, TOOLITEM_SIZE)
         self.preview.widget.set_tooltip_text(_("Preview"))
 
         theme_provider = Gtk.CssProvider()
@@ -293,7 +296,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         panes.pack2(self.settingsPane, resize=False, shrink=False)
 
     def add_fourway(self, name, tip, axis, is4dsensitive):
-        my_fourway = fourway.T(name, tip, axis)
+        my_fourway = fourway.T(name, tip, axis, TOOLITEM_SIZE)
         self.toolbar.add(my_fourway)
 
         my_fourway.connect('value-slightly-changed', self.on_drag_fourway)
@@ -323,7 +326,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.toolbar.add(self.warpmenu)
 
     def add_angle(self, name, tip, axis, is4dsensitive):
-        my_angle = angle.T(name, tip, axis)
+        my_angle = angle.T(name, tip, axis, round(TOOLITEM_SIZE * 0.75))
         my_angle.connect('value-slightly-changed',
                          self.on_angle_slightly_changed)
         my_angle.connect('value-changed',
