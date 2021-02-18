@@ -17,7 +17,7 @@ class T(Gtk.DrawingArea):
     two_pi = 2.0 * math.pi
     ptr_radius = 4
 
-    def __init__(self, text, tip, axis):
+    def __init__(self, text, tip, axis, size):
         self.axis = axis
         self.radius = 0
         self.text = text
@@ -34,7 +34,8 @@ class T(Gtk.DrawingArea):
 
         self.adjustment.connect('value-changed', self.onAdjustmentValueChanged)
 
-        Gtk.DrawingArea.__init__(self, tooltip_text=tip, width_request=40, height_request=40)
+        Gtk.DrawingArea.__init__(
+            self, tooltip_text=tip, width_request=size, height_request=size)
 
         self.set_events(
             Gdk.EventMask.BUTTON_RELEASE_MASK |
