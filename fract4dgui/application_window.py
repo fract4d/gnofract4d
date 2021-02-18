@@ -124,7 +124,7 @@ class ApplicationDialogs:
     def get_open_fs(self, compiler):
         if self.open_fs is None:
             self.open_fs = application_widgets.Fract4dOpenChooser(
-                self, gtkfractal.Preview(self.compiler))
+                self, gtkfractal.Preview(compiler))
         return self.open_fs
 
     def get_save_as_fs(self):
