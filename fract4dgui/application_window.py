@@ -141,7 +141,6 @@ class ApplicationDialogs:
         if self.hires_image_fs is None:
             self.hires_image_fs = application_widgets.HiresImageSaveChooser(
                 self, image.file_matches())
-
         return self.hires_image_fs
 
     def about(self, *args):
@@ -256,8 +255,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.preview.widget.set_tooltip_text(_("Preview"))
 
         theme_provider = Gtk.CssProvider()
-        css_file = "/io/github/fract4d/gnofract4d.css"
-        theme_provider.load_from_resource(css_file)
+        theme_provider.load_from_resource("/io/github/fract4d/gnofract4d.css")
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(), theme_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
