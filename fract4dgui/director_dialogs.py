@@ -155,4 +155,3 @@ class DlgAdvOptions:
             self.animation.set_directions(self.current_kf, dirs)
 
         self.dialog.destroy()
-        return
