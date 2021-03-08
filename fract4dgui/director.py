@@ -485,15 +485,14 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
         self.tv_keyframes.append_column(Gtk.TreeViewColumn(
             title='Interpolation type', cell_renderer=Gtk.CellRendererText(), text=3))
         sw.add(self.tv_keyframes)
-        self.tv_keyframes.get_selection().connect(
-            "changed", self.selection_changed, None)
+        self.tv_keyframes.get_selection().connect("changed", self.selection_changed)
         self.tv_keyframes.get_selection().set_select_function(self.before_selection, None)
         self.current_select = -1
 
         self.btn_add_keyframe = Gtk.MenuButton(label="Add", menu_model=popup_menu)
 
         btn_remove_keyframe = Gtk.Button(label="Remove")
-        btn_remove_keyframe.connect("clicked", self.remove_keyframe_clicked, None)
+        btn_remove_keyframe.connect("clicked", self.remove_keyframe_clicked)
 
         button_box_kfs.pack_start(self.btn_add_keyframe, True, True, 0)
         button_box_kfs.pack_start(btn_remove_keyframe, True, True, 0)
@@ -519,14 +518,14 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
 
         self.spin_kf_stop = Gtk.SpinButton(
             adjustment=Gtk.Adjustment.new(1, 1, 10000, 1, 10, 0))
-        self.spin_kf_stop.connect("output", self.stop_changed, None)
+        self.spin_kf_stop.connect("output", self.stop_changed)
         tbl_keyframes_right.attach(self.spin_kf_stop, 1, 0, 1, 1)
 
         tbl_keyframes_right.attach(Gtk.Label(label="Transition duration:"), 0, 1, 1, 1)
 
         self.spin_duration = Gtk.SpinButton(
             adjustment=Gtk.Adjustment.new(25, 1, 10000, 1, 10, 0))
-        self.spin_duration.connect("output", self.duration_changed, None)
+        self.spin_duration.connect("output", self.duration_changed)
         tbl_keyframes_right.attach(self.spin_duration, 1, 1, 1, 1)
 
         tbl_keyframes_right.attach(Gtk.Label(label="Interpolation type:"), 0, 2, 1, 1)
@@ -535,12 +534,12 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
             ["Linear", "Logarithmic", "Inverse logarithmic", "Cosine"])
         self.cmb_interpolation_type.set_active(0)
         self.cmb_interpolation_type.connect(
-            "changed", self.interpolation_type_changed, None)
+            "changed", self.interpolation_type_changed)
         tbl_keyframes_right.attach(
             self.cmb_interpolation_type, 1, 2, 1, 1)
 
         btn_adv_opt = Gtk.Button(label="Advanced options")
-        btn_adv_opt.connect("clicked", self.adv_opt_clicked, None)
+        btn_adv_opt.connect("clicked", self.adv_opt_clicked)
         tbl_keyframes_right.attach(btn_adv_opt, 0, 3, 2, 1)
 
         current_kf.add(tbl_keyframes_right)
@@ -561,7 +560,7 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
         box_output_file.pack_start(self.txt_temp_avi, True, True, 10)
 
         btn_temp_avi = Gtk.Button(label="Browse")
-        btn_temp_avi.connect("clicked", self.temp_avi_clicked, None)
+        btn_temp_avi.connect("clicked", self.temp_avi_clicked)
         box_output_file.pack_start(btn_temp_avi, True, True, 10)
 
         box_output_main.pack_start(box_output_file, True, True, 0)
@@ -616,13 +615,10 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
         self.updateGUI()
 
         # don't connect signals until after settings initialised
-        self.spin_height.connect(
-            "value-changed", self.output_height_changed, None)
-        self.spin_width.connect(
-            "value-changed", self.output_width_changed, None)
-        self.spin_framerate.connect(
-            "value-changed", self.output_framerate_changed, None)
-        self.chk_swapRB.connect("toggled", self.swap_redblue_clicked, None)
+        self.spin_height.connect("value-changed", self.output_height_changed)
+        self.spin_width.connect("value-changed", self.output_width_changed)
+        self.spin_framerate.connect("value-changed", self.output_framerate_changed)
+        self.chk_swapRB.connect("toggled", self.swap_redblue_clicked)
 
         # --------------showing all-------------------------------
         self.vbox.add(box_main)
