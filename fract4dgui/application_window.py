@@ -262,10 +262,6 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(), theme_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
-        # custom icon images for toolbar buttons
-        Gtk.IconTheme.add_resource_path(
-            Gtk.IconTheme.get_default(), "/io/github/fract4d/pixmaps")
-
         # window
         self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.add(self.vbox)
