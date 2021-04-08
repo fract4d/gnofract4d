@@ -165,6 +165,10 @@ class T(configparser.ConfigParser):
         # appears to work for most unixes
         return "-fPIC -DPIC -O2 -shared -ffast-math"
 
+    def optionxform(self, option):
+        # make keys case-sensitive because some are file paths
+        return str(option)
+
     def set(self, section, key, val):
         if self.has_section(section) and \
            self.has_option(section, key) and \
