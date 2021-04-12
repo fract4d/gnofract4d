@@ -364,9 +364,10 @@ class PrefsDialog(utils.Dialog):
         return widget
 
     def create_continuous_zoom_widget(self):
-        widget = Gtk.CheckButton(label="Continuous _Zoom")
-        widget.set_tooltip_text("Activate continuous zoom to zoom in or out while keep clicked the mouse buttons")
-        widget.set_use_underline(True)
+        widget = Gtk.CheckButton(
+            label="Continuous _Zoom",
+            tooltip_text="Activate continuous zoom to zoom in or out while keep clicked the mouse buttons",
+            use_underline=True)
 
         def set_widget(*args):
             widget.set_active(self.prefs.getboolean("display", "continuouszoom"))
