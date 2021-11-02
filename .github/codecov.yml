@@ -1,7 +1,7 @@
 codecov:
   notify:
     # Ensure both Mac and Linux results are uploaded
-    after_n_builds: 4
+    after_n_builds: 6
 
 coverage:
   status:
