@@ -702,9 +702,8 @@ opacity:
 
     def testGetCoolorUrl(self):
         g = gradient.Gradient()
-        f = open("testdata/test.ase", "rb")
-
-        g.load_ase(f)
+        with open("testdata/test.ase", "rb") as f:
+            g.load_ase(f)
         self.assertEqual(5, len(g.segments))
         self.assertEqual(
             [0x94 / 255.0, 0xAE / 255.0, 0x89 / 255.0, 1.0],
