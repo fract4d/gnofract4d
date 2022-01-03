@@ -147,6 +147,24 @@ pycalc(PyObject *self, PyObject *args, PyObject *kwds)
     return calcs::pycalc(self, args, kwds);
 }
 
+// POC: XaoS zooming calc
+static PyObject *
+pycalc_xaos(PyObject *self, PyObject *args, PyObject *kwds)
+{
+    return calcs::pycalc_xaos(self, args, kwds);
+}
+
+static PyObject *
+pyupdate_xaos(PyObject *self, PyObject *args)
+{
+    return calcs::pyupdate_xaos(self, args);
+}
+
+static PyObject *
+pystop_xaos(PyObject *self, PyObject *args)
+{
+    return calcs::pystop_xaos(self, args);
+}
 
 /*
 * images
@@ -589,6 +607,15 @@ static PyMethodDef PfMethods[] = {
 
     {"calc", (PyCFunction)pycalc, METH_VARARGS | METH_KEYWORDS,
      "Calculate a fractal image"},
+
+    // TODO: change this fancy names to something you can get some sense out of it
+    {"calcxaos", (PyCFunction)pycalc_xaos, METH_VARARGS | METH_KEYWORDS,
+     "Start calculating continuous zoom"},
+    {"interruptxaos", pystop_xaos, METH_VARARGS,
+     "Stop calculating continuous zoom"},
+    {"updatexaos", pyupdate_xaos, METH_VARARGS,
+     "Update continuous zooming position"},
+
 
     {"interrupt", pystop_calc, METH_VARARGS,
      "Stop an asynchronous calculation"},

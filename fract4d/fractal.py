@@ -825,6 +825,28 @@ class T(fctutils.T):
             self.auto_tolerance = auto_tolerance
             self.changed(True)
 
+    def calcxaos(self, image, colormap, nthreads, site, asynchronous):
+        args = {
+            "params" : self.params,
+            "antialias" : self.antialias,
+            "maxiter" : self.maxiter,
+            "yflip" : self.yflip,
+            "periodicity" : self.periodicity,
+            "nthreads" : nthreads,
+            "pfo" : self.pfunc,
+            "cmap" : colormap,
+            "auto_deepen" : self.auto_deepen,
+            "auto_tolerance" : self.auto_tolerance,
+            "tolerance" : self.period_tolerance,
+            "render_type" : self.render_type,
+            "warp_param" : self.get_warp(),
+            "image" : image._img,
+            "site" : site,
+            "dirty" : self.clear_image,
+            "asynchronous" : asynchronous
+        }
+        fract4dc.calcxaos(**args)
+
     def calc(self, image, colormap, nthreads, site, asynchronous):
         fract4dc.calc(
             params=self.params,

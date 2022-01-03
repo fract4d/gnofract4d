@@ -96,11 +96,11 @@ public:
 		return *this;
 	};
 	// indexing
-	T &operator[](int i)
+	const T &operator[](int i) const
 	{
 		return n[i];
 	};
-	T mag()
+	T mag() const
 	{
 		return n[VX] * n[VX] + n[VY] * n[VY] + n[VZ] * n[VZ] + n[VW] * n[VW];
 	}
@@ -278,7 +278,7 @@ public:
 		return *this;
 	};
 	// indexing
-	vec4<T> &operator[](int i)
+	const vec4<T> &operator[](int i) const
 	{
 		return v[i];
 	};

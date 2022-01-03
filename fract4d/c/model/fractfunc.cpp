@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <cassert>
+#include <thread>
 
 #include "fractfunc.h"
 #include "model/image.h"
@@ -35,7 +36,7 @@ bool fractFunc::update_image(int i)
     const auto done = try_finished_cond();
     if (!done)
     {
-        image_changed(0, m_last_update_y, m_im->Xres(), i);
+        image_changed(0, m_last_update_y, m_im->Xres(), i + 1);
         progress_changed(static_cast<float>(i) / static_cast<float>(m_im->Yres()));
     }
     m_last_update_y = i;
@@ -150,6 +151,66 @@ void fractFunc::clear_in_fates()
             }
         }
     }
+}
+
+void fractFunc::draw_all_xaos()
+{
+    status_changed(GF4D_FRACTAL_CALCULATING);
+
+    XaosFractWorker *worker = dynamic_cast<XaosFractWorker *>(m_worker);
+    if (!worker) return;
+
+    // init RNG based on time before generating image
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
+    const auto w = m_im->Xres();
+    const auto h = m_im->Yres();
+    const auto rsize = 16;
+
+    reset_counts();
+    auto y = 0;
+    for (; y < h - rsize; y += rsize)
+    {
+        worker->box_row(w, y, rsize);
+    }
+    while(y < h) {
+        worker->row(0, y, w);
+        ++y;
+    }
+    worker->flush();
+    image_changed(0, 0, w, h);
+
+    double location[N_PARAMS];
+    while (!m_site->is_xaos_stopped())
+    {
+        // keep checking for frame request until we get one
+        // we pass a function delegate, so in case a new frame request comes in while processing the current one, the worker knows
+        worker->hurry_up = false;
+        if (!m_site->get_new_location(location, [worker](){
+            worker->hurry_up = true;
+        }))
+        {
+            std::this_thread::yield();
+            continue;
+        }
+        reset_counts();
+        // update the fractal geometry so pixels from previous frame can be reutilized
+        worker->change_geometry(fract_geometry{
+            location,
+            static_cast<bool>(m_options.yflip),
+            m_im->totalXres(),
+            m_im->totalYres(),
+            m_im->Xoffset(),
+            m_im->Yoffset()
+        });
+        // perform calculations prioritizing center/edge pixels and in multithread mode
+        worker->init_thead_pool();
+        worker->box_spiral(rsize);
+        worker->flush();
+        image_changed(0, 0, w, h);
+    }
+
+    status_changed(GF4D_FRACTAL_DONE);
 }
 
 void fractFunc::draw_all()

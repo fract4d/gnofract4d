@@ -36,14 +36,14 @@ class Iters(T):
 
 class Image(T):
     def __init__(self, buffer):
-        (self.x, self.y, self.w, self.h) = struct.unpack("4i", buffer)
+        (self.x1, self.y1, self.x2, self.y2) = struct.unpack("4i", buffer)
 
     def get_name(self):
         return "Image"
     name = property(get_name)
 
     def show(self):
-        return "Image: (%d,%d) (%d,%d)" % (self.x, self.y, self.w, self.h)
+        return "Image: (%d,%d) (%d,%d)" % (self.x1, self.y1, self.x2, self.y2)
 
 
 class Progress(T):

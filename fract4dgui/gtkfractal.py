@@ -53,6 +53,7 @@ class Hidden(GObject.GObject):
 
         (self.readfd, self.writefd) = os.pipe()
         self.nthreads = 1
+        self.continuous_zoom = False
 
         self.compiler = comp
 
@@ -75,6 +76,7 @@ class Hidden(GObject.GObject):
             self.width, self.height, total_width, total_height)
 
         self.msgbuf = b""
+        self.cz_running = False
 
     def try_init_fractal(self):
         f = fractal.T(self.compiler, self.site)
@@ -190,7 +192,7 @@ class Hidden(GObject.GObject):
                 self.iters_changed(m.iterations)
         elif t == fract4dc.MESSAGE_TYPE_IMAGE:
             if not self.skip_updates:
-                self.image_changed(m.x, m.y, m.w, m.h)
+                self.image_changed(m.x1, m.y1, m.x2, m.y2)
         elif t == fract4dc.MESSAGE_TYPE_PROGRESS:
             if not self.skip_updates:
                 progress = m.progress
@@ -236,6 +238,11 @@ class Hidden(GObject.GObject):
     def set_auto_deepen(self, deepen):
         if self.f.auto_deepen != deepen:
             self.f.auto_deepen = deepen
+            self.changed()
+
+    def set_continuous_zoom(self, value):
+        if self.continuous_zoom != value:
+            self.continuous_zoom = value
             self.changed()
 
     def set_antialias(self, aa_type):
@@ -293,6 +300,9 @@ class Hidden(GObject.GObject):
     def stats_changed(self, stats):
         self.emit('stats-changed', stats)
 
+    def continuous_zoom_is_active(self):
+        return self.continuous_zoom
+
     def draw(self, image, width, height, nthreads):
         t = self.f.epsilon_tolerance(width, height)
         if self.f.auto_epsilon:
@@ -303,7 +313,10 @@ class Hidden(GObject.GObject):
         cmap = self.f.get_colormap()
         self.running = True
         try:
-            self.f.calc(image, cmap, nthreads, self.site, True)
+            if self.cz_running:
+                self.f.calcxaos(image, cmap, nthreads, self.site, True)
+            else:
+                self.f.calc(image, cmap, nthreads, self.site, True)
         except MemoryError:
             pass
 
@@ -480,6 +493,71 @@ class T(Hidden):
 
         self.widget = drawing_area
 
+        self.cz_timer = None
+
+    def continuous_zoom_start(self):
+        self.freeze() # don't emit paramter-changed signals
+        # launch calculation and wait until is running, then start zooming in
+        self.cz_running = True
+        self.draw_image()
+        while not self.running:
+            Gtk.main_iteration()
+        self.cz_timer = GLib.timeout_add(50, self.continuous_zoom_recenter)
+
+    def continuous_zoom_stop(self):
+        if self.cz_timer is None:
+            return
+
+        self.cz_running = False
+        GLib.source_remove(self.cz_timer)
+        self.cz_timer = None
+        fract4dc.interruptxaos(self.site)
+
+        if self.thaw():
+            self.changed()
+
+    def continuous_zoom_recenter(self):
+        if not self.cz_running:
+            return False # we want to stop zooming
+
+        centerX = x = self.width / 2
+        centerY = y = self.height / 2
+        clickedXPosition = max(min(self.newx, self.width), 0)
+        clickedYPosition = max(min(self.newy, self.height), 0)
+
+        if self.continuousZoomEventButton == 1:
+            if centerX != clickedXPosition:
+                x = abs(centerX - clickedXPosition) * 0.1
+                if centerX < clickedXPosition:
+                    x = centerX + x
+                else:
+                    x = centerX - x
+            if centerY != clickedYPosition:
+                y = abs(centerY - clickedYPosition) * 0.1
+                if centerY < clickedYPosition:
+                    y = centerY + y
+                else:
+                    y = centerY - y
+            zoom = 0.95
+        else:
+            if centerX != clickedXPosition:
+                x = abs(centerX - clickedXPosition) * 0.1
+                if centerX > clickedXPosition:
+                    x = centerX + x
+                else:
+                    x = centerX - x
+            if centerY != clickedYPosition:
+                y = abs(centerY - clickedYPosition) * 0.1
+                if centerY > clickedYPosition:
+                    y = centerY + y
+                else:
+                    y = centerY - y
+            zoom = 1.05
+
+        self.recenter(x, y, zoom)
+        fract4dc.updatexaos(self.site, self.f.params)
+        return True # continue with continuous zooming
+
     def image_changed(self, x1, y1, x2, y2):
         self.widget.queue_draw_area(x1, y1, x2 - x1, y2 - y1)
 
@@ -528,28 +606,29 @@ class T(Hidden):
 
         self.newx, self.newy = event.x, event.y
 
-        dy = int(abs(self.newx - self.x) * float(self.height) / self.width)
-        if(self.newy < self.y or (self.newy == self.y and self.newx < self.x)):
-            dy = -dy
-        self.newy = self.y + dy
+        if not self.continuous_zoom_is_active():
+            dy = int(abs(self.newx - self.x) * float(self.height) / self.width)
+            if(self.newy < self.y or (self.newy == self.y and self.newx < self.x)):
+                dy = -dy
+            self.newy = self.y + dy
 
-        # create a dummy Cairo context to calculate the affected bounding box
-        surface = cairo.ImageSurface(cairo.FORMAT_A1, self.width, self.height)
-        cairo_ctx = cairo.Context(surface)
-        cairo_ctx.set_line_width(T.SELECTION_LINE_WIDTH)
-        if self.selection_rect:
+            # create a dummy Cairo context to calculate the affected bounding box
+            surface = cairo.ImageSurface(cairo.FORMAT_A1, self.width, self.height)
+            cairo_ctx = cairo.Context(surface)
+            cairo_ctx.set_line_width(T.SELECTION_LINE_WIDTH)
+            if self.selection_rect:
+                cairo_ctx.rectangle(*self.selection_rect)
+
+            self.selection_rect = [
+                int(min(self.x, self.newx)),
+                int(min(self.y, self.newy)),
+                int(abs(self.newx - self.x)),
+                int(abs(self.newy - self.y))]
+
             cairo_ctx.rectangle(*self.selection_rect)
+            x1, y1, x2, y2 = cairo_ctx.stroke_extents()
 
-        self.selection_rect = [
-            int(min(self.x, self.newx)),
-            int(min(self.y, self.newy)),
-            int(abs(self.newx - self.x)),
-            int(abs(self.newy - self.y))]
-
-        cairo_ctx.rectangle(*self.selection_rect)
-        x1, y1, x2, y2 = cairo_ctx.stroke_extents()
-
-        self.widget.queue_draw_area(x1, y1, x2 - x1, y2 - y1)
+            self.widget.queue_draw_area(x1, y1, x2 - x1, y2 - y1)
 
     def onButtonPress(self, widget, event):
         self.x = event.x
@@ -557,8 +636,17 @@ class T(Hidden):
         self.newx = self.x
         self.newy = self.y
         self.button = event.button
-        if self.button == 1:
-            self.notice_mouse = True
+
+        if self.continuous_zoom_is_active():
+            if self.notice_mouse:
+                return
+            self.continuousZoomEventButton = event.button
+            if self.button == 1 or self.button == 3:
+                self.notice_mouse = True
+                self.continuous_zoom_start()
+        else:
+            if self.button == 1:
+                self.notice_mouse = True
 
     def set_paint_mode(self, isEnabled, colorsel):
         self.paint_mode = isEnabled
@@ -610,9 +698,13 @@ class T(Hidden):
         return False
 
     def onButtonRelease(self, widget, event):
-        self.widget.queue_draw()
         self.button = 0
         self.notice_mouse = False
+
+        if self.continuous_zoom_is_active():
+            self.continuous_zoom_stop()
+            return
+
         self.selection_rect.clear()
         if self.filterPaintModeRelease(event):
             return
@@ -641,7 +733,8 @@ class T(Hidden):
                 self.flip_to_julia()
 
         else:
-            if hasattr(event, "state") and event.get_state() & Gdk.ModifierType.CONTROL_MASK:
+            if hasattr(event, "state") and event.get_state(
+            ) & Gdk.ModifierType.CONTROL_MASK:
                 zoom = 20.0
             else:
                 zoom = 2.0
@@ -666,14 +759,14 @@ class T(Hidden):
             return
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_bytes(
-            GLib.Bytes(buf),
+            GLib.Bytes.new(buf),
             GdkPixbuf.Colorspace.RGB,
             False,
             8,
             min(self.width - x, w),
             min(self.height - y, h),
             self.width * 3)
-        Gdk.cairo_set_source_pixbuf(cairo_ctx, pixbuf.copy(), x, y)
+        Gdk.cairo_set_source_pixbuf(cairo_ctx, pixbuf, x, y)
         cairo_ctx.paint()
 
         if self.selection_rect:

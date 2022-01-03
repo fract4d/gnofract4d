@@ -3,17 +3,23 @@
 
 #include <memory>
 #include <vector>
+#include <thread>
+#include <list>
+#include <functional>
+#include <condition_variable>
+#include <mutex>
+#include <atomic>
 
 #include "model/vectors.h"
 #include "model/stats.h"
 #include "model/pointfunc.h"
 #include "model/threadpool.h"
 #include "model/fractgeometry.h"
+#include "model/image.h"
+#include "model/calcoptions.h"
 
 class ColorMap;
-class IImage;
 class IFractalSite;
-struct calc_options;
 typedef struct s_rgba rgba_t;
 typedef unsigned char fate_t;
 typedef struct s_pf_data pf_obj;
@@ -56,10 +62,11 @@ enum
 class IWorkerContext {
 public:
     virtual const fract_geometry& get_geometry() const = 0;
+    virtual void set_geometry(fract_geometry &&) = 0;
     virtual const calc_options& get_options() const = 0;
     virtual bool try_finished_cond() const = 0;
     virtual int get_debug_flags() const = 0;
-    virtual void image_changed(int x1, int x2, int y1, int y2) const = 0;
+    virtual void image_changed(int x1, int y1, int x2, int y2) const = 0;
     virtual void progress_changed(float progress) const = 0;
 };
 
@@ -71,7 +78,7 @@ public:
 
     IFractWorker() = default;
 
-    virtual void set_context(IWorkerContext *) = 0;
+    virtual void set_context(IWorkerContext *) = 0; // TODO: should we implement this method in this class instead child classes?
     // calculate a row of antialiased pixels
     virtual void row_aa(int y, int n) = 0;
     // calculate a row of pixels
@@ -88,7 +95,7 @@ public:
     virtual ~IFractWorker() = default;
 protected:
     mutable pixel_stat_t m_stats;
-    IWorkerContext *context;
+    IWorkerContext *m_context;
 };
 
 /* per-worker-thread fractal info */
@@ -159,7 +166,6 @@ private:
 
     // @TODO: move m_site and m_im dependencies to IWorkerContext
     [[maybe_unused]] IFractalSite *m_site;
-    IWorkerContext *m_context;
     /* pointers to data also held in fractFunc */
     IImage *m_im;
     // function object which calculates the colors of points
@@ -205,6 +211,95 @@ private:
 
     std::vector<STFractWorker> m_workers;
     std::unique_ptr<tpool<job_info_t, STFractWorker>> m_threads;
+};
+
+class XaosFractWorker final: public IFractWorker
+{
+public:
+    XaosFractWorker(
+        pf_obj * pfo,
+        ColorMap * cmap,
+        IImage * im,
+        calc_options options):
+    m_im{im},
+    m_pf{pfo, cmap},
+    m_lastPointIters{0},
+    m_geometry_previous{}
+    {
+        init_thead_pool();
+    };
+
+    ~XaosFractWorker()
+    {
+        flush();
+    }
+
+    // IFractWorker interface
+    void set_context(IWorkerContext *);
+    void row_aa(int y, int n) {};
+    void row(int x, int y, int n);
+    void qbox_row(int w, int y, int rsize, int drawsize) {};
+    void box_row(int w, int y, int rsize);
+    void box_spiral(int rsize);
+    inline void reset_counts() {
+        m_stats.reset();
+    };
+    const pixel_stat_t &get_stats() const { return m_stats; };
+    void flush();
+    void box(int x, int y, int rsize);
+    // thread pool
+    void work();
+    void add_job(std::function<void()> &&);
+    inline void init_thead_pool()
+    {
+        m_terminate_pool = false;
+        const int nthreads = std::thread::hardware_concurrency();
+        for(auto i = 0; i < nthreads; i++)
+        {
+            m_pool.push_back(std::thread(&XaosFractWorker::work, this));
+        }
+    }
+
+    // zooming in or out
+    void change_geometry(fract_geometry &&);
+
+    std::atomic<bool> hurry_up;
+
+private:
+    // calculate a single pixel
+    void pixel(int x, int y, int h, int w);
+    // periodicity guesser for when we have the last count to hand
+    int periodGuess();
+    int periodGuess(int last);
+    // update whether last pixel bailed
+    void periodSet(int ppos);
+    // draw a rectangle of this colour
+    void rectangle(rgba_t, int x, int y, int w, int h);
+    bool isTheSame(int targetIter, int targetCol, int x, int y);
+    // make an int corresponding to an RGB triple
+    int Pixel2INT(int x, int y);
+    void rectangle_with_iter(rgba_t, fate_t, int iter, float index, int x, int y, int w, int h);
+
+    void row_internal(int x, int y, int n);
+    void virtual_box(int x, int y, int rsize, int w, int h);
+    void approximate_box(int x, int y, int rsize, int w, int h);
+
+    // reuse pixels from previous geometry
+    void reuse_pixels();
+
+    IImage *m_im;
+    pointFunc m_pf;
+    int m_lastPointIters; // how many iterations did last pixel take
+
+    fract_geometry m_geometry_previous;
+
+    std::vector<std::thread> m_pool;
+    std::mutex m_queue_mutex;
+    std::condition_variable m_condition;
+    std::list<std::function<void()>> m_jobs;
+    bool m_terminate_pool;
+    bool m_zooming_in = true;
+
 };
 
 #endif

@@ -4,8 +4,11 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <cstring>
+#include <functional>
 
 #include "model/enums.h"
+#include "pf.h"
 
 typedef struct s_pixel_stat pixel_stat_t;
 
@@ -29,6 +32,7 @@ public:
     virtual void tolerance_changed(double tolerance) = 0;
     // we've drawn a rectangle of image
     virtual void image_changed(int x1, int y1, int x2, int y2) = 0;
+    virtual void xaos_image_changed(int x1, int y1, int x2, int y2) = 0;
     // estimate of how far through current pass we are
     virtual void progress_changed(float progress) = 0;
     // one of the status values above
@@ -53,8 +57,53 @@ public:
     virtual void set_thread(std::thread t);
     // wait for it to finish
     virtual void wait();
+
+    inline void change_location(double *location)
+    {
+        const std::lock_guard<std::mutex> lock(location_lock);
+        std::memcpy(m_location, location, N_PARAMS * sizeof(double));
+        location_updated = true;
+        if (location_updated_delegate)
+        {
+            location_updated_delegate();
+        }
+    }
+
+    // TODO: change name to something like pop_location
+    inline bool get_new_location(double *location, std::function<void()> &&delegate)
+    {
+        const std::lock_guard<std::mutex> lock(location_lock);
+        if (!location_updated) return false;
+        std::memcpy(location, m_location, N_PARAMS * sizeof(double));
+        location_updated = false;
+        location_updated_delegate = std::move(delegate);
+        return true;
+    }
+
+    inline bool is_xaos_stopped()
+    {
+        return xaos_stopped;
+    }
+
+    inline void stop_xaos()
+    {
+        xaos_stopped = true;
+    }
+
+    inline void start_xaos()
+    {
+        xaos_stopped = false;
+        const std::lock_guard<std::mutex> lock(location_lock);
+        location_updated = false;
+    }
+
 protected:
     std::thread m_thread;
+    std::mutex location_lock;
+    double m_location[N_PARAMS];
+    bool location_updated = false;
+    std::atomic<bool> xaos_stopped;
+    std::function<void()> location_updated_delegate;
 };
 
 // write the callbacks to a file descriptor
@@ -65,6 +114,7 @@ public:
     void iters_changed(int numiters);
     void tolerance_changed(double tolerance);
     void image_changed(int x1, int y1, int x2, int y2);
+    void xaos_image_changed(int x1, int y1, int x2, int y2);
     void progress_changed(float progress);
     void stats_changed(pixel_stat_t &stats);
     void status_changed(int status_val);

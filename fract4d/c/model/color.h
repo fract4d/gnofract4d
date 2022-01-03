@@ -1,3 +1,5 @@
+#include <cmath>
+
 #ifndef COLOR_H_
 #define COLOR_H_
 
@@ -7,6 +9,24 @@ struct s_rgba
 
     inline explicit operator int() const {
         return (r << 16) | (g << 8) | b;
+    }
+
+    inline s_rgba operator+(const s_rgba& other) const {
+        s_rgba result;
+        result.a = other.a + a;
+        result.r = other.r + r;
+        result.g = other.g + g;
+        result.b = other.b + b;
+        return result;
+    }
+
+    inline s_rgba operator*(double factor) const {
+        s_rgba result;
+        result.a = static_cast<unsigned char>(std::round(a * factor));
+        result.r = static_cast<unsigned char>(std::round(r * factor));
+        result.g = static_cast<unsigned char>(std::round(g * factor));
+        result.b = static_cast<unsigned char>(std::round(b * factor));
+        return result;
     }
 };
 

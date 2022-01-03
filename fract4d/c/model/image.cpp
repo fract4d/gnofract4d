@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cmath>
 #include <new>
+#include <cstring>
 
 #include "image.h"
 #include "model/color.h"
@@ -39,6 +40,8 @@ image::image(const image &im)
 image::~image()
 {
     delete_buffers();
+    clear_reused_rows();
+    clear_reused_columns();
 }
 
 void image::delete_buffers()
@@ -51,6 +54,14 @@ void image::delete_buffers()
     iter_buf = NULL;
     fate_buf = NULL;
     index_buf = NULL;
+}
+
+void image::swap_buffers(image &im)
+{
+    std::swap(buffer, im.buffer);
+    std::swap(iter_buf, im.iter_buf);
+    std::swap(fate_buf, im.fate_buf);
+    std::swap(index_buf, im.index_buf);
 }
 
 bool image::alloc_buffers()
@@ -94,9 +105,10 @@ void image::put(int x, int y, rgba_t pixel)
     int off = x * 3 + y * m_Xres * 3;
     assert(off + BLUE < bytes());
     char *start = buffer + off;
-    start[RED] = pixel.r;
-    start[GREEN] = pixel.g;
-    start[BLUE] = pixel.b;
+    // start[RED] = pixel.r;
+    // start[GREEN] = pixel.g;
+    // start[BLUE] = pixel.b;
+    std::memcpy(start, &pixel, 3);
 }
 
 rgba_t image::get(int x, int y) const
@@ -104,9 +116,10 @@ rgba_t image::get(int x, int y) const
     char *start = buffer + x * 3 + y * m_Xres * 3;
     //assert(start  + 2 - buffer <= bytes());
     rgba_t pixel;
-    pixel.r = start[RED];
-    pixel.g = start[GREEN];
-    pixel.b = start[BLUE];
+    // pixel.r = start[RED];
+    // pixel.g = start[GREEN];
+    // pixel.b = start[BLUE];
+    std::memcpy(&pixel, start, 3);
     pixel.a = 0;
     return pixel;
 }
@@ -193,21 +206,6 @@ void image::fill_subpixels(int x, int y)
     }
 }
 
-void image::clear_fate(int x, int y)
-{
-    if (!fate_buf)
-        return;
-    int base = index_of_subpixel(x, y, 0);
-    for (int i = base; i < base + N_SUBPIXELS; ++i)
-    {
-        fate_buf[i] = FATE_UNKNOWN;
-#ifndef NDEBUG
-        // index is only meaningful if fate is known, but set this for
-        // testing purposes
-        index_buf[i] = 1e30;
-#endif
-    }
-}
 
 fate_t image::getFate(int x, int y, int subpixel) const
 {
@@ -250,17 +248,7 @@ int image::index_of_sentinel_subpixel() const
 
 void image::clear()
 {
-    int fate_pos = 0;
-    // no need to clear image buffer, just iters and fate
-    for (int y = 0; y < m_Yres; ++y)
-    {
-        for (int x = 0; x < m_Xres; ++x)
-        {
-            iter_buf[y * m_Xres + x] = -1;
-            for (int n = 0; n < N_SUBPIXELS; ++n)
-            {
-                fate_buf[fate_pos++] = FATE_UNKNOWN;
-            }
-        }
-    }
+    std::memset(fate_buf, FATE_UNKNOWN, sizeof(fate_t) * m_Xres * m_Yres * N_SUBPIXELS);
+    clear_reused_columns();
+    clear_reused_rows();
 }

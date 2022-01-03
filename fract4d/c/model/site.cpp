@@ -63,6 +63,12 @@ void FDSite::tolerance_changed(double tolerance)
     send(TOLERANCE, sizeof(tolerance), &tolerance);
 }
 
+void FDSite::xaos_image_changed(int x1, int y1, int x2, int y2)
+{
+    int buf[4] = {x1, y1, x2, y2};
+    send(IMAGE, sizeof(buf), &buf[0]);
+}
+
 // we've drawn a rectangle of image
 void FDSite::image_changed(int x1, int y1, int x2, int y2)
 {
