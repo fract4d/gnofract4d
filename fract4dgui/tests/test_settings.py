@@ -10,6 +10,7 @@ from fract4dgui import gtkfractal, settings
 
 class Test(testgui.TestCase):
     def setUp(self):
+        super().setUp()
         self.f = gtkfractal.T(Test.g_comp)
         self.settings = settings.SettingsPane(None, self.f)
 

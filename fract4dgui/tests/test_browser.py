@@ -8,6 +8,7 @@ from fract4dgui import browser
 
 class Test(testgui.TestCase):
     def setUp(self):
+        super().setUp()
         self.f = fractal.T(Test.g_comp, self)
 
     def tearDown(self):

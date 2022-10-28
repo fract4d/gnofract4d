@@ -26,6 +26,8 @@ class MockDialog(Gtk.MessageDialog, hig.MessagePopper):
 
 class Test(unittest.TestCase):
     def setUp(self):
+        os.environ.setdefault('LANG', 'en')
+        gettext.install('gnofract4d')
         hig.timeout = 0
 
     def testCreate(self):

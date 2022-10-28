@@ -26,6 +26,7 @@ class Window(Gtk.Window):
 
 class Test(testgui.TestCase):
     def setUp(self):
+        super().setUp()
         # ensure any dialog boxes are dismissed without human interaction
         hig.timeout = 250
 
