@@ -12,6 +12,7 @@ from fract4d import fractal, animation
 
 class Test(testgui.TestCase):
     def setUp(self):
+        super().setUp()
         f = fractal.T(Test.g_comp)
         self.test_animation = animation.T(f.compiler, Test.userConfig)
 

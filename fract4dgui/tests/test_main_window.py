@@ -64,6 +64,7 @@ class TestApplication(testgui.TestCase):
 
 class Test(testgui.TestCase):
     def setUp(self):
+        super().setUp()
         self.mw = WrapMainWindow(Test.userConfig)
         self.assertEqual(self.mw.filename.filename, None, "shouldn't have a filename")
 

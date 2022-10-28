@@ -9,6 +9,7 @@ from fract4dgui import autozoom, gtkfractal
 
 class Test(testgui.TestCase):
     def setUp(self):
+        super().setUp()
         self.f = gtkfractal.T(Test.g_comp)
         self.mw = Gtk.Window()
 

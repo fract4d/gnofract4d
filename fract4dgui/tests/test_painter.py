@@ -14,6 +14,7 @@ class FakeEvent:
 
 class Test(testgui.TestCase):
     def setUp(self):
+        super().setUp()
         parent = Gtk.Window()
         self.f = parent.f = gtkfractal.T(Test.g_comp)
         self.settings = painter.PainterDialog(parent)

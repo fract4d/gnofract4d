@@ -3,13 +3,11 @@
 from fract4d import fractconfig
 from fract4d_compiler import fc
 import gi
-import os.path
+import os
 import tempfile
 import unittest
 
 import gettext
-os.environ.setdefault('LANG', 'en')
-gettext.install('gnofract4d')
 
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
@@ -38,3 +36,7 @@ class TestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.tmpdir.cleanup()
+
+    def setUp(self):
+        os.environ.setdefault('LANG', 'en')
+        gettext.install('gnofract4d')
