@@ -33,7 +33,7 @@ jobs:
       PYTHON: ${{ matrix.python }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install macOS packages
         if: ${{ runner.os == 'macOS' }}
         run: brew install gtk+3 pygobject3
@@ -48,7 +48,7 @@ jobs:
         # libxml2-utils provides xmllint for xml-stripblanks in gresource.xml
         run: sudo apt install gir1.2-gtk-3.0 gvfs libgirepository1.0-dev libxml2-utils xvfb
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
       - name: Install Tox and any other PyPI packages
@@ -63,7 +63,7 @@ jobs:
         run: xvfb-run --auto-servernum tox -e ${{ matrix.toxenv }}
       - name: Upload coverage to Codecov
         if: ${{ matrix.toxenv == 'py' }}
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: ./coverage.xml
           env_vars: OS,PYTHON
