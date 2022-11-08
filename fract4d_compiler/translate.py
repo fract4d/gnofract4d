@@ -1010,9 +1010,9 @@ class TBase:
 
     def badCast(self, exp, expectedType):
         raise TranslationError(
-            ("%s: invalid type %s for %s, expecting %s" %
+            "%s: invalid type %s for %s, expecting %s" %
              (exp.node.pos, strOfType(exp.datatype),
-              exp.node.leaf, strOfType(expectedType))))
+              exp.node.leaf, strOfType(expectedType)))
 
     def warnCast(self, exp, expectedType):
         msg = "%s: Warning: conversion from %s to %s" % \
@@ -1330,7 +1330,7 @@ parser = fractparser.parser
 
 def main(args):
     for arg in args:
-        with open(arg, "r") as f:
+        with open(arg) as f:
             s = f.read()  # read in a whole file
         result = parser.parse(s)
         for formula in result.children:

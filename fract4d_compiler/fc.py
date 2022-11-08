@@ -247,7 +247,7 @@ class Compiler:
 
     def last_chance(self, filename):
         '''does nothing here, but can be overridden by GUI to prompt user.'''
-        raise IOError("Can't find formula file %s in formula search path" %
+        raise OSError("Can't find formula file %s in formula search path" %
                       filename)
 
     def compile_one(self, formula):

@@ -32,8 +32,8 @@ class TestBase(unittest.TestCase):
             if e.find(str) != -1:
                 return
         self.fail(
-            ("No error matching '%s' raised, errors were %s" %
-             (str, t.errors)))
+            "No error matching '%s' raised, errors were %s" %
+             (str, t.errors))
 
     def assertWarning(self, t, str):
         self.assertNotEqual(len(t.warnings), 0)
@@ -41,8 +41,8 @@ class TestBase(unittest.TestCase):
             if e.find(str) != -1:
                 return
         self.fail(
-            ("No warning matching '%s' raised, warnings were %s" %
-             (str, t.warnings)))
+            "No warning matching '%s' raised, warnings were %s" %
+             (str, t.warnings))
 
     def assertNoErrors(self, t, info=""):
         self.assertEqual(len(t.errors), 0,

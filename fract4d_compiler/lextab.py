@@ -1,6 +1,6 @@
 # lextab.py. This file automatically created by PLY (version 3.9). Don't edit!
 _tabversion   = '3.8'
-_lextokens    = set(('COMMENT', 'FORM_END', 'BOOL_NEG', 'SECT_PARMS', 'COMMENT_FORMULA', 'ESCAPED_NL', 'NEWLINE', 'MOD', 'LT', 'HEADING', 'ID', 'LPAREN', 'RPAREN', 'SECT_SET', 'BOOL_AND', 'TIMES', 'STRING', 'GT', 'FUNC', 'EQ', 'NUMBER', 'WHILE', 'GTE', 'PLUS', 'COMMA', 'ELSE', 'CONST', 'ENDHEADING', 'BOOL_OR', 'MINUS', 'COMPLEX', 'FORM_ID', 'UNTIL', 'ELSEIF', 'REPEAT', 'ENDWHILE', 'TYPE', 'ENDFUNC', 'IF', 'POWER', 'ENDIF', 'ENDPARAM', 'ASSIGN', 'RARRAY', 'DIVIDE', 'MAG', 'LTE', 'PARAM', 'LARRAY', 'NEQ', 'SECT_STM'))
+_lextokens    = {'COMMENT', 'FORM_END', 'BOOL_NEG', 'SECT_PARMS', 'COMMENT_FORMULA', 'ESCAPED_NL', 'NEWLINE', 'MOD', 'LT', 'HEADING', 'ID', 'LPAREN', 'RPAREN', 'SECT_SET', 'BOOL_AND', 'TIMES', 'STRING', 'GT', 'FUNC', 'EQ', 'NUMBER', 'WHILE', 'GTE', 'PLUS', 'COMMA', 'ELSE', 'CONST', 'ENDHEADING', 'BOOL_OR', 'MINUS', 'COMPLEX', 'FORM_ID', 'UNTIL', 'ELSEIF', 'REPEAT', 'ENDWHILE', 'TYPE', 'ENDFUNC', 'IF', 'POWER', 'ENDIF', 'ENDPARAM', 'ASSIGN', 'RARRAY', 'DIVIDE', 'MAG', 'LTE', 'PARAM', 'LARRAY', 'NEQ', 'SECT_STM'}
 _lexreflags   = 0
 _lexliterals  = ''
 _lexstateinfo = {'INITIAL': 'inclusive'}

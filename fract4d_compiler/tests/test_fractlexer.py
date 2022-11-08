@@ -14,7 +14,7 @@ class Test(unittest.TestCase):
     # all the tokens therein
 
     def tokensFromFile(self, f):
-        data = open(f, "r").read()
+        data = open(f).read()
         return self.tokensFromString(data)
 
     def tokensFromString(self, data):

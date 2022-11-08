@@ -1,4 +1,3 @@
-
 class HistoryEntry:
     def __init__(self, redo, redo_data, undo, undo_data):
         self.undo_action = undo
