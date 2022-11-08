@@ -71,7 +71,7 @@ class Test(unittest.TestCase):
 
 
 def suite():
-    return unittest.defaultTestLoader.loadTestsFromTestCase(Test, 'test')
+    return unittest.defaultTestLoader.loadTestsFromTestCase(Test)
 
 
 if __name__ == '__main__':
