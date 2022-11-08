@@ -44,7 +44,7 @@ class T:
                 pass
 
     def makefilename(self, name, ext):
-        return os.path.join(self.dir, "fract4d_%s%s" % (name, ext))
+        return os.path.join(self.dir, f"fract4d_{name}{ext}")
 
     def hashcode(self, s, *extras):
         hash = hashlib.md5(s.encode("utf-8"))

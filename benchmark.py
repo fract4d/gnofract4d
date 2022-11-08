@@ -91,7 +91,7 @@ class Benchmark:
             times = self.run_nogui()
 
         for (file, time) in zip(files, times):
-            print("%.4f %s" % (time, file))
+            print(f"{time:.4f} {file}")
 
         print(reduce(operator.__add__, times, 0))
 

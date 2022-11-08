@@ -42,4 +42,4 @@ for i in range(repeats):
     times.append(t)
 
 print("stats")
-print("min:(%.4f), max(%.4f), average(%.4f)" % (min(times), max(times), sum(times)/len(times)))
+print(f"min:({min(times):.4f}), max({max(times):.4f}), average({sum(times)/len(times):.4f})")

@@ -35,7 +35,7 @@ class StackEntry:
         self.isTrue = isTrue
 
     def __repr__(self):
-        return "(%s,%s)" % (self.line_num, self.isTrue)
+        return f"({self.line_num},{self.isTrue})"
 
 
 class T:

@@ -39,7 +39,7 @@ def efl(fname, template, tlist, **kwds):
     'short-hand for expandFuncList - just reduces the amount of finger-typing'
     list = []
     for t in tlist:
-        f = "Func(%s,\"%s\")" % (re.sub("_", str(t), template), fname)
+        f = "Func({},\"{}\")".format(re.sub("_", str(t), template), fname)
         list.append(eval(f))
     return OverloadList(list, **kwds)
 
@@ -794,19 +794,19 @@ class T(UserDict):
                 l = self.data[k].pos
                 msg = ("was already defined as %s on line %d" %
                        (strOfType(pre_type), l))
-                raise KeyError("symbol '%s' %s" % (key, msg))
+                raise KeyError(f"symbol '{key}' {msg}")
             return
         elif k in T.default_dict:
             pre_var = T.default_dict[k]
             #print("in default: %s" % k)
             if isinstance(pre_var, OverloadList):
                 msg = "is predefined as a function"
-                raise KeyError("symbol '%s' %s" % (key, msg))
+                raise KeyError(f"symbol '{key}' {msg}")
             else:
                 if pre_var.type != value.type:
                     msg = "is predefined as %s" % \
                           strOfType(T.default_dict[k].type)
-                    raise KeyError("symbol '%s' %s" % (key, msg))
+                    raise KeyError(f"symbol '{key}' {msg}")
 
                 if self.is_param(k):
                     self.record_param(pre_var)
@@ -932,7 +932,7 @@ class T(UserDict):
             elif t == Image:
                 tp[i] = Image
             else:
-                raise ValueError("Unknown param type %s for %s" % (t, k))
+                raise ValueError(f"Unknown param type {t} for {k}")
         #assert not None in tp
         return tp
 

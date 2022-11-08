@@ -216,7 +216,7 @@ class ApplicationDialogs:
         else:
             anchor = "#" + section
 
-        url = "file://%s%s" % (abs_file, anchor)
+        url = f"file://{abs_file}{anchor}"
         utils.launch_browser(url, self)
 
 

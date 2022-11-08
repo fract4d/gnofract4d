@@ -319,7 +319,7 @@ opacity:
             fx = oracle(x, midpoint)
 
             self.assertTrue(0.0 <= fx <= 1.0,
-                            "dubious value %f for %f" % (fx, x))
+                            f"dubious value {fx:f} for {x:f}")
 
             col = g.get_color_at(x)
             expected = [fx, fx, fx, 1.0]

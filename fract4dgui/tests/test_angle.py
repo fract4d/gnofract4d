@@ -65,4 +65,4 @@ class Test(unittest.TestCase):
         epsilon = 1.0e-12
         for (ra, rb) in zip(a, b):
             d = abs(ra - rb)
-            self.assertTrue(d < epsilon, "%f != %f (by %f)" % (ra, rb, d))
+            self.assertTrue(d < epsilon, f"{ra:f} != {rb:f} (by {d:f})")

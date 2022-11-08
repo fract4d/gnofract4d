@@ -15,7 +15,7 @@ class ComplexArg:
         [self.re.format(), self.im.format()]
 
     def __str__(self):
-        return "Complex(%s,%s)" % (self.re, self.im)
+        return f"Complex({self.re},{self.im})"
 
 
 class HyperArg:
@@ -159,7 +159,7 @@ class Insn:
             return self.assem % lookup
         except Exception as exn:
             print(exn)
-            msg = "%s with %s" % (self, lookup)
+            msg = f"{self} with {lookup}"
             raise TranslationError(
                 "Internal Compiler Error: can't format " + msg)
 
@@ -240,13 +240,13 @@ class Binop(Oper):
                 ",".join([x.__str__() for x in self.dst]))
 
     def format(self):
-        result = "%s = %s %s %s;" % (
+        result = "{} = {} {} {};".format(
             self.dst[0].format(),
             self.src[0].format(),
             self.op,
             self.src[1].format())
         if self.trace:
-            result += "printf(\"%s = %s (%s %s %s)\\n\",%s);" % (
+            result += "printf(\"{} = {} ({} {} {})\\n\",{});".format(
                 self.dst[0].format(),
                 self.dst[0].cformat(),
                 self.src[0].format(),
@@ -286,16 +286,16 @@ class Move(Insn):
         return [self.src]
 
     def format(self):
-        result = "%s = %s;" % (self.dst[0].format(), self.src[0].format())
+        result = f"{self.dst[0].format()} = {self.src[0].format()};"
         if self.trace:
-            result += "printf(\"%s = %s\\n\",%s);" % (
+            result += "printf(\"{} = {}\\n\",{});".format(
                 self.dst[0].format(),
                 self.dst[0].cformat(),
                 self.src[0].format())
         return result
 
     def __str__(self):
-        return "MOVE(%s,%s,%s)" % (self.assem, self.src, self.dst)
+        return f"MOVE({self.assem},{self.src},{self.dst})"
 
 
 class Decl(Insn):
@@ -307,4 +307,4 @@ class Decl(Insn):
         self.dst = None
 
     def __str__(self):
-        return "DECL(%s,%s)" % (self.src, self.dst)
+        return f"DECL({self.src},{self.dst})"
