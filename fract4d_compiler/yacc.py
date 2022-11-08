@@ -105,7 +105,7 @@ MAXINT = sys.maxsize
 # it into PLY.
 
 
-class PlyLogger(object):
+class PlyLogger:
     def __init__(self, f):
         self.f = f
 
@@ -125,7 +125,7 @@ class PlyLogger(object):
 # Null logger is used when no output is generated. Does nothing.
 
 
-class NullLogger(object):
+class NullLogger:
     def __getattribute__(self, name):
         return self
 
@@ -1366,7 +1366,7 @@ _is_identifier = re.compile(r'^[a-zA-Z0-9_-]+$')
 # -----------------------------------------------------------------------------
 
 
-class Production(object):
+class Production:
     reduced = 0
 
     def __init__(self, number, name, prod, precedence=(
@@ -1426,7 +1426,7 @@ class Production(object):
 # debugging information.
 
 
-class MiniProduction(object):
+class MiniProduction:
     def __init__(self, str, name, len, func, file, line):
         self.name = name
         self.len = len
@@ -1472,7 +1472,7 @@ class MiniProduction(object):
 #       lr_before   - Grammar symbol immediately before
 # -----------------------------------------------------------------------------
 
-class LRItem(object):
+class LRItem:
     def __init__(self, p, n):
         self.name = p.name
         self.prod = list(p.prod)
@@ -1522,7 +1522,7 @@ class GrammarError(YaccError):
     pass
 
 
-class Grammar(object):
+class Grammar:
     def __init__(self, terminals):
         # A list of all of the productions.  The first
         self.Productions = [None]
@@ -2044,7 +2044,7 @@ class VersionError(YaccError):
     pass
 
 
-class LRTable(object):
+class LRTable:
     def __init__(self):
         self.lr_action = None
         self.lr_goto = None
@@ -2824,7 +2824,7 @@ class LRGeneratedTable(LRTable):
 
     def write_table(self, tabmodule, outputdir='', signature=''):
         if isinstance(tabmodule, types.ModuleType):
-            raise IOError("Won't overwrite existing tabmodule")
+            raise OSError("Won't overwrite existing tabmodule")
 
         basemodulename = tabmodule.split('.')[-1]
         filename = os.path.join(outputdir, basemodulename) + '.py'
@@ -2936,7 +2936,7 @@ del _lr_goto_items
             f.write(']\n')
             f.close()
 
-        except IOError as e:
+        except OSError as e:
             raise
 
     # -----------------------------------------------------------------------------
@@ -3049,7 +3049,7 @@ def parse_grammar(doc, file, line):
 # -----------------------------------------------------------------------------
 
 
-class ParserReflect(object):
+class ParserReflect:
     def __init__(self, pdict, log=None):
         self.pdict = pdict
         self.start = None
@@ -3126,7 +3126,7 @@ class ParserReflect(object):
         for module in self.modules:
             try:
                 lines, linen = inspect.getsourcelines(module)
-            except IOError:
+            except OSError:
                 continue
 
             counthash = {}
@@ -3448,7 +3448,7 @@ def yacc(method='LALR', debug=yaccdebug, module=None, tabmodule=tab_module, star
                             outputdir,
                             debugfile),
                         'w'))
-            except IOError as e:
+            except OSError as e:
                 errorlog.warning("Couldn't open %r. %s" % (debugfile, e))
                 debuglog = NullLogger()
         else:
@@ -3646,14 +3646,14 @@ def yacc(method='LALR', debug=yaccdebug, module=None, tabmodule=tab_module, star
     if write_tables:
         try:
             lr.write_table(tabmodule, outputdir, signature)
-        except IOError as e:
+        except OSError as e:
             errorlog.warning("Couldn't create %r. %s" % (tabmodule, e))
 
     # Write a pickled version of the tables
     if picklefile:
         try:
             lr.pickle_table(picklefile, signature)
-        except IOError as e:
+        except OSError as e:
             errorlog.warning("Couldn't create %r. %s" % (picklefile, e))
 
     # Build the parser

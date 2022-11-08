@@ -90,7 +90,7 @@ class Actions:
 
         # stateful actions
         self.explorer_action, self.fullscreen_action = \
-            [add_action(*x, state=GLib.Variant("b", False)) for x in self.get_toggle_actions()]
+            (add_action(*x, state=GLib.Variant("b", False)) for x in self.get_toggle_actions())
 
         # actions which are only available if we're in 4D mode
         self.fourd_actiongroup = Gio.SimpleActionGroup()

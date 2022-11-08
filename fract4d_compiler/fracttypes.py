@@ -17,7 +17,7 @@ FloatArray = 11
 ComplexArray = 12
 
 
-class Type(object):
+class Type:
     def __init__(self, **kwds):
         self.suffix = kwds["suffix"]
         self.printf = kwds.get("printf")  # optional

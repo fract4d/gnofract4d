@@ -504,7 +504,7 @@ class Gradient:
         clist = []
         for s in self.segments:
             color = s.left_color
-            (r, g, b, a) = [int(x * 255.0) for x in color]
+            (r, g, b, a) = (int(x * 255.0) for x in color)
             colorstring = "%02x%02x%02x" % (r, g, b)
             clist.append(colorstring)
         return "https://coolors.co/" + ("-".join(clist))

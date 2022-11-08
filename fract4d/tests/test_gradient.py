@@ -181,7 +181,7 @@ opacity:
         grad = self.checkColorMapAndGradientEquivalent(colorlist, 2)
 
     def colorMapFromFile(self, name):
-        f = open(name, "r")
+        f = open(name)
         i = 0
         colorlist = []
         rgb_re = re.compile(r'\s*(\d+)\s+(\d+)\s+(\d+)')
