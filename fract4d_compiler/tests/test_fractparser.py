@@ -1033,7 +1033,7 @@ default:
     def assertTreesEqual(self, t1, t2):
         self.assertTrue(
             t1.DeepCmp(t2) == 0,
-            ("%s, %s should be equivalent" % (t1.pretty(), t2.pretty())))
+            (f"{t1.pretty()}, {t2.pretty()} should be equivalent"))
 
     def allNodesOfType(self, t1, type):
         return [n for n in t1 if n.type == type]

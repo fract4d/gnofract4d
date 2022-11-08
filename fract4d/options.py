@@ -17,7 +17,7 @@ def formula_type_parse(name, string):
     n = string.rfind('#')
     if n == -1:
         raise argparse.ArgumentTypeError(
-            "argument '%s' to %s should be file#func" % (string, name))
+            f"argument '{string}' to {name} should be file#func")
 
     file, func = string[:n], string[n + 1:]
     path = os.path.dirname(file)

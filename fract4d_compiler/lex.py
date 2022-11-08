@@ -1035,7 +1035,7 @@ def lex(module=None, object=None, debug=False, optimize=False, lextab='lextab',
 
         # Add rules defined by functions first
         for fname, f in linfo.funcsym[state]:
-            regex_list.append('(?P<%s>%s)' % (fname, _get_regex(f)))
+            regex_list.append(f'(?P<{fname}>{_get_regex(f)})')
             if debug:
                 debuglog.info(
                     "lex: Adding rule %s -> '%s' (state '%s')",
@@ -1045,7 +1045,7 @@ def lex(module=None, object=None, debug=False, optimize=False, lextab='lextab',
 
         # Now add all of the simple rules
         for name, r in linfo.strsym[state]:
-            regex_list.append('(?P<%s>%s)' % (name, r))
+            regex_list.append(f'(?P<{name}>{r})')
             if debug:
                 debuglog.info(
                     "lex: Adding rule %s -> '%s' (state '%s')", name, r, state)

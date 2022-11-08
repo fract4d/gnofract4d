@@ -57,7 +57,7 @@ class TBase:
                     try:
                         print(name, ": ", sym)
                     except Exception as err:
-                        print("Error \"%s\" dumping %s" % (err, name))
+                        print(f"Error \"{err}\" dumping {name}")
 
         if self.dumpTranslation:
             print(self.dumpSections(f, self.canon_sections))
@@ -88,7 +88,7 @@ class TBase:
             elif tree is None:
                 pass
             else:
-                print("Unknown tree %s in section %s" % (tree, name))
+                print(f"Unknown tree {tree} in section {name}")
         print("}\n")
 
     def pretty(self):
@@ -107,7 +107,7 @@ class TBase:
             elif tree is None:
                 pass
             else:
-                out.append("Unknown tree %s in section %s" % (tree, name))
+                out.append(f"Unknown tree {tree} in section {name}")
         return "\n".join(out)
 
     def error(self, msg):
@@ -678,7 +678,7 @@ class TBase:
             return f
         else:
             raise TranslationError(
-                "%s: '%s' is not a function and cannot be called" % (pos, name))
+                f"{pos}: '{name}' is not a function and cannot be called")
 
     def findOp(self, func, pos, alist):
         ' find the most appropriate overload for this op'

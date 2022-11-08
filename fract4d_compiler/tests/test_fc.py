@@ -41,7 +41,7 @@ class Test(testbase.ClassSetup):
         try:
             return list.index(element)
         except ValueError as err:
-            raise AssertionError("couldn't find %s in %s" % (element, list))
+            raise AssertionError(f"couldn't find {element} in {list}")
 
     def assertListDoesntContain(self, list, element):
         self.assertEqual(0, list.count(element))
@@ -249,7 +249,7 @@ bailout: abs(real(z)) > 2.0 || abs(imag(z)) > 2.0
                 # skip formulas expected to produce an error
                 if fname.count("error") == 0:
                     f = Test.g_comp.get_formula(ff.filename, fname)
-                    self.assertNoErrors(f, "%s:%s" % (filename, fname))
+                    self.assertNoErrors(f, f"{filename}:{fname}")
 
     def testGetFormulaText(self):
         t = Test.g_comp.get_formula_text("gf4d.frm", "Mandelbrot")

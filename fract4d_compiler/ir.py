@@ -111,7 +111,7 @@ class Var(Exp):
         self.name = name
 
     def __str__(self):
-        return "Var<%s>(%s" % (fracttypes.strOfType(self.datatype), self.name)
+        return f"Var<{fracttypes.strOfType(self.datatype)}>({self.name}"
 
 
 class Cast(Exp):

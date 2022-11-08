@@ -235,7 +235,7 @@ class Segment:
     def save(self, f, skip_left=False):
         if skip_left:
             # this segment's left end == previous right, so leave it out
-            print("+%6f %6f" % (self.mid, self.right), end=' ', file=f)
+            print(f"+{self.mid:6f} {self.right:6f}", end=' ', file=f)
             for x in self.right_color:
                 print("%6f" % x, end=' ', file=f)
         else:
@@ -505,7 +505,7 @@ class Gradient:
         for s in self.segments:
             color = s.left_color
             (r, g, b, a) = (int(x * 255.0) for x in color)
-            colorstring = "%02x%02x%02x" % (r, g, b)
+            colorstring = f"{r:02x}{g:02x}{b:02x}"
             clist.append(colorstring)
         return "https://coolors.co/" + ("-".join(clist))
 

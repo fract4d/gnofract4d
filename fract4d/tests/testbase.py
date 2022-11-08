@@ -46,7 +46,7 @@ class TestBase(unittest.TestCase):
 
     def assertNoErrors(self, t, info=""):
         self.assertEqual(len(t.errors), 0,
-                         "Unexpected errors %s in %s" % (t.errors, info))
+                         f"Unexpected errors {t.errors} in {info}")
         for (name, item) in list(t.canon_sections.items()):
             for stm in item:
                 # print stm.pretty()
@@ -136,7 +136,7 @@ class TestBase(unittest.TestCase):
 
             self.assertTrue(
                 t1.pretty() == t2.pretty(),
-                ("%s, %s should be equivalent" % (t1.pretty(), t2.pretty())))
+                (f"{t1.pretty()}, {t2.pretty()} should be equivalent"))
 
     def assertEquivalentTranslations(self, t1, t2):
         for (k, item) in list(t1.sections.items()):
@@ -167,7 +167,7 @@ class TestBase(unittest.TestCase):
             if isinstance(n, ir.Jump):
                 jumps_and_labs.append("J:%s" % n.dest)
             elif isinstance(n, ir.CJump):
-                jumps_and_labs.append("CJ:%s,%s" % (n.trueDest, n.falseDest))
+                jumps_and_labs.append(f"CJ:{n.trueDest},{n.falseDest}")
             elif isinstance(n, ir.Label):
                 jumps_and_labs.append("L:%s" % n.name)
 
@@ -223,7 +223,7 @@ class TestBase(unittest.TestCase):
                     try:
                         sym = t.symbols[node]
                     except KeyError as err:
-                        self.fail("%s not a symbol in %s" % (node, s.pretty()))
+                        self.fail(f"{node} not a symbol in {s.pretty()}")
                     self.assertTrue(isinstance(sym, fracttypes.Var),
                                     "weird symbol %s : %s(%s)" %
                                     (node, sym, sym.__class__.__name__))
@@ -235,10 +235,10 @@ class TestBase(unittest.TestCase):
                         (node, node.__class__.__name__))
 
                 if isinstance(ob, ir.Stm):
-                    self.assertEqual(dt, None, "bad type %s for %s" % (dt, ob))
+                    self.assertEqual(dt, None, f"bad type {dt} for {ob}")
                 else:
                     self.assertTrue(dt in fracttypes.typeList,
-                                    "bad type %s for %s" % (dt, ob))
+                                    f"bad type {dt} for {ob}")
 
 
 class ClassSetup(TestBase):

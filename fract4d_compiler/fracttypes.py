@@ -257,7 +257,7 @@ def arrayTypeOf(t, node=None):
     else:
         pos = "%d: " % node.pos
     raise TranslationError(
-        "%sArrays of type %s are not supported" % (pos, strOfType(t)))
+        f"{pos}Arrays of type {strOfType(t)} are not supported")
 
 
 def elementTypeOf(t, node=None):
@@ -274,7 +274,7 @@ def elementTypeOf(t, node=None):
     else:
         pos = "%d: " % node.pos
     raise TranslationError(
-        "%sArrays of type %s are not supported" % (pos, strOfType(t)))
+        f"{pos}Arrays of type {strOfType(t)} are not supported")
 
 
 def typeOfStr(tname):
@@ -380,7 +380,7 @@ class Var:
         try:
             return self._typeobj.init_val(self)
         except AttributeError:
-            print("%s type for %s" % (self._typeobj.typename, self.cname))
+            print(f"{self._typeobj.typename} type for {self.cname}")
             raise
 
     def _get_part_names(self):

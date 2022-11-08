@@ -337,7 +337,7 @@ pf_obj *pf_new()
         decls = [None] * len(parts)
         for i in range(len(parts)):
             decls[i] = Decl(
-                "%s %s%s = %s;" % (sym.ctype, sym.cname, parts[i], vals[i]))
+                f"{sym.ctype} {sym.cname}{parts[i]} = {vals[i]};")
 
         return decls
 
@@ -345,7 +345,7 @@ pf_obj *pf_new()
         """Declare a variable for sym"""
         parts = sym.part_names
         decls = [
-            Decl("%s %s%s;" % (sym.ctype, sym.cname, part))
+            Decl(f"{sym.ctype} {sym.cname}{part};")
             for part in parts]
         return decls
 
@@ -460,7 +460,7 @@ pf_obj *pf_new()
         # print "output: %s => %s" % ( \
         #    section,[x.pretty() for x in t.canon_sections[section]])
         self.generate_all_code(t.canon_sections[section])
-        self.emit_label("t__end_%s%s" % (t.symbols.prefix, section))
+        self.emit_label(f"t__end_{t.symbols.prefix}{section}")
         t.output_sections[section] = self.out
 
     def output_all(self, t):

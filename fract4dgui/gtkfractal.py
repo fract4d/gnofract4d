@@ -122,7 +122,7 @@ class Hidden(GObject.GObject):
             cb)
 
     def error(self, msg, err):
-        print("Error: %s %s" % (msg, err))
+        print(f"Error: {msg} {err}")
 
     def warn(self, msg):
         print("Warning: ", msg)
@@ -493,7 +493,7 @@ class T(Hidden):
         if self.parent:
             self.parent.show_error_message(msg, err)
         else:
-            print("Error: %s : %s" % (msg, err))
+            print(f"Error: {msg} : {err}")
 
     def warn(self, msg):
         if self.parent:

@@ -80,7 +80,7 @@ class T:
             if warp_param == name:
                 return "warp"
             else:
-                return "(%.17f,%.17f)" % (
+                return "({:.17f},{:.17f})".format(
                     self.params[ord], self.params[ord + 1])
         elif type == fracttypes.Hyper or type == fracttypes.Color:
             return "(%.17f,%.17f,%.17f,%.17f)" % \
@@ -97,7 +97,7 @@ class T:
         elif type == fracttypes.Image:
             return "[\n" + self.params[ord].serialize() + "]"
         else:
-            raise ValueError("Unknown type %s for param %s" % (type, name))
+            raise ValueError(f"Unknown type {type} for param {name}")
 
     def save_formula_params(self, file, warp_param=None, sectnum=None):
         if sectnum is None:
@@ -116,7 +116,7 @@ class T:
         names = self.func_names()
         names.sort()
         for name in names:
-            print("%s=%s" % (name, self.get_func_value(name)), file=file)
+            print(f"{name}={self.get_func_value(name)}", file=file)
         names = self.param_names()
         names.sort()
         for name in names:
@@ -253,7 +253,7 @@ class T:
             self.params[ord] = im
             self.changed()
         else:
-            raise ValueError("Unknown param type %s for %s" % (t, name))
+            raise ValueError(f"Unknown param type {t} for {name}")
 
     def set_named_func(self, func_to_set, val):
         fname = self.formula.symbols.demangle(func_to_set)
@@ -324,7 +324,7 @@ class T:
         formula = self.compiler.get_formula(file, func, self.prefix)
 
         if formula is None:
-            raise ValueError("no such formula: %s:%s" % (file, func))
+            raise ValueError(f"no such formula: {file}:{func}")
 
         if formula.errors != []:
             raise ValueError("invalid formula '%s':\n%s" %

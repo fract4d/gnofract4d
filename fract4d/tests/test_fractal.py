@@ -781,7 +781,7 @@ colorlist=[
         for (ra, rb) in zip(a, b):
             if isinstance(ra, float):
                 d = abs(ra - rb)
-                self.assertTrue(d < epsilon, "%f != %f (by %f)" % (ra, rb, d))
+                self.assertTrue(d < epsilon, f"{ra:f} != {rb:f} (by {d:f})")
             else:
                 self.assertEqual(ra, rb)
 

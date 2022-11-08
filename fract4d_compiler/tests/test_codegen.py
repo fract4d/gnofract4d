@@ -163,7 +163,7 @@ int main()
                 print(i)
                 print(i.format())
             except Exception as e:
-                print("Can't format %s:%s" % (i, e))
+                print(f"Can't format {i}:{e}")
                 raise
 
     def makeC(self, user_preamble="", user_postamble=""):
@@ -245,10 +245,10 @@ int main()
         oFileName = str(Path(cFile.name).with_suffix(".so"))
         import sys
         if sys.platform[:6] == "darwin":
-            cmd = "gcc -Wall -fPIC -DPIC -Ifract4d/c -shared %s -o %s -lm -flat_namespace -undefined suppress" % (
+            cmd = "gcc -Wall -fPIC -DPIC -Ifract4d/c -shared {} -o {} -lm -flat_namespace -undefined suppress".format(
                 cFile.name, oFileName)
         else:
-            cmd = "gcc -Wall -fPIC -DPIC -Ifract4d/c -shared %s -o %s -lm" % (
+            cmd = "gcc -Wall -fPIC -DPIC -Ifract4d/c -shared {} -o {} -lm".format(
                 cFile.name, oFileName)
         status, output = subprocess.getstatusoutput(cmd)
         self.assertEqual(status, 0, "C error:\n%s\nProgram:\n%s\n" %
@@ -262,7 +262,7 @@ int main()
         cFile.flush()
         oFileName = str(Path(cFile.name).with_suffix(""))
 
-        cmd = "g++ -g -Wall %s -o %s -Ifract4d/c -lm" % (cFile.name, oFileName)
+        cmd = f"g++ -g -Wall {cFile.name} -o {oFileName} -Ifract4d/c -lm"
         status, output = subprocess.getstatusoutput(cmd)
         self.assertEqual(status, 0, "C error:\n%s\nProgram:\n%s\n" %
                          (output, c_code))
@@ -1154,7 +1154,7 @@ endparam
         asm = self.sourceToAsm(src, "init")
         check = self.inspect_complex("x") + self.inspect_complex("y")
 
-        postamble = "t__end_f%s:\n%s\n" % ("init", check)
+        postamble = "t__end_f{}:\n{}\n".format("init", check)
         c_code = self.makeC("", postamble)
         find_re = re.compile(r'\((.*?),(.*?)\)')
 
@@ -1259,9 +1259,9 @@ endparam
         inspects = []
         results = []
         for (f, res) in funcs:
-            srcs.append("color c_%s = %s(r,gp5)" % (f, f))
+            srcs.append(f"color c_{f} = {f}(r,gp5)")
             inspects.append(self.inspect_color("c_%s" % f))
-            results.append("c_%s = %s" % (f, res))
+            results.append(f"c_{f} = {res}")
 
         src = '''t_merge {
         init:
@@ -1625,7 +1625,7 @@ endparam
         self.codegen.generate_all_code(t.canon_sections["init"])
 
         check = self.inspect_complex("x") + self.inspect_complex("y")
-        postamble = "t__end_f%s:\n%s\n" % ("init", check)
+        postamble = "t__end_f{}:\n{}\n".format("init", check)
         c_code = self.makeC("", postamble)
         output = self.compileAndRun(c_code)
         self.assertEqual(output, "x = (0,0)\ny = (5,-1)")
@@ -1638,7 +1638,7 @@ endparam
         self.codegen.generate_all_code(t.canon_sections["init"])
 
         check = self.inspect_complex("x") + self.inspect_complex("y")
-        postamble = "t__end_f%s:\n%s\n" % ("init", check)
+        postamble = "t__end_f{}:\n{}\n".format("init", check)
         c_code = self.makeC("", postamble)
         output = self.compileAndRun(c_code)
         self.assertEqual(output, "x = (0,0)\ny = (7,1)")
@@ -1693,13 +1693,13 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
                          "z = (0,0)")
 
     def inspect_bool(self, name):
-        return "printf(\"%s = %%d\\n\", f%s);" % (name, name)
+        return f"printf(\"{name} = %d\\n\", f{name});"
 
     def inspect_float(self, name):
-        return "printf(\"%s = %%g\\n\", f%s);" % (name, name)
+        return f"printf(\"{name} = %g\\n\", f{name});"
 
     def inspect_int(self, name):
-        return "printf(\"%s = %%d\\n\", f%s);" % (name, name)
+        return f"printf(\"{name} = %d\\n\", f{name});"
 
     def inspect_complex(self, name, prefix="f"):
         return "printf(\"%s = (%%g,%%g)\\n\", isnan(%s%s_re) ? NAN : %s%s_re, isnan(%s%s_im) ? NAN : %s%s_im);" % \
@@ -1727,12 +1727,12 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         except ZeroDivisionError:
             y = "inf"
 
-        return "(%s,%s)" % (x, y)
+        return f"({x},{y})"
 
     def cpredict(self, f, arg=(1 + 0j)):
         try:
             z = f(arg)
-            return "(%.6g,%.6g)" % (z.real, z.imag)
+            return f"({z.real:.6g},{z.imag:.6g})"
         except OverflowError:
             return "(inf,inf)"
         except ZeroDivisionError:
@@ -1992,7 +1992,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
               "\n".join([x[0] for x in tests]) + "\n}"
 
         check = "\n".join([self.inspect_complex(x[1]) for x in tests])
-        exp = ["%s = %s" % (x[1], x[2]) for x in tests]
+        exp = [f"{x[1]} = {x[2]}" for x in tests]
         self.assertCSays(src, "init", check, exp)
 
     def testExpression(self):
@@ -2001,7 +2001,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         if g_exp is None:
             return
         x = g_x or "(1,0)"
-        src = 't_test {\ninit:\nx = %s\nresult = %s\n}' % (x, g_exp)
+        src = f't_test {{\ninit:\nx = {x}\nresult = {g_exp}\n}}'
         asm = self.sourceToAsm(src, "init", {})
         postamble = "t__end_finit:\nprintf(\"(%g,%g)\\n\",fresult_re,fresult_im);"
         c_code = self.makeC("", postamble)
@@ -2295,7 +2295,7 @@ Newton4(XYAXIS) {; Mark Peterson
     # assertions
     def assertCSays(self, source, section, check, result, options={}):
         asm = self.sourceToAsm(source, section, options)
-        postamble = "t__end_f%s:\n%s\n" % (section, check)
+        postamble = f"t__end_f{section}:\n{check}\n"
         c_code = self.makeC("", postamble)
         output = self.compileAndRun(c_code)
 
@@ -2314,4 +2314,4 @@ Newton4(XYAXIS) {; Mark Peterson
     def assertMatchResult(self, tree, template, result):
         template = self.codegen.expand(template)
         self.assertEqual(self.codegen.match_template(tree, template), result,
-                         "%s mismatches %s" % (tree.pretty(), template))
+                         f"{tree.pretty()} mismatches {template}")

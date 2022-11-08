@@ -90,5 +90,5 @@ class Test(unittest.TestCase):
             try:
                 self.assertTreesEqual(out, expected)
             except Exception as exn:
-                print("Error comparing trees %s, %s" % (out, expected))
+                print(f"Error comparing trees {out}, {expected}")
                 raise

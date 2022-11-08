@@ -38,7 +38,7 @@ bad_files = [
 ]
 
 def render(outfile, fctfile):
-    cmd = "./gnofract4d --nogui --threads 4 -i 64 -j 48 -s %s -q %s" % (outfile, fctfile)
+    cmd = f"./gnofract4d --nogui --threads 4 -i 64 -j 48 -s {outfile} -q {fctfile}"
     #print cmd
     ret = os.system(cmd)
     if ret != 0:
