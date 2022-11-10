@@ -529,7 +529,7 @@ class T(Hidden):
         self.newx, self.newy = event.x, event.y
 
         dy = int(abs(self.newx - self.x) * float(self.height) / self.width)
-        if(self.newy < self.y or (self.newy == self.y and self.newx < self.x)):
+        if self.newy < self.y or (self.newy == self.y and self.newx < self.x):
             dy = -dy
         self.newy = self.y + dy
 
