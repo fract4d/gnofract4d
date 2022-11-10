@@ -1,0 +1,36 @@
+[flake8]
+filename =
+    *.py
+    gnofract4d
+extend-exclude =
+    build/
+# Derived from published packages
+    fract4d_compiler/yacc.py
+builtins =
+    _
+    _n
+max-line-length = 95
+per-file-ignores =
+#E402: module level import not at top of file
+    fract4dgui/*.py: E402
+#F403: import *' used; unable to detect undefined names
+#F405: undefined, or defined from star imports
+    fract4d/*.py: F403,F405
+    fract4d_compiler/*.py: F403,F405
+    fract4d_compiler/tests/*.py: F403,F405
+#E101: indentation contains mixed spaces and tabs
+#W191: indentation contains tabs
+    fract4d/tests/test_fractal.py: E101,W191
+extend-ignore =
+# https://pep8.readthedocs.org/en/latest/intro.html#error-codes
+# these are ignored by default:
+# E121: continuation line under-indented for hanging indent
+# E123: closing bracket does not match indentation of opening bracket’s line
+# E126: continuation line over-indented for hanging indent
+# E133: closing bracket does not match visual indentation
+# E226: missing whitespace around arithmetic operator
+# E241: multiple spaces after ‘,’
+# E242: tab after ‘,’
+# E704: multiple statements on one line (def)
+# W503: line break before binary operator
+# W504: line break after binary operator
