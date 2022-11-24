@@ -30,10 +30,7 @@ if not shutil.which("glib-compile-resources"):
 # by default python uses all the args which were used to compile it. But Python is C and some
 # extension files are C++, resulting in annoying '-Wstrict-prototypes is not supported' messages.
 # tweak the cflags to override
-os.environ["CFLAGS"] = sysconfig.get_config_var(
-    "CFLAGS").replace("-Wstrict-prototypes", "")
-os.environ["OPT"] = sysconfig.get_config_var(
-    "OPT").replace("-Wstrict-prototypes", "")
+os.environ["CFLAGS"] = os.environ.get("CFLAGS", "").replace("-Wstrict-prototypes", "")
 
 # Extensions need to link against appropriate libs
 # We use pkg-config to find the appropriate set of includes and libs
@@ -132,7 +129,7 @@ if _DEBUG:
         # ('DEBUG_PIXEL',1), # debug spew for array handling
         # ('EXPERIMENTAL_OPTIMIZATIONS',1), # enables some experimental optimizations
     ]
-else:
+elif not os.environ["CFLAGS"]:
     extra_compile_args += ["-DNDEBUG", "-O3"]
 
 module_fract4dc = Extension(
