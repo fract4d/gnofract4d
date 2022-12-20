@@ -109,7 +109,7 @@ class MainWindow(Actions, ApplicationWindow):
         for widget in self.four_d_sensitives:
             widget.set_sensitive(is4d)
         for name in self.fourd_actiongroup.list_actions():
-            self.application.lookup_action(name).set_enabled(is4d)
+            self.fourd_actiongroup.lookup_action(name).set_enabled(is4d)
 
     def draw_image(self):
         nt = self.userPrefs.getint("general", "threads")
@@ -184,16 +184,16 @@ class MainWindow(Actions, ApplicationWindow):
             y *= 10.0
         self.f.nudge(x, y, axis)
 
-    def on_key_left(self, action, parameter):
+    def on_key_left(self, action, parameter, data):
         self.nudge(-1, 0, parameter.unpack())
 
-    def on_key_right(self, action, parameter):
+    def on_key_right(self, action, parameter, data):
         self.nudge(1, 0, parameter.unpack())
 
-    def on_key_up(self, action, parameter):
+    def on_key_up(self, action, parameter, data):
         self.nudge(0, -1, parameter.unpack())
 
-    def on_key_down(self, action, parameter):
+    def on_key_down(self, action, parameter, data):
         self.nudge(0, 1, parameter.unpack())
 
     def progress_changed(self, f, progress):
@@ -263,12 +263,12 @@ class MainWindow(Actions, ApplicationWindow):
         self.renderQueue.add(self.f.f, name, w, h)
         self.renderQueue.start()
 
-    def toggle_explorer(self, action, parameter):
+    def toggle_explorer(self, action, parameter, data):
         """Enter (or leave) Explorer mode."""
         state = action.get_state() == GLib.Variant("b", False)
         self.set_explorer_state(state)
 
-    def toggle_full_screen(self, action, parameter):
+    def toggle_full_screen(self, action, parameter, data):
         """Switch main window to/from full-screen."""
         to_full = action.get_state() == GLib.Variant("b", False)
         if to_full:
@@ -303,7 +303,8 @@ class MainWindow(Actions, ApplicationWindow):
             self.statusbar.show()
             self.unfullscreen()
 
-        self.fullscreen_action.set_state(GLib.Variant("b", to_full))
+        self.application.lookup_action(
+            "ViewFullScreenAction").set_state(GLib.Variant("b", to_full))
 
     def update_preview(self, f, flip2julia=False):
         if self.use_preview:
@@ -325,7 +326,8 @@ class MainWindow(Actions, ApplicationWindow):
         self.f.improve_quality()
 
     def set_explorer_state(self, active):
-        self.explorer_action.set_state(GLib.Variant("b", active))
+        self.application.lookup_action(
+            "ToolsExplorerAction").set_state(GLib.Variant("b", active))
         self.update_subfract_visibility(active)
 
     def update_angle_widget(self, f, widget):
@@ -603,7 +605,7 @@ class MainWindow(Actions, ApplicationWindow):
                 break
         return True
 
-    def quit(self, action, widget=None):
+    def quit(self, action, *args):
         """Quit Gnofract 4D."""
         self.f.interrupt()
         self.fractalWindow.interrupt()

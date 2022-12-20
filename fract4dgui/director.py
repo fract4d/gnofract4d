@@ -296,12 +296,12 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
     def swap_redblue_clicked(self, widget, data=None):
         self.animation.set_redblue(self.chk_swapRB.get_active())
 
-    def add_from_file(self, widget, data=None):
+    def add_from_file(self, *args):
         file = self.get_fct_file()
         if file != "":
             self.add_keyframe(file)
 
-    def add_from_current(self, widget, data=None):
+    def add_from_current(self, *args):
         (tmp_fd, tmp_name) = tempfile.mkstemp(suffix='.fct')
         with os.fdopen(tmp_fd, 'w') as f:
             self.f.save(f)
@@ -439,22 +439,15 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
             accelgroup.connect(
                 key, Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE, handler)
 
-        def add_action(name, handler):
-            action = Gio.SimpleAction(name=name)
-            action.connect("activate", handler)
-            actiongroup.add_action(action)
-
-        actions = [
+        actiongroup = Gio.SimpleActionGroup()
+        actiongroup.add_action_entries([
             ("new", self.new_configuration_clicked),
             ("open", self.load_configuration_clicked),
             ("save", self.save_configuration_clicked),
             ("edit_prefs", self.preferences_clicked),
-        ]
-
-        actiongroup = Gio.SimpleActionGroup()
-        # SimpleActionGroup.add_action_entries() requires override from PyGObject 3.29.2
-        for name, handler in actions:
-            add_action(name, handler)
+            ("file_keyframe", self.add_from_file),
+            ("current_keyframe", self.add_from_current),
+        ])
         self.insert_action_group("director", actiongroup)
 
         menubar = Gtk.MenuBar.new_from_model(
@@ -462,9 +455,6 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
         box_main.pack_start(menubar, False, True, 0)
 
         # -----------creating keyframes popup menu model----------------
-        add_action("file_keyframe", self.add_from_file)
-        add_action("current_keyframe", self.add_from_current)
-
         popup_menu = Gio.Menu()
         popup_menu.append("From file", "director.file_keyframe")
         popup_menu.append("From current fractal", "director.current_keyframe")
