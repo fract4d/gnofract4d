@@ -12,16 +12,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04]
-        python: ["3.8", "3.9", "3.10", "3.11"]
+        os: [ubuntu-22.04]
+        python: ["3.9", "3.10", "3.11"]
         toxenv: [py]
         # Ensure ../codecov.yml uploads after all py jobs
         include:
           - os: macos-11
             python: "3.7"
             toxenv: py
-          - os: ubuntu-18.04
-            python: "3.6"
+          - os: ubuntu-20.04
+            python: "3.8"
             toxenv: py
           - os: ubuntu-latest
             python: "3.8"
