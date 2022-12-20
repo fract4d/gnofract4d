@@ -36,7 +36,7 @@ Gnofract 4D requires these packages to run:
 - Python version 3.6 or higher
 - GTK version 3.22 or higher
 - Pycairo
-- PyGObject to access GTK from Python
+- PyGObject version 3.29.2 or higher to access GTK from Python
 - A C++ compiler (used at runtime to compile your fractal formulas)
 
 On Ubuntu, these can be installed with:

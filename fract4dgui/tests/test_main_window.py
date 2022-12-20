@@ -225,11 +225,13 @@ class Test(testgui.TestCase):
     def testToggleFullScreen(self):
         action = Gio.SimpleAction.new_stateful(
             "ViewFullScreenAction", None, GLib.Variant("b", False))
-        self.mw.toggle_full_screen(action, None)
-        self.assertTrue(self.mw.fullscreen_action.get_state().unpack())
+        self.mw.toggle_full_screen(action, None, None)
+        self.assertTrue(
+            self.mw.application.lookup_action("ViewFullScreenAction").get_state().unpack())
         action.set_state(GLib.Variant("b", True))
-        self.mw.toggle_full_screen(action, None)
-        self.assertFalse(self.mw.fullscreen_action.get_state().unpack())
+        self.mw.toggle_full_screen(action, None, None)
+        self.assertFalse(
+            self.mw.application.lookup_action("ViewFullScreenAction").get_state().unpack())
 
     def testQuit(self):
         tmpdir = tempfile.TemporaryDirectory(prefix="testQuit_")

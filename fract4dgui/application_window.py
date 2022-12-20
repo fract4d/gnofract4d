@@ -2,7 +2,7 @@
 
 import os
 
-from gi.repository import Gdk, Gio, GLib, Gtk
+from gi.repository import Gdk, Gio, Gtk
 
 from fract4d import fractal, fractconfig, image
 from fract4d.options import VERSION
@@ -71,32 +71,25 @@ class Actions:
         ]
 
     def create_actions(self):
-        def add_action(name, handler, parameter_type=None, state=None):
-            action = Gio.SimpleAction(
-                name=name, parameter_type=parameter_type, state=state)
-            action.connect("activate", handler)
-            self.application.add_action(action)
-            return action
-
         # Missing override for Gtk.Application.add_action_entries():
         # https://gitlab.gnome.org/GNOME/pygobject/-/issues/426
         # main actions
-        for name, handler in self.get_main_actions():
-            add_action(name, handler)
+        Gio.ActionMap.add_action_entries(self.application, self.get_main_actions())
 
         # actions with parameters
-        for name, handler in self.get_arrow_actions():
-            add_action(name, handler, parameter_type=GLib.VariantType("i"))
+        Gio.ActionMap.add_action_entries(
+            self.application, [(*x, "i") for x in self.get_arrow_actions()])
 
         # stateful actions
-        self.explorer_action, self.fullscreen_action = \
-            (add_action(*x, state=GLib.Variant("b", False)) for x in self.get_toggle_actions())
+        Gio.ActionMap.add_action_entries(
+            self.application,
+            [(name, None, None, "false", callback)
+             for name, callback in self.get_toggle_actions()]
+        )
 
         # actions which are only available if we're in 4D mode
         self.fourd_actiongroup = Gio.SimpleActionGroup()
-        for name, handler in self.get_fourd_actions():
-            action = add_action(name, handler)
-            self.fourd_actiongroup.add_action(action)
+        self.fourd_actiongroup.add_action_entries(self.get_fourd_actions())
 
         # keyboard accelerators for actions
         for key in [x[0] for x in self.get_arrow_actions()]:
