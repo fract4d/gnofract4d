@@ -52,6 +52,9 @@ extern "C"
     double read_float_array_2D(void *array, int x, int y);
     int write_float_array_2D(void *array, int x, int y, double val);
 
+    void image_lookup(void *im, double x, double y, double *pr, double *pg, double *pb);
+    void gradient(void *grad_object, double index, double *r, double *g, double *b);
+
 #ifdef __cplusplus
 }
 #endif
