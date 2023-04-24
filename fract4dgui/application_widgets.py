@@ -82,9 +82,9 @@ class FractalWindow(Gtk.ScrolledWindow):
 
         self.set_child(ftable)
 
-    def hide_subfracts(self):
+    def set_subfracts_visible(self, visible=True):
         for f in self.subfracts:
-            f.widget.hide()
+            f.widget.set_visible(visible)
 
     def set_subfract_size(self, width, height):
         for f in self.subfracts:
