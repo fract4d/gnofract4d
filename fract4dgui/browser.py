@@ -1,24 +1,19 @@
 # a browser to examine fractal functions
 
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk
 
 from . import utils, gtkfractal, browser_model
 
 
-class BrowserDialog(utils.Dialog):
+class BrowserDialog(Gtk.Window):
     RESPONSE_REFRESH = 2
 
     def __init__(self, main_window, f, type=browser_model.FRACTAL):
         super().__init__(
-            _("Formula Browser"),
-            main_window,
-            (_("_Refresh"), BrowserDialog.RESPONSE_REFRESH,
-             _("_Apply"), Gtk.ResponseType.APPLY,
-             _("_OK"), Gtk.ResponseType.OK,
-             _("_Close"), Gtk.ResponseType.CLOSE),
+            title=_("Formula Browser"),
+            transient_for=main_window,
+            modal=True,
         )
-
-        self.set_default_response(Gtk.ResponseType.OK)
 
         self.model = browser_model.T(f.compiler)
         self.model.type_changed += self.on_type_changed
@@ -43,35 +38,16 @@ class BrowserDialog(utils.Dialog):
 
         self.set_type(type)
 
-    def onResponse(self, widget, id):
-        if id == Gtk.ResponseType.CLOSE or \
-                id == Gtk.ResponseType.NONE or \
-                id == Gtk.ResponseType.DELETE_EVENT:
-            self.destroy()
-        elif id == Gtk.ResponseType.APPLY:
-            self.onApply()
-            # prevent dialog closing if being run
-            GObject.signal_stop_emission_by_name(self, "response")
-        elif id == Gtk.ResponseType.OK:
-            self.onApply()
-            self.destroy()
-        elif id == BrowserDialog.RESPONSE_REFRESH:
-            self.onRefresh()
-        else:
-            print("unexpected response %d" % id)
-
-    def onRefresh(self):
+    def onRefresh(self, *args):
         self.f.refresh()
         self.set_file(self.model.current.fname)  # update text window
 
-    def get_current_text(self):
-        buffer = self.sourcetext.get_buffer()
-        text = buffer.get_text(buffer.get_start_iter(),
-                               buffer.get_end_iter(), False)
-        return text
-
-    def onApply(self):
+    def onApply(self, *args):
         self.model.apply(self.f)
+
+    def onOK(self, *args):
+        self.onApply()
+        self.quit()
 
     def set_type_cb(self, optmenu):
         self.set_type(optmenu.get_active())
@@ -92,9 +68,7 @@ class BrowserDialog(utils.Dialog):
         self.model.set_type(type)
 
     def create_file_list(self):
-        sw = Gtk.ScrolledWindow(
-            has_frame=True,
-            hscrollbar_policy=Gtk.PolicyType.NEVER)
+        sw = Gtk.ScrolledWindow(has_frame=True)
 
         self.filetreeview = Gtk.TreeView(
             model=self.file_list,
@@ -164,9 +138,7 @@ class BrowserDialog(utils.Dialog):
             'changed', self.formula_selection_changed)
 
     def create_formula_list(self):
-        sw = Gtk.ScrolledWindow(
-            has_frame=True,
-            hscrollbar_policy=Gtk.PolicyType.NEVER)
+        sw = Gtk.ScrolledWindow(has_frame=True)
 
         self.treeview = Gtk.TreeView(
             model=self.formula_list,
@@ -186,7 +158,7 @@ class BrowserDialog(utils.Dialog):
 
     def create_panes(self):
         content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, css_classes=["content"])
-        self.get_content_area().append(content)
+        self.set_child(content)
 
         # option menu for choosing Inner/Outer/Fractal
         self.funcTypeMenu = utils.combo_box_text_with_items(
@@ -213,12 +185,11 @@ class BrowserDialog(utils.Dialog):
         panes1 = Gtk.Paned(vexpand=True)
         panes1.set_layout_manager(Gtk.BoxLayout())
         content.append(panes1)
-        panes1.set_shrink_end_child(True)
 
         file_list = self.create_file_list()
         formula_list = self.create_formula_list()
 
-        panes2 = Gtk.Paned()
+        panes2 = Gtk.Paned(hexpand=True)
         # left-hand pane displays file list
         panes2.set_start_child(file_list)
         # middle is formula list for that file
@@ -247,6 +218,26 @@ class BrowserDialog(utils.Dialog):
         notebook.append_page(sw, label)
 
         panes1.set_end_child(notebook)
+
+        button_box = Gtk.Box(halign=Gtk.Align.END)
+        button_box.add_css_class("component_last")
+        content.append(button_box)
+
+        refresh_button = Gtk.Button.new_with_mnemonic(label=_("_Refresh"))
+        refresh_button.connect("clicked", self.onRefresh)
+        button_box.append(refresh_button)
+
+        self.apply_button = Gtk.Button.new_with_mnemonic(label=_("_Apply"))
+        self.apply_button.connect("clicked", self.onApply)
+        button_box.append(self.apply_button)
+
+        self.ok_button = Gtk.Button.new_with_mnemonic(label=_("_OK"))
+        self.ok_button.connect("clicked", self.onOK)
+        button_box.append(self.ok_button)
+
+        close_button = Gtk.Button.new_with_mnemonic(label=_("_Close"))
+        close_button.connect("clicked", self.quit)
+        button_box.append(close_button)
 
     def load_file(self, fname):
         type = self.model.guess_type(fname)
@@ -328,8 +319,8 @@ class BrowserDialog(utils.Dialog):
 
     def set_apply_sensitivity(self):
         can_apply = self.model.current.can_apply
-        self.set_response_sensitive(Gtk.ResponseType.APPLY, can_apply)
-        self.set_response_sensitive(Gtk.ResponseType.OK, can_apply)
+        self.apply_button.set_sensitive(can_apply)
+        self.ok_button.set_sensitive(can_apply)
 
         if can_apply:
             self.model.apply(self.preview)
@@ -338,5 +329,5 @@ class BrowserDialog(utils.Dialog):
     def display_text(self, text):
         self.sourcetext.get_buffer().set_text(text, -1)
 
-    def quit(self, dialog):
-        self.destroy()
+    def quit(self, *args):
+        self.close()
