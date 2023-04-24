@@ -31,8 +31,8 @@ class SettingsPane(Gtk.Box):
         self.create_colors_page()
 
     def make_label_box(self, title):
-        label_box = Gtk.Box(name="settings_label_box", hexpand=True)
-        label_box.append(Gtk.Label(label=title, halign=Gtk.Align.START, hexpand=True))
+        label_box = Gtk.Box(name="settings_label_box")
+        label_box.append(Gtk.Label(label=title, xalign=0.0, hexpand=True))
         close = Gtk.Button(label=_("Close"))
         label_box.append(close)
 
@@ -232,7 +232,7 @@ class SettingsPane(Gtk.Box):
             tooltip_text=tip)
         button.connect('clicked', self.show_browser, param_type)
 
-        typelabel = Gtk.Label(label=typename, halign=Gtk.Align.END, valign=Gtk.Align.CENTER)
+        typelabel = Gtk.Label(label=typename, xalign=1.0)
 
         table.attach(typelabel, 0, 0, 1, 1)
         table.attach(label, 1, 0, 1, 1)
@@ -432,7 +432,7 @@ class SettingsPane(Gtk.Box):
     def create_param_entry(self, table, row, text, param):
         label = Gtk.Label(
             label=text,
-            halign=Gtk.Align.END,
+            xalign=1.0,
             justify=Gtk.Justification.RIGHT,
             margin_end=5,
             use_underline=True)
