@@ -67,29 +67,28 @@ class PrefsDialog(utils.Dialog):
         super().__init__(
             _("Gnofract 4D Preferences"),
             main_window,
-            (_("_Close"), Gtk.ResponseType.CLOSE)
+            (_("_Close"), Gtk.ResponseType.CLOSE),
         )
-
-        self.dirchooser = utils.DirectoryChooser(_("Select a Formula Directory"), self)
 
         self.f = f
         self.notebook = Gtk.Notebook(vexpand=True)
-        self.vbox.add(self.notebook)
+        self.get_content_area().append(self.notebook)
         self.prefs = userPrefs
         self.create_image_options_page()
         self.create_compiler_options_page()
         self.create_general_page()
         self.create_helper_options_page()
-        self.vbox.show_all()
 
         self.set_size_request(500, -1)
 
     def show_error(self, message):
+        def response(dialog, response_id):
+            dialog.destroy
         d = Gtk.MessageDialog(self, Gtk.DialogFlags.MODAL,
                               Gtk.MessageType.ERROR, Gtk.ButtonsType.OK,
                               message)
-        d.run()
-        d.destroy()
+        d.connect("response", response)
+        d.present()
 
     def create_width_entry(self):
         entry = Gtk.Entry(
@@ -104,8 +103,7 @@ class PrefsDialog(utils.Dialog):
                 try:
                     width = int(entry.get_text())
                 except ValueError:
-                    GLib.idle_add(
-                        self.show_error,
+                    self.show_error(
                         "Invalid value for width: '%s'. Must be an integer" %
                         entry.get_text())
                     return False
@@ -120,7 +118,9 @@ class PrefsDialog(utils.Dialog):
 
         set_entry()
         self.prefs.connect('preferences-changed', set_entry)
-        entry.connect('focus-out-event', set_prefs)
+        focus_controller = Gtk.EventControllerFocus()
+        focus_controller.connect('leave', set_prefs)
+        entry.add_controller(focus_controller)
         return entry
 
     def create_height_entry(self):
@@ -135,8 +135,7 @@ class PrefsDialog(utils.Dialog):
                 try:
                     height = int(entry.get_text())
                 except ValueError:
-                    GLib.idle_add(
-                        self.show_error,
+                    self.show_error(
                         "Invalid value for height: '%s'. Must be an integer" %
                         entry.get_text())
                     return False
@@ -151,7 +150,9 @@ class PrefsDialog(utils.Dialog):
 
         set_entry()
         self.prefs.connect('preferences-changed', set_entry)
-        entry.connect('focus-out-event', set_prefs)
+        focus_controller = Gtk.EventControllerFocus()
+        focus_controller.connect('leave', set_prefs)
+        entry.add_controller(focus_controller)
         return entry
 
     def create_compiler_entry(self, propname, **properties):
@@ -172,7 +173,9 @@ class PrefsDialog(utils.Dialog):
 
         set_entry()
         self.prefs.connect('preferences-changed', set_entry)
-        entry.connect('focus-out-event', set_prefs)
+        focus_controller = Gtk.EventControllerFocus()
+        focus_controller.connect('leave', set_prefs)
+        entry.add_controller(focus_controller)
         return entry
 
     def create_save_compress_widget(self):
@@ -236,18 +239,20 @@ class PrefsDialog(utils.Dialog):
         self.prefs.set_list(name, [row[0] for row in model])
 
     def browse_for_dir(self, widget, name, pathlist):
-        self.dirchooser.show_all()
-        result = self.dirchooser.run()
-        if result == Gtk.ResponseType.OK:
-            path = self.dirchooser.get_filename()
+        def response(dialog, response_id):
+            if response_id == Gtk.ResponseType.OK:
+                path = dialog.get_filename()
 
-            model = pathlist.get_model()
-            iter = model.append()
+                model = pathlist.get_model()
+                iter = model.append()
 
-            model.set(iter, 0, path)
-            self.update_prefs(name, model)
+                model.set(iter, 0, path)
+                self.update_prefs(name, model)
 
-        self.dirchooser.hide()
+            dialog.destroy()
+        dirchooser = utils.DirectoryChooser(_("Select a Formula Directory"), self)
+        dirchooser.connect("response", response)
+        dirchooser.present()
 
     def remove_dir(self, widget, name, pathlist):
         select = pathlist.get_selection()
@@ -279,13 +284,12 @@ class PrefsDialog(utils.Dialog):
         table.attach(flags_label, 0, 1, 1, 1)
 
         sw = Gtk.ScrolledWindow(
-            shadow_type=Gtk.ShadowType.ETCHED_IN,
             hscrollbar_policy=Gtk.PolicyType.NEVER,
             vscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
             vexpand=True)
         form_path_section = "formula_path"
         pathlist = self.create_formula_directory_list(form_path_section)
-        sw.add(pathlist)
+        sw.set_child(pathlist)
         table.attach(sw, 1, 2, 1, 3)
 
         pathlist_label = Gtk.Label(
@@ -418,3 +422,6 @@ class PrefsDialog(utils.Dialog):
         aalabel = Gtk.Label(
             label="_Antialiasing : ", mnemonic_widget=optMenu, use_underline=True)
         table.attach(aalabel, 0, 5, 1, 1)
+
+    def quit(self, dialog):
+        self.destroy()
