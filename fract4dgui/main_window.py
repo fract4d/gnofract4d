@@ -497,7 +497,7 @@ class MainWindow(Actions, ApplicationWindow):
     def autozoom(self, *args):
         """Display AutoZoom dialog."""
         dialog = autozoom.AutozoomDialog(self, self.f)
-        dialog.set_visible(True)
+        dialog.present()
 
     def contents(self, *args):
         """Show help file contents page."""

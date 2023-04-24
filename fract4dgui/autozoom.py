@@ -4,21 +4,29 @@ import random
 
 from gi.repository import Gtk
 
-from . import utils
 
-
-class AutozoomDialog(utils.Dialog):
+class AutozoomDialog(Gtk.Window):
     def __init__(self, main_window, f):
         super().__init__(
-            _("Autozoom"),
-            main_window,
-            (_("_Close"), Gtk.ResponseType.CLOSE)
+            title=_("Autozoom"),
+            transient_for=main_window,
+            modal=True,
         )
 
         self.f = f
 
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.set_child(content)
+
         table = Gtk.Grid(column_spacing=5, row_spacing=5)
-        self.get_content_area().append(table)
+        content.append(table)
+
+        close_button = Gtk.Button.new_with_mnemonic(label=_("_Close"))
+        close_button.set_halign(Gtk.Align.END)
+        close_button.connect("clicked", self.quit)
+        content.append(close_button)
+
+        self.connect("close-request", self.quit)
 
         self.zoombutton = Gtk.ToggleButton(
             label=_("Start _Zooming"),
@@ -55,10 +63,6 @@ class AutozoomDialog(utils.Dialog):
         set_entry()
 
         table.attach(self.minsize_entry, 1, 1, 1, 1)
-
-    def onResponse(self, widget, id):
-        self.zoombutton.set_active(False)
-        self.set_visible(False)
 
     def onZoomToggle(self, *args):
         if self.zoombutton.get_active():
@@ -101,5 +105,6 @@ class AutozoomDialog(utils.Dialog):
                 else:
                     self.zoombutton.set_active(False)
 
-    def quit(self, dialog):
-        self.destroy()
+    def quit(self, *args):
+        self.zoombutton.set_active(False)
+        self.close()
