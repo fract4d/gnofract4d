@@ -20,9 +20,6 @@ jobs:
           - os: macos-11
             python: "3.7"
             toxenv: py
-          - os: ubuntu-latest
-            python: "3.x"
-            toxenv: pylint
 
     env:
       # For labelling Codecov report
@@ -60,8 +57,28 @@ jobs:
         if: ${{ runner.os == 'Linux' }}
         run: xvfb-run --auto-servernum tox -e ${{ matrix.toxenv }}
       - name: Upload coverage to Codecov
-        if: ${{ matrix.toxenv == 'py' }}
         uses: codecov/codecov-action@v3
         with:
           files: ./coverage.xml
           env_vars: OS,PYTHON
+
+  lint:
+
+    name: ${{ matrix.toxenv }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        toxenv:
+          - pylint
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Ubuntu packages
+        # libglib2.0-dev-bin provides glib-compile-resources
+        run: sudo apt install gir1.2-gtk-4.0 libglib2.0-dev-bin libxml2-utils python3-gi
+      - name: Install Tox
+        run: pip install tox
+      - name: Build
+        run: python setup.py build
+      - name: Run ${{ matrix.toxenv }}
+        run: tox -e ${{ matrix.toxenv }}
