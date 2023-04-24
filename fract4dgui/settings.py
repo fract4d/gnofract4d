@@ -30,6 +30,8 @@ class SettingsPane(Gtk.Box):
         self.create_location_page()
         self.create_colors_page()
 
+        self.connect("notify::visible", self.on_visible)
+
     def make_label_box(self, title):
         label_box = Gtk.Box(name="settings_label_box")
         label_box.append(Gtk.Label(label=title, xalign=0.0, hexpand=True))
@@ -462,3 +464,10 @@ class SettingsPane(Gtk.Box):
         set_entry(self.f)
         self.f.connect('parameters-changed', set_entry)
         entry.connect('changed', set_fractal)
+
+    def on_visible(self, *args):
+        enable_action = not self.get_visible()
+        for name, callback in self.main_window.get_arrow_actions():
+            self.main_window.application.lookup_action(name).set_enabled(enable_action)
+        for name, callback, shortcut in self.main_window.get_edit_reset_actions():
+            self.main_window.application.lookup_action(name).set_enabled(enable_action)
