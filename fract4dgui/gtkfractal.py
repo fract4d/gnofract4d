@@ -587,7 +587,7 @@ class T(Hidden):
 
     def get_paint_color(self):
         color = self.paint_color_sel.get_current_color()
-        return (color.red / 65535.0, color.green / 65535.0, color.blue / 65535.0)
+        return (color.red, color.green, color.blue)
 
     def onPaint(self, x, y):
         # obtain index
