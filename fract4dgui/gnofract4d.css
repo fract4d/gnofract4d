@@ -51,6 +51,10 @@ notebook grid {
     margin-bottom: 8px;
 }
 
+.component_last {
+    margin-top: 8px;
+}
+
 .toolbar {
     /* Values from GTK Default theme, not present in Ubuntu 22.04 default theme */
     padding: 4px;
