@@ -5,9 +5,6 @@ from . import testgui
 from fract4d import fractconfig
 from fract4dgui import gtkfractal, preferences
 
-import gettext
-gettext.install('gnofract4d')
-
 from gi.repository import Gtk
 
 
