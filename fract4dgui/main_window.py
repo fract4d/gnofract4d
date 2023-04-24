@@ -3,8 +3,8 @@
 import math
 
 import gi
-gi.require_version('Gdk', '3.0')
-gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '4.0')
+gi.require_version('Gtk', '4.0')
 from gi.repository import Gdk, Gio, GLib, Gtk
 
 from fract4d import fractconfig
@@ -57,9 +57,9 @@ class MainWindow(Actions, ApplicationWindow):
         self.model = model.Model(self.f)
         self.renderQueue = renderqueue.T(self.userPrefs)
 
-        self.directorDialog = director.DirectorDialog(self)
-        self.painterDialog = painter.PainterDialog(self)
-        self.renderqueueDialog = renderqueue.QueueDialog(self)
+        #self.directorDialog = director.DirectorDialog(self)
+        #self.painterDialog = painter.PainterDialog(self)
+        #self.renderqueueDialog = renderqueue.QueueDialog(self)
 
         self.update_subfract_visibility(False)
         self.populate_warpmenu(self.f)
@@ -78,15 +78,14 @@ class MainWindow(Actions, ApplicationWindow):
         self.f.connect('parameters-changed', self.update_preview)
         self.f.connect('pointer-moved', self.update_preview_on_pointer)
 
-        self.connect('delete-event', self.quit)
-        self.connect('window-state-event', self.on_window_state_event)
+        #self.connect('delete-event', self.quit)
 
         self.userPrefs.connect('image-preferences-changed', self.on_prefs_changed)
 
     def update_subfract_visibility(self, visible):
         if visible:
-            self.fractalWindow.show_all()
-            self.weirdbox.show_all()
+            self.fractalWindow.show()
+            self.weirdbox.show()
         else:
             self.fractalWindow.hide_subfracts()
             self.weirdbox.hide()
@@ -131,8 +130,6 @@ class MainWindow(Actions, ApplicationWindow):
             w = w // 2
             h = h // 2
             self.fractalWindow.set_subfract_size(w // 2, h // 2)
-            w += 2
-            h += 2
         self.f.set_size(w, h)
 
         self.f.set_antialias(
@@ -148,12 +145,6 @@ class MainWindow(Actions, ApplicationWindow):
         self.update_image_prefs(prefs)
         if self.f.thaw():
             self.draw_image()
-
-    def on_window_state_event(self, widget, event):
-        if not event.new_window_state & Gdk.WindowState.FULLSCREEN and \
-                self.normal_window_size:
-            self.resize(*self.normal_window_size)
-            self.normal_window_size = None
 
     def set_window_title(self):
         title = self.filename.display_filename()
@@ -248,8 +239,7 @@ class MainWindow(Actions, ApplicationWindow):
     def browser(self, *args):
         """Display formula browser."""
         dialog = browser.BrowserDialog(self, self.f)
-        dialog.run()
-        dialog.destroy()
+        dialog.present()
 
     def randomize_colors(self, *args):
         """Create a new random color scheme."""
@@ -273,7 +263,7 @@ class MainWindow(Actions, ApplicationWindow):
         to_full = action.get_state() == GLib.Variant("b", False)
         if to_full:
             if not self.normal_window_size:
-                self.normal_window_size = self.get_size()
+                self.normal_window_size = self.get_width(), self.get_height()
 
             if not self.normal_display_size:
                 self.normal_display_size = (
@@ -282,12 +272,12 @@ class MainWindow(Actions, ApplicationWindow):
 
             self.fullscreen()
             self.set_show_menubar(False)
-            self.toolbar.hide()
-            self.statusbar.hide()
+            self.toolbar.set_visible(False)
+            self.statusbar.set_visible(False)
             self.fractalWindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
 
             display = self.get_display()
-            monitor = display.get_monitor_at_window(self.get_window())
+            monitor = display.get_monitor_at_surface(self.get_surface())
             geometry = monitor.get_geometry()
             self.userPrefs.set_size(geometry.width, geometry.height)
 
@@ -299,8 +289,8 @@ class MainWindow(Actions, ApplicationWindow):
                 Gtk.PolicyType.AUTOMATIC,
                 Gtk.PolicyType.AUTOMATIC)
             self.set_show_menubar(True)
-            self.toolbar.show()
-            self.statusbar.show()
+            self.toolbar.set_visible(True)
+            self.statusbar.set_visible(True)
             self.unfullscreen()
 
         self.application.lookup_action(
@@ -361,7 +351,7 @@ class MainWindow(Actions, ApplicationWindow):
     def populate_warpmenu(self, f):
         params = f.forms[0].params_of_type(fracttypes.Complex, True)
         if params == []:
-            self.warpmenu.hide()
+            self.warpmenu.set_visible(False)
         else:
             self.warpmenu.remove_all()
             for entry in ["None"] + params:
@@ -370,7 +360,7 @@ class MainWindow(Actions, ApplicationWindow):
             if p is None:
                 p = "None"
             self.warpmenu.set_active_id(p)
-            self.warpmenu.show()
+            self.warpmenu.set_visible(True)
 
     def save_file(self, file):
         try:
@@ -449,13 +439,12 @@ class MainWindow(Actions, ApplicationWindow):
 
     def settings(self, *args):
         """Show fractal settings controls."""
-        self.settingsPane.show()
+        self.settingsPane.set_visible(True)
 
     def preferences(self, *args):
         """Change current preferences."""
         dialog = preferences.PrefsDialog(self, self.f, self.userPrefs)
-        dialog.run()
-        dialog.destroy()
+        dialog.present()
 
     def undo(self, *args):
         """Undo the last operation."""
@@ -561,12 +550,14 @@ class MainWindow(Actions, ApplicationWindow):
     def load_formula(self, file):
         try:
             self.compiler.load_formula_file(file)
+
+            def response(dialog, response_id):
+                dialog.destroy()
+                return True
             dialog = browser.BrowserDialog(self, self.f)
             dialog.load_file(file)
-            dialog.run()
-            dialog.destroy()
-
-            return True
+            dialog.connect("response", response)
+            dialog.present()
         except Exception as err:
             self.show_error_message(_("Error opening %s") % file, err)
             return False
