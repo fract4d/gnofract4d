@@ -11,4 +11,4 @@ score=no
 additional-builtins=_
 
 [TYPECHECK]
-ignored-modules=gi,cairo,PIL
+ignored-modules=gi,PIL

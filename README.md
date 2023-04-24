@@ -34,14 +34,13 @@ Requirements
 Gnofract 4D requires these packages to run:
 
 - Python version 3.6 or higher
-- GTK version 3.22 or higher
-- Pycairo
+- GTK version 4.6 or higher
 - PyGObject version 3.29.2 or higher to access GTK from Python
 - A C++ compiler (used at runtime to compile your fractal formulas)
 
 On Ubuntu, these can be installed with:
 
-    sudo apt install gcc gir1.2-gtk-3.0 python3-gi-cairo
+    sudo apt install gcc gir1.2-gtk-4.0 python3-gi
 
 To build from source you also need:
 
@@ -58,7 +57,7 @@ If FFmpeg is installed it will be possible to create videos.
 
 On macOS, you can install the dependencies using brew:
 
-    brew install librsvg python3 pkg-config cairo gtk+3 pygobject3 py3cairo libpng jpeg
+    brew install librsvg python3 pkg-config gtk4 pygobject3 libpng jpeg
 
 Testing
 =======
