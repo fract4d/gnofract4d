@@ -156,7 +156,7 @@ class ApplicationDialogs:
         )
         aboutDialog.present()
 
-    def confirm(self, name):
+    def confirm(self, name, call_back):
         'if this file exists, check with user before overwriting it'
         if os.path.exists(name):
             def response(dialog, response_id):
@@ -167,11 +167,10 @@ class ApplicationDialogs:
                 transient_for=self,
                 proceed_button=_("Overwrite"))
 
-            response = d.run()
-            d.destroy()
-            return response == Gtk.ResponseType.ACCEPT
+            d.connect("response", response)
+            d.present()
         else:
-            return True
+            call_back(True)
 
     def show_warning(self, message):
         def response(dialog, response_id):
