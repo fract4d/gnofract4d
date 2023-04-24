@@ -40,7 +40,6 @@ class BrowserDialog(utils.Dialog):
         self.preview.f.auto_tolerance = False
 
         self.create_panes()
-        self.vbox.show_all()
 
         self.set_type(type)
 
@@ -48,14 +47,14 @@ class BrowserDialog(utils.Dialog):
         if id == Gtk.ResponseType.CLOSE or \
                 id == Gtk.ResponseType.NONE or \
                 id == Gtk.ResponseType.DELETE_EVENT:
-            self.hide()
+            self.destroy()
         elif id == Gtk.ResponseType.APPLY:
             self.onApply()
             # prevent dialog closing if being run
             GObject.signal_stop_emission_by_name(self, "response")
         elif id == Gtk.ResponseType.OK:
             self.onApply()
-            self.hide()
+            self.destroy()
         elif id == BrowserDialog.RESPONSE_REFRESH:
             self.onRefresh()
         else:
@@ -94,13 +93,13 @@ class BrowserDialog(utils.Dialog):
 
     def create_file_list(self):
         sw = Gtk.ScrolledWindow(
-            shadow_type=Gtk.ShadowType.ETCHED_IN,
+            has_frame=True,
             hscrollbar_policy=Gtk.PolicyType.NEVER)
 
         self.filetreeview = Gtk.TreeView(
             model=self.file_list,
             tooltip_text=_("A list of files containing fractal formulas"))
-        sw.add(self.filetreeview)
+        sw.set_child(self.filetreeview)
 
         column = Gtk.TreeViewColumn('_File', Gtk.CellRendererText(), text=0)
         self.filetreeview.append_column(column)
@@ -166,13 +165,13 @@ class BrowserDialog(utils.Dialog):
 
     def create_formula_list(self):
         sw = Gtk.ScrolledWindow(
-            shadow_type=Gtk.ShadowType.ETCHED_IN,
+            has_frame=True,
             hscrollbar_policy=Gtk.PolicyType.NEVER)
 
         self.treeview = Gtk.TreeView(
             model=self.formula_list,
             tooltip_text=_("A list of formulas in the selected file"))
-        sw.add(self.treeview)
+        sw.set_child(self.treeview)
 
         column = Gtk.TreeViewColumn(_('F_ormula'), Gtk.CellRendererText(), text=0)
         self.treeview.append_column(column)
@@ -180,9 +179,9 @@ class BrowserDialog(utils.Dialog):
         return sw
 
     def create_scrolled_textview(self, tip):
-        sw = Gtk.ScrolledWindow(shadow_type=Gtk.ShadowType.ETCHED_IN)
+        sw = Gtk.ScrolledWindow(has_frame=True)
         textview = Gtk.TextView(tooltip_text=tip, editable=False)
-        sw.add(textview)
+        sw.set_child(textview)
         return (textview, sw)
 
     def create_panes(self):
@@ -203,23 +202,25 @@ class BrowserDialog(utils.Dialog):
             label=_("Function _Type to Modify : "),
             use_underline=True,
             mnemonic_widget=self.funcTypeMenu)
-        hbox.pack_start(label, False, False, 0)
-        hbox.pack_start(self.funcTypeMenu, True, True, 0)
-        self.vbox.pack_start(hbox, False, False, 0)
+        hbox.append(label)
+        hbox.append(self.funcTypeMenu)
+        self.get_content_area().append(hbox)
 
         # 3 panes: files, formulas, formula contents
-        panes1 = Gtk.Paned(border_width=5)
-        self.vbox.pack_start(panes1, True, True, 0)
+        panes1 = Gtk.Paned(vexpand=True)
+        panes1.set_layout_manager(Gtk.BoxLayout())
+        self.get_content_area().append(panes1)
+        panes1.set_shrink_end_child(True)
 
         file_list = self.create_file_list()
         formula_list = self.create_formula_list()
 
         panes2 = Gtk.Paned()
         # left-hand pane displays file list
-        panes2.pack1(file_list, True, False)
+        panes2.set_start_child(file_list)
         # middle is formula list for that file
-        panes2.pack2(formula_list, True, False)
-        panes1.add1(panes2)
+        panes2.set_end_child(formula_list)
+        panes1.set_start_child(panes2)
 
         # right-hand pane is details of current formula
         notebook = Gtk.Notebook()
@@ -242,7 +243,7 @@ class BrowserDialog(utils.Dialog):
         label = Gtk.Label(label=_('_Messages'), use_underline=True)
         notebook.append_page(sw, label)
 
-        panes1.add2(notebook)
+        panes1.set_end_child(notebook)
 
     def load_file(self, fname):
         type = self.model.guess_type(fname)
@@ -302,7 +303,7 @@ class BrowserDialog(utils.Dialog):
 
         # update location of source buffer
         sourcebuffer = self.sourcetext.get_buffer()
-        iter = sourcebuffer.get_iter_at_line(formula.pos - 1)
+        iter = sourcebuffer.get_iter_at_line(formula.pos - 1)[1]
         self.sourcetext.scroll_to_iter(iter, 0.0, True, 0.0, 0.0)
 
         # update IR tree
@@ -333,3 +334,6 @@ class BrowserDialog(utils.Dialog):
 
     def display_text(self, text):
         self.sourcetext.get_buffer().set_text(text, -1)
+
+    def quit(self, dialog):
+        self.destroy()
