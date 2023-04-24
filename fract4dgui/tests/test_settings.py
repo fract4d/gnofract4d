@@ -15,7 +15,7 @@ class Test(testgui.TestCase):
         self.settings = settings.SettingsPane(None, self.f)
 
     def search_for_named_widget(self, page, label_name):
-        for child in page.get_children():
+        for child in page:
             if isinstance(child, Gtk.Label):
                 this_label_name = child.get_text()
                 # print this_label_name
@@ -25,7 +25,7 @@ class Test(testgui.TestCase):
                                         "all widgets should have mnemonics")
                     self.assertEqual(isinstance(entry, Gtk.Entry), True)
                     return entry
-            elif isinstance(child, Gtk.Container):
+            elif child.get_first_child():
                 widget = self.search_for_named_widget(child, label_name)
                 if widget:
                     return widget
@@ -83,9 +83,9 @@ class Test(testgui.TestCase):
         rectangle = Gdk.Rectangle()
         rectangle.width = 100
         rectangle.height = 100
-        w.size_allocate(rectangle)
+        w.size_allocate(rectangle, -1)
         ct = cairo.Context(cairo.ImageSurface(cairo.Format.A8, 100, 100))
-        self.settings.redraw_rect(w, ct)
+        self.settings.redraw_rect(w, ct, 100, 100)
 
     def testSelectedSegment(self):
         self.settings.copy_left(None)

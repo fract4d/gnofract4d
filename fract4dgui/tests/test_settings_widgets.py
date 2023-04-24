@@ -9,8 +9,8 @@ class Test(testgui.TestCase):
     def setUp(self):
         self.window = Gtk.Window()
         self.f = gtkfractal.T(Test.g_comp)
-        self.window.add(self.f.widget)
-        self.f.widget.realize()
+        self.window.set_child(self.f.widget)
+        self.window.present()
 
     def tearDown(self):
         self.window.destroy()
@@ -22,9 +22,7 @@ class Test(testgui.TestCase):
 
         table = settings_widgets.FractalSettingsTable(self.f, self.window, 0)
 
-        children = table.get_children()
-        list.reverse(children)
-
+        children = [x for x in table]
         names = [x.get_text() for x in children if isinstance(x, Gtk.Label)]
 
         self.assertEqual(names[0], "Max Iterations")
@@ -35,9 +33,7 @@ class Test(testgui.TestCase):
 
         table = settings_widgets.FractalSettingsTable(self.f, self.window, 1)
 
-        children = table.get_children()
-        list.reverse(children)
-
+        children = [x for x in table]
         names = [x.get_text() for x in children if isinstance(x, Gtk.Label)]
 
         self.assertEqual(

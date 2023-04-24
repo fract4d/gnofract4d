@@ -15,6 +15,13 @@ from fract4d_compiler import fc
 from fract4dgui import main_window, preferences
 
 
+class FakeMonitor:
+    def get_geometry(self):
+        self.width = 1920
+        self.height = 1080
+        return self
+
+
 class Application(Gtk.Application):
     def __init__(self, config):
         super().__init__()
@@ -154,10 +161,7 @@ class Test(testgui.TestCase):
 
         self.assertEqual(fct1, fct2)
 
-    @patch("gi.repository.Gtk.Dialog.run")
-    def testAbout(self, mock_dialog_run):
-        mock_dialog_run.side_effect = lambda: Gtk.ResponseType.OK
-
+    def testAbout(self):
         self.mw.about()
 
     def testDialogs(self):
@@ -183,7 +187,7 @@ class Test(testgui.TestCase):
         with open(sub3_file, "w") as fh:
             self.mw.fractalWindow.subfracts[3].save(fh, False)
 
-        self.mw.fractalWindow.subfracts[3].onButtonRelease(None, None)
+        self.mw.fractalWindow.subfracts[3].onButtonRelease(None, None, None)
         main_file = os.path.join(Test.tmpdir.name, "main.fct")
         with open(main_file, "w") as fh:
             self.mw.f.save(fh, False)
@@ -222,7 +226,9 @@ class Test(testgui.TestCase):
         finally:
             fractal.T.DEFAULT_FORMULA_FILE = old_default
 
-    def testToggleFullScreen(self):
+    @patch("gi.repository.Gdk.Display.get_monitor_at_surface")
+    def testToggleFullScreen(self, mock_get_monitor_at_surface):
+        mock_get_monitor_at_surface.side_effect = lambda x: FakeMonitor()
         action = Gio.SimpleAction.new_stateful(
             "ViewFullScreenAction", None, GLib.Variant("b", False))
         self.mw.toggle_full_screen(action, None, None)
