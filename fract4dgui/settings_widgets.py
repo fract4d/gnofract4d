@@ -76,7 +76,7 @@ class FractalSettingsTable(Gtk.Grid):
 
         funclist = sorted(form.formula.symbols.available_param_functions(
             param.ret, param.args))
-        widget = utils.combo_box_text_with_items(funclist)
+        widget = utils.dropdown_with_items(funclist)
 
         formula = form.formula
 
@@ -89,10 +89,10 @@ class FractalSettingsTable(Gtk.Grid):
                 # print "bad cname"
                 return
 
-            widget.set_active(index)
+            widget.set_selected(index)
 
-        def set_fractal_function(om, f, param, formula):
-            index = om.get_active()
+        def set_fractal_function(om, item, f, param, formula):
+            index = om.get_selected()
             if index != -1:
                 # this shouldn't be necessary but I got weird errors
                 # trying to reuse the old funclist
@@ -106,7 +106,7 @@ class FractalSettingsTable(Gtk.Grid):
 
         widget.update_function = set_selected_function
 
-        widget.connect('changed', set_fractal_function, self.f, param, formula)
+        widget.connect('notify::selected-item', set_fractal_function, self.f, param, formula)
 
         self.attach(widget, 1, i, 1, 1)
 
@@ -160,7 +160,9 @@ class FractalSettingsTable(Gtk.Grid):
 
         self.f.connect('parameters-changed', set_entry)
         self.f.connect('iters-changed', set_entry)
-        widget.connect('focus-out-event', set_fractal)
+        focus_controller = Gtk.EventControllerFocus()
+        focus_controller.connect('leave', set_fractal)
+        widget.add_controller(focus_controller)
 
         label = Gtk.Label(
             label="_Max Iterations",
@@ -186,13 +188,13 @@ class FractalSettingsTable(Gtk.Grid):
             if widget.get_text() != new_value:
                 widget.set_text(new_value)
 
-        def set_fractal(entry, event, form, order):
+        def set_fractal(*args):
             try:
                 GLib.idle_add(
-                    form.set_param, order, entry.get_text())
+                    form.set_param, order, widget.get_text())
             except Exception:
                 # FIXME: produces too many errors
-                msg = f"Invalid value '{entry.get_text()}': must be a number"
+                msg = f"Invalid value '{widget.get_text()}': must be a number"
                 print(msg)
                 # GLib.idle_add(f.warn,msg)
             return False
@@ -202,7 +204,9 @@ class FractalSettingsTable(Gtk.Grid):
         widget.update_function = set_entry
 
         widget.f = self.f
-        widget.connect('focus-out-event', set_fractal, form, order)
+        focus_controller = Gtk.EventControllerFocus()
+        focus_controller.connect('leave', set_fractal)
+        widget.add_controller(focus_controller)
 
         if hasattr(param, "min") and hasattr(param, "max"):
             widget.freeze = False
@@ -232,8 +236,8 @@ class FractalSettingsTable(Gtk.Grid):
             hscale = Gtk.Scale(adjustment=adj, draw_value=False)
             hscale.update_function = set_adj
             vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-            vbox.pack_start(widget, True, True, 0)
-            vbox.pack_start(hscale, True, True, 0)
+            vbox.append(widget)
+            vbox.append(hscale)
             return vbox
 
         return widget
