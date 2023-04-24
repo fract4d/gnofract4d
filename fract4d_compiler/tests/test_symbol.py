@@ -181,8 +181,8 @@ class SymbolTest(unittest.TestCase):
     def test_expand(self):
         l = fsymbol.efl("foo", "[_,_] , _", [Int, Float, Complex])
         self.assertEqual(len(l), 3)
-        self.assertEqual(l[0].ret, Int)
-        self.assertEqual(l[1].args, [Float, Float])
+        self.assertEqual(l[0].ret, Int)  # pylint: disable=no-member
+        self.assertEqual(l[1].args, [Float, Float])  # pylint: disable=no-member
 
     def test_matches(self):
         times = self.t["*"]
