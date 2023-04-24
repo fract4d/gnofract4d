@@ -80,7 +80,7 @@ class MainWindow(Actions, ApplicationWindow):
         self.f.connect('parameters-changed', self.update_preview)
         self.f.connect('pointer-moved', self.update_preview_on_pointer)
 
-        #self.connect('delete-event', self.quit)
+        self.connect('close-request', self.quit)
 
         self.userPrefs.connect('image-preferences-changed', self.on_prefs_changed)
 
@@ -214,20 +214,18 @@ class MainWindow(Actions, ApplicationWindow):
 
         fs = self.get_save_hires_image_as_fs()
         fs.set_filename(save_filename)
-        fs.show_all()
 
-        name = None
-        while True:
-            result = fs.run()
-            if result == Gtk.ResponseType.OK:
-                name = fs.get_filename()
-            else:
-                break
-
-            if name and self.confirm(name):
+        def response(dialog, response_id):
+            if response_id != Gtk.ResponseType.OK:
+                dialog.set_visible(False)
+                return
+            name = fs.get_file().get_path()
+            if name:
                 self.add_to_queue(name, *fs.get_hires_dimensions())
-                break
-        fs.hide()
+            dialog.set_visible(False)
+
+        fs.connect("response", response)
+        fs.present()
 
     def director(self, *args):
         """Display the Director (animation) window."""
@@ -371,34 +369,33 @@ class MainWindow(Actions, ApplicationWindow):
                 _("Error saving to file %s") % file, err)
             return False
 
-    def save(self, *args):
+    def save(self, *args, callback=None):
         """Save the current parameters."""
         if self.filename.filename is None:
-            self.saveas()
+            self.saveas(callback)
         else:
             self.save_file(self.filename.filename)
 
-    def saveas(self, *args):
+    def saveas(self, *args, callback=None):
         """Save the current parameters into a new file."""
         save_filename = self.filename.default_save_filename()
 
         fs = self.get_save_as_fs()
         fs.set_filename(save_filename)
-        fs.show_all()
 
-        name = None
-        while True:
-            result = fs.run()
-            if result == Gtk.ResponseType.OK:
-                name = fs.get_filename()
-            else:
-                break
-
-            if name and self.confirm(name):
-                if self.save_file(name):
-                    break
-
-        fs.hide()
+        def response(dialog, response_id):
+            if response_id != Gtk.ResponseType.OK:
+                dialog.set_visible(False)
+                if callback is not None:
+                    callback()
+                return
+            name = fs.get_file().get_path()
+            if name and self.save_file(name):
+                dialog.set_visible(False)
+            if callback is not None:
+                callback()
+        fs.connect("response", response)
+        fs.present()
 
     def save_image(self, *args):
         """Save the current image to a file."""
@@ -406,24 +403,18 @@ class MainWindow(Actions, ApplicationWindow):
 
         fs = self.get_save_image_as_fs()
         fs.set_filename(save_filename)
-        fs.show_all()
 
-        name = None
-        while True:
-            result = fs.run()
-            if result == Gtk.ResponseType.OK:
-                name = fs.get_filename()
-            else:
-                break
+        def response(dialog, response_id):
+            name = None
+            if response_id != Gtk.ResponseType.OK:
+                dialog.set_visible(False)
+                return
+            name = fs.get_file().get_path()
+            if name and self.save_image_file(name):
+                dialog.set_visible(False)
 
-            if name and self.confirm(name):
-                try:
-                    self.save_image_file(name)
-                    break
-                except Exception as err:
-                    self.show_error_message(
-                        _("Error saving image %s") % name, err)
-        fs.hide()
+        fs.connect("response", response)
+        fs.present()
 
     def save_image_file(self, filename):
         try:
@@ -453,16 +444,17 @@ class MainWindow(Actions, ApplicationWindow):
 
     def paste(self, *args):
         """Paste (can be used to update colors)."""
+        clipboard = self.get_clipboard()
+        clipboard.read_text_async(None, self.paste_color)
 
-        clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
-        text = clipboard.wait_for_text()
-        if text is None:
-            return
-
-        grad = self.f.get_gradient()
-        grad.load_from_url(text)
-        self.f.set_gradient(grad)
-        self.f.changed()
+    def paste_color(self, clipboard, result):
+        """Retrieve color URL from clipboard"""
+        text = clipboard.read_text_finish(result)
+        if text:
+            grad = self.f.get_gradient()
+            grad.load_from_url(text)
+            self.f.set_gradient(grad)
+            self.f.changed()
 
     def reset(self, *args):
         """Reset all numeric parameters to their defaults."""
@@ -519,17 +511,14 @@ class MainWindow(Actions, ApplicationWindow):
     def open(self, *args):
         """Open a parameter or formula file."""
         fs = self.get_open_fs(self.compiler)
-        fs.show_all()
 
-        while True:
-            result = fs.run()
-            if result == Gtk.ResponseType.OK:
-                if self.load(fs.get_filename()):
-                    break
-            else:
-                break
+        def response(dialog, response_id):
+            if response_id == Gtk.ResponseType.OK:
+                self.load(dialog.get_file().get_path())
+            dialog.set_visible(False)
 
-        fs.hide()
+        fs.connect("response", response)
+        fs.present()
 
     def load(self, file):
         try:
@@ -560,49 +549,45 @@ class MainWindow(Actions, ApplicationWindow):
             return False
 
     def check_save_fractal(self):
-        "Prompt user to save if necessary. Return whether to quit"
-        while not self.f.is_saved():
+        "Prompt user to save if necessary."
+        if self.f.is_saved():
+            self.check_render_queue_empty()
+        else:
             d = hig.SaveConfirmationAlert(
                 document_name=self.filename.display_filename(),
                 transient_for=self)
 
-            response = d.run()
-            d.destroy()
-            if response == Gtk.ResponseType.ACCEPT:
-                self.save(None)
-            elif response == Gtk.ResponseType.CANCEL \
-                    or response == Gtk.ResponseType.DELETE_EVENT:
-                return False
-            elif response == hig.SaveConfirmationAlert.NOSAVE:
-                break
+            def response(dialog, response_id):
+                d.destroy()
+                if response_id == Gtk.ResponseType.ACCEPT:
+                    self.save(callback=self.check_render_queue_empty)
+                elif response_id == hig.SaveConfirmationAlert.NOSAVE:
+                    self.check_render_queue_empty()
 
-        while not self.renderQueue.empty():
+            d.connect("response", response)
+            d.present()
+
+    def check_render_queue_empty(self):
+        if self.renderQueue.empty():
+            self.save_prefs_exit()
+        else:
             d = hig.ConfirmationAlert(
                 primary=_("Render queue still processing."),
                 secondary=_("If you proceed, queued images will not be saved"),
                 proceed_button=_("Close anyway"),
                 transient_for=self)
 
-            response = d.run()
-            d.destroy()
-            if response == Gtk.ResponseType.ACCEPT:
-                break
-            elif response == Gtk.ResponseType.CANCEL:
-                return False
-            else:
-                break
-        return True
+            def response(dialog, response_id):
+                d.destroy()
+                if response_id != Gtk.ResponseType.CANCEL:
+                    self.save_prefs_exit()
 
-    def quit(self, action, *args):
-        """Quit Gnofract 4D."""
-        self.f.interrupt()
-        self.fractalWindow.interrupt()
-        if not self.check_save_fractal():
-            # user doesn't want to quit after all
-            return True
+            d.connect("response", response)
+            d.present()
 
+    def save_prefs_exit(self):
         try:
-            self.userPrefs.set_main_window_size(*self.get_size())
+            self.userPrefs.set_main_window_size(self.get_width(), self.get_height())
             self.userPrefs.save()
             del self.f
             for f in self.fractalWindow.subfracts:
@@ -610,6 +595,13 @@ class MainWindow(Actions, ApplicationWindow):
             self.compiler.clear_cache()
         finally:
             self.application.quit()
+
+    def quit(self, *args):
+        """Quit Gnofract 4D."""
+        self.f.interrupt()
+        self.fractalWindow.interrupt()
+        self.check_save_fractal()
+        return True
 
     def apply_options(self, opts):
         "Deal with opts gathered from cmd-line"
