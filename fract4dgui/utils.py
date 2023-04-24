@@ -28,6 +28,9 @@ class BaseChooser(Gtk.FileChooserDialog):
         self.add_filter(file_filter)
         return file_filter
 
+    def get_filename(self):
+        return None if self.get_file() is None else self.get_file().get_path()
+
 
 class DirectoryChooser(BaseChooser):
     def __init__(self, title, parent):
@@ -51,7 +54,8 @@ class FileSaveChooser(BaseChooser):
 
     def set_filename(self, name):
         if name:
-            self.set_current_folder(os.path.abspath(os.path.dirname(name)))
+            self.set_current_folder(
+                Gio.File.new_for_path(os.path.abspath(os.path.dirname(name))))
             self.set_current_name(os.path.basename(name))
 
 
@@ -75,13 +79,15 @@ def launch_browser(url, window):
     try:
         Gio.AppInfo.launch_default_for_uri(url)
     except GLib.Error as err:
+        def response(dialog, response_id):
+            dialog.destroy()
         d = hig.ErrorAlert(
             primary=_("Error launching browser"),
             secondary=_(f"Try copying the URL '{url}' manually to a browser window.\n"
                         f"{err.message}"),
             transient_for=window)
-        d.run()
-        d.destroy()
+        d.connect("response", response)
+        d.present()
 
 
 class ColorButton(Gtk.ColorButton):
@@ -94,43 +100,46 @@ class ColorButton(Gtk.ColorButton):
         self.connect('color-set', self.on_color_set)
 
     def on_color_set(self, widget):
-        self.color_changed(self.get_color())
+        self.color_changed(self.get_rgba())
 
     def set_color(self, rgb):
-        self.color = Gdk.RGBA(rgb[0], rgb[1], rgb[2], 1.0)
+        self.color = Gdk.RGBA()
+        self.color.red = rgb[0]
+        self.color.green = rgb[1]
+        self.color.blue = rgb[2]
+        self.color.alpha = 1.0
         Gtk.ColorButton.set_rgba(self, self.color)
 
     def color_changed(self, color):
-        # get_color() returns each component in the range 0-65535. Normalize to float 0-1.0
-        self.color = Gdk.RGBA(color.red / 65535.0,
-                              color.green / 65535.0, color.blue / 65535.0, 1.0)
+        self.color = color
         self.changed_cb(self.color.red, self.color.green,
                         self.color.blue, self.is_left)
 
 
 class Dialog(Gtk.Dialog):
-    def __init__(self, title=None, parent=None, buttons=None, modal=Gtk.DialogFlags.MODAL):
+    def __init__(self, title=None, parent=None, buttons=None, modal=True, name=None):
         super().__init__(
             title=title,
             transient_for=parent,
             modal=modal,
-            destroy_with_parent=Gtk.DialogFlags.DESTROY_WITH_PARENT)
+            destroy_with_parent=True,
+            name=name,
+        )
 
         if buttons:
             self.add_buttons(*buttons)
 
         self.set_default_response(Gtk.ResponseType.CLOSE)
         self.connect('response', self.onResponse)
-        self.connect('delete-event', self.quit)
+        self.connect('close-request', self.quit)
 
     def onResponse(self, widget, id):
         if id == Gtk.ResponseType.CLOSE or \
                 id == Gtk.ResponseType.NONE or \
                 id == Gtk.ResponseType.DELETE_EVENT:
-            self.hide()
+            self.set_visible(False)
         else:
             print("unexpected response %d" % id)
 
-    def quit(self, widget, event):
-        self.hide()
-        return True
+    def quit(self, *args):
+        self.set_visible(False)
