@@ -15,20 +15,6 @@ class Fract4dOpenChooser(utils.FileOpenChooser):
 
         self.add_filters()
 
-        def on_update_preview(chooser, preview):
-            filename = chooser.get_preview_filename()
-            try:
-                with open(filename) as f:
-                    preview.loadFctFile(f)
-                preview.draw_image(False, False)
-                active = True
-            except Exception:
-                active = False
-            chooser.set_preview_widget_active(active)
-
-        self.set_preview_widget(preview.widget)
-        self.connect('update-preview', on_update_preview, preview)
-
     def add_filters(self):
         param_patterns = ["*.fct"]
         self.add_file_filter(_("Parameter Files"), param_patterns)
