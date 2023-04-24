@@ -155,7 +155,7 @@ class FractalFilename:
 class Toolbar(Gtk.Box):
     def __init__(self):
         super().__init__()
-        self.get_style_context().add_class("toolbar")
+        self.add_css_class("toolbar")
 
     @staticmethod
     def button_args(icon_name, tip_text, action):

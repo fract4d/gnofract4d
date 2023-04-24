@@ -38,7 +38,7 @@ class DirectorPrefs:
 
         self.animation = animation
         # -----------Temporary directories---------------------
-        tbl_dirs = Gtk.Grid(row_spacing=10, column_spacing=10)
+        tbl_dirs = Gtk.Grid(row_spacing=10, column_spacing=10, css_classes=["content"])
 
         tbl_dirs.attach(
             Gtk.Label(label="Temporary directory for .fct files:"), 0, 1, 1, 1)
