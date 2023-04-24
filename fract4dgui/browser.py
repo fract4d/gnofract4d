@@ -15,7 +15,7 @@ class BrowserDialog(utils.Dialog):
             (_("_Refresh"), BrowserDialog.RESPONSE_REFRESH,
              _("_Apply"), Gtk.ResponseType.APPLY,
              _("_OK"), Gtk.ResponseType.OK,
-             _("_Close"), Gtk.ResponseType.CLOSE)
+             _("_Close"), Gtk.ResponseType.CLOSE),
         )
 
         self.set_default_response(Gtk.ResponseType.OK)
@@ -185,6 +185,9 @@ class BrowserDialog(utils.Dialog):
         return (textview, sw)
 
     def create_panes(self):
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, css_classes=["content"])
+        self.get_content_area().append(content)
+
         # option menu for choosing Inner/Outer/Fractal
         self.funcTypeMenu = utils.combo_box_text_with_items(
             [_("Fractal Function"),
@@ -197,19 +200,19 @@ class BrowserDialog(utils.Dialog):
         self.funcTypeMenu.connect('changed', self.set_type_cb)
 
         # label for the menu
-        hbox = Gtk.Box()
+        hbox = Gtk.Box(css_classes=["component_first"])
         label = Gtk.Label(
             label=_("Function _Type to Modify : "),
             use_underline=True,
             mnemonic_widget=self.funcTypeMenu)
         hbox.append(label)
         hbox.append(self.funcTypeMenu)
-        self.get_content_area().append(hbox)
+        content.append(hbox)
 
         # 3 panes: files, formulas, formula contents
         panes1 = Gtk.Paned(vexpand=True)
         panes1.set_layout_manager(Gtk.BoxLayout())
-        self.get_content_area().append(panes1)
+        content.append(panes1)
         panes1.set_shrink_end_child(True)
 
         file_list = self.create_file_list()

@@ -33,7 +33,7 @@ class SettingsPane(Gtk.Box):
         self.create_colors_page()
 
     def make_label_box(self, title):
-        label_box = Gtk.Box(name="dialog_label_box", hexpand=True)
+        label_box = Gtk.Box(name="settings_label_box", hexpand=True)
         label_box.append(Gtk.Label(label=title, halign=Gtk.Align.START, hexpand=True))
         close = Gtk.Button(label=_("Close"))
         label_box.append(close)

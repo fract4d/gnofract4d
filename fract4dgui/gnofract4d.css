@@ -2,12 +2,11 @@ notebook grid {
     padding: 10px;
 }
 
-#dialog_label_box {
-    margin: 2px;
-}
-
-#dialog_label_box > label {
-    font-weight: bold;
+#director_dialog frame {
+    padding: 6px;
+    border-width: 1px;
+    border-style: solid;
+    margin-bottom: 12px;
 }
 
 #main_window progressbar {
@@ -19,8 +18,12 @@ notebook grid {
     margin-top: 0.3em;
 }
 
-#main_window progressbar progress {
-    /* produces annoying warnings on ubuntu 16.04 min-height: 3.5em; */
+#settings_label_box {
+    margin: 2px;
+}
+
+#settings_label_box > label {
+    font-weight: bold;
 }
 
 #settings_notebook tab {
@@ -40,10 +43,18 @@ notebook grid {
     padding: 2px;
 }
 
-/* toolbar class style exists in GTK 4 */
+.content {
+    margin: 10px;
+}
+
+.component_first {
+    margin-bottom: 8px;
+}
 
 .toolbar {
+    /* Values from GTK Default theme, not present in Ubuntu 22.04 default theme */
     padding: 4px;
+    border-spacing: 4px;
 }
 
 .toolbar button {

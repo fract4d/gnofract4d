@@ -429,7 +429,8 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
             _("Director"),
             main_window,
             (_("_Render"), DirectorDialog.RESPONSE_RENDER,
-             _("_Close"), Gtk.ResponseType.CLOSE)
+             _("_Close"), Gtk.ResponseType.CLOSE),
+            name="director_dialog",
         )
 
         hig.MessagePopper.__init__(self)
@@ -469,6 +470,8 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
             main_window.application.get_menu_by_id("director_menubar"))
         box_main.append(menubar)
 
+        box_content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, css_classes=["content"])
+        box_main.append(box_content)
         # -----------creating keyframes popup menu model----------------
         popup_menu = Gio.Menu()
         popup_menu.append("From file", "director.file_keyframe")
@@ -508,11 +511,11 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
         vbox_kfs.append(button_box_kfs)
 
         frm_kf.set_child(vbox_kfs)
-        box_main.append(frm_kf)
+        box_content.append(frm_kf)
 
         # current keyframe box
         current_kf = Gtk.Frame(label="Current Keyframe")
-        box_main.append(current_kf)
+        box_content.append(current_kf)
 
         tbl_keyframes_right = Gtk.Grid(
             column_homogeneous=True,
@@ -598,7 +601,7 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
         box_output_main.append(box_output_framerate)
 
         frm_output.set_child(box_output_main)
-        box_main.append(frm_output)
+        box_content.append(frm_output)
 
         # check if video converter can be found
         self.converterpath = shutil.which("ffmpeg")
@@ -615,7 +618,7 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
                 wrap=True)
             warning_box.append(message)
 
-            box_main.append(warning_box)
+            box_content.append(warning_box)
 
         # initialise default settings
         self.updateGUI()
