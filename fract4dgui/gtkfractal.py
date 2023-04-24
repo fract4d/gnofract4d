@@ -52,7 +52,6 @@ class Hidden(GObject.GObject):
         self.compiler = comp
 
         self.x = self.y = 0
-        self.button = 0
         self.last_progress = 0.0
         self.skip_updates = False
         self.running = False
@@ -554,9 +553,10 @@ class T(Hidden):
     def onMotionNotify(self, gesture, offset_x, offset_y):
         self.newx, self.newy = self.x + offset_x, self.y + offset_y
         x, y = self.float_coords(self.newx, self.newy)
-        self.emit('pointer-moved', self.button, x, y)
+        button = gesture.get_current_button()
+        self.emit('pointer-moved', button, x, y)
 
-        if not self.notice_mouse:
+        if button != 1:
             return
 
         dy = int(abs(self.newx - self.x) * float(self.height) / self.width)
@@ -577,9 +577,6 @@ class T(Hidden):
         self.y = start_y
         self.newx = self.x
         self.newy = self.y
-        self.button = gesture.get_current_button()
-        if self.button == 1:
-            self.notice_mouse = True
 
     def set_paint_mode(self, isEnabled, colorsel):
         self.paint_mode = isEnabled
@@ -622,8 +619,6 @@ class T(Hidden):
         self.changed(False)
 
     def onButtonRelease(self, gesture, offset_x, offset_y):
-        self.button = 0
-        self.notice_mouse = False
         self.selection_rect.clear()
         button = gesture.get_current_button()
         modifier_state = gesture.get_current_event_state()
@@ -693,7 +688,6 @@ class SubFract(T):
         self.master = master
 
     def onButtonRelease(self, gesture, offset_x, offset_y):
-        self.button = 0
         if self.master:
             self.master.set_fractal(self.copy_f())
 
