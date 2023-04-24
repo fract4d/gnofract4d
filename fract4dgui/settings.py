@@ -2,7 +2,7 @@
 
 import copy
 
-from gi.repository import Gdk, Gtk
+from gi.repository import Gtk
 
 from fract4d_compiler.fc import FormulaTypes
 
@@ -11,15 +11,15 @@ from . import hig, browser, utils, browser_model, settings_widgets
 
 class SettingsPane(Gtk.Box):
     def __init__(self, main_window, f):
-        Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL)
+        Gtk.Box.__init__(self, orientation=Gtk.Orientation.VERTICAL, visible=False)
 
         self.main_window = main_window
         self.f = f
 
         label_box = self.make_label_box(_("Fractal Settings"))
-        self.notebook = Gtk.Notebook(name="settings_notebook")
-        self.pack_start(label_box, False, False, 0)
-        self.pack_start(self.notebook, True, True, 0)
+        self.notebook = Gtk.Notebook(name="settings_notebook", vexpand=True)
+        self.append(label_box)
+        self.append(self.notebook)
 
         self.tables = [None, None, None, None]
         self.selected_transform = None
@@ -32,28 +32,26 @@ class SettingsPane(Gtk.Box):
         self.create_location_page()
         self.create_colors_page()
 
-        self.notebook.show_all()
-
     def make_label_box(self, title):
-        label_box = Gtk.Box(name="dialog_label_box")
-        label_box.pack_start(Gtk.Label(label=title), False, False, 0)
+        label_box = Gtk.Box(name="dialog_label_box", hexpand=True)
+        label_box.append(Gtk.Label(label=title, halign=Gtk.Align.START, hexpand=True))
         close = Gtk.Button(label=_("Close"))
-        label_box.pack_end(close, False, False, 0)
-        label_box.show_all()
+        label_box.append(close)
 
-        close.connect('clicked', lambda x: self.hide())
+        close.connect('clicked', lambda x: self.set_visible(False))
         return label_box
 
-    def gradarea_mousedown(self, widget, event):
+    def gradarea_mousedown(self, gesture, start_x, start_y):
         pass
 
-    def gradarea_clicked(self, widget, event):
-        pos = float(event.x) / widget.get_allocated_width()
+    def gradarea_clicked(self, gesture, offset_x, offset_y):
+        current, x, y = gesture.get_point()
+        pos = float(x) / self.gradarea.get_allocated_width()
         i = self.f.get_gradient().get_index_at(pos)
         self.select_segment(i)
         self.redraw()
 
-    def gradarea_mousemoved(self, widget, event):
+    def gradarea_mousemoved(self, gesture, offset_x, offset_yt):
         pass
 
     def draw_handle(self, widget, cairo_ctx, midpoint, fill):
@@ -71,32 +69,28 @@ class SettingsPane(Gtk.Box):
         else:
             cairo_ctx.stroke()
 
-    def redraw_rect(self, widget, cairo_ctx):
+    def redraw_rect(self, widget, cairo_ctx, width, height):
         # draw the color preview bar
-        result, r = Gdk.cairo_get_clip_rectangle(cairo_ctx)
+        x, y = 0, 0
         wwidth = widget.get_allocated_width()
         colorband_height = widget.get_allocated_height() - self.grad_handle_height
 
-        style_ctx = widget.get_style_context()
-        normal_background_color = style_ctx.get_property(
-            "background-color", Gtk.StateFlags.NORMAL)
         grad = self.f.get_gradient()
 
         cairo_ctx.set_line_width(2.0)
-        for i in range(r.x, r.x + r.width):
+        for i in range(x, x + width):
             pos_in_gradient = i / wwidth
             col = grad.get_color_at(pos_in_gradient)
             cairo_ctx.set_source_rgba(col[0], col[1], col[2])
-            cairo_ctx.move_to(i, r.y)
-            cairo_ctx.line_to(i, min(r.y + r.height, colorband_height))
+            cairo_ctx.move_to(i, y)
+            cairo_ctx.line_to(i, min(y + height, colorband_height))
             cairo_ctx.stroke()
 
         # draw the handles
-        cairo_ctx.set_source_rgba(*normal_background_color)
         cairo_ctx.rectangle(
-            r.x,
+            x,
             colorband_height,
-            r.width,
+            width,
             self.grad_handle_height)
         cairo_ctx.fill()
 
@@ -142,29 +136,23 @@ class SettingsPane(Gtk.Box):
         browse_button.connect(
             "clicked", self.show_browser, browser_model.GRADIENT)
 
-        gradbox.pack_start(browse_button, False, False, 1)
+        gradbox.append(browse_button)
 
         # gradient viewer
         self.grad_handle_height = 8
 
         self.gradarea = Gtk.DrawingArea(width_request=256, height_request=96)
+        self.gradarea.set_draw_func(self.redraw_rect)
 
-        self.gradarea.add_events(
-            Gdk.EventMask.BUTTON_RELEASE_MASK |
-            Gdk.EventMask.BUTTON1_MOTION_MASK |
-            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
-            Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.KEY_PRESS_MASK |
-            Gdk.EventMask.KEY_RELEASE_MASK
-        )
+        event_controller_gesture = Gtk.GestureDrag()
+        self.gradarea.add_controller(event_controller_gesture)
 
-        self.gradarea.connect('draw', self.redraw_rect)
-        self.gradarea.connect('button-press-event', self.gradarea_mousedown)
-        self.gradarea.connect('button-release-event', self.gradarea_clicked)
-        self.gradarea.connect('motion-notify-event', self.gradarea_mousemoved)
+        event_controller_gesture.connect("drag_begin", self.gradarea_mousedown)
+        event_controller_gesture.connect("drag_update", self.gradarea_mousemoved)
+        event_controller_gesture.connect("drag_end", self.gradarea_clicked)
 
         self.f.connect('parameters-changed', self.redraw)
-        gradbox.pack_start(self.gradarea, False, False, 1)
+        gradbox.append(self.gradarea)
 
         table = Gtk.Grid(
             column_homogeneous=True,
@@ -221,7 +209,7 @@ class SettingsPane(Gtk.Box):
         self.edit_online_button.connect('clicked', self.edit_online)
         table.attach(self.edit_online_button, 0, 3, 4, 1)
 
-        gradbox.add(table)
+        gradbox.append(table)
 
         return gradbox
 
@@ -362,7 +350,9 @@ class SettingsPane(Gtk.Box):
         set_entry(self.f)
         self.f.connect('parameters-changed', set_entry)
         self.f.connect('tolerance-changed', set_entry)
-        entry.connect('focus-out-event', set_fractal)
+        focus_controller = Gtk.EventControllerFocus()
+        focus_controller.connect('leave', set_fractal)
+        entry.add_controller(focus_controller)
 
     def create_yflip_widget(self):
         widget = Gtk.CheckButton(
@@ -404,8 +394,8 @@ class SettingsPane(Gtk.Box):
 
     def add_notebook_page(self, page, text):
         label = Gtk.Label(label=text, use_underline=True)
-        frame = Gtk.Frame(shadow_type=Gtk.ShadowType.ETCHED_IN)
-        frame.add(page)
+        frame = Gtk.Frame()
+        frame.set_child(page)
         self.notebook.append_page(frame, label)
 
     def remove_transform(self, *args):
@@ -416,8 +406,8 @@ class SettingsPane(Gtk.Box):
 
     def create_transforms_page(self):
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        table = Gtk.Box(spacing=10, margin=10)
-        vbox.pack_start(table, False, False, 0)
+        table = Gtk.Box(spacing=10)
+        vbox.append(table)
 
         self.transform_store = Gtk.ListStore(str, object)
 
@@ -433,27 +423,25 @@ class SettingsPane(Gtk.Box):
         self.transform_view = Gtk.TreeView(
             model=self.transform_store,
             headers_visible=False,
-            width_request=150,
+            hexpand=True,
             height_request=250)
         column = Gtk.TreeViewColumn('_Transforms', Gtk.CellRendererText(), text=0)
         self.transform_view.append_column(column)
 
-        sw = Gtk.ScrolledWindow(shadow_type=Gtk.ShadowType.IN, min_content_height=200)
-        sw.add(self.transform_view)
-        table.pack_start(sw, True, True, 0)
+        sw = Gtk.ScrolledWindow(min_content_height=200)
+        sw.set_child(self.transform_view)
+        table.append(sw)
 
-        add_button = Gtk.Button(label="Add")
+        add_button = Gtk.Button(label="Add", valign=Gtk.Align.CENTER)
         add_button.connect(
             'clicked', self.show_browser, browser_model.TRANSFORM)
-        remove_button = Gtk.Button(label="Remove")
+        remove_button = Gtk.Button(label="Remove", valign=Gtk.Align.CENTER)
         remove_button.connect(
             'clicked', self.remove_transform)
-        buttonbox = Gtk.ButtonBox(
-            orientation=Gtk.Orientation.VERTICAL,
-            layout_style=Gtk.ButtonBoxStyle.SPREAD)
-        buttonbox.add(add_button)
-        buttonbox.add(remove_button)
-        table.pack_start(buttonbox, False, False, 0)
+        buttonbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, homogeneous=True)
+        buttonbox.append(add_button)
+        buttonbox.append(remove_button)
+        table.append(buttonbox)
 
         selection = self.transform_view.get_selection()
         selection.connect('changed', self.transform_selection_changed, vbox)
@@ -538,18 +526,20 @@ class SettingsPane(Gtk.Box):
             else:
                 secondary_message = str(exception)
 
+        def response(dialog, response_id):
+            dialog.destroy()
         d = hig.ErrorAlert(
             primary=message,
             secondary=secondary_message,
             transient_for=self.main_window)
-        d.run()
-        d.destroy()
+        d.connect("response", response)
+        d.present()
 
     def create_formula_text_area(self, parent, formindex, formtype):
-        sw = Gtk.ScrolledWindow(shadow_type=Gtk.ShadowType.ETCHED_IN, min_content_height=400)
+        sw = Gtk.ScrolledWindow(vexpand=True)
         textview = Gtk.TextView()
-        sw.add(textview)
-        parent.pack_start(sw, True, True, 2)
+        sw.set_child(textview)
+        parent.append(sw)
 
         self.f.connect(
             'formula-changed', self.update_formula_text, textview, formindex)
@@ -562,7 +552,7 @@ class SettingsPane(Gtk.Box):
             formindex,
             formtype)
 
-        parent.pack_end(apply, False, False, 1)
+        parent.append(apply)
         self.update_formula_text(self.f, textview, formindex)
 
     def create_formula_parameters_page(self):
@@ -574,10 +564,10 @@ class SettingsPane(Gtk.Box):
             _("Formula"),
             _("Browse available fractal functions"))
 
-        vbox.pack_start(formbox, False, False, 0)
+        vbox.append(formbox)
         self.create_formula_text_area(vbox, 0, FormulaTypes.FRACTAL)
         sw = Gtk.ScrolledWindow(overlay_scrolling=False)
-        sw.add(vbox)
+        sw.set_child(vbox)
         self.add_notebook_page(sw, _("Formula"))
 
     def create_outer_page(self):
@@ -589,10 +579,10 @@ class SettingsPane(Gtk.Box):
             _("Coloring Method"),
             _("Browse available coloring functions"))
 
-        vbox.pack_start(formbox, False, False, 0)
+        vbox.append(formbox)
         self.create_formula_text_area(vbox, 1, FormulaTypes.COLORFUNC)
         sw = Gtk.ScrolledWindow(overlay_scrolling=False)
-        sw.add(vbox)
+        sw.set_child(vbox)
         self.add_notebook_page(sw, _("Outer"))
 
     def create_inner_page(self):
@@ -604,10 +594,10 @@ class SettingsPane(Gtk.Box):
             _("Coloring Method"),
             _("Browse available coloring functions"))
 
-        vbox.pack_start(formbox, False, False, 0)
+        vbox.append(formbox)
         self.create_formula_text_area(vbox, 2, FormulaTypes.COLORFUNC)
         sw = Gtk.ScrolledWindow(overlay_scrolling=False)
-        sw.add(vbox)
+        sw.set_child(vbox)
         self.add_notebook_page(sw, _("Inner"))
 
     def update_transform_parameters(self, parent, *args):
@@ -624,8 +614,7 @@ class SettingsPane(Gtk.Box):
                 self.main_window,
                 self.selected_transform + 3)
 
-            self.tables[3].show_all()
-            parent.pack_start(self.tables[3], True, True, 0)
+            parent.append(self.tables[3])
 
     def create_transform_widget_table(self, parent):
         self.tables[3] = None
@@ -656,8 +645,7 @@ class SettingsPane(Gtk.Box):
                 row_spacing=5)
             self.create_browsable_name(table, param_type, typename, tip)
 
-            table.show_all()
-            parent.pack_start(table, True, True, 0)
+            parent.append(table)
             self.tables[param_type] = table
         update_formula_parameters()
 
@@ -680,18 +668,17 @@ class SettingsPane(Gtk.Box):
         if container is None:
             return
 
-        for widget in container.get_children():
+        for widget in container:
             try:
                 widget.update_function()
             except AttributeError:
                 pass
-            if isinstance(widget, Gtk.Container):
+            if widget.get_first_child():
                 self.update_all_widgets(fractal, widget)  # recurse
 
     def show_browser(self, button, type):
         dialog = browser.BrowserDialog(self.main_window, self.f, type)
-        dialog.run()
-        dialog.destroy()
+        dialog.present()
 
     def create_param_entry(self, table, row, text, param):
         label = Gtk.Label(
@@ -724,4 +711,4 @@ class SettingsPane(Gtk.Box):
 
         set_entry(self.f)
         self.f.connect('parameters-changed', set_entry)
-        entry.connect('focus-out-event', set_fractal)
+        entry.connect('changed', set_fractal)
