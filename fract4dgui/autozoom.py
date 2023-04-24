@@ -18,7 +18,7 @@ class AutozoomDialog(utils.Dialog):
         self.f = f
 
         table = Gtk.Grid(column_spacing=5, row_spacing=5)
-        self.vbox.add(table)
+        self.get_content_area().append(table)
 
         self.zoombutton = Gtk.ToggleButton(
             label=_("Start _Zooming"),
@@ -48,16 +48,17 @@ class AutozoomDialog(utils.Dialog):
                 set_entry()
             return False
 
-        self.connect('focus-out-event', change_entry)
+        focus_controller = Gtk.EventControllerFocus()
+        focus_controller.connect('leave', change_entry)
+        self.add_controller(focus_controller)
+
         set_entry()
 
         table.attach(self.minsize_entry, 1, 1, 1, 1)
 
-        self.vbox.show_all()
-
     def onResponse(self, widget, id):
         self.zoombutton.set_active(False)
-        self.hide()
+        self.set_visible(False)
 
     def onZoomToggle(self, *args):
         if self.zoombutton.get_active():
@@ -99,3 +100,6 @@ class AutozoomDialog(utils.Dialog):
                     self.select_quadrant_and_zoom()
                 else:
                     self.zoombutton.set_active(False)
+
+    def quit(self, dialog):
+        self.destroy()
