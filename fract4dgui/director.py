@@ -9,7 +9,7 @@ import fnmatch
 import shutil
 import tempfile
 
-from gi.repository import Gdk, Gio, Gtk, GObject
+from gi.repository import Gio, Gtk, GObject
 
 from fract4d import animation
 from . import hig, PNGGen, AVIGen, director_dialogs, utils
@@ -440,21 +440,6 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
         # main VBox
         box_main = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         # --------------------menu-------------------------------
-        accelerators = [
-            (Gdk.KEY_n, self.new_configuration_clicked),
-            (Gdk.KEY_o, self.load_configuration_clicked),
-            (Gdk.KEY_s, self.save_configuration_clicked),
-            (Gdk.KEY_p, self.preferences_clicked),
-        ]
-
-        for key, handler in accelerators:
-            self.add_shortcut(
-                Gtk.Shortcut.new(
-                    Gtk.KeyvalTrigger(keyval=key, modifiers=Gdk.ModifierType.CONTROL_MASK),
-                    Gtk.CallbackAction.new(handler)
-                )
-            )
-
         actiongroup = Gio.SimpleActionGroup()
         actiongroup.add_action_entries([
             ("new", self.new_configuration_clicked),
@@ -465,6 +450,20 @@ class DirectorDialog(utils.Dialog, hig.MessagePopper):
             ("current_keyframe", self.add_from_current),
         ])
         self.insert_action_group("director", actiongroup)
+
+        shortcut_controller = Gtk.ShortcutController()
+        accelerators = [
+            ("new", "<Ctrl>n"),
+            ("open", "<Ctrl>o"),
+            ("save", "<Ctrl>s"),
+            ("edit_prefs", "<Ctrl>p"),
+        ]
+        for action, accel in accelerators:
+            shortcut_controller.add_shortcut(Gtk.Shortcut.new(
+                Gtk.ShortcutTrigger.parse_string(accel),
+                Gtk.ShortcutAction.parse_string(f"action(director.{action})")),
+            )
+        self.add_controller(shortcut_controller)
 
         menubar = Gtk.PopoverMenuBar.new_from_model(
             main_window.application.get_menu_by_id("director_menubar"))

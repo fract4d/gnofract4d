@@ -14,42 +14,42 @@ TOOLITEM_SIZE = 53
 class Actions:
     def get_toggle_actions(self):
         return [
-            ("ToolsExplorerAction", self.toggle_explorer),
-            ("ViewFullScreenAction", self.toggle_full_screen),
+            ("ToolsExplorerAction", self.toggle_explorer, "<Ctrl>e"),
+            ("ViewFullScreenAction", self.toggle_full_screen, "F11"),
         ]
 
     def get_main_actions(self):
         return [
-            ("FileOpenAction", self.open),
-            ("FileSaveAction", self.save),
-            ("FileSaveAsAction", self.saveas),
-            ("FileSaveImageAction", self.save_image),
-            ("FileSaveHighResImageAction", self.save_hires_image),
-            ("FileQuitAction", self.quit),
+            ("FileOpenAction", self.open, "<Ctrl>o"),
+            ("FileSaveAction", self.save, "<Ctrl>s"),
+            ("FileSaveAsAction", self.saveas, "<Ctrl><Shift>s"),
+            ("FileSaveImageAction", self.save_image, "<Ctrl>i"),
+            ("FileSaveHighResImageAction", self.save_hires_image, "<Ctrl><Shift>i"),
+            ("FileQuitAction", self.quit, "<Ctrl>q"),
 
-            ("EditFractalSettingsAction", self.settings),
-            ("EditPreferencesAction", self.preferences),
-            ("EditUndoAction", self.undo),
-            ("EditRedoAction", self.redo),
-            ("EditResetAction", self.reset),
-            ("EditResetZoomAction", self.reset_zoom),
-            ("EditPasteAction", self.paste),
+            ("EditFractalSettingsAction", self.settings, "<Ctrl>f"),
+            ("EditPreferencesAction", self.preferences, None),
+            ("EditUndoAction", self.undo, "<Ctrl>z"),
+            ("EditRedoAction", self.redo, "<Ctrl><Shift>z"),
+            ("EditResetAction", self.reset, "Home"),
+            ("EditResetZoomAction", self.reset_zoom, "<Ctrl>Home"),
+            ("EditPasteAction", self.paste, "<Ctrl>v"),
 
             # View Full Screen is a toggle, see above
 
-            ("ToolsAutozoomAction", self.autozoom),
+            ("ToolsAutozoomAction", self.autozoom, "<Ctrl>a"),
             # explorer is a toggle, see above
-            ("ToolsBrowserAction", self.browser),
-            ("ToolsDirectorAction", self.director),
-            ("ToolsRandomizeAction", self.randomize_colors),
-            ("ToolsPainterAction", self.painter),
+            ("ToolsBrowserAction", self.browser, "<Ctrl>b"),
+            ("ToolsDirectorAction", self.director, "<Ctrl>d"),
+            ("ToolsRandomizeAction", self.randomize_colors, "<Ctrl>r"),
+            ("ToolsPainterAction", self.painter, None),
 
-            ("HelpContentsAction", self.contents),
+            ("HelpContentsAction", self.contents, "F1"),
             # Command Reference action is win.show-help-overlay
-            ("HelpReportBugAction", self.report_bug),
-            ("HelpAboutAction", self.about),
+            ("HelpReportBugAction", self.report_bug, None),
+            ("HelpAboutAction", self.about, None),
 
-            ("ImproveNow", self.improve_now),
+            ("ImproveNow", self.improve_now, None),
         ]
 
     def get_arrow_actions(self):
@@ -62,36 +62,29 @@ class Actions:
 
     def get_fourd_actions(self):
         return [
-            ("PlanesXYAction", self.set_xy_plane),
-            ("PlanesZWAction", self.set_zw_plane),
-            ("PlanesXZAction", self.set_xz_plane),
-            ("PlanesXWAction", self.set_xw_plane),
-            ("PlanesYZAction", self.set_yz_plane),
-            ("PlanesWYAction", self.set_wy_plane),
+            ("PlanesXYAction", self.set_xy_plane, "<Ctrl>1"),
+            ("PlanesZWAction", self.set_zw_plane, "<Ctrl>2"),
+            ("PlanesXZAction", self.set_xz_plane, "<Ctrl>3"),
+            ("PlanesXWAction", self.set_xw_plane, "<Ctrl>4"),
+            ("PlanesYZAction", self.set_yz_plane, "<Ctrl>5"),
+            ("PlanesWYAction", self.set_wy_plane, "<Ctrl>6"),
         ]
 
     def create_actions(self):
         # Missing override for Gtk.Application.add_action_entries():
         # https://gitlab.gnome.org/GNOME/pygobject/-/issues/426
         # main actions
-        Gio.ActionMap.add_action_entries(self.application, self.get_main_actions())
+        Gio.ActionMap.add_action_entries(
+            self.application,
+            [(name, callback)
+             for name, callback, accel in self.get_main_actions()]
+        )
+        for name, callback, accel in self.get_main_actions():
+            self.application.set_accels_for_action(f"app.{name}", [accel])
 
         # actions with parameters
         Gio.ActionMap.add_action_entries(
             self.application, [(*x, "i") for x in self.get_arrow_actions()])
-
-        # stateful actions
-        Gio.ActionMap.add_action_entries(
-            self.application,
-            [(name, None, None, "false", callback)
-             for name, callback in self.get_toggle_actions()]
-        )
-
-        # actions which are only available if we're in 4D mode
-        self.fourd_actiongroup = Gio.SimpleActionGroup()
-        self.fourd_actiongroup.add_action_entries(self.get_fourd_actions())
-
-        # keyboard accelerators for actions
         for key in [x[0] for x in self.get_arrow_actions()]:
             self.application.set_accels_for_action(
                 f"app.{key}(0)",
@@ -106,6 +99,25 @@ class Actions:
                 f"app.{key}"
                 f"({int(Gdk.ModifierType.SHIFT_MASK | Gdk.ModifierType.CONTROL_MASK)})",
                 [f"<Shift><Control>{key}"])
+
+        # stateful actions
+        Gio.ActionMap.add_action_entries(
+            self.application,
+            [(name, None, None, "false", callback)
+             for name, callback, accel in self.get_toggle_actions()]
+        )
+        for name, callback, accel in self.get_toggle_actions():
+            self.application.set_accels_for_action(f"app.{name}", [accel])
+
+        # actions which are only available if we're in 4D mode
+        self.fourd_actiongroup = Gio.SimpleActionGroup()
+        self.fourd_actiongroup.add_action_entries(
+            [(name, callback)
+             for name, callback, accel in self.get_fourd_actions()]
+        )
+        self.insert_action_group("app", self.fourd_actiongroup)
+        for name, callback, accel in self.get_fourd_actions():
+            self.application.set_accels_for_action(f"app.{name}", [accel])
 
         self.model.seq.register_callbacks(
             self.application.lookup_action("EditRedoAction").set_enabled,
