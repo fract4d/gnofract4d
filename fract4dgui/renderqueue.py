@@ -115,8 +115,7 @@ class QueueDialog(utils.Dialog):
         view.append_column(Gtk.TreeViewColumn(
             _('_Progress'), CellRendererProgress(), value=2))
 
-        self.vbox.add(view)
-        self.vbox.show_all()
+        self.get_content_area().append(view)
 
     def onQueueChanged(self, q):
         self.store.clear()
@@ -129,4 +128,4 @@ class QueueDialog(utils.Dialog):
             self.store.set_value(iter, 2, progress)
 
     def onQueueDone(self, q):
-        self.hide()
+        self.set_visible(False)

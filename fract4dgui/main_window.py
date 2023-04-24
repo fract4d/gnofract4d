@@ -61,7 +61,7 @@ class MainWindow(Actions, ApplicationWindow):
 
         #self.directorDialog = director.DirectorDialog(self)
         #self.painterDialog = painter.PainterDialog(self)
-        #self.renderqueueDialog = renderqueue.QueueDialog(self)
+        self.renderqueueDialog = renderqueue.QueueDialog(self)
 
         self.update_subfract_visibility(False)
         self.populate_warpmenu(self.f)
@@ -246,7 +246,7 @@ class MainWindow(Actions, ApplicationWindow):
         self.painterDialog.show()
 
     def add_to_queue(self, name, w, h):
-        self.renderqueueDialog.show()
+        self.renderqueueDialog.present()
         self.renderQueue.add(self.f.f, name, w, h)
         self.renderQueue.start()
 
