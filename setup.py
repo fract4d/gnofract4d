@@ -206,7 +206,7 @@ and includes a Fractint-compatible parser for your own fractal formulas.''',
         # theme icons
         *get_icons(),
         # .desktop file
-        ('share/applications', ['gnofract4d.desktop']),
+        ('share/applications', ['io.github.fract4d.desktop']),
         # MIME type registration
         ('share/mime/packages', ['gnofract4d-mime.xml']),
         # doc files
