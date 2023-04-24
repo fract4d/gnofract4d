@@ -21,10 +21,10 @@ include fract4dgui/gnofract4d.css
 include fract4dgui/gnofract4d.gresource.xml
 include gnofract4d
 include gnofract4d-mime.xml
-include gnofract4d.desktop
 include help/*.css
 include help/*.html
 include help/*.png
+include io.github.fract4d.desktop
 include maps/*.cs
 include maps/*.map
 include maps/*.ugr
