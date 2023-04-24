@@ -27,8 +27,6 @@ class Alert(Gtk.MessageDialog):
 
         self.add_buttons(*buttons)
 
-        self.show_all()
-
 
 class InformationAlert(Alert):
     def __init__(self, **kwds):
@@ -129,17 +127,17 @@ class MessagePopper:
             primary=msg,
             secondary=extra_message)
 
-        return self.do(d)
+        self.do(d)
 
-    def show_info(self, msg, extra_message=""):
+    def show_info(self, msg, extra_message="", callback=None):
         d = InformationAlert(
             transient_for=self,
             primary=msg,
             secondary=extra_message)
 
-        return self.do(d)
+        self.do(d, callback)
 
-    def ask_question(self, msg, secondary):
+    def ask_question(self, msg, secondary, callback):
         d = ConfirmationAlert(
             transient_for=self,
             primary=msg,
@@ -148,9 +146,14 @@ class MessagePopper:
             proceed_button=_("_Yes"),
             cancel_button=_("_No"))
 
-        return self.do(d)
+        self.do(d, callback)
 
-    def do(self, d):
+    def do(self, d, callback=None):
+        def response(dialog, response_id):
+            dialog.destroy()
+            if callback:
+                callback(response_id)
+
         if timeout > 0:
             def dismiss():
                 d.response(Gtk.ResponseType.ACCEPT)
@@ -158,6 +161,5 @@ class MessagePopper:
 
             GLib.timeout_add(timeout, dismiss)
 
-        response = d.run()
-        d.destroy()
-        return response
+        d.connect("response", response)
+        d.present()
