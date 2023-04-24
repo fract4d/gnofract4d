@@ -5,12 +5,7 @@ import struct
 import math
 import copy
 
-import gi
-
-import cairo
-gi.require_foreign('cairo')  # ensure Cairo integration support is available
-
-from gi.repository import Gtk, Gdk, GObject, GdkPixbuf, GLib
+from gi.repository import Gsk, Gtk, Gdk, GObject, GLib, Graphene
 
 from fract4d_compiler import fracttypes
 from fract4d import fractal, fract4dc, image, messages
@@ -154,9 +149,10 @@ class Hidden(GObject.GObject):
 
         n = 0
         # wait for stream from worker to flush
+        mc = GLib.MainContext.default()
         while self.running:
             n += 1
-            Gtk.main_iteration()
+            mc.iteration(True)
 
         self.skip_updates = False
 
@@ -446,6 +442,47 @@ class HighResolution(Hidden):
             self.last_overall_progress = overall_progress
 
 
+class DrawingWidget(Gtk.Widget):
+    def __init__(self, parent):
+        super().__init__(width_request=parent.width, height_request=parent.height)
+        self.parent = parent
+
+    def do_snapshot(self, s):
+        x, y = 0, 0
+        w, h = self.parent.width, self.parent.height
+
+        try:
+            buf = self.parent.image.image_buffer(x, y)
+        except MemoryError:
+            # suppress these errors
+            return
+
+        texture = Gdk.MemoryTexture.new(
+            w, h, Gdk.MemoryFormat.R8G8B8, GLib.Bytes(buf), w * 3
+        )
+        rect = Graphene.Rect()
+        rect.init(x, y, w, h)
+        s.append_texture(texture, rect)
+
+
+class SelectionWidget(Gtk.Widget):
+    def __init__(self, parent):
+        super().__init__(width_request=parent.width, height_request=parent.height)
+        self.parent = parent
+
+    def do_snapshot(self, s):
+        if self.parent.selection_rect:
+            rect = Graphene.Rect()
+            rect.init(*self.parent.selection_rect)
+            white = Gdk.RGBA()
+            white.parse("white")
+            corner = Graphene.Size()
+            corner.init(0, 0)
+            rrect = Gsk.RoundedRect()
+            rrect.init(rect, corner, corner, corner, corner)
+            s.append_border(rrect, [T.SELECTION_LINE_WIDTH] * 4, [white] * 4)
+
+
 class T(Hidden):
     "A visible GtkFractal which responds to user input"
     SELECTION_LINE_WIDTH = 2.0
@@ -456,32 +493,27 @@ class T(Hidden):
 
         self.paint_mode = False
 
-        drawing_area = Gtk.DrawingArea(
-            width_request=self.width, height_request=self.height)
-        drawing_area.set_events(
-            Gdk.EventMask.BUTTON_RELEASE_MASK |
-            Gdk.EventMask.BUTTON1_MOTION_MASK |
-            Gdk.EventMask.POINTER_MOTION_MASK |
-            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
-            Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.KEY_PRESS_MASK |
-            Gdk.EventMask.KEY_RELEASE_MASK |
-            Gdk.EventMask.EXPOSURE_MASK
-        )
+        overlay = Gtk.Overlay()
+        self.drawing_area = DrawingWidget(self)
+        overlay.set_child(self.drawing_area)
+        self.selection_area = SelectionWidget(self)
+        overlay.add_overlay(self.selection_area)
 
-        self.notice_mouse = False
+        drag_gesture = Gtk.GestureDrag()
+        drag_gesture.set_button(0)
+        overlay.add_controller(drag_gesture)
 
-        drawing_area.connect('motion_notify_event', self.onMotionNotify)
-        drawing_area.connect('button_release_event', self.onButtonRelease)
-        drawing_area.connect('button_press_event', self.onButtonPress)
-        drawing_area.connect('draw', self.redraw_rect)
+        drag_gesture.connect("drag_begin", self.onButtonPress)
+        drag_gesture.connect("drag_update", self.onMotionNotify)
+        drag_gesture.connect("drag_end", self.onButtonRelease)
 
         self.selection_rect = []
 
-        self.widget = drawing_area
+        self.widget = overlay
 
     def image_changed(self, x1, y1, x2, y2):
-        self.widget.queue_draw_area(x1, y1, x2 - x1, y2 - y1)
+        self.selection_area.queue_draw()
+        self.drawing_area.queue_draw()
 
     def set_nthreads(self, n):
         if self.nthreads != n:
@@ -504,7 +536,7 @@ class T(Hidden):
     def set_size(self, new_width, new_height):
         try:
             Hidden.set_size(self, new_width, new_height)
-            self.widget.set_size_request(new_width, new_height)
+            self.drawing_area.set_size_request(new_width, new_height)
         except MemoryError as err:
             GLib.idle_add(self.warn, str(err))
 
@@ -519,26 +551,18 @@ class T(Hidden):
                           err.msg + advice)
             return
 
-    def onMotionNotify(self, widget, event):
-        x, y = self.float_coords(event.x, event.y)
+    def onMotionNotify(self, gesture, offset_x, offset_y):
+        self.newx, self.newy = self.x + offset_x, self.y + offset_y
+        x, y = self.float_coords(self.newx, self.newy)
         self.emit('pointer-moved', self.button, x, y)
 
         if not self.notice_mouse:
             return
 
-        self.newx, self.newy = event.x, event.y
-
         dy = int(abs(self.newx - self.x) * float(self.height) / self.width)
         if self.newy < self.y or (self.newy == self.y and self.newx < self.x):
             dy = -dy
         self.newy = self.y + dy
-
-        # create a dummy Cairo context to calculate the affected bounding box
-        surface = cairo.ImageSurface(cairo.FORMAT_A1, self.width, self.height)
-        cairo_ctx = cairo.Context(surface)
-        cairo_ctx.set_line_width(T.SELECTION_LINE_WIDTH)
-        if self.selection_rect:
-            cairo_ctx.rectangle(*self.selection_rect)
 
         self.selection_rect = [
             int(min(self.x, self.newx)),
@@ -546,17 +570,14 @@ class T(Hidden):
             int(abs(self.newx - self.x)),
             int(abs(self.newy - self.y))]
 
-        cairo_ctx.rectangle(*self.selection_rect)
-        x1, y1, x2, y2 = cairo_ctx.stroke_extents()
+        self.selection_area.queue_draw()
 
-        self.widget.queue_draw_area(x1, y1, x2 - x1, y2 - y1)
-
-    def onButtonPress(self, widget, event):
-        self.x = event.x
-        self.y = event.y
+    def onButtonPress(self, gesture, start_x, start_y):
+        self.x = start_x
+        self.y = start_y
         self.newx = self.x
         self.newy = self.y
-        self.button = event.button
+        self.button = gesture.get_current_button()
         if self.button == 1:
             self.notice_mouse = True
 
@@ -600,26 +621,24 @@ class T(Hidden):
 
         self.changed(False)
 
-    def filterPaintModeRelease(self, event):
-        if self.paint_mode:
-            if event.button == 1:
-                if self.x == self.newx or self.y == self.newy:
-                    self.onPaint(self.newx, self.newy)
-                    return True
-
-        return False
-
-    def onButtonRelease(self, widget, event):
-        self.widget.queue_draw()
+    def onButtonRelease(self, gesture, offset_x, offset_y):
         self.button = 0
         self.notice_mouse = False
         self.selection_rect.clear()
-        if self.filterPaintModeRelease(event):
+        button = gesture.get_current_button()
+        modifier_state = gesture.get_current_event_state()
+
+        self.newx, self.newy = self.x + offset_x, self.y + offset_y
+
+        if self.paint_mode and button == 1 and (offset_x == 0 or offset_y == 0):
+            # no box drawn
+            print("no box drawn")
+            self.onPaint(self.newx, self.newy)
             return
 
         self.freeze()
-        if event.button == 1:
-            if self.x == self.newx or self.y == self.newy:
+        if button == 1:
+            if offset_x == 0 or offset_y == 0:
                 zoom = 0.5
                 x = self.x
                 y = self.y
@@ -629,68 +648,35 @@ class T(Hidden):
                 y = 0.5 + (self.y + self.newy) / 2.0
 
             # with shift held, don't zoom
-            if hasattr(event, "state") and event.get_state() & Gdk.ModifierType.SHIFT_MASK:
+            if modifier_state & Gdk.ModifierType.SHIFT_MASK:
                 zoom = 1.0
             self.recenter(x, y, zoom)
 
-        elif event.button == 2:
-            (x, y) = (event.x, event.y)
+        elif button == 2:
             zoom = 1.0
-            self.recenter(x, y, zoom)
+            self.recenter(self.newx, self.newy, zoom)
             if self.is4D():
                 self.flip_to_julia()
 
         else:
-            if hasattr(event, "state") and event.get_state() & Gdk.ModifierType.CONTROL_MASK:
+            if modifier_state & Gdk.ModifierType.CONTROL_MASK:
                 zoom = 20.0
             else:
                 zoom = 2.0
-            (x, y) = (event.x, event.y)
-            self.recenter(x, y, zoom)
+            self.recenter(self.newx, self.newy, zoom)
 
         if self.thaw():
             self.changed()
-
-    def redraw_rect(self, widget, cairo_ctx):
-        result, r = Gdk.cairo_get_clip_rectangle(cairo_ctx)
-        if result:
-            x, y, w, h = r.x, r.y, r.width, r.height
-        else:
-            print("Skipping drawing because entire context clipped")
-            return
-
-        try:
-            buf = self.image.image_buffer(x, y)
-        except MemoryError:
-            # suppress these errors
-            return
-
-        pixbuf = GdkPixbuf.Pixbuf.new_from_bytes(
-            GLib.Bytes(buf),
-            GdkPixbuf.Colorspace.RGB,
-            False,
-            8,
-            min(self.width - x, w),
-            min(self.height - y, h),
-            self.width * 3)
-        Gdk.cairo_set_source_pixbuf(cairo_ctx, pixbuf.copy(), x, y)
-        cairo_ctx.paint()
-
-        if self.selection_rect:
-            cairo_ctx.set_source_rgb(1.0, 1.0, 1.0)
-            cairo_ctx.set_line_width(T.SELECTION_LINE_WIDTH)
-            cairo_ctx.rectangle(*self.selection_rect)
-            cairo_ctx.stroke()
 
 
 class Preview(T):
     def __init__(self, comp, width=120, height=90):
         T.__init__(self, comp, None, width, height)
 
-    def onButtonRelease(self, widget, event):
+    def onButtonRelease(self, *args):
         pass
 
-    def onMotionNotify(self, widget, event):
+    def onMotionNotify(self, *args):
         pass
 
     def error(self, msg, exn):
@@ -706,12 +692,12 @@ class SubFract(T):
         T.__init__(self, comp, None, width, height)
         self.master = master
 
-    def onButtonRelease(self, widget, event):
+    def onButtonRelease(self, gesture, offset_x, offset_y):
         self.button = 0
         if self.master:
             self.master.set_fractal(self.copy_f())
 
-    def onMotionNotify(self, widget, event):
+    def onMotionNotify(self, *args):
         pass
 
     def error(self, msg, exn):
