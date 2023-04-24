@@ -474,7 +474,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
             adjustment=self.weirdness_adjustment,
             width_request=120,
             value_pos=Gtk.PositionType.RIGHT)
-        shape_label = Gtk.Label(label=_("Shape:"), halign=Gtk.Align.START)
+        shape_label = Gtk.Label(label=_("Shape:"), xalign=0.0)
 
         self.weirdbox.attach(shape_label, 0, 0, 1, 1)
         self.weirdbox.attach(weirdness, 1, 0, 1, 1)
@@ -484,7 +484,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         color_weirdness = Gtk.Scale(
             adjustment=self.color_weirdness_adjustment,
             value_pos=Gtk.PositionType.RIGHT)
-        color_label = Gtk.Label(label=_("Color:"), halign=Gtk.Align.START)
+        color_label = Gtk.Label(label=_("Color:"), xalign=0.0)
 
         self.weirdbox.attach(color_label, 0, 1, 1, 1)
         self.weirdbox.attach(color_weirdness, 1, 1, 1, 1)

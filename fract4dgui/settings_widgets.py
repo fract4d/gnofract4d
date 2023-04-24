@@ -72,8 +72,8 @@ class FractalSettingsTable(Gtk.Grid):
     def add_formula_function(self, i, name, param, form):
         label = Gtk.Label(
             label=self.f.param_display_name(name, param),
-            halign=Gtk.Align.END,
-            valign=Gtk.Align.CENTER)
+            xalign=1.0,
+        )
         self.attach(label, 0, i, 1, 1)
 
         funclist = sorted(form.formula.symbols.available_param_functions(
@@ -168,8 +168,7 @@ class FractalSettingsTable(Gtk.Grid):
 
         label = Gtk.Label(
             label="_Max Iterations",
-            halign=Gtk.Align.END,
-            valign=Gtk.Align.CENTER,
+            xalign=1.0,
             use_underline=True,
             mnemonic_widget=widget)
 
@@ -249,8 +248,7 @@ class FractalSettingsTable(Gtk.Grid):
 
         label = Gtk.Label(
             label=self.f.param_display_name(name, param) + part,
-            halign=Gtk.Align.END,
-            valign=Gtk.Align.CENTER,
+            xalign=1.0,
             mnemonic_widget=widget)
         self.attach(label, 0, i, 1, 1)
 
@@ -284,8 +282,8 @@ class FractalSettingsTable(Gtk.Grid):
     def make_color_widget(self, i, form, name, param, order):
         label = Gtk.Label(
             label=self.f.param_display_name(name, param),
-            halign=Gtk.Align.END,
-            valign=Gtk.Align.CENTER)
+            xalign=1.0,
+        )
         self.attach(label, 0, i, 1, 1)
 
         def set_fractal(r, g, b, is_left):
@@ -339,8 +337,7 @@ class FractalSettingsTable(Gtk.Grid):
 
         label = Gtk.Label(
             label=self.f.param_display_name(name, param),
-            halign=Gtk.Align.END,
-            valign=Gtk.Align.CENTER,
+            xalign=1.0,
             mnemonic_widget=widget)
         self.attach(label, 0, i, 1, 1)
 
