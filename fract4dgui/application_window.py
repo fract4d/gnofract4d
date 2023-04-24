@@ -95,17 +95,17 @@ class Actions:
         for key in [x[0] for x in self.get_arrow_actions()]:
             self.application.set_accels_for_action(
                 f"app.{key}(0)",
-                [f"<Release>{key}"])
+                [f"{key}"])
             self.application.set_accels_for_action(
                 f"app.{key}({int(Gdk.ModifierType.SHIFT_MASK)})",
-                [f"<Release><Shift>{key}"])
+                [f"<Shift>{key}"])
             self.application.set_accels_for_action(
                 f"app.{key}({int(Gdk.ModifierType.CONTROL_MASK)})",
-                [f"<Release><Control>{key}"])
+                [f"<Control>{key}"])
             self.application.set_accels_for_action(
                 f"app.{key}"
                 f"({int(Gdk.ModifierType.SHIFT_MASK | Gdk.ModifierType.CONTROL_MASK)})",
-                [f"<Release><Shift><Control>{key}"])
+                [f"<Shift><Control>{key}"])
 
         self.model.seq.register_callbacks(
             self.application.lookup_action("EditRedoAction").set_enabled,
@@ -154,15 +154,16 @@ class ApplicationDialogs:
             website="https://fract4d.github.io/gnofract4d/",
             website_label="fract4d.github.io/gnofract4d"
         )
-        aboutDialog.run()
-        aboutDialog.destroy()
+        aboutDialog.present()
 
     def confirm(self, name):
         'if this file exists, check with user before overwriting it'
         if os.path.exists(name):
-            msg = _("File %s already exists. Overwrite?") % name
+            def response(dialog, response_id):
+                d.destroy()
+                call_back(response_id == Gtk.ResponseType.ACCEPT)
             d = hig.ConfirmationAlert(
-                primary=msg,
+                primary=_("File %s already exists. Overwrite?") % name,
                 transient_for=self,
                 proceed_button=_("Overwrite"))
 
@@ -173,11 +174,13 @@ class ApplicationDialogs:
             return True
 
     def show_warning(self, message):
+        def response(dialog, response_id):
+            dialog.destroy()
         d = Gtk.MessageDialog(self, Gtk.DialogFlags.MODAL,
                               Gtk.MessageType.WARNING, Gtk.ButtonsType.OK,
                               message)
-        d.run()
-        d.destroy()
+        d.connect("response", response)
+        d.present()
 
     def show_error_message(self, message, exception=None):
         if exception is None:
@@ -188,10 +191,12 @@ class ApplicationDialogs:
             else:
                 secondary_message = str(exception)
 
+        def response(dialog, response_id):
+            dialog.destroy()
         d = hig.ErrorAlert(
             primary=message, secondary=secondary_message, transient_for=self)
-        d.run()
-        d.destroy()
+        d.connect("response", response)
+        d.present()
 
     def display_help(self, section=None):
         helpfile = fractconfig.T.find_resource("index.html", "help")
@@ -202,15 +207,14 @@ class ApplicationDialogs:
             self.show_error_message(
                 _("Can't display help"),
                 _("Can't find help file '%s'") % abs_file)
-            return
-
-        if section is None:
-            anchor = ""
         else:
-            anchor = "#" + section
+            if section is None:
+                anchor = ""
+            else:
+                anchor = "#" + section
 
-        url = f"file://{abs_file}{anchor}"
-        utils.launch_browser(url, self)
+            url = f"file://{abs_file}{anchor}"
+            utils.launch_browser(url, self)
 
 
 class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
@@ -221,6 +225,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
             default_width=application.userPrefs.getint("main_window", "width"),
             default_height=application.userPrefs.getint("main_window", "height"),
             name="main_window",
+            show_menubar=True,
         )
 
         self.application = application
@@ -252,19 +257,19 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         theme_provider = Gtk.CssProvider()
         theme_provider.load_from_resource("/io/github/fract4d/gnofract4d.css")
-        Gtk.StyleContext.add_provider_for_screen(
-            Gdk.Screen.get_default(), theme_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        Gtk.StyleContext.add_provider_for_display(
+            self.get_display(), theme_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # window
         self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.add(self.vbox)
+        self.set_child(self.vbox)
 
         self.create_toolbar()
-        panes = Gtk.Paned(vexpand=True)
-        self.vbox.add(panes)
+        panes = Gtk.Paned(vexpand=True, resize_end_child=False, shrink_end_child=False)
+        self.vbox.append(panes)
 
         self.statusbar = Gtk.ProgressBar(show_text=True)
-        self.vbox.pack_end(self.statusbar, False, True, 0)
+        self.vbox.append(self.statusbar)
 
         try:
             # try to make default image more interesting
@@ -274,17 +279,14 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
             pass
 
         self.fractalWindow = application_widgets.FractalWindow(self.f, application.compiler)
-        panes.pack1(self.fractalWindow, resize=True, shrink=True)
-
-        # show everything apart from the settings pane
-        self.show_all()
+        panes.set_start_child(self.fractalWindow)
 
         self.settingsPane = settings.SettingsPane(self, self.f)
-        panes.pack2(self.settingsPane, resize=False, shrink=False)
+        panes.set_end_child(self.settingsPane)
 
     def add_fourway(self, name, tip, axis, is4dsensitive):
         my_fourway = fourway.T(name, tip, axis, TOOLITEM_SIZE)
-        self.toolbar.add(my_fourway)
+        self.toolbar.append(my_fourway)
 
         my_fourway.connect('value-slightly-changed', self.on_drag_fourway)
         my_fourway.connect('value-changed', self.on_release_fourway)
@@ -310,7 +312,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         self.warpmenu.connect("changed", update_warp_param, self.f)
 
-        self.toolbar.add(self.warpmenu)
+        self.toolbar.append(self.warpmenu)
 
     def add_angle(self, name, tip, axis, is4dsensitive):
         my_angle = angle.T(name, tip, axis, round(TOOLITEM_SIZE * 0.75))
@@ -322,7 +324,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.f.connect('parameters-changed',
                        self.update_angle_widget, my_angle)
 
-        self.toolbar.add(my_angle)
+        self.toolbar.append(my_angle)
 
         if is4dsensitive:
             self.four_d_sensitives.append(my_angle)
@@ -374,12 +376,12 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
     def create_toolbar(self):
         self.toolbar = application_widgets.Toolbar()
         # request enough space for toolbar items
-        self.vbox.pack_start(self.toolbar, expand=False, fill=False, padding=0)
+        self.vbox.append(self.toolbar)
 
         # preview
         self.toolbar.add_space()
 
-        self.toolbar.add(self.preview.widget)
+        self.toolbar.append(self.preview.widget)
 
         # angles
         self.toolbar.add_space()
@@ -425,7 +427,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         res_menu = self.create_resolution_menu()
 
-        self.toolbar.add(res_menu)
+        self.toolbar.append(res_menu)
 
         # undo/redo
         self.toolbar.add_space()
@@ -476,7 +478,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
         self.weirdbox.attach(color_label, 0, 1, 1, 1)
         self.weirdbox.attach(color_weirdness, 1, 1, 1, 1)
 
-        self.toolbar.add(self.weirdbox)
+        self.toolbar.append(self.weirdbox)
 
         def on_weirdness_changed(adjustment):
             self.update_subfracts()
