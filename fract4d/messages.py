@@ -147,17 +147,15 @@ class Stats(T):
         return 100.0 - self.percent_inside
     percent_outside = property(_get_percent_outside)
 
-    def show(self):
+    def __str__(self):
         return (
-            "Calculation Statistics:\n" +
-            "Total pixels:%d\n" % self.pixels +
-            "Calculated pixels:%d(%2g%%)\n" %
-            (self.pixels_calculated, self.percent_calculated) +
-            "  Inside pixels:%d(%2g%%)\n" % (self.pixels_inside, self.percent_inside) +
-            "    Perodic pixels:%d(%2g%%)\n" % (self.pixels_periodic, self.percent_periodic) +
-            "  Outside pixels:%d(%2g%%)\n" % (self.pixels_outside, self.percent_outside) +
-            "Guessed pixels:%d(%2g%%)\n" % (
-                self.pixels_skipped, self.percent_skipped)
+            "Calculation Statistics:\n"
+            f"Total pixels:{self.pixels}\n"
+            f"Calculated pixels:{self.pixels_calculated}({self.percent_calculated:2g}%)\n"
+            f"  Inside pixels:{self.pixels_inside}({self.percent_inside:2g}%)\n"
+            f"    Perodic pixels:{self.pixels_periodic}({self.percent_periodic:2g}%)\n"
+            f"  Outside pixels:{self.pixels_outside}({self.percent_outside:2g}%)\n"
+            f"Guessed pixels:{self.pixels_skipped}({self.percent_skipped:2g}%)\n"
         )
 
         # /out/per:\t%d\t%d\t%d\n" % \

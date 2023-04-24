@@ -188,7 +188,7 @@ class MainWindow(Actions, ApplicationWindow):
         self.statusbar.set_fraction(progress / 100.0)
 
     def stats_changed(self, f, stats):
-        self.statusbar.set_tooltip_text(stats.show())
+        self.statusbar.set_tooltip_text(str(stats))
 
     def status_changed(self, f, status):
         if status == 2:
