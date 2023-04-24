@@ -4,7 +4,7 @@
 
 import os
 
-from gi.repository import Gdk, GLib, Gtk
+from gi.repository import Gtk
 
 from . import gtkfractal, hig
 from fract4d import fractal
@@ -22,22 +22,45 @@ class PNGGeneration(Gtk.Dialog, hig.MessagePopper):
 
         self.add_buttons(_("_Cancel"), Gtk.ResponseType.CANCEL)
         hig.MessagePopper.__init__(self)
-        self.vbox.pack_start(Gtk.Label(label="Current image progress"), True, True, 0)
+        self.get_content_area().append(Gtk.Label(label="Current image progress"))
         self.pbar_image = Gtk.ProgressBar()
-        self.vbox.pack_start(self.pbar_image, True, True, 0)
-        self.vbox.pack_start(Gtk.Label(label="Overall progress"), True, True, 0)
+        self.get_content_area().append(self.pbar_image)
+        self.get_content_area().append(Gtk.Label(label="Overall progress"))
         self.pbar_overall = Gtk.ProgressBar()
-        self.vbox.pack_start(self.pbar_overall, True, True, 0)
-        geometry = Gdk.Geometry()
-        geometry.min_aspect = 3.5
-        geometry.max_aspect = 3.5
-        self.set_geometry_hints(None, geometry, Gdk.WindowHints.ASPECT)
+        self.get_content_area().append(self.pbar_overall)
         self.anim = animation
 
         # -------------loads compiler----------------------------
         self.compiler = compiler
 
     def generate_png(self):
+        existing_image = None
+        filelist = self.anim.create_list()
+        for f in filelist:
+            if os.path.exists(f):
+                existing_image = f
+                break
+        if existing_image is None:
+            self.run_generate(True)
+            return False
+
+        def check_recreate_images(response_id):
+            self.run_generate(response_id != Gtk.ResponseType.ACCEPT)
+        try:
+            folder_png = self.anim.get_png_dir()
+            self.ask_question(
+                _("The temporary directory: %s already contains"
+                  " at least one image" % folder_png),
+                _("Use them to speed up generation?"),
+                check_recreate_images,
+            )
+        except Exception as err:
+            print(err)
+            raise
+
+        return False
+
+    def run_generate(self, create_all_images):
         durations = []
         # --------find values and duration from all keyframes------------
         try:
@@ -47,35 +70,9 @@ class PNGGeneration(Gtk.Dialog, hig.MessagePopper):
             self.show_error(_("Error processing keyframes"), str(err))
             return
         # ---------------------------------------------------------------
-        create_all_images = self.to_create_images_again()
         gt = GenerationManager(
             durations, self.anim, self.compiler, create_all_images, self)
         gt.run()
-        return False
-
-    def to_create_images_again(self):
-        create = True
-        filelist = self.anim.create_list()
-        for f in filelist:
-            if os.path.exists(f):
-                try:
-                    folder_png = self.anim.get_png_dir()
-                    response = self.ask_question(
-                        _("The temporary directory: %s already contains"
-                          " at least one image" % folder_png),
-                        _("Use them to speed up generation?"))
-
-                except Exception as err:
-                    print(err)
-                    raise
-
-                if response == Gtk.ResponseType.ACCEPT:
-                    create = False
-                else:
-                    create = True
-                return create
-
-        return create
 
     def show_error(self, message, secondary):
         self.error = True
@@ -83,33 +80,33 @@ class PNGGeneration(Gtk.Dialog, hig.MessagePopper):
             transient_for=self,
             primary=message,
             secondary=secondary)
-        error_dlg.run()
-        error_dlg.destroy()
-        event = Gdk.Event(Gdk.EventType.DELETE)
-        self.emit('delete_event', event)
 
-    def show(self):
-        global running
-        self.show_all()
-        self.error = False
-        GLib.idle_add(self.generate_png)
-        response = self.run()
-        if response != Gtk.ResponseType.CANCEL:
-            if running is True:  # destroy by user
+        def response(dialog, response_id):
+            dialog.destroy()
+            self.response(Gtk.ResponseType.DELETE_EVENT)
+        error_dlg.connect("response", response)
+        error_dlg.present()
+
+    def show_dialog(self, callback, user_data):
+        def response(dialog, response_id):
+            global running
+            dialog.destroy()
+            if response_id != Gtk.ResponseType.CANCEL:
+                if running is True:  # destroy by user
+                    running = False
+                    callback(1, user_data)
+                else:
+                    if self.error is True:  # error
+                        callback(-1, user_data)
+                    else:  # everything ok
+                        callback(0, user_data)
+            else:  # cancel pressed
                 running = False
-                self.destroy()
-                return 1
-            else:
-                if self.error is True:  # error
-                    self.destroy()
-                    return -1
-                else:  # everything ok
-                    self.destroy()
-                    return 0
-        else:  # cancel pressed
-            running = False
-            self.destroy()
-            return 1
+                callback(1, user_data)
+        self.connect("response", response)
+        self.error = False
+        self.present()
+        self.generate_png()
 
 # interpolate values and call generation of .png files
 

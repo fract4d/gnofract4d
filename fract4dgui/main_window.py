@@ -59,7 +59,7 @@ class MainWindow(Actions, ApplicationWindow):
         self.model = model.Model(self.f)
         self.renderQueue = renderqueue.T(self.userPrefs)
 
-        #self.directorDialog = director.DirectorDialog(self)
+        self.directorDialog = director.DirectorDialog(self)
         #self.painterDialog = painter.PainterDialog(self)
         self.renderqueueDialog = renderqueue.QueueDialog(self)
 
@@ -231,7 +231,7 @@ class MainWindow(Actions, ApplicationWindow):
 
     def director(self, *args):
         """Display the Director (animation) window."""
-        self.directorDialog.show()
+        self.directorDialog.present()
 
     def browser(self, *args):
         """Display formula browser."""
