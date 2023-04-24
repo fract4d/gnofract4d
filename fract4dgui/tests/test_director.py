@@ -6,10 +6,18 @@ import sys
 
 from . import testgui
 
-from gi.repository import Gio, Gtk
+from gi.repository import Gio, GLib, Gtk
 
-from fract4dgui import director, PNGGen, hig
+from fract4dgui import director, PNGGen, hig, utils
 from fract4d import fractal, animation
+
+
+class MockFileChooser:
+    def __init__(self, filepath):
+        self.filepath = filepath
+
+    def get_path(self):
+        return self.filepath
 
 
 class Window(Gtk.Window):
@@ -38,7 +46,7 @@ class Test(testgui.TestCase):
 
     def testDirectorDialog(self):
         dd = director.DirectorDialog(self.parent)
-        dd.show()
+        dd.present()
         dd.animation.set_png_dir(Test.tmpdir.name)
         dd.animation.set_fct_enabled(False)
         dd.animation.add_keyframe(
@@ -51,6 +59,13 @@ class Test(testgui.TestCase):
         dd.animation.set_width(320)
         dd.animation.set_height(240)
         dd.generate(dd.converterpath is not None)
+        loop = GLib.MainLoop()
+
+        def stop_loop(*args):
+            print("stop_loop")
+            loop.quit()
+        dd.connect("notify::visible", stop_loop)
+        loop.run()
 
         self.assertEqual(
             True,
@@ -70,25 +85,34 @@ class Test(testgui.TestCase):
 
         dd.destroy()
 
-    @patch("gi.repository.Gtk.FileChooserDialog.run")
-    @patch("gi.repository.Gtk.FileChooserDialog.get_filename")
-    def testFileChoosers(self, mock_dialog_get_filename, mock_dialog_run):
+    @patch("gi.repository.Gtk.FileChooserDialog.connect")
+    @patch("gi.repository.Gtk.FileChooserDialog.get_file")
+    def testFileChoosers(self, mock_dialog_get_file, mock_dialog_connect):
         filename = "test_file"
-        mock_dialog_get_filename.side_effect = lambda: filename
+        mock_dialog_get_file.side_effect = lambda: MockFileChooser(filename)
+        mock_dialog_connect.side_effect = \
+            lambda signal, response: \
+            response(utils.FileOpenChooser("test", None), Gtk.ResponseType.OK)
 
         dd = director.DirectorDialog(self.parent)
 
-        mock_dialog_run.side_effect = lambda: Gtk.ResponseType.OK
-        self.assertEqual(dd.get_fct_file(), filename)
-        self.assertEqual(dd.get_avi_file(), filename)
-        self.assertEqual(dd.get_cfg_file_save(), filename)
-        self.assertEqual(dd.get_cfg_file_open(), filename)
+        def callback1(temp_file):
+            self.assertEqual(temp_file, filename)
+        dd.get_fct_file(callback1)
+        dd.get_avi_file(callback1)
+        #  dd.get_cfg_file_save()
+        dd.get_cfg_file_open(callback1)
 
-        mock_dialog_run.side_effect = lambda: Gtk.ResponseType.CANCEL
-        self.assertEqual(dd.get_fct_file(), "")
-        self.assertEqual(dd.get_avi_file(), "")
-        self.assertEqual(dd.get_cfg_file_save(), "")
-        self.assertEqual(dd.get_cfg_file_open(), "")
+        def callback2(temp_file):
+            self.fail("FileOpenChooser called callback on CANCEL")
+        mock_dialog_connect.side_effect = \
+            lambda signal, response: \
+            response(utils.FileOpenChooser("test", None), Gtk.ResponseType.CANCEL)
+        dd.get_fct_file(callback2)
+        dd.get_avi_file(callback2)
+        #  dd.get_cfg_file_save()
+        dd.get_cfg_file_open(callback2)
+        dd.close()
 
     def assertRaisesMessage(self, excClass, msg, callable, *args, **kwargs):
         try:

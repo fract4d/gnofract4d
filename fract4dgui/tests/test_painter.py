@@ -7,23 +7,32 @@ from gi.repository import Gtk
 from fract4dgui import gtkfractal, painter
 
 
-class FakeEvent:
-    def __init__(self, **kwds):
-        self.__dict__.update(kwds)
+class FakeGesture:
+    def __init__(self, button=1):
+        self.button = button
+
+    def get_current_button(self):
+        return self.button
+
+    def get_current_event_state(self):
+        return 0
+
+    def set_state(self, state):
+        pass
 
 
 class Test(testgui.TestCase):
     def setUp(self):
         super().setUp()
-        parent = Gtk.Window()
-        self.f = parent.f = gtkfractal.T(Test.g_comp)
-        self.settings = painter.PainterDialog(parent)
+        self.parent = Gtk.Window()
+        self.f = self.parent.f = gtkfractal.T(Test.g_comp)
 
     def testPaintOnUnknown(self):
-        self.settings.show()
+        painterDialog = painter.PainterDialog(self.parent)
+        painterDialog.present()
         self.assertEqual(True, self.f.paint_mode)
-        event = FakeEvent(x=0, y=0, button=1)
-        self.f.onButtonPress(self.f.widget, event)
-        self.f.onButtonRelease(self.f.widget, event)
-        self.settings.hide()
+        gesture = FakeGesture()
+        self.f.onButtonPress(gesture, 0, 0)
+        self.f.onButtonRelease(gesture, 0, 0)
+        painterDialog.close()
         self.assertEqual(False, self.f.paint_mode)

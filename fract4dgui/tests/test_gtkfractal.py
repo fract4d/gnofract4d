@@ -4,18 +4,24 @@ import os.path
 
 from . import testgui
 
-from gi.repository import Gdk, Gtk
+from gi.repository import Gdk, GLib, Gtk
 
 from fract4dgui import gtkfractal
 
 
-class FakeEvent:
-    def __init__(self, **kwds):
-        self.state = False
-        self.__dict__.update(kwds)
+class FakeGesture:
+    def __init__(self, button=1, modifier_state=0):
+        self.button = button
+        self.modifier_state = modifier_state
 
-    def get_state(self):
-        return self.state
+    def get_current_button(self):
+        return self.button
+
+    def get_current_event_state(self):
+        return self.modifier_state
+
+    def set_state(self, state):
+        pass
 
 
 class CallCounter:
@@ -38,11 +44,12 @@ class Recurser:
 
 class TestHidden(testgui.TestCase):
     def wait(self):
-        Gtk.main()
+        self.loop = GLib.MainLoop()
+        self.loop.run()
 
     def quitloop(self, f, status):
         if status == 0:
-            Gtk.main_quit()
+            self.loop.quit()
 
     def testCreate(self):
         # draw a default fractal
@@ -80,8 +87,6 @@ class TestHidden(testgui.TestCase):
         # size
         f.set_size(57, 211)
         f.set_size(57, 211)
-        while cc.count < 3:
-            Gtk.main_iteration()
 
     def testLoad(self):
         f = gtkfractal.Hidden(TestHidden.g_comp, 64, 40)
@@ -105,19 +110,20 @@ class Test(testgui.TestCase):
     def setUp(self):
         self.window = Gtk.Window()
         self.f = gtkfractal.T(Test.g_comp)
-        self.window.add(self.f.widget)
-        self.f.widget.realize()
+        self.window.set_child(self.f.widget)
+        self.window.present()
 
     def tearDown(self):
         self.window.destroy()
         self.f = None
 
     def wait(self):
-        Gtk.main()
+        self.loop = GLib.MainLoop()
+        self.loop.run()
 
     def quitloop(self, f, status):
         if status == 0:
-            Gtk.main_quit()
+            self.loop.quit()
 
     def testCreate(self):
         # draw a default fractal
@@ -138,57 +144,52 @@ class Test(testgui.TestCase):
         f = self.f
 
         # check click updates member vars
-        f.onButtonPress(f.widget, FakeEvent(x=17, y=88, button=1))
+        f.onButtonPress(gesture=FakeGesture(), start_x=17, start_y=88)
         self.assertEqual((f.x, f.y, f.newx, f.newy), (17, 88, 17, 88))
 
         # click+release in middle of screen zooms but doesn't change params
         (xp, yp) = (f.width / 2, f.height / 2)
-        f.onButtonPress(f.widget, FakeEvent(x=xp, y=yp, button=1))
+        f.onButtonPress(gesture=FakeGesture(), start_x=xp, start_y=yp)
         self.assertEqual((f.x, f.y, f.newx, f.newy), (xp, yp, xp, yp))
         tparams = copy.copy(f.params())
         tparams[f.MAGNITUDE] /= 2.0
 
-        f.onButtonRelease(f.widget, FakeEvent(button=1))
+        f.onButtonRelease(FakeGesture(), offset_x=0, offset_y=0)
         self.assertEqual(f.params(), tparams)
 
         # select entire screen & release should be a no-op
-        f.onButtonPress(f.widget, FakeEvent(x=0, y=0, button=1))
+        f.onButtonPress(FakeGesture(), start_x=0, start_y=0)
         self.assertEqual((f.x, f.y, f.newx, f.newy), (0, 0, 0, 0))
 
-        f.onMotionNotify(
-            f.widget,
-            FakeEvent(
-                x=f.width - 1,
-                y=f.height - 1,
-                button=1))
+        f.onMotionNotify(FakeGesture(), offset_x=f.width - 1, offset_y=f.height - 1)
         self.assertEqual((f.x, f.y, f.newx, f.newy),
                          (0, 0, f.width - 1, f.height - 1))
 
-        f.onButtonRelease(f.widget, FakeEvent(button=1))
+        f.onButtonRelease(FakeGesture(), f.width - 1, f.height - 1)
         self.assertEqual(f.params(), tparams)
 
         # same if you do the corners the other way and get newx automatically
         (wm1, hm1) = (f.width - 1, f.height - 1)
-        f.onButtonPress(f.widget, FakeEvent(x=wm1, y=hm1, button=1))
+        f.onButtonPress(FakeGesture(), start_x=wm1, start_y=hm1)
         self.assertEqual((f.x, f.y, f.newx, f.newy), (wm1, hm1, wm1, hm1))
 
-        f.onMotionNotify(f.widget, FakeEvent(x=0, y=hm1))
+        f.onMotionNotify(FakeGesture(), offset_x=-wm1, offset_y=-hm1)
         self.assertEqual((f.x, f.y, f.newx, f.newy), (wm1, hm1, 0, 0))
 
-        f.onButtonRelease(f.widget, FakeEvent(button=1))
+        f.onButtonRelease(FakeGesture(), -wm1, -hm1)
         self.assertEqual(f.params(), tparams)
 
-    def testCtrlButton1(self):
+    def testShiftButton1(self):
         f = self.f
 
-        # ctrl + click on center should have no effect
+        # shift + click on center should have no effect
         (xp, yp) = (f.width / 2, f.height / 2)
-        f.onButtonPress(f.widget, FakeEvent(x=xp, y=yp, button=1))
+        f.onButtonPress(FakeGesture(), start_x=xp, start_y=yp)
         self.assertEqual((f.x, f.y, f.newx, f.newy), (xp, yp, xp, yp))
         tparams = copy.copy(f.params())
 
-        f.onButtonRelease(f.widget,
-                          FakeEvent(button=1, state=Gdk.ModifierType.SHIFT_MASK))
+        f.onButtonRelease(
+            FakeGesture(modifier_state=Gdk.ModifierType.SHIFT_MASK), 0, 0)
         self.assertEqual(f.params(), tparams)
 
     def testZooms(self):
@@ -205,13 +206,11 @@ class Test(testgui.TestCase):
         tparams = copy.copy(f.params())
 
         # select the top LH quadrant zooms and recenters
-        f.onButtonPress(f.widget, FakeEvent(x=0, y=0, button=1))
-        f.onMotionNotify(
-            f.widget,
-            FakeEvent(
-                x=f.width / 2 - 1,
-                y=f.height / 2 - 1))
-        f.onButtonRelease(f.widget, FakeEvent(button=1))
+        f.onButtonPress(FakeGesture(), start_x=0, start_y=0)
+        offset_x = f.width / 2 - 1
+        offset_y = f.height / 2 - 1
+        f.onMotionNotify(gesture=FakeGesture(), offset_x=offset_x, offset_y=offset_y)
+        f.onButtonRelease(FakeGesture(), offset_x, offset_y)
 
         tparams[f.XCENTER] -= tparams[f.MAGNITUDE] / 4.0
         tparams[f.YCENTER] += dir * tparams[f.MAGNITUDE] / \
@@ -221,13 +220,11 @@ class Test(testgui.TestCase):
         self.assertEqual(f.params(), tparams)
 
         # top RH quadrant
-        f.onButtonPress(f.widget, FakeEvent(x=f.width / 2, y=0, button=1))
-        f.onMotionNotify(
-            f.widget,
-            FakeEvent(
-                x=f.width - 1,
-                y=f.height / 2 - 1))
-        f.onButtonRelease(f.widget, FakeEvent(button=1))
+        f.onButtonPress(FakeGesture(), start_x=f.width / 2, start_y=0)
+        offset_x = (f.width - 1) - (f.width / 2)
+        offset_y = f.height / 2 - 1
+        f.onMotionNotify(gesture=FakeGesture(), offset_x=offset_x, offset_y=offset_y)
+        f.onButtonRelease(FakeGesture(), offset_x, offset_y)
 
         tparams[f.XCENTER] += tparams[f.MAGNITUDE] / 4.0
         tparams[f.YCENTER] += dir * tparams[f.MAGNITUDE] / \
@@ -237,13 +234,11 @@ class Test(testgui.TestCase):
         self.assertEqual(f.params(), tparams)
 
         # bottom LH quadrant
-        f.onButtonPress(f.widget, FakeEvent(x=0, y=f.height / 2, button=1))
-        f.onMotionNotify(
-            f.widget,
-            FakeEvent(
-                x=f.width / 2 - 1,
-                y=f.height - 1))
-        f.onButtonRelease(f.widget, FakeEvent(button=1))
+        f.onButtonPress(FakeGesture(), start_x=0, start_y=f.height / 2)
+        offset_x = f.width / 2 - 1
+        offset_y = (f.height - 1) - (f.height / 2)
+        f.onMotionNotify(gesture=FakeGesture(), offset_x=offset_x, offset_y=offset_y)
+        f.onButtonRelease(FakeGesture(), offset_x, offset_y)
 
         tparams[f.XCENTER] -= tparams[f.MAGNITUDE] / 4.0
         tparams[f.YCENTER] -= dir * tparams[f.MAGNITUDE] / \
@@ -253,14 +248,11 @@ class Test(testgui.TestCase):
         self.assertEqual(f.params(), tparams)
 
         # bottom RH quadrant
-        f.onButtonPress(
-            f.widget,
-            FakeEvent(
-                x=f.width / 2,
-                y=f.height / 2,
-                button=1))
-        f.onMotionNotify(f.widget, FakeEvent(x=f.width - 1, y=f.height - 1))
-        f.onButtonRelease(f.widget, FakeEvent(button=1))
+        f.onButtonPress(FakeGesture(), start_x=f.width / 2, start_y=f.height / 2)
+        offset_x = (f.width - 1) - (f.width / 2)
+        offset_y = (f.height - 1) - (f.height / 2)
+        f.onMotionNotify(gesture=FakeGesture(), offset_x=offset_x, offset_y=offset_y)
+        f.onButtonRelease(FakeGesture(), offset_x, offset_y)
 
         tparams[f.XCENTER] += tparams[f.MAGNITUDE] / 4.0
         tparams[f.YCENTER] -= dir * tparams[f.MAGNITUDE] / \
@@ -271,18 +263,18 @@ class Test(testgui.TestCase):
 
     def testButton3(self):
         f = self.f
+        f.newx = 0
+        f.newy = 0
         tparams = copy.copy(f.params())
 
         # right click in center just zooms out
-        evt = FakeEvent(button=3, x=f.width / 2, y=f.height / 2)
-        f.onButtonRelease(f.widget, evt)
+        f.onButtonRelease(FakeGesture(button=3), f.width / 2, f.height / 2)
         tparams[f.MAGNITUDE] *= 2.0
 
         self.assertEqual(f.params(), tparams)
 
         # right click in top corner zooms + recenters
-        evt = FakeEvent(button=3, x=0, y=0)
-        f.onButtonRelease(f.widget, evt)
+        f.onButtonRelease(FakeGesture(button=3), 0, 0)
         tparams[f.XCENTER] -= tparams[f.MAGNITUDE] / 2.0
         tparams[f.YCENTER] += tparams[f.MAGNITUDE] / \
             2.0 * (float(f.height) / f.width)
@@ -292,27 +284,26 @@ class Test(testgui.TestCase):
 
     def testButton2(self):
         f = self.f
+        f.newx = 0
+        f.newy = 0
         tparams = copy.copy(f.params())
 
         # middle click in center goes to Julia
-        evt = FakeEvent(button=2, x=f.width / 2, y=f.height / 2)
-        f.onButtonRelease(f.widget, evt)
+        f.onButtonRelease(FakeGesture(button=2), f.width / 2, f.height / 2)
         tparams[f.XZANGLE] = math.pi / 2
         tparams[f.YWANGLE] = math.pi / 2
 
         self.assertEqual(f.params(), tparams)
 
         # middle click again goes back to Mandelbrot
-        evt = FakeEvent(button=2, x=f.width / 2, y=f.height / 2)
-        f.onButtonRelease(f.widget, evt)
+        f.onButtonRelease(FakeGesture(button=2), f.width / 2, f.height / 2)
         tparams[f.XZANGLE] = 0.0
         tparams[f.YWANGLE] = 0.0
 
         self.assertEqual(f.params(), tparams)
 
         # click off to one side changes center
-        evt = FakeEvent(button=2, x=f.width, y=0)
-        f.onButtonRelease(f.widget, evt)
+        f.onButtonRelease(FakeGesture(button=2), f.width, 0)
         tparams[f.XZANGLE] = math.pi / 2
         tparams[f.YWANGLE] = math.pi / 2
         tparams[f.XCENTER] += tparams[f.MAGNITUDE] / 2.0
@@ -322,8 +313,7 @@ class Test(testgui.TestCase):
         self.assertNearlyEqual(f.params(), tparams)
 
         # click off to the other side changes xycenter
-        evt = FakeEvent(button=2, x=0, y=f.height)
-        f.onButtonRelease(f.widget, evt)
+        f.onButtonRelease(FakeGesture(button=2), 0, f.height)
         tparams[f.XZANGLE] = 0.0
         tparams[f.YWANGLE] = 0.0
         tparams[f.ZCENTER] -= tparams[f.MAGNITUDE] / 2.0

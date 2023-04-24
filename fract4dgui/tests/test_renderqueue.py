@@ -4,7 +4,7 @@ import os
 
 from . import testgui
 
-from gi.repository import Gtk
+from gi.repository import GLib, Gtk
 
 from fract4d import fractal
 from fract4dgui import preferences, renderqueue
@@ -17,10 +17,11 @@ class Test(testgui.TestCase):
         cls.userPrefs = preferences.Preferences(testgui.TestCase.userConfig)
 
     def wait(self):
-        Gtk.main()
+        self.loop = GLib.MainLoop()
+        self.loop.run()
 
     def quitloop(self, rq):
-        Gtk.main_quit()
+        self.loop.quit()
 
     def testRQ(self):
         rq = renderqueue.T(Test.userPrefs)
@@ -60,5 +61,5 @@ class Test(testgui.TestCase):
         parent = Gtk.Window()
         parent.renderQueue = rq
         d = renderqueue.QueueDialog(parent)
-        d.show()
+        d.present()
         self.wait()

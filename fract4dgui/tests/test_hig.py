@@ -1,12 +1,12 @@
-from fract4dgui import hig
-
 import unittest
 import gettext
 import os
 
 import gi
-gi.require_version('Gtk', '3.0')
+gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, GLib
+
+from fract4dgui import hig
 
 os.environ.setdefault('LANG', 'en')
 gettext.install('gnofract4d')
@@ -26,8 +26,6 @@ class MockDialog(Gtk.MessageDialog, hig.MessagePopper):
 
 class Test(unittest.TestCase):
     def setUp(self):
-        os.environ.setdefault('LANG', 'en')
-        gettext.install('gnofract4d')
         hig.timeout = 0
 
     def testCreate(self):
@@ -97,7 +95,6 @@ class Test(unittest.TestCase):
         # increase timeout to see what dialogs look like
         GLib.timeout_add(10, dismiss)
 
-        d.run()
         d.destroy()
 
     def testPeriodText(self):
@@ -127,4 +124,4 @@ class Test(unittest.TestCase):
         hig.timeout = 300
 
         dd.show_error("Hello", "A catastrophe has occurred")
-        dd.ask_question("Eh?", "Speak into t'trumpet!")
+        dd.ask_question("Eh?", "Speak into t'trumpet!", None)

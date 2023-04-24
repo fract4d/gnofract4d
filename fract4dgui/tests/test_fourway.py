@@ -1,13 +1,26 @@
 # unit tests for model
 
-from fract4dgui import fourway
-
 import unittest
 
 import gi
-gi.require_version('Gdk', '3.0')
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gdk, Gtk
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk
+
+from fract4dgui import fourway
+
+
+class FakeGesture:
+    def __init__(self, button=1):
+        self.button = button
+
+    def get_current_button(self):
+        return self.button
+
+    def get_start_point(self):
+        return True, 0, 0
+
+    def set_state(self, state):
+        pass
 
 
 class Test(unittest.TestCase):
@@ -18,27 +31,18 @@ class Test(unittest.TestCase):
     def testAddToWindow(self):
         w = Gtk.Window()
         f = fourway.T("wibble", "fourway")
-        w.add(f)
-        w.show()
-        Gtk.main_iteration()
+        w.set_child(f)
+        w.present()
 
     def testMouseButton1(self):
         f = fourway.T("button1", "fourway")
-        event = Gdk.EventButton()
-        event.button = 1
-        event.x, event.y = 1, 1
-        widget = Gtk.Window()
-        rectangle = Gdk.Rectangle()
-        rectangle.width = 100
-        rectangle.height = 100
-        widget.size_allocate(rectangle)
+        gesture = FakeGesture()
 
-        f.onButtonPress(widget, event)
+        f.onButtonPress(gesture, 1, 1)
         self.assertEqual(f.last_x, 1)
 
-        event.x = 2
-        f.onMotionNotify(widget, event)
+        f.onMotionNotify(gesture, 2, 1)
         self.assertEqual(f.last_x, 2)
 
-        f.onButtonRelease(widget, event)
-        self.assertFalse(f.notice_mouse)
+        f.onButtonRelease(gesture, 1, 1)
+        self.assertEqual(f.last_x, 2)

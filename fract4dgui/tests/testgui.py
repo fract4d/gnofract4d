@@ -9,8 +9,13 @@ import unittest
 
 import gettext
 
-gi.require_version('Gdk', '3.0')
-gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '4.0')
+gi.require_version('Gtk', '4.0')
+gi.require_version('Graphene', '1.0')
+
+from gi.repository import Gtk
+
+Gtk.init()
 
 
 class TestCase(unittest.TestCase):
