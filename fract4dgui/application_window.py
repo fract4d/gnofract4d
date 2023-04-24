@@ -340,7 +340,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
 
         res_names = ["%dx%d" % (w, h) for (w, h) in self.resolutions]
 
-        res_menu = utils.combo_box_text_with_items(res_names, _("Resolution"))
+        res_menu = utils.dropdown_with_items(res_names, _("Resolution"))
 
         def set_selected_resolution(prefs):
             res = (w, h) = (prefs.getint("display", "width"),
@@ -352,13 +352,13 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
                 # not found
                 self.resolutions.append(res)
                 item = "%dx%d" % (w, h)
-                res_menu.append_text(item)
+                res_menu.get_model().append(item)
                 index = len(self.resolutions) - 1
 
-            res_menu.set_active(int(index))
+            res_menu.set_selected(int(index))
 
         def set_resolution(*args):
-            index = res_menu.get_active()
+            index = res_menu.get_selected()
             if index != -1:
                 (w, h) = self.resolutions[index]
                 self.userPrefs.set_size(w, h)
@@ -367,7 +367,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
             self.set_focus()
 
         set_selected_resolution(self.application.userPrefs)
-        res_menu.connect('changed', set_resolution)
+        res_menu.connect('notify::selected-item', set_resolution)
 
         self.application.userPrefs.connect('preferences-changed', set_selected_resolution)
 
