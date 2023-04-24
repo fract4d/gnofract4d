@@ -455,6 +455,8 @@ class SettingsPane(Gtk.Box):
                 entry.get_buffer().set_text(text, len(text))
 
         def set_fractal(*args):
+            if entry.get_text() == f"{self.f.get_param(param):0.17f}":
+                return
             try:
                 self.f.set_param(param, entry.get_text())
             except Exception as exn:
