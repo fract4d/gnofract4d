@@ -29,11 +29,6 @@ class Actions:
 
             ("EditFractalSettingsAction", self.settings, "<Ctrl>f"),
             ("EditPreferencesAction", self.preferences, None),
-            ("EditUndoAction", self.undo, "<Ctrl>z"),
-            ("EditRedoAction", self.redo, "<Ctrl><Shift>z"),
-            ("EditResetAction", self.reset, "Home"),
-            ("EditResetZoomAction", self.reset_zoom, "<Ctrl>Home"),
-            ("EditPasteAction", self.paste, "<Ctrl>v"),
 
             # View Full Screen is a toggle, see above
 
@@ -50,6 +45,15 @@ class Actions:
             ("HelpAboutAction", self.about, None),
 
             ("ImproveNow", self.improve_now, None),
+        ]
+
+    def get_edit_reset_actions(self):
+        return [
+            ("EditUndoAction", self.undo, "<Ctrl>z"),
+            ("EditRedoAction", self.redo, "<Ctrl><Shift>z"),
+            ("EditResetAction", self.reset, "Home"),
+            ("EditResetZoomAction", self.reset_zoom, "<Ctrl>Home"),
+            ("EditPasteAction", self.paste, "<Ctrl>v"),
         ]
 
     def get_arrow_actions(self):
@@ -74,12 +78,13 @@ class Actions:
         # Missing override for Gtk.Application.add_action_entries():
         # https://gitlab.gnome.org/GNOME/pygobject/-/issues/426
         # main actions
+        main_actions = self.get_main_actions() + self.get_edit_reset_actions()
         Gio.ActionMap.add_action_entries(
             self.application,
             [(name, callback)
-             for name, callback, accel in self.get_main_actions()]
+             for name, callback, accel in main_actions]
         )
-        for name, callback, accel in self.get_main_actions():
+        for name, callback, accel in main_actions:
             self.application.set_accels_for_action(f"app.{name}", [accel])
 
         # actions with parameters
