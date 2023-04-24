@@ -62,22 +62,28 @@ class Preferences(GObject.GObject):
 GObject.type_register(Preferences)
 
 
-class PrefsDialog(utils.Dialog):
+class PrefsDialog(Gtk.Window):
     def __init__(self, main_window, f, userPrefs):
         super().__init__(
-            _("Gnofract 4D Preferences"),
-            main_window,
-            (_("_Close"), Gtk.ResponseType.CLOSE),
+            title=_("Gnofract 4D Preferences"),
+            transient_for=main_window,
+            modal=True,
         )
 
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.set_child(content)
         self.f = f
         self.notebook = Gtk.Notebook(vexpand=True)
-        self.get_content_area().append(self.notebook)
+        content.append(self.notebook)
         self.prefs = userPrefs
         self.create_image_options_page()
         self.create_compiler_options_page()
         self.create_general_page()
         self.create_helper_options_page()
+        close_button = Gtk.Button.new_with_mnemonic(label=_("_Close"))
+        close_button.set_halign(Gtk.Align.END)
+        close_button.connect("clicked", self.quit)
+        content.append(close_button)
 
         self.set_size_request(500, -1)
 
@@ -424,4 +430,4 @@ class PrefsDialog(utils.Dialog):
         table.attach(aalabel, 0, 5, 1, 1)
 
     def quit(self, dialog):
-        self.destroy()
+        self.close()
