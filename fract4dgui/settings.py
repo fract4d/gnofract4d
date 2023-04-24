@@ -445,11 +445,12 @@ class SettingsPane(Gtk.Box):
         def set_entry(f):
             try:
                 current = float(entry.get_text())
-                if current != f.get_param(param):
-                    entry.set_text("%.17f" % f.get_param(param))
             except ValueError:
                 # current was set to something that isn't a float
-                entry.set_text("%.17f" % f.get_param(param))
+                current = None
+            if current != f.get_param(param):
+                text = f"{f.get_param(param):0.17f}"
+                entry.get_buffer().set_text(text, len(text))
 
         def set_fractal(*args):
             try:
