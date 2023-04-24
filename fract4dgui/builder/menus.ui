@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
+  <requires lib="gtk" version="4.0"/>
   <menu id="menubar">
     <submenu>
       <attribute name="label" translatable="yes">_File</attribute>
@@ -197,11 +198,11 @@
     </submenu>
     <submenu>
       <attribute name="label" translatable="yes">_Edit</attribute>
-        <item>
-          <attribute name="action">director.edit_prefs</attribute>
-          <attribute name="label" translatable="yes">_Preferences</attribute>
-          <attribute name="accel">&lt;control&gt;P</attribute>
-        </item>
+      <item>
+        <attribute name="action">director.edit_prefs</attribute>
+        <attribute name="label" translatable="yes">_Preferences</attribute>
+        <attribute name="accel">&lt;control&gt;P</attribute>
+      </item>
     </submenu>
   </menu>
 </interface>

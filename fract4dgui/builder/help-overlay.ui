@@ -1,247 +1,211 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 3.22 -->
+  <requires lib="gtk" version="4.0"/>
   <object class="GtkShortcutsWindow" id="help_overlay">
     <property name="modal">1</property>
     <child>
       <object class="GtkShortcutsSection">
         <property name="section-name">shortcuts</property>
-        <property name="visible">1</property>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="title" translatable="yes">Mouse Commands</property>
-            <property name="visible">1</property>
+            <property name="title" translatable="1">Mouse Commands</property>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">Pointer_Button1</property>
-                <property name="title" translatable="yes">Zoom in</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Zoom in</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">Pointer_Drag1</property>
-                <property name="title" translatable="yes">Draw rectangle to zoom into</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Draw rectangle to zoom into</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">&lt;shift&gt;Pointer_Button1</property>
-                <property name="title" translatable="yes">Recenter image on point clicked</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Recenter image on point clicked</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">Pointer_Button3</property>
-                <property name="title" translatable="yes">Flip to Julia set (or back to Mandelbrot)</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Flip to Julia set (or back to Mandelbrot)</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">Pointer_Button2</property>
-                <property name="title" translatable="yes">Zoom out</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Zoom out</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">&lt;ctrl&gt;Pointer_Button2</property>
-                <property name="title" translatable="yes">Zoom out more quickly</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Zoom out more quickly</property>
               </object>
             </child>
           </object>
         </child>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="title" translatable="yes">Keyboard Shortcuts</property>
-            <property name="visible">1</property>
+            <property name="title" translatable="1">Keyboard Shortcuts</property>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">cursor</property>
-                <property name="title" translatable="yes">Pan image in indicated direction</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Pan image in indicated direction</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">&lt;ctrl&gt;cursor</property>
-                <property name="title" translatable="yes">Pan more quickly in indicated direction</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Pan more quickly in indicated direction</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">&lt;shift&gt;cursor</property>
-                <property name="title" translatable="yes">Mutate image in Z or W directions</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Mutate image in Z or W directions</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">&lt;shift&gt;&lt;ctrl&gt;cursor</property>
-                <property name="title" translatable="yes">Mutate more quickly</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Mutate more quickly</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.PlanesXYAction</property>
-                <property name="title" translatable="yes">Reset rotation to show the XY (Mandelbrot) plane</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Reset rotation to show the XY (Mandelbrot) plane</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.PlanesZWAction</property>
-                <property name="title" translatable="yes">Reset rotation to show the ZW (Julia) plane</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Reset rotation to show the ZW (Julia) plane</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.PlanesXZAction</property>
-                <property name="title" translatable="yes">Reset rotation to show the XZ (Oblate) plane</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Reset rotation to show the XZ (Oblate) plane</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.PlanesXWAction</property>
-                <property name="title" translatable="yes">Reset rotation to show the XW (Parabolic) plane</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Reset rotation to show the XW (Parabolic) plane</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.PlanesYZAction</property>
-                <property name="title" translatable="yes">Reset rotation to show the YZ (Elliptic) plane</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Reset rotation to show the YZ (Elliptic) plane</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.PlanesWYAction</property>
-                <property name="title" translatable="yes">Reset rotation to show the WY (Rectangular) plane</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Reset rotation to show the WY (Rectangular) plane</property>
               </object>
             </child>
           </object>
         </child>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="visible">1</property>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.ToolsAutozoomAction</property>
-                <property name="title" translatable="yes">Display AutoZoom dialog</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Display AutoZoom dialog</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.ToolsBrowserAction</property>
-                <property name="title" translatable="yes">Display formula browser</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Display formula browser</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.ToolsDirectorAction</property>
-                <property name="title" translatable="yes">Display the Director (animation) window</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Display the Director (animation) window</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.ToolsExplorerAction</property>
-                <property name="title" translatable="yes">Enter (or leave) Explorer mode</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Enter (or leave) Explorer mode</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.EditFractalSettingsAction</property>
-                <property name="title" translatable="yes">Show fractal settings controls</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Show fractal settings controls</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.ViewFullScreenAction</property>
-                <property name="title" translatable="yes">Toggle main window full-screen</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Toggle main window full-screen</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.HelpContentsAction</property>
-                <property name="title" translatable="yes">Show help file contents page</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Show help file contents page</property>
               </object>
             </child>
           </object>
         </child>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="visible">1</property>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.EditResetAction</property>
-                <property name="title" translatable="yes">Reset all numeric parameters to their defaults</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Reset all numeric parameters to their defaults</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.EditResetZoomAction</property>
-                <property name="title" translatable="yes">Reset zoom to default level</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Reset zoom to default level</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.FileSaveImageAction</property>
-                <property name="title" translatable="yes">Save the current image to a file</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Save the current image to a file</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.FileSaveHighResImageAction</property>
-                <property name="title" translatable="yes">Save a higher-resolution version of the current image</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Save a higher-resolution version of the current image</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.ToolsRandomizeAction</property>
-                <property name="title" translatable="yes">Create a new random color scheme</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Create a new random color scheme</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.FileSaveAsAction</property>
-                <property name="title" translatable="yes">Save the current parameters into a new file</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Save the current parameters into a new file</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.EditUndoAction</property>
-                <property name="title" translatable="yes">Undo the last operation</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Undo the last operation</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="action-name">app.EditRedoAction</property>
-                <property name="title" translatable="yes">Redo an operation after undoing it</property>
-                <property name="visible">1</property>
+                <property name="title" translatable="1">Redo an operation after undoing it</property>
               </object>
             </child>
           </object>
