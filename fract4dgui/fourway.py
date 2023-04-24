@@ -1,9 +1,9 @@
 # A widget which controls 2 linear dimensions of the fractal
 
-from gi.repository import Gtk, Gdk, GObject, Pango
+from gi.repository import Gtk, GObject, Graphene, Pango
 
 
-class T(Gtk.DrawingArea):
+class T(Gtk.Widget):
     __gsignals__ = {
         'value-changed': (
             (GObject.SignalFlags.RUN_FIRST | GObject.SignalFlags.NO_RECURSE),
@@ -20,24 +20,15 @@ class T(Gtk.DrawingArea):
         self.last_x = 0
         self.last_y = 0
         self.text = text
-        Gtk.DrawingArea.__init__(
-            self, tooltip_text=tip, width_request=size, height_request=size)
+        super().__init__(
+            tooltip_text=tip, width_request=size, height_request=size)
 
-        self.set_events(
-            Gdk.EventMask.BUTTON_RELEASE_MASK |
-            Gdk.EventMask.BUTTON1_MOTION_MASK |
-            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
-            Gdk.EventMask.ENTER_NOTIFY_MASK |
-            Gdk.EventMask.LEAVE_NOTIFY_MASK |
-            Gdk.EventMask.BUTTON_PRESS_MASK |
-            Gdk.EventMask.EXPOSURE_MASK
-        )
+        event_controller_gesture = Gtk.GestureDrag()
+        self.add_controller(event_controller_gesture)
 
-        self.notice_mouse = False
-        self.connect('motion_notify_event', self.onMotionNotify)
-        self.connect('button_release_event', self.onButtonRelease)
-        self.connect('button_press_event', self.onButtonPress)
-        self.connect('draw', self.onDraw)
+        event_controller_gesture.connect("drag_begin", self.onButtonPress)
+        event_controller_gesture.connect("drag_update", self.onMotionNotify)
+        event_controller_gesture.connect("drag_end", self.onButtonRelease)
 
     def update_from_mouse(self, x, y):
         dx = self.last_x - x
@@ -47,40 +38,35 @@ class T(Gtk.DrawingArea):
             self.last_x = x
             self.last_y = y
 
-    def onMotionNotify(self, widget, event):
-        if not self.notice_mouse:
-            return
-        self.update_from_mouse(event.x, event.y)
+    def onMotionNotify(self, gesture, offset_x, offset_y):
+        active, start_x, start_y = gesture.get_start_point()
+        self.update_from_mouse(start_x + offset_x, start_y + offset_y)
 
-    def onButtonRelease(self, widget, event):
-        if event.button == 1:
-            self.notice_mouse = False
-            (xc, yc) = (widget.get_allocated_width() // 2,
-                        widget.get_allocated_height() // 2)
-            dx = xc - self.last_x
-            dy = yc - self.last_y
-            if dx or dy:
-                self.emit('value-changed', dx, dy)
+    def onButtonRelease(self, gesture, offset_x, offset_y):
+        (xc, yc) = (self.get_allocated_width() // 2,
+                    self.get_allocated_height() // 2)
+        dx = xc - self.last_x
+        dy = yc - self.last_y
+        if dx or dy:
+            self.emit('value-changed', dx, dy)
 
-    def onButtonPress(self, widget, event):
-        if event.button == 1:
-            self.notice_mouse = True
-            self.last_x = widget.get_allocated_width() / 2
-            self.last_y = widget.get_allocated_height() / 2
-            self.update_from_mouse(event.x, event.y)
+    def onButtonPress(self, gesture, start_x, start_y):
+        self.last_x = self.get_allocated_width() / 2
+        self.last_y = self.get_allocated_height() / 2
+        self.update_from_mouse(start_x, start_y)
 
-    def onDraw(self, widget, cairo_ctx):
-        self.redraw_rect(widget, cairo_ctx)
+    def do_snapshot(self, s):
+        w, h = self.get_width(), self.get_height()
+        rect = Graphene.Rect()
+        rect.init(0, 0, w, h)
+        color = self.get_style_context().get_color()
 
-    def redraw_rect(self, widget, cairo_ctx):
-        style_ctx = widget.get_style_context()
-        (w, h) = (widget.get_allocated_width(), widget.get_allocated_height())
-        Gtk.render_background(style_ctx, cairo_ctx, 0, 0, w - 1, h - 1)
+        cairo_ctx = s.append_cairo(rect)
+        cairo_ctx.set_source_rgb(color.red, color.blue, color.green)
 
         xc = w // 2
         yc = h // 2
 
-        # Consider using gtk_render_arrow
         def triangle(points):
             cairo_ctx.move_to(*points[0])
             cairo_ctx.line_to(*points[1])
@@ -120,7 +106,7 @@ class T(Gtk.DrawingArea):
             (xc + tw, h - 2 - th)]
         triangle(points)
 
-        pango_ctx = widget.get_pango_context()
+        pango_ctx = self.get_pango_context()
         layout = Pango.Layout(pango_ctx)
 
         try:
@@ -132,15 +118,14 @@ class T(Gtk.DrawingArea):
         while True:
             layout.set_text(drawtext, len(drawtext))
 
-            (text_width, text_height) = layout.get_pixel_size()
+            text_width, text_height = layout.get_pixel_size()
             # truncate text if it's too long
             if text_width < (w - th * 2) or len(drawtext) < 3:
                 break
             drawtext = drawtext[:-1]
 
-        Gtk.render_layout(
-            style_ctx,
-            cairo_ctx,
-            xc - text_width // 2,
-            yc - text_height // 2,
-            layout)
+        point = Graphene.Point()
+        point.init(xc - text_width // 2, yc - text_height // 2)
+        s.translate(point)
+
+        s.append_layout(layout, color)
