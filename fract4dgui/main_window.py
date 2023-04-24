@@ -5,6 +5,7 @@ import math
 import gi
 gi.require_version('Gdk', '4.0')
 gi.require_version('Gtk', '4.0')
+gi.require_version('Graphene', '1.0')
 from gi.repository import Gdk, Gio, GLib, Gtk
 
 from fract4d import fractconfig
