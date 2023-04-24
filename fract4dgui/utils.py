@@ -67,6 +67,13 @@ def combo_box_text_with_items(items, tip=None):
     return widget
 
 
+def dropdown_with_items(items, tip=None):
+    widget = Gtk.DropDown.new_from_strings(items)
+    widget.set_tooltip_text(tip)
+
+    return widget
+
+
 def floatColorFrom256(rgba):
     return [rgba[0] / 255.0, rgba[1] / 255.0, rgba[2] / 255.0, rgba[3] / 255.0]
 
