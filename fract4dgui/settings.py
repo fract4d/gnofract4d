@@ -706,7 +706,7 @@ class SettingsPane(Gtk.Box):
             try:
                 self.f.set_param(param, entry.get_text())
             except Exception as exn:
-                print(exn)
+                print(f"SettingsPane.create_param_entry set_fractal: {exn}")
             return False
 
         set_entry(self.f)
