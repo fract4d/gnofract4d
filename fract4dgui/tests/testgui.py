@@ -9,6 +9,9 @@ import unittest
 
 import gettext
 
+os.environ.setdefault('LANG', 'en')
+gettext.install('gnofract4d')
+
 gi.require_version('Gdk', '4.0')
 gi.require_version('Gtk', '4.0')
 gi.require_version('Graphene', '1.0')
@@ -41,7 +44,3 @@ class TestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.tmpdir.cleanup()
-
-    def setUp(self):
-        os.environ.setdefault('LANG', 'en')
-        gettext.install('gnofract4d')
