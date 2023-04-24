@@ -58,7 +58,7 @@ class HiresImageSaveChooser(utils.FileSaveChooser):
         table.attach(Gtk.Label(label=_("Height:")), 0, 1, 1, 1)
         table.attach(self.width, 1, 0, 1, 1)
         table.attach(self.height, 1, 1, 1, 1)
-        self.set_extra_widget(table)
+        self.get_content_area().append(table)
 
     def get_hires_dimensions(self):
         return int(self.width.get_text()), int(self.height.get_text())
@@ -66,7 +66,7 @@ class HiresImageSaveChooser(utils.FileSaveChooser):
 
 class FractalWindow(Gtk.ScrolledWindow):
     def __init__(self, f, compiler):
-        super().__init__()
+        super().__init__(has_frame=False)
         self.f = f
 
         self.subfracts = [
@@ -94,8 +94,7 @@ class FractalWindow(Gtk.ScrolledWindow):
                         ]:
             ftable.attach(self.subfracts[i].widget, x, y, 1, 1)
 
-        self.add(ftable)
-        self.get_child().set_shadow_type(Gtk.ShadowType.NONE)
+        self.set_child(ftable)
 
     def hide_subfracts(self):
         for f in self.subfracts:
@@ -174,17 +173,16 @@ class Toolbar(Gtk.Box):
 
     @staticmethod
     def button_args(icon_name, tip_text, action):
-        icon = Gtk.Image(icon_name=icon_name, icon_size=Gtk.IconSize.LARGE_TOOLBAR)
         return dict(
-            action_name=action, image=icon, relief=Gtk.ReliefStyle.NONE, tooltip_text=tip_text)
+            action_name=action, icon_name=icon_name, has_frame=False, tooltip_text=tip_text)
 
     def add_space(self):
-        self.add(Gtk.Separator(orientation=Gtk.Orientation.VERTICAL))
+        self.append(Gtk.Separator(orientation=Gtk.Orientation.VERTICAL))
 
     def add_button(self, icon_name, tip_text, action):
-        self.add(Gtk.Button(**self.button_args(icon_name, tip_text, action)))
+        self.append(Gtk.Button(**self.button_args(icon_name, tip_text, action)))
 
     def add_toggle(self, icon_name, tip_text, action):
         toolitem = Gtk.ToggleButton(**self.button_args(icon_name, tip_text, action))
-        self.add(toolitem)
+        self.append(toolitem)
         return toolitem
