@@ -60,7 +60,7 @@ class MainWindow(Actions, ApplicationWindow):
         self.renderQueue = renderqueue.T(self.userPrefs)
 
         self.directorDialog = director.DirectorDialog(self)
-        #self.painterDialog = painter.PainterDialog(self)
+        self.painterDialog = painter.PainterDialog(self)
         self.renderqueueDialog = renderqueue.QueueDialog(self)
 
         self.update_subfract_visibility(False)
@@ -243,7 +243,7 @@ class MainWindow(Actions, ApplicationWindow):
         self.f.make_random_colors(8)
 
     def painter(self, *args):
-        self.painterDialog.show()
+        self.painterDialog.present()
 
     def add_to_queue(self, name, w, h):
         self.renderqueueDialog.present()
