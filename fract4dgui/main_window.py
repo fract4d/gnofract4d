@@ -85,13 +85,8 @@ class MainWindow(Actions, ApplicationWindow):
         self.userPrefs.connect('image-preferences-changed', self.on_prefs_changed)
 
     def update_subfract_visibility(self, visible):
-        if visible:
-            self.fractalWindow.show()
-            self.weirdbox.show()
-        else:
-            self.fractalWindow.hide_subfracts()
-            self.weirdbox.hide()
-
+        self.fractalWindow.set_subfracts_visible(visible)
+        self.weirdbox.set_visible(visible)
         self.show_subfracts = visible
         self.update_image_prefs(self.userPrefs)
 
