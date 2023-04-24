@@ -1,12 +1,13 @@
 from . import testgui
 
-from gi.repository import Gtk
+from gi.repository import Graphene, Gtk
 
 from fract4dgui import settings_widgets, gtkfractal
 
 
 class Test(testgui.TestCase):
     def setUp(self):
+        super().setUp()
         self.window = Gtk.Window()
         self.f = gtkfractal.T(Test.g_comp)
         self.window.set_child(self.f.widget)
@@ -52,3 +53,23 @@ class Test(testgui.TestCase):
         self.window.on_drag_param_fourway = lambda widget, dx, dy, order, param_type: widget
 
         settings_widgets.FractalSettingsTable(self.f, self.window, 0)
+
+    def testGradientViewerDrawHandle(self):
+        gradarea = settings_widgets.GradientViewer(self.f, -1)
+        s = Gtk.Snapshot.new()
+        rect = Graphene.Rect()
+        rect.init(0, 0, 100, 100)
+        ct = s.append_cairo(rect)
+        gradarea.draw_handle(96, ct, 10, None)
+        gradarea.draw_handle(96, ct, 10, True)
+
+    def testGradientViewerDoSnapshot(self):
+        gradarea = settings_widgets.GradientViewer(self.f, -1)
+        gradarea.do_snapshot(Gtk.Snapshot.new())
+
+    def testSelectedSegment(self):
+        table = settings_widgets.ColorSettingsTable(self.f, self.window)
+        table.copy_left(None)
+        table.copy_right(None)
+        table.split(None)
+        table.remove(None)
