@@ -14,7 +14,8 @@ Basic Installation
 
 Run:
 
-    ./setup.py build
+    meson setup --prefix ~/.local/ _build
+    meson compile -C _build
 
 You can then run Gnofract 4D in the local directory:
 
@@ -22,7 +23,7 @@ You can then run Gnofract 4D in the local directory:
 
 Alternatively to build and install Gnofract 4D type:
 
-    pip3 install gnofract4d-4.3.tar.gz
+    meson install -C builddir
 
 You can then run it by clicking on the desktop icon or typing:
 
@@ -44,6 +45,7 @@ On Ubuntu, these can be installed with:
 
 To build from source you also need:
 
+- Meson and Ninja
 - headers for libpng and libjpeg
 - Python headers
 - glib-compile-resources and optionally xmllint
@@ -51,13 +53,13 @@ To build from source you also need:
 
 On Ubuntu, these can be installed with:
 
-    sudo apt install libglib2.0-dev-bin libjpeg-dev libpng-dev libpython3-dev libxml2-utils pkg-config
+    sudo apt install libglib2.0-dev-bin libjpeg-dev libpng-dev libpython3-dev libxml2-utils meson pkg-config
 
 If FFmpeg is installed it will be possible to create videos.
 
 On macOS, you can install the dependencies using brew:
 
-    brew install librsvg python3 pkg-config gtk4 pygobject3 libpng jpeg
+    brew install librsvg meson python3 pkg-config gtk4 pygobject3 libpng jpeg
 
 Testing
 =======
