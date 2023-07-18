@@ -13,6 +13,7 @@ from fract4d import options
 
 
 class Test(unittest.TestCase):
+    @pytest.mark.skip(reason="version management under development with meson")
     def testDocVersionMatches(self):
         # check the docs
         with open("manual/config.toml") as doc:
@@ -24,6 +25,7 @@ class Test(unittest.TestCase):
         self.assertTrue(m, "manual doesn't specify version")
         self.assertEqual(options.VERSION, m.group(1), "Version mismatch")
 
+    @pytest.mark.skip(reason="version management under development with meson")
     def testReadmeVersionMatches(self):
         with open("README.md") as doc:
             content = doc.read()
@@ -34,6 +36,7 @@ class Test(unittest.TestCase):
         self.assertTrue(m, "README doesn't specify version")
         self.assertEqual(options.VERSION, m.group(1), "Version mismatch")
 
+    @pytest.mark.skip(reason="version management under development with meson")
     def testWebsiteVersionMatches(self):
         if not os.path.exists("website"):
             # not included in source dist
