@@ -1,0 +1,2 @@
+APP_DATADIR = "@app_datadir@"
+VERSION = "@version@"

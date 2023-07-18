@@ -47,6 +47,16 @@ foreach p: packages
     )
 endforeach
 
+conf_data = configuration_data()
+conf_data.set('app_datadir', get_option('prefix') / project_datadir)
+conf_data.set('version', meson.project_version())
+conf_file = configure_file(input: '_conf_data.py.in',
+   output: '_conf_data.py',
+   configuration: conf_data,
+   install: true,
+   install_dir: py.get_install_dir() / 'fract4d',
+)
+
 # Application Data
 
 install_subdir('help',
@@ -113,6 +123,14 @@ custom_target('cp_gresource',
     output: 'none2',
     build_by_default: true,
     depends: gresource,
+)
+custom_target('cp_confdata',
+    command: [cp,
+        conf_file,
+        meson.project_source_root() / 'fract4d/',
+    ],
+    output: 'none3',
+    build_by_default: true,
 )
 
 test('testing',

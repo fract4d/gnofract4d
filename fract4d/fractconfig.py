@@ -3,6 +3,11 @@ import configparser
 import os
 import sys
 
+try:
+    from ._conf_data import APP_DATADIR
+except ImportError:
+    APP_DATADIR = ".."
+
 CONFIG_FILE = "~/.gnofract4d"
 
 
@@ -132,9 +137,7 @@ class T(configparser.ConfigParser):
     def get_data_path(subpath=""):
         # find where data files are present.
         # use share path one level up from module location
-        moduledir = os.path.dirname(sys.modules[__name__].__file__)
-        path = os.path.normpath(os.path.join(
-            moduledir, "../../../../share/gnofract4d", subpath))
+        path = os.path.join(APP_DATADIR, subpath)
         #print("Looking in %s" % path)
         return path
 
