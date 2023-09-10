@@ -36,22 +36,24 @@ Gnofract 4D requires these packages to run:
 - Python version 3.6 or higher
 - GTK version 4.6 or higher
 - PyGObject version 3.29.2 or higher to access GTK from Python
-- A C++ compiler (used at runtime to compile your fractal formulas)
+- A C compiler (used at runtime to compile your fractal formulas)
 
-On Ubuntu, these can be installed with:
+On Debian/Ubuntu, these can be installed with:
 
     sudo apt install gcc gir1.2-gtk-4.0 python3-gi
 
 To build from source you also need:
 
+- A C++ compiler
 - headers for libpng and libjpeg
 - Python headers
 - glib-compile-resources and optionally xmllint
 - pkg-config
+- Python setuptools package
 
-On Ubuntu, these can be installed with:
+On Debian/Ubuntu, these can be installed with:
 
-    sudo apt install libglib2.0-dev-bin libjpeg-dev libpng-dev libpython3-dev libxml2-utils pkg-config
+    sudo apt install build-essential libglib2.0-dev-bin libjpeg-dev libpng-dev libpython3-dev libxml2-utils pkg-config python3-setuptools
 
 If FFmpeg is installed it will be possible to create videos.
 
