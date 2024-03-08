@@ -61,6 +61,8 @@ conf_file = configure_file(input: '_conf_data.py.in',
 
 install_subdir('help',
     exclude_directories: 'svg',
+    exclude_files: ['favicon.svg', 'flexsearch.min.js', 'index.xml',
+        'manifest.json', 'mermaid.min.js', 'sitemap.xml'],
     install_dir: project_datadir / 'help',
     strip_directory: true,
 )
