@@ -12,6 +12,11 @@ project('gnofract4d', 'cpp',
 )
 
 project_datadir = get_option('datadir') /  meson.project_name()
+if get_option('docdir') != ''
+    project_docdir = get_option('docdir')
+else
+    project_docdir = get_option('datadir') /  'doc/gnofract4d'
+endif
 
 pymod = import('python')
 py = pymod.find_installation()
@@ -58,6 +63,10 @@ conf_file = configure_file(input: '_conf_data.py.in',
 )
 
 # Application Data
+
+install_data(['LICENSE', 'README.md'],
+    install_dir: project_docdir,
+)
 
 install_subdir('help',
     exclude_directories: 'svg',
