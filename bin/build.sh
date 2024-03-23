@@ -1,5 +1,5 @@
 #!/bin/bash
 
-rm -rf build
-rm fract4d/*.so
-./setup.py build
+rm -rf _build
+meson setup --prefix ~/.local/ _build
+meson compile -C _build
