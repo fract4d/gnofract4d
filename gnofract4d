@@ -22,8 +22,9 @@ except ImportError as err:
     print(_("Can't import a required module."))
     if "fract4dc" in str(err):
         print(_("If you haven't set up Gnofract 4D yet, run:\n"
-                "./setup.py build\n"))
-    print(_("Error was: '%s'") % err)
+                "  meson setup _build\n"
+                "  meson compile -C _build\n"))
+    print(_("Error was: '%s' ") % err)
     sys.exit(1)
 
 def main(args):

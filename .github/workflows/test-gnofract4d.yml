@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install macOS packages
         if: ${{ runner.os == 'macOS' }}
-        run: brew install gtk4 pygobject3
+        run: brew install gtk4 ninja pygobject3
         # Prevent delay caused by:
         # `brew cleanup` has not been run in 30 days, running now...
         env:
@@ -43,16 +43,18 @@ jobs:
         # libxml2-utils provides xmllint for xml-stripblanks in gresource.xml
         run: |
           sudo apt update
-          sudo apt install dbus-x11 gir1.2-gtk-4.0 gvfs libgirepository1.0-dev libxml2-utils xvfb
+          sudo apt install dbus-x11 gir1.2-gtk-4.0 gvfs libgirepository1.0-dev libxml2-utils ninja-build xvfb
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
       - name: Install Tox and any other PyPI packages
-        run: pip install tox
+        run: pip install meson pytest tox
       - name: Build
-        run: python setup.py build
-      - name: Run Tox (macOS)
+        run: |
+            meson setup _build
+            meson compile -C _build
+      - name: Run Tox (MacOS)
         if: ${{ runner.os == 'macOS' }}
         run: tox -e ${{ matrix.toxenv }}
       - name: Run Tox (Linux)
@@ -79,10 +81,12 @@ jobs:
         # libglib2.0-dev-bin provides glib-compile-resources
         run: |
           sudo apt update
-          sudo apt install gir1.2-gtk-4.0 libglib2.0-dev-bin libxml2-utils python3-gi
-      - name: Install Tox
-        run: pip install tox
+          sudo apt install gir1.2-gtk-4.0 libglib2.0-dev-bin libxml2-utils ninja-build python3-gi
+      - name: Install Tox and any other PyPI packages
+        run: pip install meson pytest tox
       - name: Build
-        run: python setup.py build
+        run: |
+            meson setup _build
+            meson compile -C _build
       - name: Run ${{ matrix.toxenv }}
         run: tox -e ${{ matrix.toxenv }}

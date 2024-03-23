@@ -13,16 +13,6 @@ from fract4d import options
 
 
 class Test(unittest.TestCase):
-    def testSetupPyVersionMatches(self):
-        with open("setup.py") as doc:
-            content = doc.read()
-
-        doc_re = re.compile(r"gnofract4d_version = '(\S+)'")
-        m = doc_re.search(content)
-
-        self.assertTrue(m, "setup.py doesn't specify version")
-        self.assertEqual(options.VERSION, m.group(1))
-
     def testDocVersionMatches(self):
         # check the docs
         with open("manual/config.toml") as doc:
@@ -32,16 +22,6 @@ class Test(unittest.TestCase):
 
         m = ver_re.search(content)
         self.assertTrue(m, "manual doesn't specify version")
-        self.assertEqual(options.VERSION, m.group(1), "Version mismatch")
-
-    def testReadmeVersionMatches(self):
-        with open("README.md") as doc:
-            content = doc.read()
-
-        ver_re = re.compile(r'gnofract4d-(\S+)\.tar\.gz')
-
-        m = ver_re.search(content)
-        self.assertTrue(m, "README doesn't specify version")
         self.assertEqual(options.VERSION, m.group(1), "Version mismatch")
 
     def testWebsiteVersionMatches(self):

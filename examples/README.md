@@ -2,7 +2,8 @@
 
 *Note: for all exmples make sure you have performed the setup previously:*
 ```
-./setup.py build
+meson setup --prefix ~/.local/ _build
+meson compile -C _build
 ```
 
 ## Python examples
