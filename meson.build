@@ -144,14 +144,17 @@ custom_target('cp_confdata',
     build_by_default: true,
 )
 
-test('testing',
-    find_program('pytest', required: false),
-    args: ['-v',
-        'fract4d',
-        'fract4dgui',
-        'fract4d_compiler',
-        'test.py',
-    ],
-    timeout: 60,
-    workdir: meson.project_source_root(),
-)
+pytest = find_program('pytest', required: false)
+if pytest.found()
+    test('testing',
+        pytest,
+        args: [
+            'fract4d',
+            'fract4dgui',
+            'fract4d_compiler',
+            'test.py',
+        ],
+        timeout: 60,
+        workdir: meson.project_source_root(),
+    )
+endif
