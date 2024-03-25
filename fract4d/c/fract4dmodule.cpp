@@ -651,9 +651,6 @@ PyInit_fract4dc(void)
         return NULL;
     }
 
-    // todo: check this https://docs.python.org/3/c-api/init.html#c.PyEval_InitThreads
-    PyEval_InitThreads();
-
     /* expose some constants */
     PyModule_AddIntConstant(pymod, "CALC_DONE", GF4D_FRACTAL_DONE);
     PyModule_AddIntConstant(pymod, "CALC_CALCULATING", GF4D_FRACTAL_CALCULATING);
