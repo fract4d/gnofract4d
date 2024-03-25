@@ -27,7 +27,7 @@ jobs:
       PYTHON: ${{ matrix.python }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install macOS packages
         if: ${{ runner.os == 'macOS' }}
         run: brew install gtk4 ninja pygobject3
@@ -45,7 +45,7 @@ jobs:
           sudo apt update
           sudo apt install dbus-x11 gir1.2-gtk-4.0 gvfs libgirepository1.0-dev libxml2-utils ninja-build xvfb
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
       - name: Install Tox and any other PyPI packages
@@ -61,7 +61,7 @@ jobs:
         if: ${{ runner.os == 'Linux' }}
         run: xvfb-run --auto-servernum tox -e ${{ matrix.toxenv }}
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: ./coverage.xml
           env_vars: OS,PYTHON
@@ -76,7 +76,7 @@ jobs:
           - pylint
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Ubuntu packages
         # libglib2.0-dev-bin provides glib-compile-resources
         run: |
