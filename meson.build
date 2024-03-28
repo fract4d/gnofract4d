@@ -22,8 +22,8 @@ pymod = import('python')
 py = pymod.find_installation()
 
 py_version = py.language_version()
-if py_version.version_compare('< 3.6')
-    error('Sorry, you need Python 3.6 or higher to run Gnofract 4D.'
+if py_version.version_compare('< 3.9')
+    error('Sorry, you need Python 3.9 or higher to run Gnofract 4D.'
           + ' You have version ' + py_version + '. Please upgrade.')
 endif
 
