@@ -47,6 +47,7 @@ packages = ['fract4d', 'fract4d_compiler', 'fract4dgui']
 foreach p: packages
     install_subdir(p,
         install_dir: py.get_install_dir(),
+        install_mode: 'rw-r--r--',
         exclude_directories: ['tests', 'builder', 'c', 'fract4d_new'],
         exclude_files: ['gnofract4d.css', 'gnofract4d.gresource.xml'],
     )
