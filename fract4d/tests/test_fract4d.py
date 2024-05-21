@@ -572,6 +572,7 @@ class Test(testbase.ClassSetup):
                 # we use a buffer here like in gtkfractal.py "onData"
                 nb = 2 * 4
                 bytes = b""
+                temp = b""
                 while True:
                     # wait up to 1 sec until we can read, otherwise we assume the counterpart is gone (an error ocurred on the C++ layer)
                     r, w, e = select.select([rfd], [], [], 1)

@@ -208,6 +208,7 @@ class Segment:
             mpos = (self.mid - self.left) / len
             pos = (pos - self.left) / len
 
+        # pylint: disable=possibly-used-before-assignment
         if self.bmode == Blend.LINEAR:
             factor = self.get_linear_factor(pos, mpos)
         elif self.bmode == Blend.CURVED:

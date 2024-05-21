@@ -771,6 +771,7 @@ class TBase:
             atype)
 
     def exp(self, node):
+        # pylint: disable=possibly-used-before-assignment
         if node.type == "const":
             r = self.const(node)
         elif node.type == "id":

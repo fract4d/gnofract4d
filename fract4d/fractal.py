@@ -171,7 +171,7 @@ class T(fctutils.T):
 
         if compress:
             file.close()
-            print(file.getvalue(), file=main_file)
+            print(file.getvalue(), file=main_file)  # pylint: disable=possibly-used-before-assignment
 
         if update_saved_flag:
             self.saved = True
