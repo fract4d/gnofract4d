@@ -82,7 +82,8 @@ jobs:
         # libglib2.0-dev-bin provides glib-compile-resources
         run: |
           sudo apt update
-          sudo apt install gir1.2-gtk-4.0 libglib2.0-dev-bin libxml2-utils ninja-build python3-gi
+          sudo apt install gir1.2-gtk-4.0 libglib2.0-dev-bin libjpeg-dev libpng-dev \
+            libxml2-utils ninja-build python3-gi
       - name: Install Tox and any other PyPI packages
         run: pip install meson pytest tox
       - name: Build
