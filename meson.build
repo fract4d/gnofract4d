@@ -29,6 +29,14 @@ endif
 
 py_dep = py.dependency(required: true)
 
+# Generate lextab.py and parsetab.py
+run_command(
+    py.full_path(), '-B', '-c',
+    'from fract4d_compiler import fractparser',
+    env: {'PYTHONPATH': meson.project_source_root()},
+    check: true,
+)
+
 gnome = import('gnome')
 gresource = gnome.compile_resources('gnofract4d', 'fract4dgui/gnofract4d.gresource.xml',
     source_dir: 'fract4dgui',
@@ -49,7 +57,7 @@ foreach p: packages
         install_dir: py.get_install_dir(),
         install_mode: 'rw-r--r--',
         exclude_directories: ['tests', 'builder', 'c', 'fract4d_new'],
-        exclude_files: ['gnofract4d.css', 'gnofract4d.gresource.xml'],
+        exclude_files: ['gnofract4d.css', 'gnofract4d.gresource.xml', 'parser.out'],
     )
 endforeach
 
