@@ -57,7 +57,6 @@ jobs:
       - name: Run Tox (MacOS)
         if: ${{ runner.os == 'macOS' }}
         run: tox -e ${{ matrix.toxenv }}
-        continue-on-error: true  # Gio introspection is broken: https://gitlab.gnome.org/GNOME/glib/-/issues/3322
       - name: Run Tox (Linux)
         if: ${{ runner.os == 'Linux' }}
         run: xvfb-run --auto-servernum tox -e ${{ matrix.toxenv }}
