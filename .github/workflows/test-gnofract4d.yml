@@ -5,6 +5,7 @@ on:
     types: [opened, reopened, ready_for_review, synchronize]
   push:
     branches: ["master"]
+  workflow_dispatch:  # allow manual triggering from GitHub UI
 
 jobs:
   run:
