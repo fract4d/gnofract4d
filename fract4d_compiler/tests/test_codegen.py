@@ -2303,9 +2303,15 @@ Newton4(XYAXIS) {; Mark Peterson
         if isinstance(result, list):
             outputs = output.split("\n")
             for (exp, res) in zip(result, outputs):
-                self.assertEqual(exp, res)
+                self.assertCOutputEqual(exp, res)
         else:
-            self.assertEqual(output, result)
+            self.assertCOutputEqual(output, result)
+
+    def assertCOutputEqual(self, output, result):
+        # Report -0j and 0j as equal
+        output = output.replace(",-0)", ",0)")
+        result = result.replace(",-0)", ",0)")
+        self.assertEqual(output, result)
 
     def assertOutputMatch(self, exp):
         str_output = "\n".join([x.format() for x in self.codegen.out])
