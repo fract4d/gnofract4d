@@ -1750,8 +1750,8 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
     def manufacture_tests(self, myfunc, pyfunc):
         vals = [0 + 0j, 0 + 1j, 1 + 0j, 1 + 1j, 3 + 2j,
                 1 - 0j, 0 - 1j, -3 + 2j, -2 - 2j, -1 + 0j]
-        return [self.make_test(myfunc, pyfunc, x_y[0], x_y[1])
-                for x_y in zip(vals, list(range(1, len(vals))))]
+        return [self.make_test(myfunc, pyfunc, x_y[1], x_y[0])
+                for x_y in enumerate(vals, start=1)]
 
     def cotantests(self):
         def mycotan(z):
@@ -1817,6 +1817,7 @@ TileMandel {; Terren Suydam (terren@io.com), 1996
         tests = self.manufacture_tests("atanh", cmath.atanh)
         # Python overflows the whole number
         tests[2][2] = tests[5][2] = "(inf,0)"
+        tests[9][2] = "(-inf,0)"
         return tests
 
     def test_stdlib_quick(self):
