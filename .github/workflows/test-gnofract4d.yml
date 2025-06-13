@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04]
+        os: [ubuntu-24.04]
         python: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
         toxenv: [py]
         # Ensure ../codecov.yml uploads after all py jobs
@@ -38,13 +38,15 @@ jobs:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
       - name: Install Ubuntu packages
         if: ${{ runner.os == 'Linux' }}
-        # libgirepository1.0-dev required to build PyGObject from source
+        # libcairo2-dev and libgirepository-2.0-dev required to build PyGObject from source
         # dbus-x11 avoids timeouts, failed to execute "dbus-launch"
         # gvfs is needed for Gio.AppInfo.launch_default_for_uri()
         # libxml2-utils provides xmllint for xml-stripblanks in gresource.xml
+        # libgles2 system dependency is not automatically installed on ubuntu-24.04
         run: |
           sudo apt update
-          sudo apt install dbus-x11 gir1.2-gtk-4.0 gvfs libgirepository1.0-dev libxml2-utils ninja-build xvfb
+          sudo apt install dbus-x11 gir1.2-gtk-4.0 gvfs libcairo2-dev libgirepository-2.0-dev libgles2 \
+            libjpeg-dev libpng-dev libxml2-utils ninja-build xvfb
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
