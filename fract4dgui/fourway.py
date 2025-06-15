@@ -43,16 +43,16 @@ class T(Gtk.Widget):
         self.update_from_mouse(start_x + offset_x, start_y + offset_y)
 
     def onButtonRelease(self, gesture, offset_x, offset_y):
-        (xc, yc) = (self.get_allocated_width() // 2,
-                    self.get_allocated_height() // 2)
+        (xc, yc) = (self.get_width() // 2,
+                    self.get_height() // 2)
         dx = xc - self.last_x
         dy = yc - self.last_y
         if dx or dy:
             self.emit('value-changed', dx, dy)
 
     def onButtonPress(self, gesture, start_x, start_y):
-        self.last_x = self.get_allocated_width() / 2
-        self.last_y = self.get_allocated_height() / 2
+        self.last_x = self.get_width() / 2
+        self.last_y = self.get_height() / 2
         self.update_from_mouse(start_x, start_y)
 
     def do_snapshot(self, s):

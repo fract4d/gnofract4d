@@ -437,7 +437,7 @@ class ColorSettingsTable(Gtk.Box):
 
     def gradarea_clicked(self, gesture, offset_x, offset_y):
         current, x, y = gesture.get_point()
-        pos = float(x) / self.gradarea.get_allocated_width()
+        pos = float(x) / self.gradarea.get_width()
         i = self.f.get_gradient().get_index_at(pos)
         self.select_segment(i)
         self.redraw()

@@ -50,7 +50,7 @@ class T(Gtk.Widget):
         self.queue_draw()
 
     def update_from_mouse(self, x, y):
-        (w, h) = (self.get_allocated_width(), self.get_allocated_height())
+        (w, h) = (self.get_width(), self.get_height())
 
         xc = w // 2
         yc = h // 2
