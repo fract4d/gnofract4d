@@ -1,4 +1,4 @@
-baseURL = "http://fract4d.github.io/gnofract4d/manual/"
+baseURL = "https://fract4d.github.io/gnofract4d/manual/"
 languageCode = "en-us"
 title = "Gnofract 4D Manual"
 theme = "book"
