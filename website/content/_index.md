@@ -11,7 +11,7 @@ latest: "4.3"
 **Gnofract 4D** is a free, open source program which allows anyone to create beautiful fractal images.
 These include the famous Mandelbrot and Julia sets and many more. 
 You can explore a universe of images just using a mouse. 
-It runs on Unix-based systems such as Linux and FreeBSD and can also be run on Mac OS X. 
+It runs on Unix-based systems such as Linux and FreeBSD and can also be run on macOS. 
 It is easy to use, very fast, flexible, and widely used,with over **125,000** downloads over the past 20 years.
 
 
