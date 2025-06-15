@@ -1,7 +1,6 @@
 [MESSAGES CONTROL]
 disable=all
 enable=E,
-  bad-whitespace,
   bad-indentation,
   unnecessary-semicolon,
   missing-final-newline,
