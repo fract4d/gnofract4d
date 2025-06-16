@@ -11,6 +11,10 @@
 import os
 import subprocess
 
+
+if not os.path.exists("manual/themes/book/theme.toml"):
+    raise RuntimeError("hugo book theme not found")
+
 cp = subprocess.run(["bin/version"], capture_output=True, check=True, text=True)
 version = cp.stdout.strip()
 myenv = os.environ.copy()
