@@ -27,6 +27,8 @@ enableGitInfo = true
   url = "https://fract4d.github.io/gnofract4d"
   weight = 10
 
+[outputs]
+home = ['html']
 
 [params]
   # Gnofract 4D version
