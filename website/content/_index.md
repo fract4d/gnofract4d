@@ -2,7 +2,6 @@
 title: "Front Page"
 date: 2020-04-12T08:55:54-07:00
 draft: false
-latest: "4.3"
 ---
 
 

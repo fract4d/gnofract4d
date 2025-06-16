@@ -3,6 +3,7 @@ languageCode = "en-us"
 title = "My New Hugo Site"
 publishDir = "../docs"
 theme = "notheme"
+latest = 4.3
 
 [markup]
   [markup.highlight]

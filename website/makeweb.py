@@ -10,8 +10,11 @@
 import subprocess
 import os
 
+cp = subprocess.run(["../bin/version"], capture_output=True, check=True, text=True)
+version = cp.stdout.strip()
 myenv = os.environ.copy()
 myenv["HUGO_PARAMS_StyleBase"] = 'https://fract4d.github.io'
+myenv["HUGO_PARAMS_version"] = version
 
 # update the manual
 subprocess.run(
@@ -19,6 +22,11 @@ subprocess.run(
     cwd="../manual",
     env=myenv)
 
+latest = version.split("-")[0]
+myenv = os.environ.copy()
+myenv["HUGO_PARAMS_latest"] = latest
+
 subprocess.run(
-    ["hugo", "-b", "https://fract4d.github.io/gnofract4d/", "-d", "../docs"]
+    ["hugo", "-b", "https://fract4d.github.io/gnofract4d/", "-d", "../docs"],
+    env=myenv,
 )

@@ -1,0 +1,18 @@
+#!/usr/bin/python3
+
+from pathlib import Path
+import subprocess
+
+version = None
+try:
+    cp = subprocess.run(['git', 'describe', '--tags'], check=True, capture_output=True, text=True)
+    version = cp.stdout.strip()
+except subprocess.CalledProcessError:
+    git_version = Path(".gnofract4d_version.txt").read_text()
+    if not git_version.startswith("$Format"):
+        version = git_version.strip()
+if not version:
+    raise SystemExit("Version not found")
+
+version = version.lstrip("v")
+print(version)

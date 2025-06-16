@@ -8,7 +8,7 @@ project('gnofract4d', 'cpp',
         'strip=true',
     ],
     meson_version: '>= 0.56',
-    version: '4.3',
+    version: run_command('bin' / 'version', check: true).stdout().strip(),
 )
 
 project_datadir = get_option('datadir') /  meson.project_name()

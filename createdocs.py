@@ -8,7 +8,13 @@
 # install those tools. The 'sdist' packages (gnofract4d-4.2.zip etc) contain the output from this step
 # but not all the input. To build the docs you need to clone the git repo
 
+import os
 import subprocess
+
+cp = subprocess.run(["bin/version"], capture_output=True, check=True, text=True)
+version = cp.stdout.strip()
+myenv = os.environ.copy()
+myenv["HUGO_PARAMS_version"] = version
 
 # create list of stdlib functions
 from fract4d import createdocs as cd1
@@ -18,6 +24,7 @@ print("Generating docs")
 result = subprocess.run(
     ["hugo", "-b", "", "-d", "../help"],
     cwd="manual",
+    env=myenv,
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE)
 
