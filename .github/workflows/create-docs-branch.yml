@@ -1,0 +1,42 @@
+name: Create a branch with updated help
+
+on: workflow_dispatch
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: fract4d/gnofract4d
+          fetch-depth: 0
+          submodules: true
+
+      - name: Install Ubuntu packages
+        run: sudo apt install git hugo
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Prepare git environment
+        run: |
+            git config user.email "gnofract4d@fract4d.github.io"
+            git config user.name "Gnofract 4D"
+            git checkout -b help-update
+            git remote add local ${{ github.server_url }}/${{ github.repository }}
+
+      - name: Update help
+        run: |
+            rm -rf help
+            ./createdocs.py
+            git add help/
+            git commit -m "Update help"
+
+      - name: Push changes
+        run: >
+            git push --set-upstream local help-update
