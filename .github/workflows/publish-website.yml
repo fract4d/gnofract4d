@@ -1,0 +1,50 @@
+name: Publish Gnofract 4D Website on GitHub Pages
+
+on:
+  workflow_dispatch:  # allow manual triggering from GitHub UI
+
+jobs:
+  run:
+
+    name: Publish Website
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Install Ubuntu packages
+        run: sudo apt install git hugo
+
+      - name: Build website
+        run: |
+          cd website
+          ./makeweb.py
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "docs"
+
+
+  deploy:
+
+    needs: run
+
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
