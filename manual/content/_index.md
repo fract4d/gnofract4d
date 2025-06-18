@@ -732,9 +732,7 @@ threading. Basically we want the calculation of the fractal to happen
 on a different thread (or multiple threads for SMP) from the main UI,
 so you can interrupt at any point. This is complicated by the fact
 that Python only allows a single thread in the Global Interpreter
-Lock, and that PyGTK is often compiled by Linux distribution vendors
-without thread support, meaning this lock is not released when running
-the GTK main loop. (This last is probably nottrue any more, but I haven't checked.)
+Lock.
 
 The way out of this is that the additional threads live only in the
 C++ code, where they are invisible to the Python code and GTK. When
