@@ -1,0 +1,50 @@
+name: Create Release File
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  upload_archive:
+    name: Upload archive
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - run: |
+          ref="${{ github.ref_name }}"
+          echo "release_name=gnofract4d-${ref#v}" >> $GITHUB_ENV
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: ${{ env.release_name }}
+          submodules: recursive
+      - name: Install Ubuntu packages
+        run: sudo apt install hugo
+      - name: Save version
+        run: >
+            echo "${{ github.ref_name }}" > "${{ env.release_name }}"/.gnofract4d_version.txt
+      - name: Update help
+        run: |
+            cd ${{ env.release_name }}
+            rm -rf help
+            ./createdocs.py
+      - name: Build archive
+        run: >
+          tar --exclude=".git*" -cz "${{ env.release_name }}" -f "${{ env.release_name }}".tar.gz
+      - name: Attest
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: "${{ env.release_name }}.tar.gz"
+      - name: Log checksum
+        run: >
+          sha256sum "${{ env.release_name }}".tar.gz
+      - name: Add file to release
+        run: |
+          cd "${{ env.release_name }}" || exit 1
+          gh release upload "${{ github.ref_name }}" ../"${{ env.release_name }}".tar.gz
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
