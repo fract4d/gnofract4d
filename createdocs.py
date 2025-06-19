@@ -35,3 +35,7 @@ result = subprocess.run(
 if result.returncode != 0:
     raise RuntimeError("Error generating docs: %d\nStderr\n%s\nStdout\n%s" %
         (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
+
+UNUSED_FILES = ["flexsearch.min.js", "mermaid.min.js"]
+for unused_file in UNUSED_FILES:
+    os.remove(os.path.join("help", unused_file))
