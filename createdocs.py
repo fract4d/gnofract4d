@@ -9,6 +9,7 @@
 # but not all the input. To build the docs you need to clone the git repo
 
 import os
+import shutil
 import subprocess
 
 
@@ -36,6 +37,9 @@ if result.returncode != 0:
     raise RuntimeError("Error generating docs: %d\nStderr\n%s\nStdout\n%s" %
         (result.returncode, result.stderr.decode('utf8'), result.stdout.decode('utf8')))
 
-UNUSED_FILES = ["flexsearch.min.js", "mermaid.min.js"]
+UNUSED_DIRS = ["categories", "commands", "fonts", "katex", "tags", "stdlib"]
+UNUSED_FILES = ["404.html", "flexsearch.min.js", "mermaid.min.js", "sitemap.xml"]
+for unused_dir in UNUSED_DIRS:
+    shutil.rmtree(os.path.join("help", unused_dir))
 for unused_file in UNUSED_FILES:
     os.remove(os.path.join("help", unused_file))
