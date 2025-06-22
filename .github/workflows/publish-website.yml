@@ -18,7 +18,9 @@ jobs:
           submodules: true
 
       - name: Install Ubuntu packages
-        run: sudo apt install git hugo
+        run: |
+          sudo apt update
+          sudo apt install git hugo
 
       - name: Build website
         run: |

@@ -23,7 +23,9 @@ jobs:
           path: ${{ env.release_name }}
           submodules: recursive
       - name: Install Ubuntu packages
-        run: sudo apt install hugo
+        run: |
+          sudo apt update
+          sudo apt install hugo
       - name: Save version
         run: >
             echo "${{ github.ref_name }}" > "${{ env.release_name }}"/.gnofract4d_version.txt
