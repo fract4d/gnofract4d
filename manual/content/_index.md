@@ -761,7 +761,7 @@ Gnofract 4D from https://github.com/fract4d/gnofract4d
 
 ## Credits and copyright
 
-Gnofract 4D is Copyright 1999-2020 Edwin Young
+Gnofract 4D is Copyright 1999-2025 Edwin Young
 [edwin@bathysphere.org](mailto:edwin@bathysphere.org)
 , and is distributed under the **BSD
 license**.  See the file "LICENSE" for details. 
