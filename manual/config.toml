@@ -1,11 +1,14 @@
 baseURL = "https://fract4d.github.io/gnofract4d/manual/"
-languageCode = "en-us"
 title = "Gnofract 4D Manual"
 theme = "book"
 
 # Book configuration
 disablePathToLower = true
 enableGitInfo = true
+
+[languages]
+  [languages.en]
+    languageDirection = "ltr"
 
 # Needed for mermaid/katex shortcodes
 [markup]
