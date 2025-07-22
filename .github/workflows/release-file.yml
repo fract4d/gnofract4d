@@ -16,7 +16,9 @@ jobs:
     steps:
       - run: |
           ref="${{ github.ref_name }}"
-          echo "release_name=gnofract4d-${ref#v}" >> $GITHUB_ENV
+          release_name="gnofract4d-${ref#v}"
+          echo "release_name=${release_name}" >> $GITHUB_ENV
+          echo "release_file=${release_name}.tar.xz" >> $GITHUB_ENV
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -30,23 +32,28 @@ jobs:
         run: >
             echo "${{ github.ref_name }}" > "${{ env.release_name }}"/.gnofract4d_version.txt
       - name: Update help
+        working-directory: ${{ env.release_name }}
         run: |
-            cd ${{ env.release_name }}
             rm -rf help
             ./createdocs.py
+      - name: Remove documentation sources
+        working-directory: ${{ env.release_name }}
+        run: |
+            rm -rf manual website
+            rm createdocs.py
       - name: Build archive
         run: >
-          tar --exclude=".git*" -cz "${{ env.release_name }}" -f "${{ env.release_name }}".tar.gz
+          tar --exclude=".git*" -cJ "${{ env.release_name }}" -f "${{ env.release_file }}"
       - name: Attest
         uses: actions/attest-build-provenance@v2
         with:
-          subject-path: "${{ env.release_name }}.tar.gz"
+          subject-path: "${{ env.release_file }}"
       - name: Log checksum
         run: >
-          sha256sum "${{ env.release_name }}".tar.gz
+          sha256sum "${{ env.release_file }}"
       - name: Add file to release
+        working-directory: ${{ env.release_name }}
         run: |
-          cd "${{ env.release_name }}" || exit 1
-          gh release upload "${{ github.ref_name }}" ../"${{ env.release_name }}".tar.gz
+          gh release upload "${{ github.ref_name }}" ../"${{ env.release_file }}"
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
