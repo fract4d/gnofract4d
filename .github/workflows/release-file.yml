@@ -35,7 +35,7 @@ jobs:
         working-directory: ${{ env.release_name }}
         run: |
             rm -rf help
-            ./createdocs.py
+            python -B createdocs.py
       - name: Remove documentation sources
         working-directory: ${{ env.release_name }}
         run: |
