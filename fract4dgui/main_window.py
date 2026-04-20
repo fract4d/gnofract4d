@@ -1,6 +1,7 @@
 # main window
 
 import math
+import sys
 
 import gi
 gi.require_version('Gdk', '4.0')
@@ -25,7 +26,12 @@ STATUS = [_("Done"),
 
 class Application(Gtk.Application):
     def __init__(self, options, userConfig):
-        super().__init__(application_id="io.github.fract4d")
+        if sys.platform == "win32":
+            super().__init__(
+                application_id=None,
+                flags=Gio.ApplicationFlags.NON_UNIQUE)
+        else:
+            super().__init__(application_id="io.github.fract4d")
         self.mainWindow = None
         self.options = options
         self.userConfig = userConfig
@@ -47,6 +53,7 @@ class Application(Gtk.Application):
             self.mainWindow.apply_options(self.options)
             GLib.idle_add(self.mainWindow.first_draw)
 
+        self.mainWindow.set_visible(True)
         self.mainWindow.present()
 
 
@@ -283,7 +290,7 @@ class MainWindow(Actions, ApplicationWindow):
             self.fractalWindow.set_policy(
                 Gtk.PolicyType.AUTOMATIC,
                 Gtk.PolicyType.AUTOMATIC)
-            self.set_show_menubar(True)
+            self.set_show_menubar(sys.platform != "win32")
             self.toolbar.set_visible(True)
             self.statusbar.set_visible(True)
             self.unfullscreen()

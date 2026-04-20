@@ -4,6 +4,7 @@ import os
 import struct
 import math
 import copy
+import sys
 
 from gi.repository import Gsk, Gtk, Gdk, GObject, GLib, Graphene
 
@@ -58,6 +59,10 @@ class Hidden(GObject.GObject):
         self.frozen = False  # if true, don't emit signals
 
         self.site = fract4dc.fdsite_create(self.writefd)
+        try:
+            os.set_blocking(self.readfd, False)
+        except (AttributeError, OSError):
+            pass
         self.f = None
         self.try_init_fractal()
 
@@ -68,12 +73,11 @@ class Hidden(GObject.GObject):
         self.image = image.T(
             self.width, self.height, total_width, total_height)
 
-        self.msgbuf = b""
+        self.msgbuf = bytearray()
 
     def try_init_fractal(self):
         f = fractal.T(self.compiler, self.site)
         self.set_fractal(f)
-        self.f.compile()
 
     def set_fractal(self, f):
         if f != self.f:
@@ -109,6 +113,13 @@ class Hidden(GObject.GObject):
             self.f.saved = val
 
     def input_add(self, fd, cb):
+        if sys.platform == "win32":
+            def poll_fd():
+                cb(fd, GLib.IO_IN)
+                return True
+            GLib.timeout_add(16, poll_fd)
+            return
+
         GLib.io_add_watch(
             fd,
             GLib.PRIORITY_DEFAULT,
@@ -161,23 +172,8 @@ class Hidden(GObject.GObject):
     def set_formula(self, fname, formula, index=0):
         self.f.set_formula(fname, formula, index)
 
-    def onData(self, fd, condition):
-        self.msgbuf = self.msgbuf + os.read(fd, 8 - len(self.msgbuf))
-
-        if len(self.msgbuf) < 8:
-            # print "incomplete message: %s" % list(self.msgbuf)
-            return True
-
-        (t, size) = struct.unpack("2i", self.msgbuf)
-        self.msgbuf = b""
-        bytes = os.read(fd, size)
-        if len(bytes) < size:
-            print(
-                "not enough bytes, got %d instead of %d" %
-                (len(bytes), size))
-            return True
-
-        m = messages.parse(t, bytes)
+    def handle_message(self, t, payload):
+        m = messages.parse(t, payload)
 
         # print "msg: %s %d %d %d %d" % (m,p1,p2,p3,p4)
         if t == fract4dc.MESSAGE_TYPE_ITERS:
@@ -210,7 +206,32 @@ class Hidden(GObject.GObject):
             if not self.skip_updates:
                 self.stats_changed(m)
         else:
-            print("Unknown message from fractal thread; %s" % list(bytes))
+            print("Unknown message from fractal thread; %s" % list(payload))
+
+    def onData(self, fd, condition):
+        if condition & GLib.IO_HUP:
+            return False
+
+        try:
+            while True:
+                chunk = os.read(fd, 65536)
+                if not chunk:
+                    return False
+                self.msgbuf.extend(chunk)
+        except BlockingIOError:
+            pass
+
+        header_size = struct.calcsize("2i")
+        while len(self.msgbuf) >= header_size:
+            (t, size) = struct.unpack("2i", self.msgbuf[:header_size])
+            if len(self.msgbuf) < header_size + size:
+                break
+
+            start = header_size
+            end = header_size + size
+            payload = bytes(self.msgbuf[start:end])
+            del self.msgbuf[:end]
+            self.handle_message(t, payload)
 
         return True
 
