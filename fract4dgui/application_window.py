@@ -1,6 +1,7 @@
 # pylint: disable=no-member
 
 import os
+import sys
 
 from gi.repository import Gdk, Gio, Gtk
 
@@ -241,7 +242,7 @@ class ApplicationWindow(Gtk.ApplicationWindow, ApplicationDialogs):
             default_width=application.userPrefs.getint("main_window", "width"),
             default_height=application.userPrefs.getint("main_window", "height"),
             name="main_window",
-            show_menubar=True,
+            show_menubar=(sys.platform != "win32"),
         )
 
         self.application = application
